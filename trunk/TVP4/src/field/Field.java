@@ -6,11 +6,13 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.1
+ * @version 1.2
  *
  *
  * ******VERSION HISTORY******
- * LMK @ 9. februar 2007 (v 1.0)
+ * LMK @ 9. februar 2007 (v 1.2)
+ * Made nodes private
+ * LMK @ 9. februar 2007 (v 1.1)
  * Added method getSize()
  * LMK @ 9. februar 2007 (v 1.0)
  * Created
@@ -27,7 +29,7 @@ import java.io.Serializable;
 
 public class Field implements Serializable {
         
-    LinkedList nodes;
+    private LinkedList nodes;
     
     /** 
      * Creates a new empty field 
