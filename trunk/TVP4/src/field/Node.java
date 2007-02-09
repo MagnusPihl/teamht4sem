@@ -5,11 +5,13 @@
  *
  * Company: HT++
  *
- * @author LMK
- * @version 1.0
+ * @author Lau Maack-Krommes
+ * @version 1.1
  *
- *
+ * 
  * ******VERSION HISTORY******
+ * LMK @ 9. februar 2007 (v 1.1)
+ * Added method removeAllConnections()
  *
  * LMK @ 8. februar 2007 (v 1.0)
  * Created
@@ -296,6 +298,15 @@ public class Node implements Serializable {
      */
     public Node getDownNode() {
         return this.connectedNodes[DOWN];
+    }
+    
+    /**
+     * Remove all connections to surrounding nodes
+     */
+    public void removeAllConnections() {
+        for (int i = 0; i < this.connectedNodes.length; i++) {
+            this.setNodeAt(null, i);
+        }
     }
     
     /**
