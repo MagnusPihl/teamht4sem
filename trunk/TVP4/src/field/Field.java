@@ -6,11 +6,12 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
- *
+ * LMK @ 9. februar 2007 (v 1.0)
+ * Added method getSize()
  * LMK @ 9. februar 2007 (v 1.0)
  * Created
  *
@@ -19,6 +20,7 @@
 package field;
 
 import java.awt.Point;
+import java.awt.Dimension;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.io.Serializable;
@@ -84,5 +86,39 @@ public class Field implements Serializable {
         }
         
         return null;
+    }
+    
+    /**
+     * Get the dimension of the field, based on the positions of the nodes.
+     * Once the field has been created save the size, this function computes
+     * the size anew every time it's called.
+     * 
+     * @return The difference between dimension of the field. 
+     * 0,0 if the field is empty.
+     */
+    public Dimension getSize() {
+        int minX = 0;
+        int maxX = 0;
+        int minY = 0;
+        int maxY = 0;
+        Point current = null;
+        
+        for (Iterator i = this.nodes.iterator(); i.hasNext();) {
+            current = ((Node)i.next()).getPosition();
+            if (current.getX() < minX) {
+                minX = (int)current.getX();
+            }
+            if (current.getX() > maxX) {
+                maxX = (int)current.getX();
+            }
+            if (current.getY() < minY) {
+                minY = (int)current.getY();
+            }
+            if (current.getY() > maxY) {
+                maxY = (int)current.getY();
+            }
+        }
+        
+        return new Dimension(maxX - minX, maxY - minY);        
     }
 }
