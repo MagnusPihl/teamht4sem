@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.2
+ * @version 1.3
  *
  *
  * ******VERSION HISTORY******
+ * LMK @ 9. februar 2007 (v 1.3)
+ * Added method addNodeAt(int x, int y, int points)
+ * Changed Point to simple int x, int y
  * LMK @ 9. februar 2007 (v 1.2)
  * Made nodes private
  * LMK @ 9. februar 2007 (v 1.1)
@@ -43,16 +46,25 @@ public class Field implements Serializable {
      *
      * @param position to add node.
      */
-    public void addNodeAt(Point position) {
+    public void addNodeAt(int x, int y) {
+        this.addNodeAt(x, y, 0);                 
+    }
+    
+    /**
+     * Add note to field at position.
+     *
+     * @param position to add node.
+     */
+    public void addNodeAt(int x, int y, int points) {
                  
-        if (this.getNodeAt(position) == null) {
+        if (this.getNodeAt(x,y) == null) {
             this.nodes.add(new Node(
-                    position, 
-                    this.getNodeAt(new Point(position.x-1, position.y)),
-                    this.getNodeAt(new Point(position.x+1, position.y)),
-                    this.getNodeAt(new Point(position.x, position.y-1)),
-                    this.getNodeAt(new Point(position.x, position.y+1)),
-                    0));
+                    new Point(x,y), 
+                    this.getNodeAt(x-1, y),
+                    this.getNodeAt(x+1, y),
+                    this.getNodeAt(x, y-1),
+                    this.getNodeAt(x, y+1),
+                    points));
         }
     }
     
@@ -61,8 +73,8 @@ public class Field implements Serializable {
      * 
      * @param position of the node to remove.
      */
-    public void removeNodeAt(Point position) {
-        Node node = this.getNodeAt(position);
+    public void removeNodeAt(int x, int y) {
+        Node node = this.getNodeAt(x, y);
         
         if (node != null) {
             node.removeAllConnections();
@@ -77,7 +89,8 @@ public class Field implements Serializable {
      * @return The node at position. If no node is associated
      * NULL is returned.
      */
-    public Node getNodeAt(Point position) {
+    public Node getNodeAt(int x, int y) {
+        Point position = new Point(x, y);
         Node current = null;
         
         for (Iterator i = this.nodes.iterator(); i.hasNext();) {
@@ -122,5 +135,14 @@ public class Field implements Serializable {
         }
         
         return new Dimension(maxX - minX, maxY - minY);        
+    }
+    
+    /**
+     * Retrieve the list of nodes at the field
+     * 
+     * @return list of nodes on the field
+     */
+    public LinkedList getNodeList() {
+        return this.nodes;
     }
 }
