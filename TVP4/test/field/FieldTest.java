@@ -10,6 +10,9 @@
  *
  *
  * ******VERSION HISTORY******
+ * Magnus Hemmer Pihl @ 11. februar 2007 (v 1.2)
+ * Corrected expected return value from getSize().
+ *
  * Magnus Hemmer Pihl @ 11. februar 2007 (v 1.1)
  * Updated to match Field class version 1.3
  *
@@ -37,13 +40,13 @@ public class FieldTest extends TestCase {
 
     protected void setUp() throws Exception {
         this.instance = new Field();
-        this.instance.addNodeAt(10,10);
-        this.instance.addNodeAt(11,10);
-        this.instance.addNodeAt(12,10);
-        this.instance.addNodeAt(12,11);
-        this.instance.addNodeAt(12,12);
-        this.instance.addNodeAt(11,12);
-        this.instance.addNodeAt(10,12);
+        this.instance.addNodeAt(0,0);
+        this.instance.addNodeAt(1,0);
+        this.instance.addNodeAt(2,0);
+        this.instance.addNodeAt(2,1);
+        this.instance.addNodeAt(2,2);
+        this.instance.addNodeAt(1,2);
+        this.instance.addNodeAt(0,2);
     }
 
     protected void tearDown() throws Exception {
@@ -55,10 +58,10 @@ public class FieldTest extends TestCase {
     public void testAddNodeAt() {
         System.out.println("addNodeAt");
         
-        this.instance.addNodeAt(10,11,2);
-        Node node = this.instance.getNodeAt(10,11);
+        this.instance.addNodeAt(0,1,2);
+        Node node = this.instance.getNodeAt(0,1);
         
-        assertEquals(node.getUpNode(), this.instance.getNodeAt(10,10));
+        assertEquals(node.getUpNode(), this.instance.getNodeAt(0,0));
         assertEquals(node.getPoints(), 2);
     }
 
@@ -68,13 +71,13 @@ public class FieldTest extends TestCase {
     public void testRemoveNodeAt() {
         System.out.println("removeNodeAt");
         
-        this.instance.removeNodeAt(11,10);
-        Node node1 = this.instance.getNodeAt(10,10);
-        Node node2 = this.instance.getNodeAt(12,10);
+        this.instance.removeNodeAt(1,0);
+        Node node1 = this.instance.getNodeAt(0,0);
+        Node node2 = this.instance.getNodeAt(2,0);
         
         assertEquals(node1.getRightNode(), null);
         assertEquals(node2.getLeftNode(), null);
-        assertEquals(this.instance.getNodeAt(11,10), null);
+        assertEquals(this.instance.getNodeAt(1,0), null);
     }
 
     /**
@@ -83,7 +86,7 @@ public class FieldTest extends TestCase {
     public void testGetNodeAt() {
         System.out.println("getNodeAt");
         
-        assertEquals(this.instance.getNodeAt(11,12).getRightNode(), this.instance.getNodeAt(12,12));
+        assertEquals(this.instance.getNodeAt(1,2).getRightNode(), this.instance.getNodeAt(2,2));
     }
     
     /**
