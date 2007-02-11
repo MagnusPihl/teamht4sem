@@ -6,7 +6,7 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
@@ -29,7 +29,7 @@ import java.io.Serializable;
 
 public class FieldTest extends TestCase {
     
-    Field instance;
+    private Field instance;
     
     public FieldTest(String testName) {
         super(testName);
