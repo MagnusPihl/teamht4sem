@@ -6,13 +6,17 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.1
+ * @version 1.3
  *
  * 
  * ******VERSION HISTORY******
+ * LMK @ 10. februar 2007 (v 1.3)
+ * Fixed isStraightPath() so that it doesn't return true if 3 connections
+ * are present.
+ * LMK @ 9. februar 2007 (v 1.2)
+ * Moved position attribute to Field.
  * LMK @ 9. februar 2007 (v 1.1)
  * Added method removeAllConnections()
- *
  * LMK @ 8. februar 2007 (v 1.0)
  * Created
  *
@@ -24,7 +28,6 @@
 
 package field;
 
-import java.awt.Point;
 import java.io.Serializable;
 
 public class Node implements Serializable {
@@ -34,8 +37,7 @@ public class Node implements Serializable {
     public static final int DOWN = 2;
     public static final int LEFT = 3;
     public static final int INVALID_DIRECTION = -1;
-    
-    private Point position;
+        
     private Node[] connectedNodes;
     private boolean pointsTaken;
     private int points;
@@ -45,8 +47,8 @@ public class Node implements Serializable {
      *
      * @param position on the playing field.     
      */
-    public Node(Point position) {       
-        this(position, null, null, null, null, 0);
+    public Node() {       
+        this(null, null, null, null, 0);
     }
     
     /**
@@ -59,8 +61,7 @@ public class Node implements Serializable {
      * @param downNode node on the bottom of the node to be created
      * @param points points to be held by the node     
      */
-    public Node(Point position, Node leftNode, Node rightNode, Node upNode, Node downNode, int points) {
-        this.position = position;
+    public Node(Node leftNode, Node rightNode, Node upNode, Node downNode, int points) {
         this.connectedNodes = new Node[4];
         this.setNodeAt(leftNode, LEFT);
         this.setNodeAt(rightNode, RIGHT);
@@ -77,26 +78,16 @@ public class Node implements Serializable {
      * @return true if the path is straight.
      */
     public boolean isStraightPath() {
-        return (((this.connectedNodes[LEFT] != null) && (this.connectedNodes[RIGHT] != null)) 
-                ^ ((this.connectedNodes[UP] != null) && (this.connectedNodes[DOWN] != null)));
-    }
-    
-    /**
-     * Get the position on the playing field.
-     *
-     * @return The position on the playing field.
-     */
-    public Point getPosition() {
-        return this.position;
-    }
-         
-    /**
-     * Set the position on the playing field.
-     *
-     * @param position
-     */
-    public void setPosition(Point position) {
-        this.position = position;
+        boolean isHorizontalStraight = ((this.connectedNodes[LEFT] != null) && (this.connectedNodes[RIGHT] != null));
+        boolean isVerticalStraight = ((this.connectedNodes[UP] != null) && (this.connectedNodes[DOWN] != null));
+        
+        if (isHorizontalStraight) {
+            return isHorizontalStraight ^ ((this.connectedNodes[UP] != null) | (this.connectedNodes[DOWN] != null));
+        } else if (isVerticalStraight) {
+            return isVerticalStraight ^ ((this.connectedNodes[RIGHT] != null) | (this.connectedNodes[LEFT] != null));
+        }
+        
+        return false;
     }
     
     /**
@@ -168,6 +159,9 @@ public class Node implements Serializable {
             this.connectedNodes[direction] = node;
             
             if (node != null) {
+                if (node.connectedNodes[this.getOpposite(direction)] != null) {
+                    node.connectedNodes[this.getOpposite(direction)].connectedNodes[direction] = null;
+                }
                 node.connectedNodes[this.getOpposite(direction)] = this;
             }
         }
