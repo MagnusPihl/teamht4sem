@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
+ * Magnus Hemmer Pihl @ 11. februar 2007 (v 1.1)
+ * Updated to no longer use Point coordinates.
+ *
  * Magnus Hemmer Pihl @ 11. februar 2007 (v 1.0)
  * Created
  *
@@ -33,10 +36,10 @@ public class NodeTest extends TestCase {
     }
 
     protected void setUp() throws Exception {
-        node1 = new Node(new Point(0,0), null, null, null, null, 1);
-        node2 = new Node(new Point(0,1), null, null, node1, null, 2);
-        node3 = new Node(new Point(1,1), node2, null, null, null, 3);
-        node4 = new Node(new Point(2,1), node3, null, null, null, 4);
+        node1 = new Node(null, null, null, null, 1);
+        node2 = new Node(null, null, node1, null, 2);
+        node3 = new Node(node2, null, null, null, 3);
+        node4 = new Node(node3, null, null, null, 4);
     }
 
     protected void tearDown() throws Exception {
@@ -51,30 +54,6 @@ public class NodeTest extends TestCase {
         assertEquals(node1.isStraightPath(), false);
         assertEquals(node2.isStraightPath(), false);
         assertEquals(node3.isStraightPath(), true);
-    }
-
-    /**
-     * Test of getPosition method, of class field.Node.
-     */
-    public void testGetPosition() {
-        System.out.println("getPosition");
-        
-        assertEquals(node1.getPosition(), new Point(0,0));
-        assertEquals(node2.getPosition(), new Point(0,1));
-        assertEquals(node3.getPosition(), new Point(1,1));
-        assertEquals(node4.getPosition(), new Point(2,1));
-    }
-
-    /**
-     * Test of setPosition method, of class field.Node.
-     */
-    public void testSetPosition() {
-        System.out.println("setPosition");
-        
-        node4.setPosition(new Point(5,5));
-        assertEquals(node4.getPosition(), new Point(5,5));
-        node4.setPosition(new Point(2,1));
-        assertEquals(node4.getPosition(), new Point(2,1));
     }
 
     /**
@@ -137,7 +116,7 @@ public class NodeTest extends TestCase {
     public void testSetNodeAt() {
         System.out.println("setNodeAt");
         
-        Node node5 = new Node(new Point(2,0));
+        Node node5 = new Node();
         node4.setNodeAt(node5, Node.UP);
         assertEquals(node5.getDownNode(), node4);
     }
