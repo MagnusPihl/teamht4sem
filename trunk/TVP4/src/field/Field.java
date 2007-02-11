@@ -6,10 +6,12 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.3
+ * @version 1.4
  *
  *
  * ******VERSION HISTORY******
+ * LMK @ 11. februar 2007 (v 1.4)
+ * Fixed Field.getSize() bug
  * LMK @ 9. februar 2007 (v 1.3)
  * Added method addNodeAt(int x, int y, int points)
  * Changed Point to simple int x, int y
@@ -156,7 +158,7 @@ public class Field implements Serializable {
             }
         }
         
-        return new Dimension(maxX - minX, maxY - minY);        
+        return new Dimension(maxX - minX + 1, maxY - minY +1);        
     }
     
     /**

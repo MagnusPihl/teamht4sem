@@ -6,11 +6,12 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
- *
+ * LMK @ 11. februar 2007 (v 1.1)
+ * Fixed Field.getSize() bug
  * LMK @ 9. februar 2007 (v 1.0)
  * __________ Changes ____________
  *
@@ -30,7 +31,7 @@ public class EditorPanel extends FieldTileRenderer implements MouseMotionListene
         
     /** Creates a new instance of EditorPanel */
     public EditorPanel(Field field) {        
-        super(field, "skins/pacman/", 30);
+        super(field, "skins/nodes/", 30);
         //System.out.println((new File("skins/lines/")).getAbsolutePath());
         super.addMouseListener(this);
         super.addMouseMotionListener(this);        
