@@ -6,13 +6,15 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
+ * @version 1.1
  *
  * This class should use sprite to draw the field. A list should be loaded on
  * startup.
  *
  * ******VERSION HISTORY******
  *
+ * LMK @ 11. februar 2007 (v 1.1)
+ * Fixed Field.getSize() bug
  * LMK @ 10. februar 2007 (v 1.0)
  * __________ Changes ____________
  *
@@ -113,8 +115,8 @@ public class FieldTileRenderer extends FieldPanel {
     private void drawBaseTile(Graphics g) {
         Dimension size = this.field.getSize();
         
-        for (int x = 0; x <= size.width; x++) {            
-            for (int y = 0; y <= size.height; y++) {
+        for (int x = 0; x < size.width; x++) {            
+            for (int y = 0; y < size.height; y++) {
                 g.drawImage(this.baseTile, x*tileSize, y*tileSize, null);
             }
         }

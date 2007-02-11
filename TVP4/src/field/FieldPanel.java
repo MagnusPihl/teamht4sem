@@ -6,11 +6,13 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
  *
+ * LMK @ 11. februar 2007 (v 1.1)
+ * Fixed Field.getSize() bug
  * LMK @ 10. februar 2007 (v 1.0)
  * __________ Changes ____________
  *
@@ -56,11 +58,11 @@ public abstract class FieldPanel extends JPanel {
         Dimension size = this.field.getSize();
         g.setColor(this.gridColor);       
         
-        for (int x = 1; x <= size.width; x++) {
-            g.drawLine(x*tileSize, 0, x*tileSize, (size.height+1)*tileSize);
+        for (int x = 1; x < size.width; x++) {
+            g.drawLine(x*tileSize, 0, x*tileSize, size.height*tileSize);
         }
-        for (int y = 1; y <= size.height; y++) {
-            g.drawLine(0, y*tileSize, (size.width+1)*tileSize, y*tileSize);
+        for (int y = 1; y < size.height; y++) {
+            g.drawLine(0, y*tileSize, size.width*tileSize, y*tileSize);
         }
     }
 
