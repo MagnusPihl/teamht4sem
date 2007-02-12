@@ -31,7 +31,7 @@ public class EditorPanel extends FieldTileRenderer implements MouseMotionListene
         
     /** Creates a new instance of EditorPanel */
     public EditorPanel(Field field) {        
-        super(field, "skins/nodes/", 30);
+        super(field, "skins/nodes/");
         //System.out.println((new File("skins/lines/")).getAbsolutePath());
         super.addMouseListener(this);
         super.addMouseMotionListener(this);        
