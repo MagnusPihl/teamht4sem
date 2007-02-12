@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.4
+ * @version 1.5
  *
  *
  * ******VERSION HISTORY******
+ * LMK @ 11. februar 2007 (v 1.5)
+ * You can no longer add Nodes at position less than (0,0)
+ * Added hasChanged
  * LMK @ 11. februar 2007 (v 1.4)
  * Fixed Field.getSize() bug
  * LMK @ 9. februar 2007 (v 1.3)
@@ -60,16 +63,16 @@ public class Field implements Serializable {
      * @param position to add node.
      */    
     public void addNodeAt(Point position, int points) {                 
-        if (this.getNodeAt(position) == null) {
+        if ((this.getNodeAt(position) == null)&&(0 <= position.x)&&(0 <= position.y)) {
             this.nodes.put(position, new Node(
                     this.getNodeAt(position.x-1, position.y),
                     this.getNodeAt(position.x+1, position.y),
                     this.getNodeAt(position.x, position.y-1),
                     this.getNodeAt(position.x, position.y+1),
                     points));
-        }
-        
-        this.hasChanged = true;
+            
+            this.hasChanged = true;
+        }        
     }
     
     public void addNodeAt(int x, int y, int points) {

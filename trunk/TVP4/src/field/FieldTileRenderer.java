@@ -6,13 +6,14 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.1
+ * @version 1.2
  *
  * This class should use sprite to draw the field. A list should be loaded on
  * startup.
  *
  * ******VERSION HISTORY******
- *
+ * LMK @ 12. februar 2007 (v 1.2)
+ * TileSize is now determined by the width of the baseTile;
  * LMK @ 11. februar 2007 (v 1.1)
  * Fixed Field.getSize() bug
  * LMK @ 10. februar 2007 (v 1.0)
@@ -51,8 +52,8 @@ public class FieldTileRenderer extends FieldPanel {
      */
     
     /** Creates a new instance of FieldSpriteRenderer */
-    public FieldTileRenderer(Field field, String directory, int tileSize) {
-        super(field, tileSize);
+    public FieldTileRenderer(Field field, String directory) {
+        super(field, 30);
         this.loadTile(directory);
         super.setBackground(Color.WHITE);
         super.setGridColor(Color.LIGHT_GRAY);
@@ -73,6 +74,7 @@ public class FieldTileRenderer extends FieldPanel {
             }
 
             this.baseTile = (new ImageIcon(file.getAbsolutePath() + file.separator +  "base.png")).getImage();
+            super.tileSize = this.baseTile.getWidth(null);
         }        
     }
     
