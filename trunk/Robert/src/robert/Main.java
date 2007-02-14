@@ -27,7 +27,9 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Hejsa");
         Tower t = new Tower();
-        
+        t.open();
+        t.write(new byte[] {(byte) 0x10},1);
+        t.close();
     }
     
 }
