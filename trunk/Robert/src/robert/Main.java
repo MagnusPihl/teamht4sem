@@ -9,6 +9,8 @@
 
 package robert;
 
+import josx.rcxcomm.*;
+
 /**
  *
  * @author bamsi
@@ -24,6 +26,8 @@ public class Main {
      */
     public static void main(String[] args) {
         System.out.println("Hejsa");
+        Tower t = new Tower();
+        
     }
     
 }
