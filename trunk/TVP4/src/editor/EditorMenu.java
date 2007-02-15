@@ -6,13 +6,16 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
+ * @version 1.2
  *
  *
  * ******VERSION HISTORY******
- *
+ * LMK @ 14. februar 2007 (v 1.2)
+ * Added draw buttons for ghosts and pacman
+ * LMK @ 13. februar 2007 (v 1.1)
+ * Added view menu and show hide grid and points.
+ * Changed to support the change of LevelEditor into a singleton
  * LMK @ 10. februar 2007 (v 1.0)
- * __________ Changes ____________
  *
  */
 
@@ -20,27 +23,35 @@ package editor;
 
 import java.awt.event.*;
 import javax.swing.*;
+import java.awt.*;
+import java.io.File;
 
 /**
  *
  * @author LMK
  */
-public class EditorMenu extends JMenuBar {
+public class EditorMenu extends JPanel {
     
-    private LevelEditor editor;
+    private JTextField pointsField;
+    
+    public static final String IMAGE_DIR = (new File("images").getAbsolutePath()) + File.separator;
     
     /** Creates a new instance of EditorMenu */
-    public EditorMenu(LevelEditor editor) {
-        this.editor = editor;
+    public EditorMenu() {
+        this.setLayout(new BorderLayout());
+        JMenuBar menu = new JMenuBar();
+        JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT));                
         
         String[][] menuStrings = {
             {"File","New level","Scan new level","Open...","-","Save","Save As...","-","Quit"},
+            {"View","Show grid","Show points"},
             {"Skin","Nodes","Pac-Man","-","Open skin..."},
             {"Help","About...","Open help"}
         };
         
         char[][] mnemonics = {
             {'f','n','c','o','-','-','s','-','q'},
+            {'v','g','p'},
             {'s','n','p','-','o'},
             {'h','a','h'}
         };
@@ -55,6 +66,9 @@ public class EditorMenu extends JMenuBar {
              KeyStroke.getKeyStroke('S',InputEvent.CTRL_MASK),
              null,                     
              KeyStroke.getKeyStroke('Q',InputEvent.CTRL_MASK)},
+            {null,
+             KeyStroke.getKeyStroke('G',InputEvent.CTRL_MASK),
+             KeyStroke.getKeyStroke('P',InputEvent.CTRL_MASK)},
             {null, 
              KeyStroke.getKeyStroke('1',InputEvent.CTRL_MASK),
              KeyStroke.getKeyStroke('2',InputEvent.CTRL_MASK),
@@ -67,22 +81,25 @@ public class EditorMenu extends JMenuBar {
         
         ActionListener[][] actionListener = {
             {null,
-             new ActionListener() {public void actionPerformed(ActionEvent evt) {newLevel();}},
-             new ActionListener() {public void actionPerformed(ActionEvent evt) {scanLevel();}},
-             new ActionListener() {public void actionPerformed(ActionEvent evt) {openLevel();}},
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().newLevel();}},
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().scanLevel();}},
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().openLevel();}},
              null,
-             new ActionListener() {public void actionPerformed(ActionEvent evt) {saveLevel();}},
-             new ActionListener() {public void actionPerformed(ActionEvent evt) {saveLevelAs();}},
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().saveLevel();}},
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().saveLevelAs();}},
              null, 
-             new ActionListener() {public void actionPerformed(ActionEvent evt) {quit();}}},             
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().quit();}}},  
             {null,
-             new ActionListener() {public void actionPerformed(ActionEvent evt) {setSkin("skins/nodes/");}},
-             new ActionListener() {public void actionPerformed(ActionEvent evt) {setSkin("skins/pacman/");}},
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().showHideGrid();}},
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().showHidePoints();}}},
+            {null,
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().setSkin("skins/nodes/");}},
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().setSkin("skins/pacman/");}},
              null,
-             new ActionListener() {public void actionPerformed(ActionEvent evt) {openSkin();}}},
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().openSkin();}}},
             {null,
-             new ActionListener() {public void actionPerformed(ActionEvent evt) {about();}},
-             new ActionListener() {public void actionPerformed(ActionEvent evt) {openHelp();}}}                      
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().about();}},
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().openHelp();}}}                      
         };
         
         //JMenu[] topMenus = new JMenu[menuStrings.length];
@@ -105,21 +122,65 @@ public class EditorMenu extends JMenuBar {
                 }
             }
             
-            this.add(topMenu);
-        }
-        /*JMenuItem fileMenuOpen, fileMenuScan, fileMenuSave, fileMenuQuit;
-        JMenuItem skinMenuNodes, skinMenuPacman, skinMenuOpen;
-        JMenuItem helpMenuAbout, helpMenuHelp;*/                
+            menu.add(topMenu);
+        }      
+        
+        //toolbar        
+        JButton gridBtn = new JButton(new ImageIcon(IMAGE_DIR + "grid.png"));
+        gridBtn.setToolTipText("Show/hide grid");
+        gridBtn.addActionListener(actionListener[1][1]);
+        toolbar.add(gridBtn);
+        
+        
+        JButton pointsBtn = new JButton(new ImageIcon(IMAGE_DIR + "points.png"));
+        pointsBtn.setToolTipText("Show/hide points");
+        pointsBtn.addActionListener(actionListener[1][2]);
+        toolbar.add(pointsBtn);
+        
+        toolbar.add(new JSeparator(JSeparator.VERTICAL));
+        
+        JButton brushBtn = new JButton(new ImageIcon(IMAGE_DIR + "brush.png"));
+        brushBtn.setToolTipText("Draw freehand");
+        //pointsBtn.addActionListener(actionListener[1][2]);
+        toolbar.add(brushBtn);
+        
+        /*JButton lineBtn = new JButton(new ImageIcon(IMAGE_DIR + "line.png"));
+        lineBtn.setToolTipText("Draw lines");
+        //pointsBtn.addActionListener(actionListener[1][2]);
+        toolbar.add(lineBtn);*/
+                
+        JButton pacmanBtn = new JButton(new ImageIcon(IMAGE_DIR + "pacman.png"));
+        pacmanBtn.setToolTipText("Draw pacman");
+        //pointsBtn.addActionListener(actionListener[1][2]);
+        toolbar.add(pacmanBtn);
+        
+        JButton ghostBtn = new JButton(new ImageIcon(IMAGE_DIR + "ghosts.png"));
+        ghostBtn.setToolTipText("Draw ghosts");
+        //pointsBtn.addActionListener(actionListener[1][2]);
+        toolbar.add(ghostBtn);
+        
+        toolbar.add(new JSeparator(JSeparator.VERTICAL));
+        toolbar.add(new JLabel("Points:"));
+        
+        pointsField = new JTextField("10");
+        pointsField.setHorizontalAlignment(JTextField.RIGHT);
+        pointsField.setPreferredSize(new Dimension(50,22));
+        pointsField.setToolTipText("Number of points to be added to nodes");
+        toolbar.add(pointsField);
+        
+        this.add(menu, BorderLayout.NORTH);
+        this.add(toolbar, BorderLayout.SOUTH);
     }
     
-     public void newLevel() {this.editor.newLevel();}
-     public void scanLevel() {this.editor.scanLevel();}
-     public void openLevel() {this.editor.openLevel();}
-     public void saveLevel() {this.editor.saveLevel();}
-     public void saveLevelAs() {this.editor.saveLevelAs();}     
-     public void quit() {this.editor.quit();}     
-     public void setSkin(String path) {this.editor.setSkin(path);}
-     public void openSkin() {this.editor.openSkin();}          
-     public void about() {this.editor.about();}
-     public void openHelp() {this.editor.openHelp();}     
+    /**
+     * Get amount of points specified in the points text field.
+     * If the text held in the text field is not a number 0 is returned.
+     */
+    public int getPoints() {
+        try {
+            return Integer.parseInt(pointsField.getText());
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 }
