@@ -6,19 +6,23 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
  *
+ * LMK @ 13. februar 2007 (v 1.1)
+ * Changed into singleton
+ * Added javadoc
+ * Added getPoints()
  * LMK @ 9. februar 2007 (v 1.0)
- * __________ Changes ____________
  *
  */
 
 package editor;
 
 import field.*;
+import field.Field;
 import java.awt.*;
 import javax.swing.*;
 import java.io.*;
@@ -33,27 +37,30 @@ public class LevelEditor {
     private JFrame frame;
     private Field field;
     private EditorPanel editorPanel;
-    private ConfigPanel configPanel;
+    private StatusBar statusBar;
     private EditorMenu menu;
     private JFileChooser openSaveDialog, skinDialog;
     
+    private static LevelEditor instance = new LevelEditor();
+    
     /** Creates a new instance of LevelEditor */
-    public LevelEditor() {
+    private LevelEditor() {
         this.frame = new JFrame();
         this.saveFile = null;
         this.updateTitle();
         
         this.field = new Field();
-        this.menu = new EditorMenu(this);
+        this.menu = new EditorMenu();
         this.editorPanel = new EditorPanel(field);
-        this.configPanel = new ConfigPanel(editorPanel);        
+        this.statusBar = new StatusBar(editorPanel);    
+        
         
         JScrollPane scrollPanel = new JScrollPane(editorPanel); //, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         frame.setPreferredSize(new Dimension(640, 480));
         
-        frame.getContentPane().add(this.menu, BorderLayout.NORTH);
+        frame.getContentPane().add(menu, BorderLayout.NORTH);
         frame.getContentPane().add(scrollPanel, BorderLayout.CENTER);
-        frame.getContentPane().add(configPanel, BorderLayout.WEST);
+        frame.getContentPane().add(statusBar, BorderLayout.SOUTH);
         
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -71,25 +78,26 @@ public class LevelEditor {
         
         this.skinDialog = new JFileChooser(new File("skins/"));
         this.skinDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        /*this.skinDialog.setFileFilter(new javax.swing.filechooser.FileFilter() {
-            public boolean accept(File f) {
-                return (f.isDirectory());
-            }
-            public String getDescription() {
-                return "Skin folders";
-            }
-        });         */       
+    }
+    
+    
+    public static LevelEditor getInstance() {
+        return instance;
     }
     
     public static void main(String[] args) {
-        new LevelEditor();
+        LevelEditor.getInstance();
     }
     
+    /**
+     * Create a new level.
+     */
     public void newLevel() {
         boolean commit = true;
         if (this.field.hasChanged()) {
             if (JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(this.frame, 
                 "Are you sure you wish to abandon the current level and start a new one?")) {
+                this.saveFile = null;
                 commit = false;
             }            
         }
@@ -102,6 +110,9 @@ public class LevelEditor {
         }
     }
     
+    /**
+     * Scan physical level using robots.
+     */
     public void scanLevel() {
         boolean commit = true;
         
@@ -117,6 +128,9 @@ public class LevelEditor {
         }
     }        
     
+    /**
+     * Open a previously saved level.
+     */
     public void openLevel() {        
         boolean commit = true;
         
@@ -142,6 +156,10 @@ public class LevelEditor {
         }
     }
     
+    /**
+     * Save level to the currently selected save file. If no file is selected
+     * ask user to select a file.
+     */
     public void saveLevel() {
         if (this.saveFile != null) {                        
             if (!this.field.saveNodesTo(this.saveFile)) {                                                
@@ -152,6 +170,9 @@ public class LevelEditor {
         }
     }
     
+    /**
+     * Ask user to select a file in wich to save the current level.
+     */
     public void saveLevelAs() {
         if (JFileChooser.APPROVE_OPTION == this.openSaveDialog.showSaveDialog(this.frame)) {            
             //System.out.println(this.openSaveDialog.getSelectedFile());
@@ -171,16 +192,28 @@ public class LevelEditor {
         }
     }
     
+    /**
+     * Exit the level editor. 
+     * Should ask user whether he wants to save before quitting.
+     */
     public void quit() {
         //insert code that checks whether user have saved since last change
         System.exit(0);
     }
     
+    /**
+     * Use skin from directory.
+     *
+     * @param path to directory where skin files are stored.
+     */
     public void setSkin(String path) {
         this.editorPanel.loadTile(path);
         this.editorPanel.checkSize();
     }
     
+    /**
+     * Ask user to select directory in wich skin files to be used are stored.
+     */
     public void openSkin() {
         if (JFileChooser.APPROVE_OPTION == this.skinDialog.showOpenDialog(this.frame)) {
             this.editorPanel.loadTile(this.skinDialog.getSelectedFile());
@@ -188,7 +221,31 @@ public class LevelEditor {
         }        
     }
     
+    /**
+     * Inverts the current grid view setting. If the grid is visible it is
+     * made invisible and vice versa.
+     */
+    public void showHideGrid() {       
+        this.editorPanel.setGridVisible(!this.editorPanel.isGridVisible());
+        this.editorPanel.checkSize();
+    }
+    
+    /**
+     * Inverts the current point view setting. If the points are visible on the field 
+     * they are made invisible and vice versa.
+     */
+    public void showHidePoints() {
+        
+    }
+    
+    /**
+     * Show about dialog.
+     */
     public void about() {}
+    
+    /**
+     * Open help file.
+     */
     public void openHelp() {}
     
     public void updateTitle() {
@@ -197,5 +254,16 @@ public class LevelEditor {
         } else {            
             this.frame.setTitle("Pacman Level Editor");
         }
+    }
+        
+    /**
+     * Get amount of points to be added to nodes.
+     */
+    public int getPoints() {
+        return this.menu.getPoints();
+    }
+    
+    public EditorPanel getEditorPanel() {
+        this.editorPanel;
     }
 }
