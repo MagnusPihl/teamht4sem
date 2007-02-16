@@ -6,10 +6,12 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
+ * Magnus Hemmer Pihl @ 16. februar 2007 (v 1.0)
+ * Corrected name of method getEntityTile()
  *
  * Magnus Hemmer Pihl @ 16. februar 2007 (v 1.0)
  * Created.
@@ -130,7 +132,7 @@ public class TileSet
      * @param frame The frame number to be retrieved. Continuous starting from 0.
      * @return The image object of the specified entity frame.
      */
-    public Image EntityTile(int index, int direction, int frame)
+    public Image getEntityTile(int index, int direction, int frame)
     {
         if(index < this.entityTiles.length && direction < this.entityTiles[0].length && frame < this.entityTiles[0][0].length)
             return this.entityTiles[index][direction][frame];
