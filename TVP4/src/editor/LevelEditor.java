@@ -6,11 +6,14 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.1
+ * @version 1.2
  *
  *
  * ******VERSION HISTORY******
  *
+ * LMK @ 16. februar 2007 (v 1.2)
+ * Refactored new, save, open and scan functions
+ * Created confirmClearField()
  * LMK @ 13. februar 2007 (v 1.1)
  * Changed into singleton
  * Added javadoc
@@ -90,19 +93,33 @@ public class LevelEditor {
     }
     
     /**
+     * Ask user whether he wants to save the current level before he continues
+     * with the current action (such as new, scan or open). 
+     *
+     * @return true if the user does not press cancel or closes the dialog.
+     */
+    public boolean confirmClearField() {
+        int result;
+        
+        if (this.field.hasChanged()) {
+            result = JOptionPane.showConfirmDialog(this.frame, 
+                "Do you wish to save the current level before you continue?");
+            if (JOptionPane.OK_OPTION == result) {
+                this.saveLevel();
+                return true;
+            }            
+            if (((JOptionPane.CANCEL_OPTION & result) != 0) || 
+                ((JOptionPane.CLOSED_OPTION & result) != 0)) {
+                return false;
+            }
+        }
+    }
+    
+    /**
      * Create a new level.
      */
     public void newLevel() {
-        boolean commit = true;
-        if (this.field.hasChanged()) {
-            if (JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(this.frame, 
-                "Are you sure you wish to abandon the current level and start a new one?")) {
-                this.saveFile = null;
-                commit = false;
-            }            
-        }
-        
-        if (commit) {
+        if (this.confirmClearField()) {
             this.field.clearField();
             this.saveFile = null;
             this.updateTitle();
@@ -114,17 +131,12 @@ public class LevelEditor {
      * Scan physical level using robots.
      */
     public void scanLevel() {
-        boolean commit = true;
-        
-        if (this.field.hasChanged()) {
-            if (JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(this.frame, 
-                "Are you sure you wish to abandon the current level and start a new one?")) {
-                commit = false;
-            }
-        }
-        
-        if (commit) {
+        if (this.confirmClearField()) {
             this.field.clearField();
+            this.saveFile = null;
+            this.updateTitle();
+            this.editorPanel.checkSize();
+            //scan code
         }
     }        
     
@@ -132,20 +144,11 @@ public class LevelEditor {
      * Open a previously saved level.
      */
     public void openLevel() {        
-        boolean commit = true;
-        
-        if (this.field.hasChanged()) {
-            if (JOptionPane.OK_OPTION != JOptionPane.showConfirmDialog(this.frame, 
-                "Are you sure you wish to open a new level?")) {
-                commit = false;
-            }
-        }
-                
-        if (commit) {
+        if (this.confirmClearField()) {
             if (JFileChooser.APPROVE_OPTION == this.openSaveDialog.showOpenDialog(this.frame)) {
                 File file = this.openSaveDialog.getSelectedFile();
                 
-                if (this.field.loadNodesFrom(file)) {
+                if (this.field.loadFrom(file)) {
                     this.saveFile = file;
                     this.updateTitle();
                     this.editorPanel.checkSize();
@@ -153,7 +156,7 @@ public class LevelEditor {
                     JOptionPane.showMessageDialog(this.frame, "Could not open level, file doesn't exist!");
                 }
             }
-        }
+        }            
     }
     
     /**
@@ -162,7 +165,7 @@ public class LevelEditor {
      */
     public void saveLevel() {
         if (this.saveFile != null) {                        
-            if (!this.field.saveNodesTo(this.saveFile)) {                                                
+            if (!this.field.saveTo(this.saveFile)) {                                                
                 JOptionPane.showMessageDialog(this.frame, "Could not save level!");
             }
         } else {
@@ -181,14 +184,11 @@ public class LevelEditor {
             if (!file.getName().toLowerCase().endsWith(".lvl")) {
                 file = new File(file.getAbsoluteFile() + ".lvl");
             }
-            System.out.println(file.getAbsoluteFile());
-            
-            if (this.field.saveNodesTo(file)) {                                                
-                this.saveFile = file;
-                this.updateTitle();
-            } else {                 
-                JOptionPane.showMessageDialog(this.frame, "Could not save level=");
-            }
+            //System.out.println(file.getAbsoluteFile());
+                                                           
+            this.saveFile = file;
+            this.updateTitle();
+            this.saveLevel();            
         }
     }
     
@@ -207,7 +207,7 @@ public class LevelEditor {
      * @param path to directory where skin files are stored.
      */
     public void setSkin(String path) {
-        this.editorPanel.loadTile(path);
+        this.editorPanel.getTileSet().loadTileSet(path);
         this.editorPanel.checkSize();
     }
     
@@ -216,8 +216,7 @@ public class LevelEditor {
      */
     public void openSkin() {
         if (JFileChooser.APPROVE_OPTION == this.skinDialog.showOpenDialog(this.frame)) {
-            this.editorPanel.loadTile(this.skinDialog.getSelectedFile());
-            this.editorPanel.checkSize();
+            this.setSkin(this.skinDialog.getSelectedFile());
         }        
     }
     
@@ -264,6 +263,6 @@ public class LevelEditor {
     }
     
     public EditorPanel getEditorPanel() {
-        this.editorPanel;
+        return this.editorPanel;
     }
 }
