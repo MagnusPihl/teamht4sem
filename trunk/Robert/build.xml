@@ -2,9 +2,64 @@
 <!-- You may freely edit this file. See commented blocks below for -->
 <!-- some examples of how to customize the build. -->
 <!-- (If you delete it and reopen the project it will be recreated.) -->
-<project name="Robert" default="default" basedir=".">
+<project name="Robert" default="run" basedir=".">
+    
+
     <description>Builds, tests, and runs the project Robert.</description>
     <import file="nbproject/build-impl.xml"/>
+
+    <target name="[Lejos] Firmware download">
+        <exec executable="lejosfirmdl.exe" >
+            <arg line="-f --tty=usb"/>
+        </exec>
+    </target>
+    
+    <!-- After compile create a bin file -->
+    <target name="-post-compile">
+        <exec dir="${build.classes.dir}" executable="lejos.exe">
+            <arg line="-o robert.bin Robert" />
+        </exec>
+    </target>
+
+    
+    <!-- 'Run' executes the lejosrun.exe, which downloads the .bin file to the RCX, all that is left is to press 'run' on the rcx -->
+    <target name="run" depends="init, compile">
+        <exec dir="${build.classes.dir}" executable="lejosrun.exe">
+            <arg line="--tty=usb" />
+            <arg line="robert.bin" />
+        </exec>
+    </target>
+    
+    <!--
+    Christian's old shit
+    
+    <property environment="env"/>
+    <property name="classPath" value="${env.classpath}/"/>
+    <property name="LejosLib" value="${env.$LEJOS_LIB}/"/>
+    <property name="home" value=""/>
+    <property name="doc" value="${home}doc/"/>
+    <property name="src" value="${home}src/"/>
+    <property name="out" value="${home}build/classes/"/>
+    <target name="[Lejos] Init">
+        <mkdir dir="${out}" />
+    </target>
+    
+    <target name="[Lejos] Compile" depends="[Lejos] Init">
+        <exec executable="lejosc.exe" >
+            <arg line="-classpath '${LejosLib}' -source 1.2 -d ${out} ${src}/robert/*.java"/>
+        </exec>
+    </target>
+    
+    
+    <target name="[Lejos] Create bin file" depends="[Lejos] Compile">
+        
+    </target>
+    
+    <target name="[Lejos] Download program" depends="[Lejos] Create bin file">
+        
+    </target>
+    -->
+    
     <!--
 
     There exist several targets which are by default empty and which can be 
