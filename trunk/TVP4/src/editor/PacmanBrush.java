@@ -41,8 +41,8 @@ public class PacmanBrush extends Brush
         }
         else if (e.getButton() == e.BUTTON3)
         {
-            if(super.panel.getField().getEntityStartPosition().equals(curpos))
-                super.panel.getField().placePacman(null);
+            if(super.panel.getField().getEntityStartPosition(0).equals(curpos))
+                super.panel.getField().removeEntityAt(curpos);
         }
     }
     
