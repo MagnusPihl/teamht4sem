@@ -6,11 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
  *
+ * Magnus Hemmer Pihl @ 19. februar 2007 (v 1.1)
+ * Updated draw()-method to properly retrieve direction and ID from its entity.
  * Magnus Hemmer Pihl @ 16. februar 2007 (v 1.0)
  * Created.
  *
@@ -58,9 +60,6 @@ public class EntityRenderer
     public void draw(Graphics g)
     {
         Point position = entity.getPosition();
-        int type = 0;
-        if(!entity.isPacman())
-            type = 1;
         
         if((System.currentTimeMillis() - this.lastUpdate) > this.animationDelay)
         {
@@ -69,7 +68,7 @@ public class EntityRenderer
         }
         
         g.drawImage(
-                this.tileSet.getEntityTile(type, entity.getDirection(), this.frameCounter),
+                this.tileSet.getEntityTile(entity.getID(), entity.getDirection(), this.frameCounter),
                 position.x * this.tileSet.getTileSize(),
                 position.y * this.tileSet.getTileSize(),
                 null);
