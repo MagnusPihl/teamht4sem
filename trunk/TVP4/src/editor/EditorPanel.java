@@ -67,7 +67,7 @@ public class EditorPanel extends JPanel {
         size.setSize(size.getWidth()*this.tileSet.getTileSize(), size.getHeight()*this.tileSet.getTileSize());
         this.setPreferredSize(size);
         this.revalidate();
-//        this.repaint();
+        this.repaint();
     }                         
     
     /**

@@ -90,12 +90,14 @@ public class Field implements Serializable{
     }
     
     public Entity getEntityAt(Point position) {
-        Entity current = null;
+        EntityRenderer current = null;
         
         for (int i = 0; i < this.entities.length; i++) {
-            current = this.entities[i].getEntity();
-            if (current.getPosition().equals(position)) {
-                return current;
+            current = this.entities[i];
+            if (current != null) {
+                if (current.getEntity().getPosition().equals(position)) {
+                    return current.getEntity();
+                }
             }
         }
         
