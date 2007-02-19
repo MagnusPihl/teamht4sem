@@ -238,7 +238,8 @@ public class LevelEditor {
      * they are made invisible and vice versa.
      */
     public void showHidePoints() {
-        
+        this.editorPanel.setPointsVisible(!this.editorPanel.isPointsVisible());
+        this.editorPanel.checkSize();
     }
     
     /**
