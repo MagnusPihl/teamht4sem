@@ -43,23 +43,13 @@ public class EditorPanel extends JPanel {
     /** Creates a new instance of EditorPanel */
     public EditorPanel(Field field) {        
         this.field = field;
-        this.tileSet = new TileSet(TileSet.SKIN_LIBRARY + "nodes/");
+        this.tileSet = TileSet.getInstance();
         this.renderer = new FieldRenderer(field, this.tileSet);
         this.gridColor = Color.LIGHT_GRAY;
         this.gridVisible = false;
         this.pointsVisible = false;
         this.setBrush(new NodeBrush(this));
         this.font = new Font("HT", Font.PLAIN, 5);
-        this.field.setTileSet(this.tileSet);
-    }
-    
-    /**
-     * Return this panels TileSet
-     *
-     * @return TileSet
-     */
-    public TileSet getTileSet(){
-        return this.tileSet;
     }
     
     /**
@@ -219,12 +209,10 @@ public class EditorPanel extends JPanel {
     }
     
     public void placePacman(Point point){
-        this.field.addNodeAt(point, 0);
         this.field.placePacman(point);
     }
     
     public void placeGhost(Point point){
-        this.field.addNodeAt(point, 0);
-        this.field.addGhost(point);
+        this.field.placeGhost(point);
     }
 }
