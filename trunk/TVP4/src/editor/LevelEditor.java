@@ -108,13 +108,15 @@ public class LevelEditor {
                 this.saveLevel();
                 return true;
             }            
-            if (((JOptionPane.CANCEL_OPTION & result) != 0) || 
-                ((JOptionPane.CLOSED_OPTION & result) != 0)) {
-                return false;
+            if (JOptionPane.NO_OPTION == result) {
+                return true;
+            }
+            if ((JOptionPane.CANCEL_OPTION == result) || 
+                (JOptionPane.CLOSED_OPTION == result)) {;
             }
         }
         
-        return false;
+        return true;
     }
     
     /**

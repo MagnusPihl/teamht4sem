@@ -22,8 +22,9 @@
 package field;
 
 import java.awt.Point;
+import java.io.*;
 
-public class Entity {
+public class Entity implements Serializable {
     
     private boolean isMoving;
     private Point position;
