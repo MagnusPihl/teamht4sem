@@ -6,11 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
  *
+ * Magnus Hemmer Pihl @ 19. februar 2007 (v 1.1)
+ * Updated removing the Pacman entity to use removeEntityAt method.
  * Magnus Hemmer Pihl @ 16. februar 2007 (v 1.0)
  * Created.
  *
