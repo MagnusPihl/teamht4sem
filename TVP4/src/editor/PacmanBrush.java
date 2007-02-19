@@ -6,7 +6,7 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.2
+ * @version 1.3
  *
  *
  * ******VERSION HISTORY******
