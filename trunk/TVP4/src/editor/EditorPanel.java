@@ -10,11 +10,9 @@
  *
  *
  * ******VERSION HISTORY******
- * LMK @ 13. februar 2007 (v 1.2)
+ * LMK @ 13. februar 2007 (v 1.1)
  * Points are now alloted to each node according to the amount of points 
  * specified by the user.
- * LMK @ 11. februar 2007 (v 1.1)
- * Fixed Field.getSize() bug
  * LMK @ 9. februar 2007 (v 1.0)
  *
  */
@@ -27,17 +25,20 @@ import field.FieldRenderer;
 import java.awt.event.*;
 import java.io.File;
 import java.awt.*;
+import java.util.Iterator;
 import javax.swing.*;
+import java.util.HashMap;
 
 public class EditorPanel extends JPanel {    
             
     protected Field field;
     protected FieldRenderer renderer;
     //protected TileSet tileSet;
-    protected boolean gridVisible;
+    protected boolean gridVisible, pointsVisible;
     protected Color gridColor;
     protected Brush brush;
-    
+    private Font font;
+    private int ID;
     /** Creates a new instance of EditorPanel */
     public EditorPanel(Field field) {        
         this.field = field;
@@ -45,7 +46,9 @@ public class EditorPanel extends JPanel {
         this.tileSet = new TileSet(SKIN_LIBRARY + "nodes/");
         this.gridColor = Color.LIGHT_GRAY;
         this.gridVisible = false;
-        this.setBrush(new NodeBrush());    
+        this.pointsVisible = false;
+        this.setBrush(new NodeBrush());
+        this.font = new Font("HT", Font.PLAIN, 5);
     }
     
     /**
@@ -103,7 +106,9 @@ public class EditorPanel extends JPanel {
     }
     
     public void paint(Graphics g) {
-        this.renderer.aint(g);
+        this.renderer.drawBaseTile(g);
+        this.drawGrid(g);
+        this.renderer.drawNodes(g);
     }
     
     /**
@@ -123,6 +128,33 @@ public class EditorPanel extends JPanel {
                 g.drawLine(0, y*tileSize, size.width*tileSize, y*tileSize);
             }
         }
+    }
+    
+    /**
+     * Draw points on graphic
+     *
+     * @param g graphic to draw points on.
+     */
+    protected void drawPoints(Graphics g) {    
+        if(pointsVisible){
+        Point position = null;
+        Node current = null;
+        for (Iterator i = this.field.getNodeList().keySet().iterator(); i.hasNext();) {
+            position = (Point)i.next();
+            current = (Node)this.field.getNodeList().get(position);
+            g.setFont(this.font);
+            g.setColor(Color.BLACK);
+            g.drawRect(position.x * this.tileSet.getTileSize(), 
+                    position.y * this.tileSet.getTileSize(), 
+                    this.tileSet.getTileSize(),
+                    this.tileSet.getTileSize());
+            g.setColor(Color.WHITE);
+            g.drawString(current.getPoints() + "", 
+                    position.x * this.tileSet.getTileSize(), 
+                    position.y * this.tileSet.getTileSize());
+            
+        }
+        }//...
     }
 
     /**
@@ -149,11 +181,40 @@ public class EditorPanel extends JPanel {
     }
     
     /**
+     * Set whether points should be visible when drawPoints() is  called.
+     * 
+     * @param isVisible. Should be true if the grid should be drawn
+     */
+    public void setPointsVisible(boolean isVisible) {
+        this.pointsVisible = isVisible;
+    }
+    
+    /**
+     * Get points visibility.
+     * 
+     * @return true if the points is visible.
+     */
+    public boolean isPointsVisible() {
+        return this.pointsVisible;
+    }
+    
+    /**
      * Get grid visibility.
      * 
      * @return true if the grid is visible.
      */
     public boolean isGridVisible() {
         return this.gridVisible;
+    }
+    
+    public void create(Field field, String path){
+        LevelEditor.getInstance().newLevel();
+        //???
+    }
+    
+    public void placePacman(Point point){
+        this.field.addNodeAt(point, 0);
+        this.field.placePacman(point);
+        Entity pacman = new Entity(point, 1, true);
     }
 }

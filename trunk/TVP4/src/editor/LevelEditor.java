@@ -265,4 +265,8 @@ public class LevelEditor {
     public EditorPanel getEditorPanel() {
         return this.editorPanel;
     }
+    
+    public void placeGhost(Point point){
+        this.field.placeGhost(point);
+    }
 }
