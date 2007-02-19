@@ -311,6 +311,7 @@ public class Field implements Serializable{
     public void clearField() {
         //add code to clear entity positions
         this.nodes.clear();   
+        this.entities = new EntityRenderer[3];
         this.hasChanged = false;
     }
     
@@ -326,10 +327,20 @@ public class Field implements Serializable{
         if (file.isFile()) {                                
             try {
                 in = new ObjectInputStream(new FileInputStream(file));
-                this.entities = (EntityRenderer[])in.readObject();
+                this.entities = new EntityRenderer[in.readInt()];
+                Object current = null;
+                
+                for (int i = 0; i < this.entities.length; i++) {
+                    current = in.readObject();
+                    if (current != null) {
+                        this.entities[i] = new EntityRenderer((Entity)current);
+                    }
+                }
+            
                 this.nodes = (HashMap)in.readObject();                
             } catch (Exception e) {
                 success = false;
+                e.printStackTrace(); 
             } finally {
                 try {
                     in.close();
@@ -358,10 +369,21 @@ public class Field implements Serializable{
                                                   
         try {
             out = new ObjectOutputStream(new FileOutputStream(file));
-            out.writeObject(this.entities);
+            
+            out.writeInt(this.entities.length);
+            
+            for (int i = 0; i < this.entities.length; i++) {
+                if (this.entities[i] != null) {
+                    out.writeObject(this.entities[i].getEntity());
+                } else {
+                    out.writeObject(null);
+                }
+            }
+            
             out.writeObject(this.nodes);                
         } catch (Exception e) {
             success = false;
+            e.printStackTrace(); 
         } finally {
             try {
                 out.close();
