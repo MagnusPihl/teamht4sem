@@ -6,18 +6,21 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.1
+ * @version 1.2
  *
  *
  * ******VERSION HISTORY******
+ * Magnus Hemmer Pihl @ 19. februar 2007 (v 1.3)
+ * Now uses the MouseReleased event, rather than MouseClicked, to ensure action even when the mouse is dragged.
  *
  * Magnus Hemmer Pihl @ 19. februar 2007 (v 1.2)
  * Removed conditional removal from removeEntityAt call. Will now remove any entity at the given position.
+ *
  * Magnus Hemmer Pihl @ 19. februar 2007 (v 1.1)
  * Updated removing the Pacman entity to use removeEntityAt method.
+ *
  * Magnus Hemmer Pihl @ 16. februar 2007 (v 1.0)
  * Created.
- *
  */
 
 package editor;
@@ -35,7 +38,7 @@ public class PacmanBrush extends Brush
         super(panel);
     }
     
-    public void mouseClicked(MouseEvent e)
+    public void mouseReleased(MouseEvent e)
     {
         Point curpos = super.panel.translate(e.getPoint());
         if (e.getButton() == e.BUTTON1)
@@ -47,7 +50,7 @@ public class PacmanBrush extends Brush
     }
     
     public void mousePressed(MouseEvent e) {}
-    public void mouseReleased(MouseEvent e) {}
+    public void mouseClicked(MouseEvent e) {}
     public void mouseDragged(MouseEvent e) {}
     public void mouseEntered(MouseEvent e) {}
     public void mouseExited(MouseEvent e) {}
