@@ -6,10 +6,11 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.6
+ * @version 1.7
  *
- *
- * ******VERSION HISTORY******
+ * ******VERSION HISTORY****** 
+ * LMK @ 16. februar 2007 (v 1.7)
+ * Added getEntityStartingPositon
  * LMK @ 14. februar 2007 (v 1.6)
  * Added entityStartingPositons
  * When addNoteAt is passed a point of an existing node it will now
@@ -76,6 +77,23 @@ public class Field implements Serializable{
         }
         this.entityStartPositions[1] = position;
         this.hasChanged = true;
+    }
+    
+    /**
+     * Get the starting position of the entity at index
+     * 
+     * @param index of entity. 0 is pacman, 1-2 are ghosts.
+     * @return the Point at which the entity should start.
+     */
+    public Point getEntityStartPosition(int index) {
+        return this.entityStartPositions[index];
+    }
+   
+    /**
+     * Number of entities.
+     */
+    public int getEntityCount() {
+        return this.entityStartPositions.length;
     }
     
     /**
