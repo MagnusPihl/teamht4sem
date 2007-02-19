@@ -39,14 +39,9 @@ public class PacmanBrush extends Brush
     {
         Point curpos = super.panel.translate(e.getPoint());
         if (e.getButton() == e.BUTTON1)
-        {
-            if(super.panel.getField().getNodeAt(curpos) != null)
-                super.panel.placePacman(curpos);
-        }
+            super.panel.placePacman(curpos);
         else if (e.getButton() == e.BUTTON3)
-        {
             super.panel.getField().removeEntityAt(curpos);
-        }
     }
     
     public void mousePressed(MouseEvent e) {}
