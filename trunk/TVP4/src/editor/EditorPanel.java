@@ -32,7 +32,6 @@ import java.util.HashMap;
 public class EditorPanel extends JPanel {    
             
     protected Field field;
-    protected FieldRenderer renderer;
     protected TileSet tileSet;
     protected boolean gridVisible, pointsVisible;
     protected Color gridColor;
@@ -44,7 +43,6 @@ public class EditorPanel extends JPanel {
     public EditorPanel(Field field) {        
         this.field = field;
         this.tileSet = TileSet.getInstance();
-        this.renderer = new FieldRenderer(field, this.tileSet);
         this.gridColor = Color.LIGHT_GRAY;
         this.gridVisible = false;
         this.pointsVisible = false;
@@ -107,9 +105,9 @@ public class EditorPanel extends JPanel {
     }
     
     public void paint(Graphics g) {
-        this.renderer.drawBaseTile(g);
+        this.field.drawField(g);
         this.drawGrid(g);
-        this.renderer.drawNodes(g);
+        this.drawPoints(g);
     }
     
     /**
