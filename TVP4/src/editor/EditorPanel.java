@@ -60,6 +60,7 @@ public class EditorPanel extends JPanel {
         }
         super.addMouseListener(brush);
         super.addMouseMotionListener(brush);    
+        this.brush = brush;
     }
     
     public void checkSize() {
@@ -202,13 +203,5 @@ public class EditorPanel extends JPanel {
      */
     public boolean isGridVisible() {
         return this.gridVisible;
-    }
-    
-    public void placePacman(Point point){
-        this.field.placePacman(point);
-    }
-    
-    public void placeGhost(Point point){
-        this.field.placeGhost(point);
-    }
+    }       
 }

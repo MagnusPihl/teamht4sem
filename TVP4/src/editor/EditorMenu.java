@@ -154,7 +154,7 @@ public class EditorMenu extends JPanel {
         
         JButton brushBtn = new JButton(new ImageIcon(IMAGE_DIR + "brush.png"));
         brushBtn.setToolTipText("Use path brush");
-        pointsBtn.addActionListener(actionListener[1][1]);
+        brushBtn.addActionListener(actionListener[1][1]);
         toolbar.add(brushBtn);
         
         /*JButton lineBtn = new JButton(new ImageIcon(IMAGE_DIR + "line.png"));
@@ -164,12 +164,12 @@ public class EditorMenu extends JPanel {
                 
         JButton pacmanBtn = new JButton(new ImageIcon(IMAGE_DIR + "pacman.png"));
         pacmanBtn.setToolTipText("Use pacman brush");
-        pointsBtn.addActionListener(actionListener[1][2]);
+        pacmanBtn.addActionListener(actionListener[1][2]);
         toolbar.add(pacmanBtn);
         
         JButton ghostBtn = new JButton(new ImageIcon(IMAGE_DIR + "ghosts.png"));
         ghostBtn.setToolTipText("Use ghosts brush");
-        pointsBtn.addActionListener(actionListener[1][3]);
+        ghostBtn.addActionListener(actionListener[1][3]);
         toolbar.add(ghostBtn);
         
         toolbar.add(new JSeparator(JSeparator.VERTICAL));

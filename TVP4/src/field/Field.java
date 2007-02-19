@@ -133,8 +133,10 @@ public class Field implements Serializable{
     
     public void removeEntityAt(Point position) {
         for (int i = 0; i < this.entities.length; i++) {
-            if (this.entities[i].equals(position)) {
-                this.entities[i] = null;
+            if (this.entities[i] != null) {
+                if (this.entities[i].getEntity().getPosition().equals(position)) {
+                    this.entities[i] = null;
+                }
             }
         }
     }
