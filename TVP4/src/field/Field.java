@@ -34,24 +34,26 @@
 
 package field;
 
-import java.awt.Point;
-import java.awt.Dimension;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.awt.*;
+import java.util.*;
 import java.io.*;
 
 public class Field implements Serializable{
         
-    private Point[] entityStartPositions;
+    private FieldRenderer renderer;
+    private EntityRenderer[] entities;
     private HashMap nodes;
     private transient boolean hasChanged;
+    private int lastEntity;
     
     /** 
      * Creates a new empty field 
      */
     public Field() {
+        this.renderer = new FieldRenderer(this);
         this.nodes = new HashMap();
-        this.entityStartPositions = new Point[3];
+        this.entities = new EntityRenderer[3];
+        this.lastEntity = 0;
         this.hasChanged = false;
     }
     
@@ -61,8 +63,41 @@ public class Field implements Serializable{
      * @param position on the field;
      */
     public void placePacman(Point position) {
-        this.entityStartPositions[0] = position;
-        this.hasChanged = true;
+        this.placeEntityAt(position, 0);
+    }
+    
+    public void placeGhost(Point position) {
+        for (int i = 1; i < this.entities.length; i++) {
+            if (this.entities[i] == null) {                
+                this.placeEntityAt(position, i);
+                this.hasChanged = true;
+                return;
+            }
+        }
+    }
+    
+    private boolean placeEntityAt(Point position, int id) {  
+        Node node = this.getNodeAt(position);
+        if ((node != null)&&(this.getEntityAt(position) == null)) {
+            if (id == 0) {
+                node.setPoints(0);
+            }
+            this.entities[id] = new EntityRenderer(new Entity(position, id));
+            this.hasChanged = true;
+            return true;
+        }
+        return false;
+    }
+    
+    public Entity getEntityAt(Point position) {
+        Entity current = null;
+        
+        for (int i = 0; i < this.entities.length; i++) {
+            current = this.entities[i].getEntity();
+            if (current.getPosition().equals(position)) {
+                return current;
+            }
+        }
     }
     
     /**
@@ -71,13 +106,16 @@ public class Field implements Serializable{
      *
      * @param position on the field;
      */
-    public void placeGhost(Point position) {
+    /*public int placeGhost(Point position) {        
+        this.hasChanged = true;
+        
         if (this.entityStartPositions[1] != null) {
             this.entityStartPositions[2] = this.entityStartPositions[1];
         }
+        
         this.entityStartPositions[1] = position;
         this.hasChanged = true;
-    }
+    }*/
     
     /**
      * Get the starting position of the entity at index
@@ -85,16 +123,24 @@ public class Field implements Serializable{
      * @param index of entity. 0 is pacman, 1-2 are ghosts.
      * @return the Point at which the entity should start.
      */
-    public Point getEntityStartPosition(int index) {
-        return this.entityStartPositions[index];
+    /*public Point getEntityAt(int index) {
+        return this.entities[index];
+    }*/
+    
+    public void removeEntityAt(Point position) {
+        for (int i = 0; i < this.entities.length; i++) {
+            if (this.entities[i].equals(position)) {
+                this.entities[i] = null;
+            }
+        }
     }
    
     /**
      * Number of entities.
      */
-    public int getEntityCount() {
+    /*public int getEntityCount() {
         return this.entityStartPositions.length;
-    }
+    }*/
     
     /**
      * Add note to field at position with 0 points held
@@ -274,7 +320,7 @@ public class Field implements Serializable{
         if (file.isFile()) {                                
             try {
                 in = new ObjectInputStream(new FileInputStream(file));
-                this.entityStartPositions = (Point[])in.readObject();
+                this.entities = (EntityRenderer[])in.readObject();
                 this.nodes = (HashMap)in.readObject();                
             } catch (Exception e) {
                 success = false;
@@ -306,7 +352,7 @@ public class Field implements Serializable{
                                                   
         try {
             out = new ObjectOutputStream(new FileOutputStream(file));
-            out.writeObject(this.entityStartPositions);
+            out.writeObject(this.entities);
             out.writeObject(this.nodes);                
         } catch (Exception e) {
             success = false;
@@ -333,5 +379,14 @@ public class Field implements Serializable{
      */
     public boolean hasChanged() {
         return this.hasChanged;
+    }
+            
+    public void drawField(Graphics g) {
+        this.renderer.drawBaseTile(g);
+        this.renderer.drawNodes(g);
+        
+        for (int i = 0; i < this.entities.length; i++) {
+            this.entities[i].draw(g);
+        }
     }
 }
