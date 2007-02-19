@@ -83,7 +83,7 @@ public class FieldRenderer {
             
             //g.drawOval(position.x*tileSize, position.y*tileSize, 5,5);
             g.drawImage(
-                    this.tileSet.getNodeTile(tileNumber), 
+                    this.tileSet.getPathTile(tileNumber), 
                     position.x * this.tileSet.getTileSize(), 
                     position.y * this.tileSet.getTileSize(), 
                     null);
