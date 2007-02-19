@@ -6,11 +6,14 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.1
- *
+ * @version 1.2
  *
  * ******VERSION HISTORY******
- * Magnus Hemmer Pihl @ 16. februar 2007 (v 1.0)
+ * Magnus Hemmer Pihl @ 19. februar 2007 (v 1.2)
+ * TileSet is now a Singleton.
+ * Implemented getInstance() method.
+ *
+ * Magnus Hemmer Pihl @ 16. februar 2007 (v 1.1)
  * Corrected name of method getEntityTile()
  *
  * Magnus Hemmer Pihl @ 16. februar 2007 (v 1.0)
@@ -26,13 +29,14 @@ import javax.swing.ImageIcon;
 
 public class TileSet
 {
-    
     private Image[][][] entityTiles;
     private Image[] pathTiles;
     private Image baseTile;
     private int tileSize;
     
     public static final String SKIN_LIBRARY = (new File("skins/")).getAbsolutePath() + File.separator;
+    
+    private static TileSet instance = new TileSet(SKIN_LIBRARY + "nodes/");
     
     /**
      * All images should be of the same size and should be in .png format.
@@ -63,6 +67,15 @@ public class TileSet
         this.entityTiles = new Image[4][4][2];
         this.pathTiles = new Image[16];
         this.loadTileSet(new File(path));
+    }
+    
+    /**
+     * Returns a reference to the Singleton instance of TileSet.
+     * @return Singleton instance of TileSet.
+     */
+    public static TileSet getInstance()
+    {
+        return instance;
     }
     
     /**
