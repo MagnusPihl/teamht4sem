@@ -11,6 +11,8 @@
  *
  * ******VERSION HISTORY******
  *
+ * Magnus Hemmer Pihl @ 19. februar 2007 (v 1.2)
+ * Removed conditional removal from removeEntityAt call. Will now remove any entity at the given position.
  * Magnus Hemmer Pihl @ 19. februar 2007 (v 1.1)
  * Updated removing the Pacman entity to use removeEntityAt method.
  * Magnus Hemmer Pihl @ 16. februar 2007 (v 1.0)
@@ -43,8 +45,7 @@ public class PacmanBrush extends Brush
         }
         else if (e.getButton() == e.BUTTON3)
         {
-            if(super.panel.getField().getEntityStartPosition(0).equals(curpos))
-                super.panel.getField().removeEntityAt(curpos);
+            super.panel.getField().removeEntityAt(curpos);
         }
     }
     
