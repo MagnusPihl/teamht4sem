@@ -36,7 +36,6 @@ import java.util.Iterator;
 public class FieldRenderer {
     
     protected Field field;
-    protected TileSet tileSet;    
     
     /** 
      * Creates a new instance of FieldRenderer with a specified Field to render
@@ -45,9 +44,8 @@ public class FieldRenderer {
      * @param field to draw.
      * @param tileSet containing images. 
      */
-    public FieldRenderer(Field field, TileSet tileSet) {
-        this.field = field;
-        this.tileSet = tileSet;        
+    public FieldRenderer(Field field) {
+        this.field = field;   
     }        
     
     /**
@@ -83,9 +81,9 @@ public class FieldRenderer {
             
             //g.drawOval(position.x*tileSize, position.y*tileSize, 5,5);
             g.drawImage(
-                    this.tileSet.getPathTile(tileNumber), 
-                    position.x * this.tileSet.getTileSize(), 
-                    position.y * this.tileSet.getTileSize(), 
+                    TileSet.getInstance().getPathTile(tileNumber), 
+                    position.x * TileSet.getInstance().getTileSize(), 
+                    position.y * TileSet.getInstance().getTileSize(), 
                     null);
         }        
     }
@@ -101,9 +99,9 @@ public class FieldRenderer {
         for (int x = 0; x < size.width; x++) {            
             for (int y = 0; y < size.height; y++) {
                 g.drawImage(
-                        this.tileSet.getBaseTile(), 
-                        x * this.tileSet.getTileSize(), 
-                        y * this.tileSet.getTileSize(), 
+                        TileSet.getInstance().getBaseTile(), 
+                        x * TileSet.getInstance().getTileSize(), 
+                        y * TileSet.getInstance().getTileSize(), 
                         null);
             }
         }
@@ -116,14 +114,5 @@ public class FieldRenderer {
      */
     public Field getField() {
         return this.field;
-    }
-    
-    /**
-     * Set the TileSet used to render
-     *
-     * @param tileSet to render field with.
-     */
-    public void setTileSet(TileSet tileSet) {
-        this.tileSet = tileSet;
-    }
+    }   
 }

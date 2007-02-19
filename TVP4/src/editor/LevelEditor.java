@@ -113,6 +113,8 @@ public class LevelEditor {
                 return false;
             }
         }
+        
+        return false;
     }
     
     /**
@@ -207,7 +209,7 @@ public class LevelEditor {
      * @param path to directory where skin files are stored.
      */
     public void setSkin(String path) {
-        this.editorPanel.getTileSet().loadTileSet(path);
+        TileSet.getInstance().loadTileSet(new File(path));
         this.editorPanel.checkSize();
     }
     
@@ -216,7 +218,7 @@ public class LevelEditor {
      */
     public void openSkin() {
         if (JFileChooser.APPROVE_OPTION == this.skinDialog.showOpenDialog(this.frame)) {
-            this.setSkin(this.skinDialog.getSelectedFile());
+            this.setSkin(this.skinDialog.getSelectedFile().getAbsolutePath());
         }        
     }
     

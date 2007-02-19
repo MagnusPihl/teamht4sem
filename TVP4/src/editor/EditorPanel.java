@@ -20,8 +20,6 @@
 package editor;
 
 import field.*;
-import field.Field;
-import field.FieldRenderer;
 import java.awt.event.*;
 import java.io.File;
 import java.awt.*;

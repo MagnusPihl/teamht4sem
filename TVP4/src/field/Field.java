@@ -98,6 +98,8 @@ public class Field implements Serializable{
                 return current;
             }
         }
+        
+        return null;
     }
     
     /**
@@ -386,7 +388,9 @@ public class Field implements Serializable{
         this.renderer.drawNodes(g);
         
         for (int i = 0; i < this.entities.length; i++) {
-            this.entities[i].draw(g);
+            if (this.entities[i] != null) {
+                this.entities[i].draw(g);
+            }
         }
     }
 }
