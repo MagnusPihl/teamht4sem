@@ -44,6 +44,7 @@ public class EditorMenu extends JPanel {
         
         String[][] menuStrings = {
             {"File","New level","Scan new level","Open...","-","Save","Save As...","-","Quit"},
+            {"Brush","Use path brush","Use pacman brush","Use ghost brush"},
             {"View","Show grid","Show points"},
             {"Skin","Nodes","Pac-Man","-","Open skin..."},
             {"Help","About...","Open help"}
@@ -51,6 +52,7 @@ public class EditorMenu extends JPanel {
         
         char[][] mnemonics = {
             {'f','n','c','o','-','-','s','-','q'},
+            {'b','p','m','g'},
             {'v','g','p'},
             {'s','n','p','-','o'},
             {'h','a','h'}
@@ -66,6 +68,10 @@ public class EditorMenu extends JPanel {
              KeyStroke.getKeyStroke('S',InputEvent.CTRL_MASK),
              null,                     
              KeyStroke.getKeyStroke('Q',InputEvent.CTRL_MASK)},
+            {null,
+             KeyStroke.getKeyStroke('1',InputEvent.CTRL_MASK | InputEvent.ALT_MASK),
+             KeyStroke.getKeyStroke('2',InputEvent.CTRL_MASK | InputEvent.ALT_MASK),
+             KeyStroke.getKeyStroke('3',InputEvent.CTRL_MASK | InputEvent.ALT_MASK)},
             {null,
              KeyStroke.getKeyStroke('G',InputEvent.CTRL_MASK),
              KeyStroke.getKeyStroke('P',InputEvent.CTRL_MASK)},
@@ -89,6 +95,13 @@ public class EditorMenu extends JPanel {
              new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().saveLevelAs();}},
              null, 
              new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().quit();}}},  
+            {null,
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {
+                 LevelEditor.getInstance().getEditorPanel().setBrush(new NodeBrush(LevelEditor.getInstance().getEditorPanel()));}},
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {
+                 LevelEditor.getInstance().getEditorPanel().setBrush(new PacmanBrush(LevelEditor.getInstance().getEditorPanel()));}},
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {
+                 LevelEditor.getInstance().getEditorPanel().setBrush(new GhostBrush(LevelEditor.getInstance().getEditorPanel()));}}},
             {null,
              new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().showHideGrid();}},
              new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().showHidePoints();}}},
@@ -128,20 +141,20 @@ public class EditorMenu extends JPanel {
         //toolbar        
         JButton gridBtn = new JButton(new ImageIcon(IMAGE_DIR + "grid.png"));
         gridBtn.setToolTipText("Show/hide grid");
-        gridBtn.addActionListener(actionListener[1][1]);
+        gridBtn.addActionListener(actionListener[2][1]);
         toolbar.add(gridBtn);
         
         
         JButton pointsBtn = new JButton(new ImageIcon(IMAGE_DIR + "points.png"));
         pointsBtn.setToolTipText("Show/hide points");
-        pointsBtn.addActionListener(actionListener[1][2]);
+        pointsBtn.addActionListener(actionListener[2][2]);
         toolbar.add(pointsBtn);
         
         toolbar.add(new JSeparator(JSeparator.VERTICAL));
         
         JButton brushBtn = new JButton(new ImageIcon(IMAGE_DIR + "brush.png"));
-        brushBtn.setToolTipText("Draw freehand");
-        //pointsBtn.addActionListener(actionListener[1][2]);
+        brushBtn.setToolTipText("Use path brush");
+        pointsBtn.addActionListener(actionListener[1][1]);
         toolbar.add(brushBtn);
         
         /*JButton lineBtn = new JButton(new ImageIcon(IMAGE_DIR + "line.png"));
@@ -150,13 +163,13 @@ public class EditorMenu extends JPanel {
         toolbar.add(lineBtn);*/
                 
         JButton pacmanBtn = new JButton(new ImageIcon(IMAGE_DIR + "pacman.png"));
-        pacmanBtn.setToolTipText("Draw pacman");
-        //pointsBtn.addActionListener(actionListener[1][2]);
+        pacmanBtn.setToolTipText("Use pacman brush");
+        pointsBtn.addActionListener(actionListener[1][2]);
         toolbar.add(pacmanBtn);
         
         JButton ghostBtn = new JButton(new ImageIcon(IMAGE_DIR + "ghosts.png"));
-        ghostBtn.setToolTipText("Draw ghosts");
-        //pointsBtn.addActionListener(actionListener[1][2]);
+        ghostBtn.setToolTipText("Use ghosts brush");
+        pointsBtn.addActionListener(actionListener[1][3]);
         toolbar.add(ghostBtn);
         
         toolbar.add(new JSeparator(JSeparator.VERTICAL));
