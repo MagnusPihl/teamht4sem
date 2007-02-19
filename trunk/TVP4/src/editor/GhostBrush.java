@@ -6,16 +6,16 @@
  * Company: HT++
  *
  * @author Mikkel Brøndsholm Nielsen
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
  *
  * Administrator @ 18. februar 2007 (v 1.1)
- * __________ Changes ____________
+ * Changed from mouseClicked to mouseReleased.
  *
- * Administrator @ 18. februar 2007 (v 1.0)
- * __________ Changes ____________
+ * Mikkel Nielsen @ 18. februar 2007 (v 1.0)
+ * Class created.
  *
  */
 
@@ -33,8 +33,11 @@ public class GhostBrush extends Brush {
         super(panel);
     }        
     
-    public void mouseClicked(MouseEvent e) {
-        Point position = super.panel.translate(e.getPoint());
+    /**
+     * Places a ghost on MouseReleased. Lets Field-class handle validation.
+     */
+    public void mouseReleased(MouseEvent e) {
+    Point position = super.panel.translate(e.getPoint());
         if (e.getButton() == e.BUTTON1)
         {
                 super.panel.getField().placeGhost(position);
@@ -46,8 +49,9 @@ public class GhostBrush extends Brush {
         super.panel.checkSize();
     }
     
+    
+    public void mouseClicked(MouseEvent e) {}    
     public void mousePressed(MouseEvent e) {}
-    public void mouseReleased(MouseEvent e) {}
     public void mouseDragged(MouseEvent e) {}
     public void mouseEntered(MouseEvent e) {}
     public void mouseExited(MouseEvent e) {}
