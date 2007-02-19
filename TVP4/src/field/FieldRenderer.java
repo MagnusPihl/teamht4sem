@@ -95,7 +95,7 @@ public class FieldRenderer {
      *
      * @param g canvas to draw on.
      */
-    private void drawBaseTile(Graphics g) {
+    public void drawBaseTile(Graphics g) {
         Dimension size = this.field.getSize();
         
         for (int x = 0; x < size.width; x++) {            

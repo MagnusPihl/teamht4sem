@@ -69,7 +69,7 @@ public class EntityRenderer
         }
         
         g.drawImage(
-                this.tileSet.getEntityTile(type, entity.direction, this.frameCounter),
+                this.tileSet.getEntityTile(type, entity.getDirection(), this.frameCounter),
                 position.x * this.tileSet.getTileSize(),
                 position.y * this.tileSet.getTileSize(),
                 null);

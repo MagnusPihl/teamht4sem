@@ -37,7 +37,7 @@ public class PacmanBrush extends Brush
         if (e.getButton() == e.BUTTON1)
         {
             if(super.panel.getField().getNodeAt(curpos) != null)
-                super.panel.getField().placePacman(curpos);
+                super.panel.placePacman(curpos);
         }
         else if (e.getButton() == e.BUTTON3)
         {
