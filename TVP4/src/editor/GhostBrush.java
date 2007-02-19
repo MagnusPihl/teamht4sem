@@ -42,27 +42,15 @@ public class GhostBrush extends Brush {
         } 
         else if (e.getButton() == e.BUTTON3)
         {
-            if(super.panel.getField().getEntityStartPosition().equals(position))
-                super.panel.getField().placeGhost(null);
+                super.panel.getField().removeEntityAt(position);
         }
         super.panel.checkSize();
     }
     
-    public void mousePressed(MouseEvent e) {
-        this.mouseDown = true;
-        if (e.getButton() == e.BUTTON1) {
-            this.addNode = true;//(super.field.getNodeAt(super.translate(e.getPoint())) == null);
-        } else {
-            this.addNode = false;
-        }
-    }
-    
-    public void mouseReleased(MouseEvent e) {               
-        this.mouseDown = false;
-        super.panel.checkSize();
-    }
-    
+    public void mousePressed(MouseEvent e) {}
+    public void mouseReleased(MouseEvent e) {}
+    public void mouseDragged(MouseEvent e) {}
     public void mouseEntered(MouseEvent e) {}
     public void mouseExited(MouseEvent e) {}
-    public void mouseMoved(MouseEvent e) {}
+    public void mouseMoved(MouseEvent e) {}  
 }

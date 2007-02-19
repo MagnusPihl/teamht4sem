@@ -33,26 +33,22 @@ public class Entity {
     private boolean isPacman;
     
     /** Creates a new instance of Entity */
-    public Entity(Point _position, int _ID, boolean _isPacman) {
+    public Entity(Point _position, int _ID) {
         this.isMoving = false;
         this.position = _position;
         this.direction = Node.UP;
         this.speed = 0;
         this.ID = _ID;
-        this.isPacman = _isPacman;
     }
     
     public void setIsMoving(boolean _isMoving){this.isMoving = _isMoving;}
     public boolean isMoving(){return this.isMoving;}
-    
+    public int getDirection(){return this.direction;}
+    public void setDirection(int dir){this.direction = dir;}
     public void setPosition(Point _position){this.position = _position;}
     public Point getPosition(){return this.position;}
     public void setSpeed(int _speed){this.speed = _speed;}
     public int getSpeed(){return this.speed;}
     public void setID(int _ID){this.ID = _ID;}
     public int getID(){return this.ID;}
-    public void setIsPacman(boolean _isPacman){this.isPacman = _isPacman;}
-    public boolean isPacman(){return this.isPacman;}
-    
-    
 }

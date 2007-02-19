@@ -33,22 +33,33 @@ public class EditorPanel extends JPanel {
             
     protected Field field;
     protected FieldRenderer renderer;
-    //protected TileSet tileSet;
+    protected TileSet tileSet;
     protected boolean gridVisible, pointsVisible;
     protected Color gridColor;
     protected Brush brush;
     private Font font;
     private int ID;
+    
     /** Creates a new instance of EditorPanel */
     public EditorPanel(Field field) {        
         this.field = field;
-        this.renderer = new FieldRenderer(field);
-        this.tileSet = new TileSet(SKIN_LIBRARY + "nodes/");
+        this.tileSet = new TileSet(TileSet.SKIN_LIBRARY + "nodes/");
+        this.renderer = new FieldRenderer(field, this.tileSet);
         this.gridColor = Color.LIGHT_GRAY;
         this.gridVisible = false;
         this.pointsVisible = false;
-        this.setBrush(new NodeBrush());
+        this.setBrush(new NodeBrush(this));
         this.font = new Font("HT", Font.PLAIN, 5);
+        this.field.setTileSet(this.tileSet);
+    }
+    
+    /**
+     * Return this panels TileSet
+     *
+     * @return TileSet
+     */
+    public TileSet getTileSet(){
+        return this.tileSet;
     }
     
     /**
@@ -66,8 +77,8 @@ public class EditorPanel extends JPanel {
     }
     
     public void checkSize() {
-        Dimension size = super.field.getSize();
-        size.setSize(size.getWidth()*super.tileSize, size.getHeight()*super.tileSize);
+        Dimension size = this.field.getSize();
+        size.setSize(size.getWidth()*this.tileSet.getTileSize(), size.getHeight()*this.tileSet.getTileSize());
         this.setPreferredSize(size);
         this.revalidate();
 //        this.repaint();
@@ -82,8 +93,8 @@ public class EditorPanel extends JPanel {
      */
     public Point translate(Point position) {
         return new Point(
-            (int)(position.x / tileSize),
-            (int)(position.y / tileSize)
+            (int)(position.x / this.tileSet.getTileSize()),
+            (int)(position.y / this.tileSet.getTileSize())
             );
     }
     
@@ -120,7 +131,7 @@ public class EditorPanel extends JPanel {
         if (gridVisible) {
             Dimension size = this.field.getSize();
             g.setColor(this.gridColor);       
-
+            int tileSize = this.tileSet.getTileSize();
             for (int x = 1; x < size.width; x++) {
                 g.drawLine(x*tileSize, 0, x*tileSize, size.height*tileSize);
             }
@@ -207,14 +218,13 @@ public class EditorPanel extends JPanel {
         return this.gridVisible;
     }
     
-    public void create(Field field, String path){
-        LevelEditor.getInstance().newLevel();
-        //???
-    }
-    
     public void placePacman(Point point){
         this.field.addNodeAt(point, 0);
         this.field.placePacman(point);
-        Entity pacman = new Entity(point, 1, true);
+    }
+    
+    public void placeGhost(Point point){
+        this.field.addNodeAt(point, 0);
+        this.field.addGhost(point);
     }
 }
