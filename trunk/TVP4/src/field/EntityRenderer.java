@@ -6,13 +6,16 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.1
+ * @version 1.2
  *
  *
  * ******VERSION HISTORY******
+ * Magnus Hemmer Pihl @ 19. februar 2007 (v 1.2)
+ * Removed local reference to TileSet, using instead the TileSet singleton instance.
  *
  * Magnus Hemmer Pihl @ 19. februar 2007 (v 1.1)
  * Updated draw()-method to properly retrieve direction and ID from its entity.
+ * 
  * Magnus Hemmer Pihl @ 16. februar 2007 (v 1.0)
  * Created.
  *
@@ -33,23 +36,19 @@ public class EntityRenderer
     private int frameCounter;
     
     protected Entity entity;
-    protected TileSet tileSet;
     
     /**
-     * Creates a new instance of EntityRenderer with a specified Entity to render
-     * and a TileSet containing the images to paint with.
+     * Creates a new instance of EntityRenderer with a specified Entity to render.
      *
      * @param entity Entity to draw.
-     * @param tileSet TileSet containing images.
      */
-    public EntityRenderer(Entity entity, TileSet tileSet)
+    public EntityRenderer(Entity entity)
     {
         this.animationDelay = 500;
         this.lastUpdate = System.currentTimeMillis();
         this.frameCounter = 0;
         
         this.entity = entity;
-        this.tileSet = tileSet;
     }
     
     /**
@@ -68,9 +67,9 @@ public class EntityRenderer
         }
         
         g.drawImage(
-                this.tileSet.getEntityTile(entity.getID(), entity.getDirection(), this.frameCounter),
-                position.x * this.tileSet.getTileSize(),
-                position.y * this.tileSet.getTileSize(),
+                TileSet.getInstance().getEntityTile(entity.getID(), entity.getDirection(), this.frameCounter),
+                position.x * TileSet.getInstance().getTileSize(),
+                position.y * TileSet.getInstance().getTileSize(),
                 null);
     }
     
@@ -82,15 +81,5 @@ public class EntityRenderer
     public Entity getEntity()
     {
         return this.entity;
-    }
-    
-    /**
-     * Set the TileSet used to render
-     *
-     * @param tileSet TileSet to render entity with.
-     */
-    public void setTileSet(TileSet tileSet)
-    {
-        this.tileSet = tileSet;
     }
 }
