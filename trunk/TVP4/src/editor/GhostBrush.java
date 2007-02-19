@@ -37,7 +37,7 @@ public class GhostBrush extends Brush {
         Point position = super.panel.translate(e.getPoint());
         if (e.getButton() == e.BUTTON1)
         {
-                super.panel.placeGhost(position);
+                super.panel.getField().placeGhost(position);
         } 
         else if (e.getButton() == e.BUTTON3)
         {
