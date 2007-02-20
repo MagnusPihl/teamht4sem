@@ -70,6 +70,10 @@ public class StatusBar extends JPanel implements MouseMotionListener {
         editor.addMouseMotionListener(this);        
     }
     
+    /**
+     * When the mouse is moved, fetch the node under the cursor and print its
+     * position and points held.
+     */
     public void mouseMoved(MouseEvent e) {
         Point position = this.editor.translate(e.getPoint());
         Node node = this.editor.getField().getNodeAt(position);

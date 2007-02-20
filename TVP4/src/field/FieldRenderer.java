@@ -78,8 +78,7 @@ public class FieldRenderer {
             if (current.getNodeAt(Node.LEFT) != null) {
                 tileNumber += 1;
             }            
-            
-            //g.drawOval(position.x*tileSize, position.y*tileSize, 5,5);
+                        
             g.drawImage(
                     TileSet.getInstance().getPathTile(tileNumber), 
                     position.x * TileSet.getInstance().getTileSize(), 

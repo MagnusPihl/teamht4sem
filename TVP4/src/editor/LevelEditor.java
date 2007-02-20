@@ -10,7 +10,6 @@
  *
  *
  * ******VERSION HISTORY******
- *
  * LMK @ 16. februar 2007 (v 1.2)
  * Refactored new, save, open and scan functions
  * Created confirmClearField()
@@ -83,11 +82,18 @@ public class LevelEditor {
         this.skinDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     }
     
-    
+    /** 
+     * Get the current LevelEditor object
+     *
+     * @return LevelEditor
+     */
     public static LevelEditor getInstance() {
         return instance;
     }
     
+    /**
+     * Start application
+     */
     public static void main(String[] args) {
         LevelEditor.getInstance();
     }
@@ -252,6 +258,9 @@ public class LevelEditor {
      */
     public void openHelp() {}
     
+    /**
+     * Updates the titlebar to reflect the currently open file.
+     */
     public void updateTitle() {
         if (this.saveFile != null) {
             this.frame.setTitle("Pacman Level Editor - " + this.saveFile.getAbsoluteFile());
@@ -262,16 +271,19 @@ public class LevelEditor {
         
     /**
      * Get amount of points to be added to nodes.
+     *
+     * @return points specified in menu.
      */
     public int getPoints() {
         return this.menu.getPoints();
     }
     
+    /**
+     * Get the EditorPanel
+     * 
+     * @return EditorPanel
+     */
     public EditorPanel getEditorPanel() {
         return this.editorPanel;
-    }
-    
-    public void placeGhost(Point point){
-        this.field.placeGhost(point);
-    }
+    }        
 }

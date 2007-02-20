@@ -6,9 +6,15 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.7
+ * @version 1.8
  *
- * ******VERSION HISTORY****** 
+ * ******VERSION HISTORY******   
+ * LMK @ 20. februar 2007 (v 1.8)
+ * Changed to use TileSet
+ * Changed to hold Entities
+ * Changed to use FieldRenderer
+ * Added methods to draw
+ * Added methods to remove and place entities
  * LMK @ 16. februar 2007 (v 1.7)
  * Added getEntityStartingPositon
  * LMK @ 14. februar 2007 (v 1.6)
@@ -66,6 +72,12 @@ public class Field implements Serializable{
         this.placeEntityAt(position, 0);
     }
     
+    /**
+     * Place a ghost on the field. If the maximum amount of ghosts has been
+     * placed no ghost is placed.
+     *
+     * @param position on the field;
+     */
     public void placeGhost(Point position) {
         for (int i = 1; i < this.entities.length; i++) {
             if (this.entities[i] == null) {                
@@ -76,6 +88,14 @@ public class Field implements Serializable{
         }
     }
     
+    /**
+     * Place entity on the field. The Entity is only placed, if a free node is
+     * available at the point.
+     *
+     * @param position on the field
+     * @param id of the entity(, must be unique)
+     * @return tue if the entity has been placed
+     */
     private boolean placeEntityAt(Point position, int id) {  
         Node node = this.getNodeAt(position);
         if ((node != null)&&(this.getEntityAt(position) == null)) {
@@ -89,6 +109,12 @@ public class Field implements Serializable{
         return false;
     }
     
+    /**
+     * Get entity placed at positon
+     *
+     * @param position on the field
+     * @return entity at position
+     */
     public Entity getEntityAt(Point position) {
         EntityRenderer current = null;
         
@@ -102,36 +128,14 @@ public class Field implements Serializable{
         }
         
         return null;
-    }
+    }       
     
     /**
-     * Place a starting position for a ghost. If two ghosts have already been
-     * placed, the first of the two will be replaced.
+     * Remove entity at position.
      *
-     * @param position on the field;
+     * @param position on field
      */
-    /*public int placeGhost(Point position) {        
-        this.hasChanged = true;
-        
-        if (this.entityStartPositions[1] != null) {
-            this.entityStartPositions[2] = this.entityStartPositions[1];
-        }
-        
-        this.entityStartPositions[1] = position;
-        this.hasChanged = true;
-    }*/
-    
-    /**
-     * Get the starting position of the entity at index
-     * 
-     * @param index of entity. 0 is pacman, 1-2 are ghosts.
-     * @return the Point at which the entity should start.
-     */
-    /*public Point getEntityAt(int index) {
-        return this.entities[index];
-    }*/
-    
-    public void removeEntityAt(Point position) {
+    public void removeEntityAt(Point position) {        
         for (int i = 0; i < this.entities.length; i++) {
             if (this.entities[i] != null) {
                 if (this.entities[i].getEntity().getPosition().equals(position)) {
@@ -139,14 +143,7 @@ public class Field implements Serializable{
                 }
             }
         }
-    }
-   
-    /**
-     * Number of entities.
-     */
-    /*public int getEntityCount() {
-        return this.entityStartPositions.length;
-    }*/
+    }   
     
     /**
      * Add note to field at position with 0 points held
@@ -408,7 +405,12 @@ public class Field implements Serializable{
     public boolean hasChanged() {
         return this.hasChanged;
     }
-            
+    
+    /**
+     * Draw baseTile, nodes and entities
+     * 
+     * @param g canvas to draw on.
+     */
     public void drawField(Graphics g) {
         this.renderer.drawBaseTile(g);
         this.renderer.drawNodes(g);
@@ -418,5 +420,23 @@ public class Field implements Serializable{
                 this.entities[i].draw(g);
             }
         }
+    }
+    
+    /**
+     * Get the renderer used to draw the field
+     *
+     * @return FieldRenderer
+     */
+    public FieldRenderer getRenderer() {
+        return this.renderer;
+    }
+    
+    /**
+     * Get array of entity renderers
+     *
+     * @return EntityRenderer[]
+     */
+    public EntityRenderer[] getEntityRenderers() {
+        return this.entities;
     }
 }
