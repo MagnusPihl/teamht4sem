@@ -99,9 +99,9 @@ public class Field implements Serializable{
     private boolean placeEntityAt(Point position, int id) {  
         Node node = this.getNodeAt(position);
         if ((node != null)&&(this.getEntityAt(position) == null)) {
-            if (id == 0) {
+            /*if (id == 0) {
                 node.setPoints(0);
-            }
+            }*/
             this.entities[id] = new EntityRenderer(new Entity(position, id));
             this.hasChanged = true;
             return true;
@@ -200,14 +200,16 @@ public class Field implements Serializable{
      * @param position of the node to remove.
      */
     public void removeNodeAt(Point position) {
-        Node node = this.getNodeAt(position);
-        
-        if (node != null) {
-            node.removeAllConnections();
-            this.nodes.remove(position);
+        if (this.getEntityAt(position) == null) {        
+            Node node = this.getNodeAt(position);
+            
+            if (node != null) {
+                node.removeAllConnections();
+                this.nodes.remove(position);
+            }
+
+            this.hasChanged = true;
         }
-        
-        this.hasChanged = true;
     }
     
     /**
