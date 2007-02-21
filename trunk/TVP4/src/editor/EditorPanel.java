@@ -5,15 +5,17 @@
  *
  * Company: HT++
  *
- * @author LMK
+ * @author Mikkel Nielsen
  * @version 1.2
  *
  *
  * ******VERSION HISTORY******
- * LMK @ 13. februar 2007 (v 1.1)
+ * Mikkel Nielsen @ 21. februar 2007 (v 1.2)
+ * drawPoints refactored and optimated.
+ * Mikkel Nielsen @ 13. februar 2007 (v 1.1)
  * Points are now alloted to each node according to the amount of points 
  * specified by the user.
- * LMK @ 9. februar 2007 (v 1.0)
+ * Mikkel Nielsen @ 9. februar 2007 (v 1.0)
  *
  */
 
@@ -45,7 +47,7 @@ public class EditorPanel extends JPanel {
         this.gridVisible = false;
         this.pointsVisible = false;
         this.setBrush(new NodeBrush(this));
-        this.font = new Font("HT", Font.PLAIN, 5);
+        this.font = new Font("HT", Font.PLAIN, 10);
     }
     
     /**
@@ -63,6 +65,9 @@ public class EditorPanel extends JPanel {
         this.brush = brush;
     }
     
+    /**
+     * Resizes the frame and repainting
+     */
     public void checkSize() {
         Dimension size = this.field.getSize();
         size.setSize(size.getWidth()*this.tileSet.getTileSize(), size.getHeight()*this.tileSet.getTileSize());
@@ -103,6 +108,11 @@ public class EditorPanel extends JPanel {
         return this.gridColor;
     }
     
+    /**
+     * Overrides paint-method
+     *
+     * @param g graphic to draw on.
+     */
     public void paint(Graphics g) {
         this.field.drawField(g);
         this.drawGrid(g);
@@ -137,22 +147,25 @@ public class EditorPanel extends JPanel {
         if(pointsVisible){
         Point position = null;
         Node current = null;
+        g.setFont(this.font);
+        int tileSize = this.tileSet.getTileSize();
         for (Iterator i = this.field.getNodeList().keySet().iterator(); i.hasNext();) {
             position = (Point)i.next();
             current = (Node)this.field.getNodeList().get(position);
-            g.setFont(this.font);
             g.setColor(Color.BLACK);
-            g.drawRect(position.x * this.tileSet.getTileSize(), 
-                    position.y * this.tileSet.getTileSize(), 
-                    this.tileSet.getTileSize(),
-                    this.tileSet.getTileSize());
+            String points = current.getPoints() + "";
+            int width = g.getFontMetrics().stringWidth(points);
+            int height = g.getFontMetrics().getHeight();
+            g.fillRect(position.x * tileSize, 
+                    position.y * tileSize, 
+                    width, height);
             g.setColor(Color.WHITE);
-            g.drawString(current.getPoints() + "", 
-                    position.x * this.tileSet.getTileSize(), 
-                    position.y * this.tileSet.getTileSize());
+            g.drawString(points + "", 
+                    position.x * tileSize, 
+                    position.y * tileSize + height-3);
             
         }
-        }//...
+        }
     }
 
     /**
