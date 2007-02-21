@@ -6,10 +6,12 @@
  * Company: HT++
  *
  * @author Mikkel Nielsen
- * @version 1.2
+ * @version 1.2.1
  *
  *
  * ******VERSION HISTORY******
+ * Magnus Pihl @ 21. februar 2007 (v 1.2.1)
+ * Changed background color of drawPoints to dark gray, to work better with all skins
  * Mikkel Nielsen @ 21. februar 2007 (v 1.2)
  * drawPoints refactored and optimated.
  * Mikkel Nielsen @ 13. februar 2007 (v 1.1)
@@ -152,7 +154,7 @@ public class EditorPanel extends JPanel {
         for (Iterator i = this.field.getNodeList().keySet().iterator(); i.hasNext();) {
             position = (Point)i.next();
             current = (Node)this.field.getNodeList().get(position);
-            g.setColor(Color.BLACK);
+            g.setColor(Color.DARK_GRAY);
             String points = current.getPoints() + "";
             int width = g.getFontMetrics().stringWidth(points);
             int height = g.getFontMetrics().getHeight();
