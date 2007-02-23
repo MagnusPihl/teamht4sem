@@ -10,6 +10,8 @@
  *
  *
  * ******VERSION HISTORY******
+ * Mikkel Nielsen @ 21. februar 2007 (v 1.3)
+ * super.paint() kaldes nu i paint-metoden.
  * Magnus Pihl @ 21. februar 2007 (v 1.2.1)
  * Changed background color of drawPoints to dark gray, to work better with all skins
  * Mikkel Nielsen @ 21. februar 2007 (v 1.2)
@@ -65,6 +67,7 @@ public class EditorPanel extends JPanel {
         super.addMouseListener(brush);
         super.addMouseMotionListener(brush);    
         this.brush = brush;
+        
     }
     
     /**
@@ -116,6 +119,7 @@ public class EditorPanel extends JPanel {
      * @param g graphic to draw on.
      */
     public void paint(Graphics g) {
+        super.paint(g);
         this.field.drawField(g);
         this.drawGrid(g);
         this.drawPoints(g);
