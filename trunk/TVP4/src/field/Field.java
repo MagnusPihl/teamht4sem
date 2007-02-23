@@ -6,9 +6,11 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.9
+ * @version 1.10
  *
  * ******VERSION HISTORY******   
+ * LMK @ 20. februar 2007 (v 1.10)
+ * Fixed getSize(), now returns (0,0) when field is empty instead of (1,1)
  * Magnus Hemmer Pihl @ 23. februar 2007 (v 1.9)
  * Added boolean returns to placePacman() and placeGhost() methods
  * LMK @ 20. februar 2007 (v 1.8)
@@ -275,29 +277,33 @@ public class Field implements Serializable{
      * 0,0 if the field is empty.
      */
     public Dimension getSize() {
-        int minX = 0;
-        int maxX = 0;
-        int minY = 0;
-        int maxY = 0;
-        Point current = null;
+        if (this.nodes.size() != 0) {
+            int minX = 0;
+            int maxX = 0;
+            int minY = 0;
+            int maxY = 0;
+            Point current = null;
+
+            for (Iterator i = this.nodes.keySet().iterator(); i.hasNext();) {
+                current = (Point)i.next();
+                if (current.getX() < minX) {
+                    minX = (int)current.getX();
+                }
+                if (current.getX() > maxX) {
+                    maxX = (int)current.getX();
+                }
+                if (current.getY() < minY) {
+                    minY = (int)current.getY();
+                }
+                if (current.getY() > maxY) {
+                    maxY = (int)current.getY();
+                }
+            }
         
-        for (Iterator i = this.nodes.keySet().iterator(); i.hasNext();) {
-            current = (Point)i.next();
-            if (current.getX() < minX) {
-                minX = (int)current.getX();
-            }
-            if (current.getX() > maxX) {
-                maxX = (int)current.getX();
-            }
-            if (current.getY() < minY) {
-                minY = (int)current.getY();
-            }
-            if (current.getY() > maxY) {
-                maxY = (int)current.getY();
-            }
+            return new Dimension(maxX - minX + 1, maxY - minY +1);        
         }
         
-        return new Dimension(maxX - minX + 1, maxY - minY +1);        
+        return new Dimension(0,0);
     }
     
     /**
