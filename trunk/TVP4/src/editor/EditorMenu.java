@@ -43,11 +43,11 @@ public class EditorMenu extends JPanel {
         JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT));                
         
         String[][] menuStrings = {
-            {"File","New level","Scan new level","Open...","-","Save","Save As...","-","Quit"},
-            {"Brush","Use path brush","Use pacman brush","Use ghost brush"},
-            {"View","Show grid","Show points"},
-            {"Skin","Nodes","Pac-Man","-","Open skin..."},
-            {"Help","About...","Open help"}
+            {"File","New Level","Scan New Level","Open...","-","Save","Save As...","-","Quit"},
+            {"Brush","Use Path Brush","Use Pacman Brush","Use Ghost Brush"},
+            {"View","Show Grid","Show Points"},
+            {"Skin","Nodes","Pac-Man","-","Open Skin..."},
+            {"Help","About...","Open Help"}
         };
         
         char[][] mnemonics = {

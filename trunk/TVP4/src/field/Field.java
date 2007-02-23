@@ -424,8 +424,8 @@ public class Field implements Serializable{
      * 
      * @param g canvas to draw on.
      */
-    public void drawField(Graphics g) {
-        this.renderer.drawBaseTile(g);
+    public void drawField(Graphics g, Dimension size) {
+        this.renderer.drawBaseTile(g, size);
         this.renderer.drawNodes(g);
         
         for (int i = 0; i < this.entities.length; i++) {

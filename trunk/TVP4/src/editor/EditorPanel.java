@@ -120,7 +120,7 @@ public class EditorPanel extends JPanel {
      */
     public void paint(Graphics g) {
         super.paint(g);
-        this.field.drawField(g);
+        this.field.drawField(g,  this.getSize());
         this.drawGrid(g);
         this.drawPoints(g);
     }
