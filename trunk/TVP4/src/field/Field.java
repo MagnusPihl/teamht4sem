@@ -6,9 +6,11 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.8
+ * @version 1.9
  *
  * ******VERSION HISTORY******   
+ * Magnus Hemmer Pihl @ 23. februar 2007 (v 1.9)
+ * Added boolean returns to placePacman() and placeGhost() methods
  * LMK @ 20. februar 2007 (v 1.8)
  * Changed to use TileSet
  * Changed to hold Entities
@@ -67,9 +69,10 @@ public class Field implements Serializable{
      * Set the starting position of Pacman on the field
      *
      * @param position on the field;
+     * @return tue if the entity has been placed
      */
-    public void placePacman(Point position) {
-        this.placeEntityAt(position, 0);
+    public boolean placePacman(Point position) {
+        return this.placeEntityAt(position, 0);
     }
     
     /**
@@ -77,15 +80,17 @@ public class Field implements Serializable{
      * placed no ghost is placed.
      *
      * @param position on the field;
+     * @return tue if the entity has been placed
      */
-    public void placeGhost(Point position) {
+    public boolean placeGhost(Point position) {
         for (int i = 1; i < this.entities.length; i++) {
             if (this.entities[i] == null) {                
-                this.placeEntityAt(position, i);
+                boolean result = this.placeEntityAt(position, i);
                 this.hasChanged = true;
-                return;
+                return result;
             }
         }
+        return false;
     }
     
     /**
