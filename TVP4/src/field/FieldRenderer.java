@@ -92,15 +92,22 @@ public class FieldRenderer {
      *
      * @param g canvas to draw on.
      */
-    public void drawBaseTile(Graphics g) {
-        Dimension size = this.field.getSize();
+    public void drawBaseTile(Graphics g, Dimension size) {
+        int tileSize = TileSet.getInstance().getTileSize();
+        
+        size.setSize(
+                size.getWidth() / tileSize,
+                size.getHeight() / tileSize);
+        
+        
+        /*Dimension size = this.field.getSize(); */
         
         for (int x = 0; x < size.width; x++) {            
             for (int y = 0; y < size.height; y++) {
                 g.drawImage(
                         TileSet.getInstance().getBaseTile(), 
-                        x * TileSet.getInstance().getTileSize(), 
-                        y * TileSet.getInstance().getTileSize(), 
+                        x * tileSize, 
+                        y * tileSize, 
                         null);
             }
         }
