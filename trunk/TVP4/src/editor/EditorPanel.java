@@ -132,9 +132,14 @@ public class EditorPanel extends JPanel {
      */
     protected void drawGrid(Graphics g) {
         if (gridVisible) {
-            Dimension size = this.field.getSize();
-            g.setColor(this.gridColor);       
             int tileSize = this.tileSet.getTileSize();
+
+            Dimension size = new Dimension(
+                    (int)(this.getSize().getWidth() / tileSize) + 1,
+                    (int)(this.getSize().getHeight() / tileSize) + 1);
+                        
+            g.setColor(this.gridColor);       
+            
             for (int x = 1; x < size.width; x++) {
                 g.drawLine(x*tileSize, 0, x*tileSize, size.height*tileSize);
             }
