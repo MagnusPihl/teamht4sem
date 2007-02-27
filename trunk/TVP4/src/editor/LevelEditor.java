@@ -71,7 +71,7 @@ public class LevelEditor {
         this.openSaveDialog = new JFileChooser();
         this.openSaveDialog.setFileFilter(new javax.swing.filechooser.FileFilter() {
             public boolean accept(File f) {                
-                return (f.getName().toLowerCase().endsWith(".lvl") && f.isFile());
+                return ((f.getName().toLowerCase().endsWith(".lvl") && f.isFile()) || (f.isDirectory()));
             }
             public String getDescription() {
                 return "Level files";
