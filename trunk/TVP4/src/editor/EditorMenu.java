@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.2
+ * @version 1.3
  *
  *
  * ******VERSION HISTORY******
+ * LMK @ 14. februar 2007 (v 1.3)
+ * Keystroke now uses virtual keycodes instead of chars and strings.
+ * Fixed noneworking open keystroke
  * LMK @ 14. februar 2007 (v 1.2)
  * Added draw buttons for ghosts and pacman
  * LMK @ 13. februar 2007 (v 1.1)
@@ -60,29 +63,29 @@ public class EditorMenu extends JPanel {
         
         KeyStroke[][] keyStrokes = {
             {null, 
-             KeyStroke.getKeyStroke('N',InputEvent.CTRL_MASK),
-             KeyStroke.getKeyStroke('O',InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK),
-             KeyStroke.getKeyStroke('0',InputEvent.CTRL_MASK),
+             KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK),
+             KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK),
+             KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK),
              null,
-             KeyStroke.getKeyStroke('S',InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK),
-             KeyStroke.getKeyStroke('S',InputEvent.CTRL_MASK),
+             KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK),
+             KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK),
              null,                     
-             KeyStroke.getKeyStroke('Q',InputEvent.CTRL_MASK)},
+             KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK)},
             {null,
-             KeyStroke.getKeyStroke('1',InputEvent.CTRL_MASK | InputEvent.ALT_MASK),
-             KeyStroke.getKeyStroke('2',InputEvent.CTRL_MASK | InputEvent.ALT_MASK),
-             KeyStroke.getKeyStroke('3',InputEvent.CTRL_MASK | InputEvent.ALT_MASK)},
+             KeyStroke.getKeyStroke(KeyEvent.VK_1, InputEvent.CTRL_MASK | InputEvent.ALT_MASK),
+             KeyStroke.getKeyStroke(KeyEvent.VK_2, InputEvent.CTRL_MASK | InputEvent.ALT_MASK),
+             KeyStroke.getKeyStroke(KeyEvent.VK_3, InputEvent.CTRL_MASK | InputEvent.ALT_MASK)},
             {null,
-             KeyStroke.getKeyStroke('G',InputEvent.CTRL_MASK),
-             KeyStroke.getKeyStroke('P',InputEvent.CTRL_MASK)},
+             KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK),
+             KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK)},
             {null, 
-             KeyStroke.getKeyStroke('1',InputEvent.CTRL_MASK),
-             KeyStroke.getKeyStroke('2',InputEvent.CTRL_MASK),
+             KeyStroke.getKeyStroke(KeyEvent.VK_1, InputEvent.CTRL_MASK),
+             KeyStroke.getKeyStroke(KeyEvent.VK_2, InputEvent.CTRL_MASK),
              null,
-             KeyStroke.getKeyStroke('O',InputEvent.ALT_MASK)},
+             KeyStroke.getKeyStroke(KeyEvent.VK_3, InputEvent.ALT_MASK)},
             {null, 
              null,
-             KeyStroke.getKeyStroke("F1")}
+             KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)}
         };                
         
         ActionListener[][] actionListener = {
