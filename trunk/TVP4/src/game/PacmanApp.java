@@ -31,17 +31,26 @@ import java.awt.event.*;
  */
 public class PacmanApp extends GameCore {
     
+    private TitleScene titleScene;
+    private GameScene gameScene;
     private Scene scene;    
     
+    private static final PacmanApp instance = new PacmanApp();
+        
     public static void main(String[] args) {
-        new PacmanApp().start();
-    }
+        PacmanApp.getInstance().start();
+    }    
     
     /** Creates a new instance of PacmanApp */
-    public PacmanApp() {
-        super();
-    }            
-
+    public PacmanApp() {        
+        super();       
+        this.gameScene = new GameScene();
+        this.titleScene = new TitleScene();
+    }
+    
+    public static PacmanApp getInstance() {
+        return instance;
+    }
     /**
      * Update all objects in the current scene
      */
@@ -57,7 +66,7 @@ public class PacmanApp extends GameCore {
      */
     public void init() {
         super.init();
-        this.setScene(new TitleScene());
+        this.showTitleScene();
     }
     
     /**
@@ -83,5 +92,25 @@ public class PacmanApp extends GameCore {
         
         scene = _scene;
         scene.registerKeys(super.input);
+    }
+    
+    public void showTitleScene() {
+        this.setScene(this.titleScene);
+    }
+    
+    public void showGameScene() {
+        this.setScene(this.gameScene);
+    }
+    
+    public void showHighscoreScene() {
+    
+    }
+    
+    public GameScene getGameScene() {
+        return this.gameScene;
+    }
+    
+    public TitleScene getTitleScene() {
+        return this.titleScene;
     }
 }
