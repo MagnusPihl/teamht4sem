@@ -78,7 +78,7 @@ public class ScreenManager {
      */
     public void setFullScreen(DisplayMode _mode) {
         JFrame frame = new JFrame();
-        frame.addKeyListener(new KeyListener() {
+        /*frame.addKeyListener(new KeyListener() {
             public void keyPressed(KeyEvent e) {}
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
@@ -87,7 +87,7 @@ public class ScreenManager {
             }
             public void keyTyped(KeyEvent e) {}
 
-        });
+        });*/
                 
         frame.setUndecorated(true);
         frame.setIgnoreRepaint(true);
