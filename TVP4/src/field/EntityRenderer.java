@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.2
+ * @version 1.3
  *
  *
  * ******VERSION HISTORY******
+ * Magnus Hemmer Pihl @ 27. februar 2007 (v 1.3)
+ * Changed entity rendering, so that animation only occurs when entities are moving.
+ * 
  * Magnus Hemmer Pihl @ 19. februar 2007 (v 1.2)
  * Removed local reference to TileSet, using instead the TileSet singleton instance.
  *
