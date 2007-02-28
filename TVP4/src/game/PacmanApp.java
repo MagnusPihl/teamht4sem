@@ -11,8 +11,10 @@
  *
  * ******VERSION HISTORY******
  *
- * LMK @ 26. februar 2007 (v 1.0)
- * __________ Changes ____________
+ * LMK @ 28. februar 2007 (v 1.1)
+ * Added showGameScene and showTitleScene
+ * ShowHighscoreScene not implemented yet
+ * Changed to singleton
  *
  */
 
