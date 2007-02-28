@@ -6,14 +6,14 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
- *
+ * @version 1.1
+ * 
  *
  * ******VERSION HISTORY******
  *
- * LMK @ 28. februar 2007 (v 1.0)
- * __________ Changes ____________
- *
+ * LMK @ 28. februar 2007 (v 1.1)
+ * Added get and set methods for holdTime and repeatTime.
+ * Don't use these while action is registered as they aren't synchronized.
  */
 
 package game.input;
@@ -111,5 +111,37 @@ public class TimedInputAction extends InputAction{
         int output = this.amount;
         this.amount = 0;        
         return output;
+    }
+    
+    /**
+     * Set amount between first press and first repeat.
+     *
+     * @param time in milliseconds
+     */
+    public void setHoldTime(long time) {
+        this.holdTime = time;
+    }
+    
+    /**
+     * Set amount between repeats.
+     *
+     * @param time in milliseconds
+     */
+    public void setRepeatTime(long time) {
+        this.repeatTime = time;
+    }
+    
+    /**
+     * Get milliseconds between first press and repeats.
+     */
+    public long getHoldTime() {
+        return this.holdTime;
+    }
+    
+    /**
+     * Get milliseconds between repeats.
+     */
+    public long getRepeatTime() {
+        return this.repeatTime;
     }
 }
