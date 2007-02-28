@@ -47,7 +47,7 @@ public class EntityRenderer
      */
     public EntityRenderer(Entity entity)
     {
-        this.animationDelay = 500;
+        this.animationDelay = 100;
         this.lastUpdate = System.currentTimeMillis();
         this.frameCounter = 0;
         

@@ -40,7 +40,7 @@ public class PacmanApp {
     private static final PacmanApp instance = new PacmanApp();
         
     public static void main(String[] args) {
-        PacmanApp.getInstance();
+        PacmanApp.getInstance().getCore().start();
     }    
     
     /** Creates a new instance of PacmanApp */
@@ -48,7 +48,6 @@ public class PacmanApp {
         this.gameScene = new GameScene();
         this.titleScene = new TitleScene();
         this.core = new GameCore(this.titleScene);       
-        this.core.start();
     }
     
     public static PacmanApp getInstance() {
@@ -73,5 +72,9 @@ public class PacmanApp {
     
     public TitleScene getTitleScene() {
         return this.titleScene;
+    }
+    
+    public GameCore getCore() {
+        return this.core;
     }
 }
