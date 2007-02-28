@@ -76,10 +76,10 @@ public class TitleScene implements Scene {
         if (actionEnter.isPressed()) {
             switch (this.currentItem) {
                 case 0: ; break;
-                case 1: ; break;
-                case 2: ; break;
-                case 3: ; break;
-                case 4: ; break;
+                case 1: PacmanApp.getInstance().showGameScene(); break;
+                case 2: PacmanApp.getInstance().showGameScene(); break;
+                case 3: PacmanApp.getInstance().showGameScene(); break;
+                case 4: PacmanApp.getInstance().showHighscoreScene(); break;
                 case 5: System.exit(0); break;
             }
         } else if (actionUp.isPressed()) {
