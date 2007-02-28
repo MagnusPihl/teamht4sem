@@ -16,16 +16,18 @@ import game.input.*;
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
  *
- * LMK @ 26. februar 2007 (v 1.0)
- * __________ Changes ____________
+ * LMK @ 28. februar 2007 (v 1.1)
+ * Added constructed with initial scene
+ * Implemented scenes
+ * No longer abstract
  *
  */
-abstract public class GameCore {
+public class GameCore {
     
     //Display modes that game will run under
     private static final DisplayMode[] modes = new DisplayMode[] {
@@ -36,7 +38,15 @@ abstract public class GameCore {
     private boolean running;
     protected ScreenManager screen;
     protected InputManager input;
+    protected Scene scene;  
 
+    /**
+     * Construct GameCore with an initial scene set.
+     */
+    public GameCore(Scene startScene) {
+        this.scene = startScene;
+    }
+    
     /**
      * Halt execution of game on compleption of curren cycle.
      */
@@ -66,7 +76,8 @@ abstract public class GameCore {
         Window window = this.screen.getFullScreenWindow();
         this.input = new InputManager(window);
         this.input.setCursor(InputManager.INVISIBLE_CURSOR);
-        this.running = true;
+        this.running = true;        
+        this.setScene(this.scene);
     }
 
     /**
@@ -100,12 +111,36 @@ abstract public class GameCore {
     }
 
     /**
-     * Override this method to update all objects used in the game.
+     * Update all objects in the current scene
      */
-    abstract public void update(long _time);
+    public void update(long _time) {
+        if (this.scene != null) {
+            this.scene.update(_time);
+        }
+    }
     
     /**
-     * Override this method to draw all objects to screen.
+     * Draw all objects in scene
+     *
+     * @param graphic to draw on
      */
-    abstract public void draw(Graphics2D _g);
+    public void draw(Graphics2D _g) {
+        if (this.scene != null) {
+            this.scene.draw(_g);
+        }                    
+    }     
+    
+    /**
+     * Set the current scene
+     * 
+     * @param scene to view
+     */
+    public void setScene(Scene _scene) {
+        if (this.scene != null) {
+            this.scene.unregisterKeys(this.input);
+        }
+        
+        this.scene = _scene;
+        this.scene.registerKeys(this.input);
+    }
 }
