@@ -6,12 +6,12 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
- *
  * LMK @ 28. februar 2007 (v 1.1)
+ * Moved scene functionality and loop to GameCore
  * Added showGameScene and showTitleScene
  * ShowHighscoreScene not implemented yet
  * Changed to singleton
@@ -31,77 +31,36 @@ import java.awt.event.*;
  *
  * @author LMK
  */
-public class PacmanApp extends GameCore {
+public class PacmanApp {
     
     private TitleScene titleScene;
-    private GameScene gameScene;
-    private Scene scene;    
+    private GameScene gameScene;  
+    private GameCore core;
     
     private static final PacmanApp instance = new PacmanApp();
         
     public static void main(String[] args) {
-        PacmanApp.getInstance().start();
+        PacmanApp.getInstance();
     }    
     
     /** Creates a new instance of PacmanApp */
-    public PacmanApp() {        
-        super();       
+    private PacmanApp() {        
         this.gameScene = new GameScene();
         this.titleScene = new TitleScene();
+        this.core = new GameCore(this.titleScene);       
+        this.core.start();
     }
     
     public static PacmanApp getInstance() {
         return instance;
-    }
-    /**
-     * Update all objects in the current scene
-     */
-    public void update(long _time) {
-        if (scene != null) {
-            scene.update(_time);
-        }
-    }
-    
-    /**
-     * Overrides GameCore init
-     * Sets the initial scene.
-     */
-    public void init() {
-        super.init();
-        this.showTitleScene();
-    }
-    
-    /**
-     * Draw all objects in scene
-     *
-     * @param graphic to draw on
-     */
-    public void draw(Graphics2D _g) {
-        if (scene != null) {
-            scene.draw(_g);
-        }                    
-    }            
-    
-    /**
-     * Set the current scene
-     * 
-     * @param scene to view
-     */
-    public void setScene(Scene _scene) {
-        if (scene != null) {
-            scene.unregisterKeys(super.input);
-        }
-        
-        scene = _scene;
-        scene.registerKeys(super.input);
-    }
+    }                       
     
     public void showTitleScene() {
-        this.setScene(this.titleScene);
+        this.core.setScene(this.titleScene);
     }
     
     public void showGameScene() {
-        this.setScene(this.gameScene);
+        this.core.setScene(this.gameScene);
     }
     
     public void showHighscoreScene() {
