@@ -38,15 +38,19 @@ public class GameScene implements Scene {
     private InputAction up, down, left, right, pause, confirm;
     private EntityRenderer[] entity;
     
+    private File level;
+    private Shape clip;
+    
     /** Creates a new instance of GameScene */
     public GameScene() {
         this.points = 0;
         this.paused = false;
+        this.level = new File("test.lvl");
         
         TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "pacman/"));   
         field = new Field();
         entity = field.getEntityRenderers();
-        field.loadFrom(new File("test.lvl"));
+        field.loadFrom(this.level);
         this.up = new InputAction("Move up");
         this.down = new InputAction("Move down");
         this.left = new InputAction("Move left");
@@ -55,8 +59,17 @@ public class GameScene implements Scene {
         this.confirm = new InputAction("Confirm quit");
     }
     
+    public void loadLevel(File _level)
+    {
+        this.level = _level;
+        field.loadFrom(this.level);
+    }
+    
     public void draw(Graphics2D _g) {
+        clip = _g.getClip();
+        _g.setClip(0,25,800,575);
         field.drawField(_g, new Dimension(800,600));
+        _g.setClip(clip);
         
         _g.setColor(Color.WHITE);
         
@@ -70,6 +83,7 @@ public class GameScene implements Scene {
             _g.fillRect(305, 255, 190, 90);
             _g.setColor(Color.WHITE);
             _g.drawString("Game Paused", 360,295);
+            _g.drawString("Press 'Y' to exit to the title screen.", 310,310);
         }
         
         //Temp stuff
@@ -81,8 +95,6 @@ public class GameScene implements Scene {
             _g.drawString(left.getName(), 350,295);
         if (right.isPressed() && !this.paused)
             _g.drawString(right.getName(), 350,295);
-        if (confirm.isPressed() && this.paused)
-            _g.drawString("You're totally quitting right now.", 310,310);
         //Temp stuff end
     }            
 
@@ -121,6 +133,10 @@ public class GameScene implements Scene {
     }
     
     public void unregisterKeys(InputManager _input) {
+        this.points = 0;
+        this.paused = false;
+        field.loadFrom(this.level);
+        
         _input.removeAssociation(up);
         _input.removeAssociation(down);
         _input.removeAssociation(left);
