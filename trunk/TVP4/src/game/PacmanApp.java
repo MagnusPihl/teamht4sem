@@ -42,22 +42,40 @@ public class PacmanApp extends GameCore {
         super();
     }            
 
+    /**
+     * Update all objects in the current scene
+     */
     public void update(long _time) {
         if (scene != null) {
             scene.update(_time);
         }
     }
     
+    /**
+     * Overrides GameCore init
+     * Sets the initial scene.
+     */
     public void init() {
         super.init();
-        this.setScene(new GameScene());
+        this.setScene(new TitleScene());
     }
+    
+    /**
+     * Draw all objects in scene
+     *
+     * @param graphic to draw on
+     */
     public void draw(Graphics2D _g) {
         if (scene != null) {
             scene.draw(_g);
         }                    
     }            
     
+    /**
+     * Set the current scene
+     * 
+     * @param scene to view
+     */
     public void setScene(Scene _scene) {
         if (scene != null) {
             scene.unregisterKeys(super.input);
