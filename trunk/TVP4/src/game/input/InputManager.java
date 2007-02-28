@@ -19,12 +19,12 @@ import javax.swing.SwingUtilities;
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
+ * @version 1.1
  *
  * ******VERSION HISTORY******
  *
- * LMK @ 26. februar 2007 (v 1.0)
- * __________ Changes ____________
+ * LMK @ 28. februar 2007 (v 1.1)
+ * Added removeKeyAssociation() to make faster removal of associations.
  *
  */
 public class InputManager implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
@@ -210,6 +210,17 @@ public class InputManager implements KeyListener, MouseListener, MouseMotionList
             }
         }
         _action.reset();
+    }
+    
+    /**
+     * Remove association based on keyCode. Faster than removeAssociation.
+     *
+     * @param _keyCode. KeyCode less than 600.
+     */
+    public void removeKeyAssociation(int _keyCode) {
+        if (_keyCode < this.keyboardActions.length) {
+            this.keyboardActions[_keyCode] = null;
+        }    
     }
     
     /**
