@@ -51,9 +51,8 @@ public class GameScene implements Scene {
         this.down = new InputAction("Move down");
         this.left = new InputAction("Move left");
         this.right = new InputAction("Move right");
-        this.pause = new InputAction("Pause");
+        this.pause = new InputAction("Pause", this.pause.DETECT_FIRST_ACTION);
         this.confirm = new InputAction("Confirm quit");
-        this.pause.setBehaviour(this.pause.DETECT_FIRST_ACTION);
     }
     
     public void draw(Graphics2D _g) {
