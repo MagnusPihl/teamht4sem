@@ -105,6 +105,10 @@ public class GameScene implements Scene {
             if(left.isPressed())
                 entity[0].getEntity().setDirection(3);*/
         }
+        else if(confirm.isPressed())
+        {
+            PacmanApp.getInstance().showTitleScene();
+        }
     }
 
     public void registerKeys(InputManager _input) {
