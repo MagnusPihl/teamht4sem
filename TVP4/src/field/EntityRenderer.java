@@ -59,11 +59,13 @@ public class EntityRenderer
     public void draw(Graphics g)
     {
         Point position = entity.getPosition();
-        
-        if((System.currentTimeMillis() - this.lastUpdate) > this.animationDelay)
+        if(entity.isMoving())
         {
-            this.frameCounter = (this.frameCounter+1)%2;
-            this.lastUpdate = System.currentTimeMillis();
+            if((System.currentTimeMillis() - this.lastUpdate) > this.animationDelay)
+            {
+                this.frameCounter = (this.frameCounter+1)%2;
+                this.lastUpdate = System.currentTimeMillis();
+            }
         }
         
         g.drawImage(
