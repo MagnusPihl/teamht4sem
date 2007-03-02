@@ -10,8 +10,8 @@ import game.input.*;
  * GameCore.java
  *
  * Created 2006 by LMK
- * Based on examples in "Devoloping Games in Java"
- * by Brackeen, David
+ * Based on examples in "Devoloping Games in Java" [Brackeen]
+ * by Brackeen, David 
  *
  * Company: HT++
  *
@@ -49,6 +49,7 @@ public class GameCore {
     
     /**
      * Halt execution of game on compleption of curren cycle.
+     * Taken [Brackeen]
      */
     public void stop() {
         this.running = false;
@@ -99,12 +100,11 @@ public class GameCore {
             _g.dispose();
             this.screen.update();
 
-            /*try {
-                Thread.sleep(20);
+            try {
+                Thread.sleep(30);
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
-            }*/
-            
+            }            
             //frames++;
         }
         //System.out.println(frames);

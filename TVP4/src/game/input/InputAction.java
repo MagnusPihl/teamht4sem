@@ -4,8 +4,10 @@ package game.input;
  * InputAction.java
  *
  * Created 2006 by LMK
- * Based on examples in "Devoloping Games in Java"
+ * Based on examples in "Devoloping Games in Java" [Brackeen]
  * by Brackeen, David
+ * www.brackeen.com
+ * Listing 3.5 GameAction.java, page 114-117
  *
  * Company: HT++
  *
