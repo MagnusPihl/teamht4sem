@@ -13,8 +13,10 @@ import javax.swing.SwingUtilities;
  * InputManager.java
  *
  * Created 2006 by LMK
- * Based on examples in "Devoloping Games in Java"
+ * Based on examples in "Devoloping Games in Java" [Brackeen]
  * by Brackeen, David
+ * www.brackeen.com
+ * Listing 3.6 InputManager.java, page 134-139
  *
  * Company: HT++
  *

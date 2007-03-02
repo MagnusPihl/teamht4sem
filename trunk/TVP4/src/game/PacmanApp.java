@@ -35,6 +35,7 @@ public class PacmanApp {
     
     private TitleScene titleScene;
     private GameScene gameScene;  
+    private HighScoreScene highscoreScene;
     private GameCore core;
     
     private static final PacmanApp instance = new PacmanApp();
@@ -47,6 +48,7 @@ public class PacmanApp {
     private PacmanApp() {        
         this.gameScene = new GameScene();
         this.titleScene = new TitleScene();
+        this.highscoreScene = new HighScoreScene();
         this.core = new GameCore(this.titleScene);       
     }
     
@@ -62,8 +64,8 @@ public class PacmanApp {
         this.core.setScene(this.gameScene);
     }
     
-    public void showHighscoreScene() {
-    
+    public void showHighScoreScene() {
+        this.core.setScene(this.highscoreScene);
     }
     
     public GameScene getGameScene() {

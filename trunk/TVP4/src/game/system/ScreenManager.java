@@ -12,13 +12,16 @@ import java.awt.Graphics2D;
 import javax.swing.JFrame;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
+import java.awt.Color;
 
 /*
  * ScreenManager.java
  *
  * Created 2006 by LMK
- * Based on examples in "Devoloping Games in Java"
+ * Based on examples in "Devoloping Games in Java" [Brackeen]
  * by Brackeen, David
+ * www.brackeen.com
+ * Listing 2.7 ScreenManager.java, page 61-67
  *
  * Company: HT++
  *

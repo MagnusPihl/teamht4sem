@@ -29,7 +29,7 @@ import java.io.*;
 public class TitleScene implements Scene {
     
     private Field field;
-    private InputAction actionUp, actionDown, actionEnter;
+    private InputAction actionUp, actionDown, actionEnter, actionQuit;
     private Image background;
     private Image[] menuItems;
     private Image[] menuItemsOn;
@@ -41,6 +41,7 @@ public class TitleScene implements Scene {
         this.actionUp = new TimedInputAction("Up", 500, 100);
         this.actionDown = new TimedInputAction("Down", 500, 100);
         this.actionEnter = new InputAction("Enter", InputAction.DETECT_FIRST_ACTION);
+        this.actionQuit = new InputAction("Escape", InputAction.DETECT_FIRST_ACTION);
         this.menuItems = new Image[6];
         this.menuItemsOn = new Image[this.menuItems.length];
         
@@ -61,33 +62,29 @@ public class TitleScene implements Scene {
             if (i == this.currentItem) {
                 _g.drawImage(this.menuItemsOn[i], 250, 300 + i*40, null);
             } else {
-                _g.drawImage(this.menuItems[i], 250, 300 + i*40, null);
+                _g.drawImage(this.menuItems[i], 250, 300 + i*40, null);                
             }
-        }
-        
-        
-    /*_g.setColor(Color.WHITE);
-        if (action.isPressed()) {
-            _g.drawString("Huhej hvor jeg trykker på enter", 350,295);
-        } */
+        }        
     }
     
     public void update(long _time) {
-        if (actionEnter.isPressed()) {
+        if (this.actionQuit.isPressed()) {
+            System.exit(0);
+        } else if (this.actionEnter.isPressed()) {
             switch (this.currentItem) {
                 case 0: ; break;
                 case 1: PacmanApp.getInstance().showGameScene(); break;
                 case 2: PacmanApp.getInstance().showGameScene(); break;
                 case 3: PacmanApp.getInstance().showGameScene(); break;
-                case 4: PacmanApp.getInstance().showHighscoreScene(); break;
+                case 4: PacmanApp.getInstance().showHighScoreScene(); break;
                 case 5: System.exit(0); break;
             }
-        } else if (actionUp.isPressed()) {
+        } else if (this.actionUp.isPressed()) {
             this.currentItem--;
             if (this.currentItem < 0) {
                 this.currentItem += this.menuItems.length;
             }
-        } else if (actionDown.isPressed()) {
+        } else if (this.actionDown.isPressed()) {
             this.currentItem++;
             if (this.currentItem >= this.menuItems.length) {
                 this.currentItem = 0;
@@ -96,14 +93,16 @@ public class TitleScene implements Scene {
     }
     
     public void registerKeys(InputManager _input) {
-        _input.mapToKey(actionEnter, KeyEvent.VK_ENTER);
-        _input.mapToKey(actionUp, KeyEvent.VK_UP);
-        _input.mapToKey(actionDown, KeyEvent.VK_DOWN);
+        _input.mapToKey(this.actionEnter, KeyEvent.VK_ENTER);
+        _input.mapToKey(this.actionUp, KeyEvent.VK_UP);
+        _input.mapToKey(this.actionDown, KeyEvent.VK_DOWN);
+        _input.mapToKey(this.actionQuit, KeyEvent.VK_ESCAPE);
     }
     
     public void unregisterKeys(InputManager _input) {
         _input.removeKeyAssociation(KeyEvent.VK_ENTER);
         _input.removeKeyAssociation(KeyEvent.VK_UP);
         _input.removeKeyAssociation(KeyEvent.VK_DOWN);
+        _input.removeKeyAssociation(KeyEvent.VK_ESCAPE);
     }
 }

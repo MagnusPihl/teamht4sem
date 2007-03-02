@@ -44,6 +44,8 @@
 
 package field;
 
+import game.visual.EntityRenderer;
+import game.visual.FieldRenderer;
 import java.awt.*;
 import java.util.*;
 import java.io.*;

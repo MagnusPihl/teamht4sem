@@ -25,6 +25,7 @@ package game;
 import game.system.*;
 import game.input.*;
 import field.*;
+import game.visual.EntityRenderer;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;

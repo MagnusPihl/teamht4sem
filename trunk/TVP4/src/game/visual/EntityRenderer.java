@@ -24,8 +24,9 @@
  *
  */
 
-package field;
+package game.visual;
 
+import field.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.File;
