@@ -141,7 +141,7 @@ public class CreditsScene implements Scene {
      * 
      * @param InputManager to register with.
      */
-    public void registerKeys(InputManager _input) {
+    public void init(InputManager _input) {
         if (this.rendereredCredits == null) {
             this.prerender();
         }
@@ -155,7 +155,7 @@ public class CreditsScene implements Scene {
      * 
      * @param InputManager to unregister with.
      */
-    public void unregisterKeys(InputManager _input) {
+    public void deinit(InputManager _input) {
         _input.removeKeyAssociation(KeyEvent.VK_ESCAPE);        
     }
 }

@@ -42,16 +42,16 @@ public interface Scene {
     public void draw(Graphics2D _g);
     
     /**
-     * Register InputAction needed to support screen.
+     * Initialize scene, ie. register keys, load images vice versa.
      * 
      * @param inputmanager to register keys to.
      */
-    public void registerKeys(InputManager _input);
+    public void init(InputManager _input);
     
     /**
-     * Unregister InputAction used by screen.
+     * Deinitialize scene, ie. unregister keys vice versa.
      *
      * @param inputmanager to unregister keys from.
      */
-    public void unregisterKeys(InputManager _input);
+    public void deinit(InputManager _input);
 }

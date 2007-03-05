@@ -52,11 +52,11 @@ public class HighScoreScene implements Scene {
         }
     }
     
-    public void registerKeys(InputManager _input) {
+    public void init(InputManager _input) {
         _input.mapToKey(this.actionBack, KeyEvent.VK_ESCAPE);
     }
     
-    public void unregisterKeys(InputManager _input) {
+    public void deinit(InputManager _input) {
         _input.removeKeyAssociation(KeyEvent.VK_ESCAPE);
     }    
 }

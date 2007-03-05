@@ -93,14 +93,14 @@ public class TitleScene implements Scene {
         }
     }
     
-    public void registerKeys(InputManager _input) {
+    public void init(InputManager _input) {
         _input.mapToKey(this.actionEnter, KeyEvent.VK_ENTER);
         _input.mapToKey(this.actionUp, KeyEvent.VK_UP);
         _input.mapToKey(this.actionDown, KeyEvent.VK_DOWN);
         _input.mapToKey(this.actionQuit, KeyEvent.VK_ESCAPE);
     }
     
-    public void unregisterKeys(InputManager _input) {
+    public void deinit(InputManager _input) {
         _input.removeKeyAssociation(KeyEvent.VK_ENTER);
         _input.removeKeyAssociation(KeyEvent.VK_UP);
         _input.removeKeyAssociation(KeyEvent.VK_DOWN);
