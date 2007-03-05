@@ -137,11 +137,11 @@ public class GameCore {
      */
     public void setScene(Scene _scene) {
         if (this.scene != null) {
-            this.scene.unregisterKeys(this.input);
+            this.scene.deinit(this.input);
         }
         
         this.scene = _scene;
-        this.scene.registerKeys(this.input);
+        this.scene.init(this.input);
     }
     
     /**
