@@ -6,10 +6,12 @@
  * Company: HT++
  *
  * @author Mikkel Nielsen
- * @version 1.2.1
+ * @version 1.4
  *
  *
  * ******VERSION HISTORY******
+ * Magnus Hemmer Pihl @ 5. marts 2007 (v 1.4)
+ * Updated paint()-method to use new signature of drawField.
  * Mikkel Nielsen @ 21. februar 2007 (v 1.3)
  * super.paint() kaldes nu i paint-metoden.
  * Magnus Pihl @ 21. februar 2007 (v 1.2.1)
@@ -120,7 +122,7 @@ public class EditorPanel extends JPanel {
      */
     public void paint(Graphics g) {
         super.paint(g);
-        this.field.drawField(g,  this.getSize());
+        this.field.drawField(g, 0, 0, this.getSize());
         this.drawGrid(g);
         this.drawPoints(g);
     }
