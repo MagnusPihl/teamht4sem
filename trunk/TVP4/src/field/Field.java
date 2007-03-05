@@ -6,9 +6,11 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.10
+ * @version 1.11
  *
  * ******VERSION HISTORY******   
+ * LMK @ 05. marts 2007 (v 1.11)
+ * Added offset coordinates to drawField()
  * LMK @ 20. februar 2007 (v 1.10)
  * Fixed getSize(), now returns (0,0) when field is empty instead of (1,1)
  * Magnus Hemmer Pihl @ 23. februar 2007 (v 1.9)
@@ -425,14 +427,17 @@ public class Field implements Serializable{
      * Draw baseTile, nodes and entities
      * 
      * @param g canvas to draw on.
+     * @param offset x.
+     * @param offset y.
+     * @param area to draw.
      */
-    public void drawField(Graphics g, Dimension size) {
-        this.renderer.drawBaseTile(g, size);
-        this.renderer.drawNodes(g);
+    public void drawField(Graphics g, int offsetX, int offsetY, Dimension size) {
+        this.renderer.drawBaseTile(g, offsetX, offsetY, size);
+        this.renderer.drawNodes(g, offsetX, offsetY);
         
         for (int i = 0; i < this.entities.length; i++) {
             if (this.entities[i] != null) {
-                this.entities[i].draw(g);
+                this.entities[i].draw(g, offsetX, offsetY);
             }
         }
     }

@@ -6,11 +6,13 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.3
- *
- * This class should use a TileSet to draw the field.
+ * @version 1.4
  *
  * ******VERSION HISTORY******  
+ * LMK @ 05. marts 2007 (v 1.4)
+ * Added offset coordinates to drawNodes()
+ * Added offset coordinates to drawBaseTile()
+ * drawNodes now caches tileSize
  * LMK @ 15. februar 2007 (v 1.3)
  * Refactored and moved tile loading to the new TileSet class
  * No longer an extension of FieldPanel.
@@ -53,11 +55,14 @@ public class FieldRenderer {
      * Draw the contents of the field on the graphics
      *
      * @param g canvas to draw on.
+     * @param offset x
+     * @param offset y
      */
-    public void drawNodes(Graphics g) {            
+    public void drawNodes(Graphics g, int offsetX, int offsetY) {            
         Point position = null;
         Node current = null;
         int tileNumber = 0; 
+        int tileSize = TileSet.getInstance().getTileSize();
         
         for (Iterator i = this.field.getNodeList().keySet().iterator(); i.hasNext();) {
             position = (Point)i.next();
@@ -82,8 +87,8 @@ public class FieldRenderer {
                         
             g.drawImage(
                     TileSet.getInstance().getPathTile(tileNumber), 
-                    position.x * TileSet.getInstance().getTileSize(), 
-                    position.y * TileSet.getInstance().getTileSize(), 
+                    position.x * tileSize + offsetX, 
+                    position.y * tileSize + offsetY, 
                     null);
         }        
     }
@@ -92,9 +97,13 @@ public class FieldRenderer {
      * Draw base tile on the graphics
      *
      * @param g canvas to draw on.
+     * @param offset x
+     * @param offset y
+     * @param area to cover with base tile.
      */
-    public void drawBaseTile(Graphics g, Dimension size) {
+    public void drawBaseTile(Graphics g, int offSetX, int offSetY, Dimension size) {
         int tileSize = TileSet.getInstance().getTileSize();
+        Image baseTile = TileSet.getInstance().getBaseTile();
         
         size.setSize(
                 size.getWidth() / tileSize,
@@ -106,9 +115,9 @@ public class FieldRenderer {
         for (int x = 0; x < size.width; x++) {            
             for (int y = 0; y < size.height; y++) {
                 g.drawImage(
-                        TileSet.getInstance().getBaseTile(), 
-                        x * tileSize, 
-                        y * tileSize, 
+                        baseTile, 
+                        x * tileSize + offSetX, 
+                        y * tileSize + offSetY, 
                         null);
             }
         }
