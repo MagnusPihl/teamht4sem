@@ -6,21 +6,22 @@
  * Company: HT++
  *
  * @author Mikkel Brøndsholm Nielsen
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
  *
- * Administrator @ 18. februar 2007 (v 1.1)
- * __________ Changes ____________
+ * Magnus Hemmer Pihl @ 5. marts 2007 (v 1.1)
+ * Added EntityController field and get/set methods.
  *
- * Administrator @ 18. februar 2007 (v 1.0)
- * __________ Changes ____________
+ * Mikkel Brøndsholm Nielsen @ 18. februar 2007 (v 1.0)
+ * Initial.
  *
  */
 
 package field;
 
+import game.entitycontrol.EntityController;
 import java.awt.Point;
 import java.io.*;
 
@@ -32,6 +33,7 @@ public class Entity implements Serializable {
     private int speed;
     private int ID;
     private boolean isPacman;
+    private EntityController controller;
     
     /** Creates a new instance of Entity */
     public Entity(Point _position, int _ID) {
@@ -52,4 +54,6 @@ public class Entity implements Serializable {
     public int getSpeed(){return this.speed;}
     public void setID(int _ID){this.ID = _ID;}
     public int getID(){return this.ID;}
+    public void setController(EntityController _controller){this.controller = _controller;}
+    public EntityController getController(){return this.controller;}
 }
