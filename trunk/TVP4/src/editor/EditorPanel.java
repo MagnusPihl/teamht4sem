@@ -6,10 +6,11 @@
  * Company: HT++
  *
  * @author Mikkel Nielsen
- * @version 1.4
- *
+ * @version 1.5
  *
  * ******VERSION HISTORY******
+ * LMK @ 5. marts 2007 (v 1.5)
+ * Changed to support refactoring of Node/Field. 
  * Magnus Hemmer Pihl @ 5. marts 2007 (v 1.4)
  * Updated paint()-method to use new signature of drawField.
  * Mikkel Nielsen @ 21. februar 2007 (v 1.3)
@@ -158,26 +159,27 @@ public class EditorPanel extends JPanel {
      */
     protected void drawPoints(Graphics g) {    
         if(pointsVisible){
-        Point position = null;
-        Node current = null;
-        g.setFont(this.font);
-        int tileSize = this.tileSet.getTileSize();
-        for (Iterator i = this.field.getNodeList().keySet().iterator(); i.hasNext();) {
-            position = (Point)i.next();
-            current = (Node)this.field.getNodeList().get(position);
-            g.setColor(Color.DARK_GRAY);
-            String points = current.getPoints() + "";
-            int width = g.getFontMetrics().stringWidth(points);
-            int height = g.getFontMetrics().getHeight();
-            g.fillRect(position.x * tileSize, 
-                    position.y * tileSize, 
-                    width, height);
-            g.setColor(Color.WHITE);
-            g.drawString(points + "", 
-                    position.x * tileSize, 
-                    position.y * tileSize + height-3);
-            
-        }
+            Point position = null;
+            Node current = null;
+            g.setFont(this.font);
+            int tileSize = this.tileSet.getTileSize();
+            for (Iterator i = this.field.getNodeList().iterator(); i.hasNext();) {
+                current = (Node)(i.next());
+                position = current.getPosition();
+
+                g.setColor(Color.DARK_GRAY);
+                String points = current.getPoints() + "";
+                int width = g.getFontMetrics().stringWidth(points);
+                int height = g.getFontMetrics().getHeight();
+                g.fillRect(position.x * tileSize, 
+                        position.y * tileSize, 
+                        width, height);
+                g.setColor(Color.WHITE);
+                g.drawString(points + "", 
+                        position.x * tileSize, 
+                        position.y * tileSize + height-3);
+
+            }
         }
     }
 

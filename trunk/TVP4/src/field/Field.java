@@ -10,8 +10,11 @@
  *
  * ******VERSION HISTORY******   
  * LMK @ 05. marts 2007 (v 1.11)
+ * Positions are no longer stored in field but in Node
  * Added offset coordinates to drawField()
  * Refactored so that entities are now also saved in Node
+ * Field is no longer serializable since it doesn't make sense to serialize the
+ * whole object. Instead use loadFrom and SaveTo methods.
  * LMK @ 20. februar 2007 (v 1.10)
  * Fixed getSize(), now returns (0,0) when field is empty instead of (1,1)
  * Magnus Hemmer Pihl @ 23. februar 2007 (v 1.9)
@@ -47,18 +50,17 @@
 
 package field;
 
-import game.visual.EntityRenderer;
-import game.visual.FieldRenderer;
+import game.visual.*;
 import java.awt.*;
 import java.util.*;
 import java.io.*;
 
-public class Field implements Serializable{
+public class Field {
         
     private FieldRenderer renderer;
     private EntityRenderer[] entities;
-    private HashMap nodes;
-    private transient boolean hasChanged;
+    private java.util.List nodes;
+    private boolean hasChanged;
     private int lastEntity;
     
     /** 
@@ -66,7 +68,7 @@ public class Field implements Serializable{
      */
     public Field() {
         this.renderer = new FieldRenderer(this);
-        this.nodes = new HashMap();
+        this.nodes = new ArrayList();
         this.entities = new EntityRenderer[3];
         this.lastEntity = 0;
         this.hasChanged = false;
@@ -185,7 +187,8 @@ public class Field implements Serializable{
             Node current = this.getNodeAt(position);
             
             if (current == null) {
-                this.nodes.put(position, new Node(
+                this.nodes.add(new Node(
+                        position,
                         this.getNodeAt(position.x-1, position.y),
                         this.getNodeAt(position.x+1, position.y),
                         this.getNodeAt(position.x, position.y-1),
@@ -222,7 +225,7 @@ public class Field implements Serializable{
             
             if (node != null) {
                 node.removeAllConnections();
-                this.nodes.remove(position);
+                this.nodes.remove(node);
             }
 
             this.hasChanged = true;
@@ -248,8 +251,8 @@ public class Field implements Serializable{
      * @return The node at position. If no node is associated
      * NULL is returned.
      */
-    public Node getNodeAt(int x, int y) {                
-        return (Node)this.nodes.get(new Point(x,y));
+    public Node getNodeAt(int x, int y) {     
+        return this.getNodeAt(new Point(x,y));
     }
     
     /**
@@ -259,8 +262,17 @@ public class Field implements Serializable{
      * @return The node at position. If no node is associated
      * NULL is returned.
      */
-    public Node getNodeAt(Point position) {                
-        return (Node)this.nodes.get(position);
+    public Node getNodeAt(Point position) {     
+        Node current = null;
+        
+        for (Iterator i = this.nodes.iterator(); i.hasNext();) {            
+            current = (Node)(i.next());
+            if (current.getPosition().equals(position)) {
+                return current;
+            }
+        }
+        
+        return null;
     }
     
     /**
@@ -294,8 +306,8 @@ public class Field implements Serializable{
             int maxY = 0;
             Point current = null;
 
-            for (Iterator i = this.nodes.keySet().iterator(); i.hasNext();) {
-                current = (Point)i.next();
+            for (Iterator i = this.nodes.iterator(); i.hasNext();) {
+                current = ((Node)(i.next())).getPosition();
                 if (current.getX() < minX) {
                     minX = (int)current.getX();
                 }
@@ -321,7 +333,7 @@ public class Field implements Serializable{
      * 
      * @return list of nodes on the field
      */
-    public HashMap getNodeList() {
+    public java.util.List getNodeList() {
         return this.nodes;
     }
     
@@ -357,7 +369,7 @@ public class Field implements Serializable{
                     }
                 }
             
-                this.nodes = (HashMap)in.readObject();                
+                this.nodes = (java.util.List)in.readObject();                
             } catch (Exception e) {
                 success = false;
                 e.printStackTrace(); 
