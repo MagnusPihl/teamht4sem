@@ -35,33 +35,26 @@ public class PreyAIController extends EntityController {
     /** Creates a new instance of PreyAIController */
     public PreyAIController(Entity _entity) {
         super(_entity);
-        this.lastDirection = -1;
-        this.nextDirection = -1;
+        this.lastDirection = Node.INVALID_DIRECTION;
+        this.nextDirection = Node.INVALID_DIRECTION;
     }
     
     /**
      * Execute move
      */
     public void move() {
-        Point pos = this.entity.getPosition();        
-        Node[] nodes = PacmanApp.getInstance().getGameScene().getField().getNodeAt(pos).getConnectedNodes();
-        
-        this.nextDirection = -1;
-        for (int i = 0; i < nodes.length; i++) {
-            if ((nodes[i] != null)&&(i != this.lastDirection)) {
-                if (!nodes[i].holdsEntity()) {
-                    nodes[i].setEntity(this.entity);
-                    
-                    switch (i) {
-                        case Node.UP : pos.y--;
-                        case Node.DOWN : pos.y++;
-                        case Node.LEFT : pos.x--;
-                        case Node.RIGHT : pos.x++;
-                    }
-                    this.nextDirection = i;
-                    break;
-                }
+        if (this.nextDirection != Node.INVALID_DIRECTION) {
+            Point pos = this.entity.getPosition();
+            Node node = PacmanApp.getInstance().getGameScene().getField().getNodeAt(pos);
+            node.setEntity(null);
+            node.getConnectedNodes()[this.nextDirection].setEntity(this.entity);
+            switch (this.nextDirection) {
+                case Node.UP : pos.y--; break;
+                case Node.DOWN : pos.y++; break;
+                case Node.LEFT : pos.x--; break;
+                case Node.RIGHT : pos.x++; break;
             }
+            this.lastDirection = this.nextDirection;
         }
     }
     
@@ -69,7 +62,18 @@ public class PreyAIController extends EntityController {
      * Calculate next move
      */
     public void calculateNextMove() {
-    
+        Point pos = this.entity.getPosition();        
+        Node[] nodes = PacmanApp.getInstance().getGameScene().getField().getNodeAt(pos).getConnectedNodes();
+        
+        this.nextDirection = Node.INVALID_DIRECTION;
+        for (int i = 0; i < nodes.length; i++) {
+            if ((nodes[i] != null)&&(i != Node.getOpposite(this.lastDirection))) {
+                if (!nodes[i].holdsEntity()) {
+                    this.nextDirection = i;                    
+                    break;
+                }
+            }
+        }
     }
     
     /**
