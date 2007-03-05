@@ -56,9 +56,10 @@ public class FieldLineRenderer extends FieldPanel {
         Point position = null;
         Node current = null;
         
-        for (Iterator i = this.field.getNodeList().keySet().iterator(); i.hasNext();) {
-            position = (Point)i.next();
-            current = (Node)this.field.getNodeList().get(position);
+        for (Iterator i = this.field.getNodeList().iterator(); i.hasNext();) {
+            current = (Node)(i.next());
+            position = current.getPosition();
+            
             if (current.getNodeAt(Node.UP) != null) {
                 g.fillRect(
                         position.x * tileSize + tileSize / 2 - 1,
@@ -93,9 +94,9 @@ public class FieldLineRenderer extends FieldPanel {
         Point position = null;
         Node current = null;
         
-        for (Iterator i = this.field.getNodeList().keySet().iterator(); i.hasNext();) {
-            position = (Point)i.next();
-            current = this.field.getNodeAt(position);
+        for (Iterator i = this.field.getNodeList().iterator(); i.hasNext();) {
+            current = (Node)(i.next());
+            position = current.getPosition();
             
             if (current.isStraightPath()) {
                 g.setColor(Color.GREEN);

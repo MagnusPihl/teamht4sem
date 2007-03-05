@@ -10,6 +10,9 @@
  *
  * ******VERSION HISTORY******  
  * LMK @ 05. marts 2007 (v 1.4)
+ * Added drawPoints
+ * Added render method to speedup rendering by prerending the none changing field.
+ * Changed to support refactoring of Node/Field. 
  * Added offset coordinates to drawNodes()
  * Added offset coordinates to drawBaseTile()
  * drawNodes now caches tileSize
@@ -32,6 +35,8 @@ import java.io.IOException;
 import java.io.File;
 import javax.swing.ImageIcon;
 import java.util.Iterator;
+import java.awt.image.*;
+import game.*;
 /**
  *
  * @author LMK
@@ -59,14 +64,12 @@ public class FieldRenderer {
      * @param offset y
      */
     public void drawNodes(Graphics g, int offsetX, int offsetY) {            
-        Point position = null;
         Node current = null;
         int tileNumber = 0; 
         int tileSize = TileSet.getInstance().getTileSize();
         
-        for (Iterator i = this.field.getNodeList().keySet().iterator(); i.hasNext();) {
-            position = (Point)i.next();
-            current = (Node)this.field.getNodeList().get(position);
+        for (Iterator i = this.field.getNodeList().iterator(); i.hasNext();) {
+            current = (Node)(i.next());
             tileNumber = 0;
             
             if (current.getNodeAt(Node.UP) != null) {
@@ -87,8 +90,8 @@ public class FieldRenderer {
                         
             g.drawImage(
                     TileSet.getInstance().getPathTile(tileNumber), 
-                    position.x * tileSize + offsetX, 
-                    position.y * tileSize + offsetY, 
+                    current.getPosition().x * tileSize + offsetX, 
+                    current.getPosition().y * tileSize + offsetY, 
                     null);
         }        
     }
@@ -124,6 +127,31 @@ public class FieldRenderer {
     }
     
     /**
+     * Draw the points of the field on the graphics
+     *
+     * @param g canvas to draw on.
+     * @param offset x
+     * @param offset y
+     */
+    public void drawPoints(Graphics g, int offsetX, int offsetY) {            
+        Image image = null;
+        Node current = null;
+        int tileSize = TileSet.getInstance().getTileSize();
+        
+        for (Iterator i = this.field.getNodeList().iterator(); i.hasNext();) {                        
+            current = (Node)(i.next());
+            
+            if (!current.pointsTaken()) {            
+                g.drawImage(
+                    TileSet.getInstance().getPointsTile(current.getPoints()), 
+                    current.getPosition().x * tileSize + offsetX, 
+                    current.getPosition().y * tileSize + offsetY, 
+                    null);
+            }
+        }        
+    }
+    
+    /**
      * Return the field that the renderer draws.
      *
      * @return field held by renderer.
@@ -131,4 +159,16 @@ public class FieldRenderer {
     public Field getField() {
         return this.field;
     }   
+    
+    /**
+     * Prerender basetile and nodes for later drawing.
+     * 
+     * @return prerendered basetile and nodes.
+     */
+    public BufferedImage render(Dimension size) {
+        BufferedImage image = PacmanApp.getInstance().getCore().getScreenManager().createCompatibleImage(size.width, size.height, Transparency.TRANSLUCENT);
+        this.drawBaseTile(image.getGraphics(), 0, 0, size);
+        this.drawNodes(image.getGraphics(), 0, 0);
+        return image;
+    }
 }
