@@ -11,6 +11,7 @@
  * ******VERSION HISTORY******   
  * LMK @ 05. marts 2007 (v 1.11)
  * Added offset coordinates to drawField()
+ * Refactored so that entities are now also saved in Node
  * LMK @ 20. februar 2007 (v 1.10)
  * Fixed getSize(), now returns (0,0) when field is empty instead of (1,1)
  * Magnus Hemmer Pihl @ 23. februar 2007 (v 1.9)
@@ -109,13 +110,17 @@ public class Field implements Serializable{
      */
     private boolean placeEntityAt(Point position, int id) {  
         Node node = this.getNodeAt(position);
-        if ((node != null)&&(this.getEntityAt(position) == null)) {
-            /*if (id == 0) {
-                node.setPoints(0);
-            }*/
-            this.entities[id] = new EntityRenderer(new Entity(position, id));
-            this.hasChanged = true;
-            return true;
+        if (node != null) {
+            if (!node.holdsEntity()) {
+                if (this.entities[id] != null) {
+                    node.setEntity(null);
+                    this.entities[id].getEntity().setPosition(position);                    
+                } else {
+                    this.entities[id] = new EntityRenderer(new Entity(position, id));
+                }
+                this.hasChanged = true;
+                return true;
+            }
         }
         return false;
     }
@@ -150,6 +155,7 @@ public class Field implements Serializable{
         for (int i = 0; i < this.entities.length; i++) {
             if (this.entities[i] != null) {
                 if (this.entities[i].getEntity().getPosition().equals(position)) {
+                    this.getNodeAt(position).setEntity(null);
                     this.entities[i] = null;
                 }
             }
