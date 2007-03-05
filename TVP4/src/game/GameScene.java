@@ -27,6 +27,7 @@
 package game;
 
 import game.entitycontrol.KeyboardController;
+import game.entitycontrol.PreyAIController;
 import game.system.*;
 import game.input.*;
 import field.*;
@@ -134,9 +135,9 @@ public class GameScene implements Scene {
         if(!this.paused)
         {
             EntityRenderer[] entities = this.field.getEntityRenderers();
-            entities[0].getEntity().getController().move();
-//            for(int i=0; i<entities.length; i++)
-//                entities[i].getEntity().getController().move();
+            for(int i=0; i<entities.length; i++)
+                if(entities[i].getEntity() != null)
+                    entities[i].getEntity().getController().move();
         }
         else if(confirm.isPressed())
         {
@@ -149,19 +150,20 @@ public class GameScene implements Scene {
         this.resetPoints();
         this.loadLevel(new File("test.lvl"));
         
-//        _input.mapToKey(up, KeyEvent.VK_UP);
-//        _input.mapToKey(down, KeyEvent.VK_DOWN);
-//        _input.mapToKey(left, KeyEvent.VK_LEFT);
-//        _input.mapToKey(right, KeyEvent.VK_RIGHT);
         _input.mapToKey(pause, KeyEvent.VK_SPACE);
         _input.mapToKey(confirm, KeyEvent.VK_Y);
         
         EntityRenderer[] entities = this.field.getEntityRenderers();
+        entities[0].getEntity().setController(new KeyboardController(entities[0].getEntity()));
+        entities[1].getEntity().setController(new PreyAIController(entities[1].getEntity()));
+        entities[2].getEntity().setController(new PreyAIController(entities[2].getEntity()));
         for(int i=0; i<entities.length; i++)
         {
-            entities[i].getEntity().setController(new KeyboardController(entities[i].getEntity()));
-            if(entities[i].getEntity().getController() != null)
-                entities[i].getEntity().getController().init(_input);
+            if(entities[i].getEntity() != null)
+            {
+                if(entities[i].getEntity().getController() != null)
+                    entities[i].getEntity().getController().init(_input);
+            }
         }
     }
     
@@ -170,11 +172,12 @@ public class GameScene implements Scene {
         this.resetPoints();
         this.loadLevel(this.level);
         
-        _input.removeAssociation(pause);
-        _input.removeAssociation(confirm);
+        _input.removeKeyAssociation(KeyEvent.VK_SPACE);
+        _input.removeKeyAssociation(KeyEvent.VK_Y);
         
         EntityRenderer[] entities = this.field.getEntityRenderers();
         for(int i=0; i<entities.length; i++)
-            entities[i].getEntity().getController().deinit(_input);
+            if(entities[i].getEntity() != null)
+                entities[i].getEntity().getController().deinit(_input);
     }
 }
