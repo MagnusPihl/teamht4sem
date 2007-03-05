@@ -42,8 +42,8 @@ public class GameScene implements Scene {
     private boolean paused;
     
     private Field field;
-    private InputAction up, down, left, right, pause, confirm;
-    private EntityRenderer[] entities;
+//    private InputAction up, down, left, right;
+    private InputAction pause, confirm;
     
     private File level;
     private BitmapFont font;
@@ -51,16 +51,12 @@ public class GameScene implements Scene {
     
     /** Creates a new instance of GameScene */
     public GameScene() {
-        this.paused = false;
-        
         TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "pacman/"));
         
-        this.loadLevel(new File("test.lvl"));
-        
-        this.up = new InputAction("Move up");
-        this.down = new InputAction("Move down");
-        this.left = new InputAction("Move left");
-        this.right = new InputAction("Move right");
+//        this.up = new InputAction("Move up");
+//        this.down = new InputAction("Move down");
+//        this.left = new InputAction("Move left");
+//        this.right = new InputAction("Move right");
         this.pause = new InputAction("Pause", InputAction.DETECT_FIRST_ACTION);
         this.confirm = new InputAction("Confirm quit");
     }
@@ -84,7 +80,11 @@ public class GameScene implements Scene {
         this.level = _level;
         this.field = new Field();
         this.field.loadFrom(this.level);
-        this.entities = field.getEntityRenderers();
+    }
+    
+    public Field getField()
+    {
+        return this.field;
     }
     
     public void draw(Graphics2D _g) {
@@ -112,14 +112,14 @@ public class GameScene implements Scene {
         }
         
         //Temp stuff
-        if (up.isPressed() && !this.paused)
-            _g.drawString(up.getName(), 350,295);
-        if (down.isPressed() && !this.paused)
-            _g.drawString(down.getName(), 350,295);
-        if (left.isPressed() && !this.paused)
-            _g.drawString(left.getName(), 350,295);
-        if (right.isPressed() && !this.paused)
-            _g.drawString(right.getName(), 350,295);
+//        if (up.isPressed() && !this.paused)
+//            _g.drawString(up.getName(), 350,295);
+//        if (down.isPressed() && !this.paused)
+//            _g.drawString(down.getName(), 350,295);
+//        if (left.isPressed() && !this.paused)
+//            _g.drawString(left.getName(), 350,295);
+//        if (right.isPressed() && !this.paused)
+//            _g.drawString(right.getName(), 350,295);
         //Temp stuff end
     }            
 
@@ -132,15 +132,9 @@ public class GameScene implements Scene {
         
         if(!this.paused)
         {
-            //Game stuff goes in here
-            /*if(up.isPressed())
-                entity[0].getEntity().setDirection(0);
-            if(right.isPressed())
-                entity[0].getEntity().setDirection(1);
-            if(down.isPressed())
-                entity[0].getEntity().setDirection(2);
-            if(left.isPressed())
-                entity[0].getEntity().setDirection(3);*/
+            EntityRenderer[] entities = this.field.getEntityRenderers();
+            for(int i=0; i<entities.length; i++)
+                entities[i].getEntity().getController().move();
         }
         else if(confirm.isPressed())
         {
@@ -148,25 +142,31 @@ public class GameScene implements Scene {
         }
     }
 
-    public void registerKeys(InputManager _input) {
-        _input.mapToKey(up, KeyEvent.VK_UP);
-        _input.mapToKey(down, KeyEvent.VK_DOWN);
-        _input.mapToKey(left, KeyEvent.VK_LEFT);
-        _input.mapToKey(right, KeyEvent.VK_RIGHT);
+    public void init(InputManager _input) {
+//        _input.mapToKey(up, KeyEvent.VK_UP);
+//        _input.mapToKey(down, KeyEvent.VK_DOWN);
+//        _input.mapToKey(left, KeyEvent.VK_LEFT);
+//        _input.mapToKey(right, KeyEvent.VK_RIGHT);
         _input.mapToKey(pause, KeyEvent.VK_SPACE);
         _input.mapToKey(confirm, KeyEvent.VK_Y);
+        EntityRenderer[] entities = this.field.getEntityRenderers();
+        for(int i=0; i<entities.length; i++)
+            entities[i].getEntity().getController().init(_input);
     }
     
-    public void unregisterKeys(InputManager _input) {
-        this.points = 0;
+    public void deinit(InputManager _input) {
         this.paused = false;
-        field.loadFrom(this.level);
+        this.resetPoints();
+        this.loadLevel(new File("test.lvl"));
         
-        _input.removeAssociation(up);
-        _input.removeAssociation(down);
-        _input.removeAssociation(left);
-        _input.removeAssociation(right);
+//        _input.removeAssociation(up);
+//        _input.removeAssociation(down);
+//        _input.removeAssociation(left);
+//        _input.removeAssociation(right);
         _input.removeAssociation(pause);
         _input.removeAssociation(confirm);
+        EntityRenderer[] entities = this.field.getEntityRenderers();
+        for(int i=0; i<entities.length; i++)
+            entities[i].getEntity().getController().deinit(_input);
     }
 }
