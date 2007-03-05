@@ -33,7 +33,7 @@ import java.awt.image.*;
 
 public class BitmapFont {
     
-    public static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyzæøåABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ1234567890-_., ?!";
+    public static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyzæøåABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ1234567890-_., \\/\"'()[]&%#;?!{}=:+©";
                                              
     private Image[] images;
     private int fontHeight;
