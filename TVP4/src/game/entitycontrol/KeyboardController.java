@@ -64,9 +64,9 @@ public class KeyboardController extends EntityController
     
     public void deinit(InputManager _input)
     {
-        _input.removeAssociation(up);
-        _input.removeAssociation(down);
-        _input.removeAssociation(left);
-        _input.removeAssociation(right);
+        _input.removeKeyAssociation(KeyEvent.VK_UP);
+        _input.removeKeyAssociation(KeyEvent.VK_DOWN);
+        _input.removeKeyAssociation(KeyEvent.VK_LEFT);
+        _input.removeKeyAssociation(KeyEvent.VK_RIGHT);
     }
 }
