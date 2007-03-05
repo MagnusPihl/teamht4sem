@@ -32,4 +32,6 @@ public abstract class EntityController
     
     public abstract void move();
     public abstract void calculateNextMove();
+    public abstract void init();
+    public abstract void deinit();
 }
