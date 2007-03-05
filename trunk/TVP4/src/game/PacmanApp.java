@@ -26,7 +26,7 @@ import field.*;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
-
+import game.visual.*;
 /**
  *
  * @author LMK
@@ -36,7 +36,9 @@ public class PacmanApp {
     private TitleScene titleScene;
     private GameScene gameScene;  
     private HighScoreScene highscoreScene;
+    private CreditsScene creditsScene;
     private GameCore core;
+    private BitmapFont font;
     
     private static final PacmanApp instance = new PacmanApp();
         
@@ -49,6 +51,8 @@ public class PacmanApp {
         this.gameScene = new GameScene();
         this.titleScene = new TitleScene();
         this.highscoreScene = new HighScoreScene();
+        this.creditsScene = new CreditsScene();
+        this.font = new BitmapFont(new File("images/alfa"), 5);
         this.core = new GameCore(this.titleScene);       
     }
     
@@ -68,6 +72,10 @@ public class PacmanApp {
         this.core.setScene(this.highscoreScene);
     }
     
+    public void showCreditsScene() {
+        this.core.setScene(this.creditsScene);
+    }
+    
     public GameScene getGameScene() {
         return this.gameScene;
     }
@@ -78,5 +86,9 @@ public class PacmanApp {
     
     public GameCore getCore() {
         return this.core;
+    }
+    
+    public BitmapFont getFont() {
+        return this.font;
     }
 }

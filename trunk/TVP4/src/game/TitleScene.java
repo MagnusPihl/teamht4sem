@@ -77,7 +77,8 @@ public class TitleScene implements Scene {
                 case 2: PacmanApp.getInstance().showGameScene(); break;
                 case 3: PacmanApp.getInstance().showGameScene(); break;
                 case 4: PacmanApp.getInstance().showHighScoreScene(); break;
-                case 5: System.exit(0); break;
+                case 5: PacmanApp.getInstance().showCreditsScene(); break;
+                //case 5: System.exit(0); break;
             }
         } else if (this.actionUp.isPressed()) {
             this.currentItem--;
