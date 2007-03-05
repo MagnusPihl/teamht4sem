@@ -33,19 +33,17 @@ import java.io.*;
 public class HighScoreScene implements Scene {
     
     private InputAction actionBack;
-    private BitmapFont font;
     
     /** Creates a new instance of HighscoreScene */
     public HighScoreScene() {        
         this.actionBack = new InputAction("Escape", InputAction.DETECT_FIRST_ACTION);
-        this.font = new BitmapFont(new File("images/alfa"));
     }
     
     public void draw(Graphics2D _g) {
         _g.setColor(Color.BLACK);
         _g.fillRect(0,0,800,600);
         //this.font.drawString(_g, BitmapFont.CHARACTERS, 10, 10, 780, 5);
-        this.font.drawString(_g, "Hvis din mor hun bare vidste,\nHvis din mor hun bare vidst!\nHvad ville hun så sige til dig?", 10, 10, 780, 5);
+        PacmanApp.getInstance().getFont().drawString(_g, "Hvis din mor hun bare vidste,\nHvis din mor hun bare vidst!\nHvad ville hun så sige til dig?", 10, 10, 780);
     }
     
     public void update(long _time) {
@@ -60,6 +58,5 @@ public class HighScoreScene implements Scene {
     
     public void unregisterKeys(InputManager _input) {
         _input.removeKeyAssociation(KeyEvent.VK_ESCAPE);
-    }
-    
+    }    
 }
