@@ -6,9 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.2
+ * @version 1.3
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 5. marts 2007 (v 1.3)
+ * Added point tiles, along with getPointsTile method.
+ *
  * Magnus Hemmer Pihl @ 19. februar 2007 (v 1.2)
  * TileSet is now a Singleton.
  * Implemented getInstance() method.
@@ -31,6 +35,7 @@ public class TileSet
 {
     private Image[][][] entityTiles;
     private Image[] pathTiles;
+    private Image[] pointTiles;
     private Image baseTile;
     private int tileSize;
     
@@ -66,6 +71,7 @@ public class TileSet
     {
         this.entityTiles = new Image[4][4][2];
         this.pathTiles = new Image[16];
+        this.pointTiles = new Image[2];
         this.loadTileSet(new File(path));
     }
     
@@ -115,6 +121,9 @@ public class TileSet
                     //System.out.println(file.getAbsolutePath() + file.separator + this.zeroPad(Integer.toBinaryString(i),4));
                     this.pathTiles[i] = (new ImageIcon(file.getAbsolutePath() + file.separator + this.zeroPad(Integer.toBinaryString(i),4) + ".png")).getImage();
                 }
+                
+                this.pointTiles[0] = new ImageIcon(file.getAbsolutePath() + file.separator + "p10.png").getImage();
+                this.pointTiles[1] = new ImageIcon(file.getAbsolutePath() + file.separator + "p25.png").getImage();
 
                 this.baseTile = (new ImageIcon(file.getAbsolutePath() + file.separator +  "base.png")).getImage();
                 this.tileSize = this.baseTile.getWidth(null);
@@ -164,6 +173,19 @@ public class TileSet
             return this.pathTiles[tile];
         else
             return null;
+    }
+    
+    /**
+     * Retrieves the point tile of the specified number of points, for the current tileset.
+     * @param int Number of points to represent
+     * @return The image object of the point tile.
+     */
+    public Image getPointsTile(int points)
+    {
+        if(points <= 10)
+            return this.pointTiles[0];
+        else
+            return this.pointTiles[1];
     }
     
     /**
