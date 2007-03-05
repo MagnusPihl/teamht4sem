@@ -26,6 +26,7 @@
 
 package game;
 
+import game.entitycontrol.KeyboardController;
 import game.system.*;
 import game.input.*;
 import field.*;
@@ -133,8 +134,9 @@ public class GameScene implements Scene {
         if(!this.paused)
         {
             EntityRenderer[] entities = this.field.getEntityRenderers();
-            for(int i=0; i<entities.length; i++)
-                entities[i].getEntity().getController().move();
+            entities[0].getEntity().getController().move();
+//            for(int i=0; i<entities.length; i++)
+//                entities[i].getEntity().getController().move();
         }
         else if(confirm.isPressed())
         {
@@ -143,28 +145,34 @@ public class GameScene implements Scene {
     }
 
     public void init(InputManager _input) {
+        this.paused = false;
+        this.resetPoints();
+        this.loadLevel(new File("test.lvl"));
+        
 //        _input.mapToKey(up, KeyEvent.VK_UP);
 //        _input.mapToKey(down, KeyEvent.VK_DOWN);
 //        _input.mapToKey(left, KeyEvent.VK_LEFT);
 //        _input.mapToKey(right, KeyEvent.VK_RIGHT);
         _input.mapToKey(pause, KeyEvent.VK_SPACE);
         _input.mapToKey(confirm, KeyEvent.VK_Y);
+        
         EntityRenderer[] entities = this.field.getEntityRenderers();
         for(int i=0; i<entities.length; i++)
-            entities[i].getEntity().getController().init(_input);
+        {
+            entities[i].getEntity().setController(new KeyboardController(entities[i].getEntity()));
+            if(entities[i].getEntity().getController() != null)
+                entities[i].getEntity().getController().init(_input);
+        }
     }
     
     public void deinit(InputManager _input) {
         this.paused = false;
         this.resetPoints();
-        this.loadLevel(new File("test.lvl"));
+        this.loadLevel(this.level);
         
-//        _input.removeAssociation(up);
-//        _input.removeAssociation(down);
-//        _input.removeAssociation(left);
-//        _input.removeAssociation(right);
         _input.removeAssociation(pause);
         _input.removeAssociation(confirm);
+        
         EntityRenderer[] entities = this.field.getEntityRenderers();
         for(int i=0; i<entities.length; i++)
             entities[i].getEntity().getController().deinit(_input);
