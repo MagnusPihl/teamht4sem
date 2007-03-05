@@ -137,7 +137,10 @@ public class GameScene implements Scene {
             EntityRenderer[] entities = this.field.getEntityRenderers();
             for(int i=0; i<entities.length; i++)
                 if(entities[i].getEntity() != null)
+                {
                     entities[i].getEntity().getController().move();
+                    entities[i].getEntity().getController().calculateNextMove();
+                }
         }
         else if(confirm.isPressed())
         {
