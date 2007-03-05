@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.3
+ * @version 1.4
  *
  *
  * ******VERSION HISTORY******
+ * LMK @ 05. marts 2007 (v 1.4)
+ * Added offset coordinates to draw method
+ *
  * Magnus Hemmer Pihl @ 27. februar 2007 (v 1.3)
  * Changed entity rendering, so that animation only occurs when entities are moving.
  * 
@@ -59,10 +62,14 @@ public class EntityRenderer
      * Draw the contents of the field on the graphics canvas.
      *
      * @param g Canvas to draw on.
+     * @param offset x
+     * @param offset y
      */
-    public void draw(Graphics g)
+    public void draw(Graphics g, int offsetX, int offsetY)
     {
         Point position = entity.getPosition();
+        int tileSize = TileSet.getInstance().getTileSize();
+        
         if(entity.isMoving())
         {
             if((System.currentTimeMillis() - this.lastUpdate) > this.animationDelay)
@@ -74,8 +81,8 @@ public class EntityRenderer
         
         g.drawImage(
                 TileSet.getInstance().getEntityTile(entity.getID(), entity.getDirection(), this.frameCounter),
-                position.x * TileSet.getInstance().getTileSize(),
-                position.y * TileSet.getInstance().getTileSize(),
+                position.x * tileSize + offsetX,
+                position.y * tileSize + offsetY,
                 null);
     }
     
