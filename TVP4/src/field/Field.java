@@ -10,6 +10,8 @@
  *
  * ******VERSION HISTORY******   
  * LMK @ 05. marts 2007 (v 1.11)
+ * Added call to drawPoints to drawField method
+ * Speeded up drawing by prerendering field
  * Positions are no longer stored in field but in Node
  * Added offset coordinates to drawField()
  * Refactored so that entities are now also saved in Node
@@ -62,6 +64,7 @@ public class Field {
     private java.util.List nodes;
     private boolean hasChanged;
     private int lastEntity;
+    private Image renderedField;
     
     /** 
      * Creates a new empty field 
@@ -450,8 +453,12 @@ public class Field {
      * @param area to draw.
      */
     public void drawField(Graphics g, int offsetX, int offsetY, Dimension size) {
-        this.renderer.drawBaseTile(g, offsetX, offsetY, size);
-        this.renderer.drawNodes(g, offsetX, offsetY);
+        if ((this.hasChanged) || (this.renderedField == null)) {
+            this.renderedField = this.renderer.render(size);
+        }        
+        
+        g.drawImage(this.renderedField, offsetX, offsetY, null);
+        this.renderer.drawPoints(g, offsetX, offsetY);
         
         for (int i = 0; i < this.entities.length; i++) {
             if (this.entities[i] != null) {

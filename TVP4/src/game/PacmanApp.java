@@ -91,4 +91,8 @@ public class PacmanApp {
     public BitmapFont getFont() {
         return this.font;
     }
+    
+    protected void finalize() throws Throwable {
+        System.gc();
+    }
 }
