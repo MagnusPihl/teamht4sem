@@ -11,6 +11,10 @@
  *
  * ******VERSION HISTORY******
  *
+ * Magnus Hemmer Pihl @ 5. marts 2007 (v 1.2)
+ * Shifted the rendering of field to be below the points display.
+ * Modified points display to use bitmap font.
+ *
  * Magnus Hemmer Pihl @ 27. februar 2007 (v 1.1)
  * Added bindings and temporary actions for movement and pause/quit keys.
  * Added points variable and display.
@@ -25,9 +29,11 @@ package game;
 import game.system.*;
 import game.input.*;
 import field.*;
+import game.visual.BitmapFont;
 import game.visual.EntityRenderer;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 
 public class GameScene implements Scene {
@@ -37,21 +43,20 @@ public class GameScene implements Scene {
     
     private Field field;
     private InputAction up, down, left, right, pause, confirm;
-    private EntityRenderer[] entity;
+    private EntityRenderer[] entities;
     
     private File level;
-    private Shape clip;
+    private BitmapFont font;
+    private BufferedImage pointsImage;
     
     /** Creates a new instance of GameScene */
     public GameScene() {
-        this.points = 0;
         this.paused = false;
-        this.level = new File("test.lvl");
         
-        TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "pacman/"));   
-        field = new Field();
-        entity = field.getEntityRenderers();
-        field.loadFrom(this.level);
+        TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "pacman/"));
+        
+        this.loadLevel(new File("test.lvl"));
+        
         this.up = new InputAction("Move up");
         this.down = new InputAction("Move down");
         this.left = new InputAction("Move left");
@@ -60,21 +65,40 @@ public class GameScene implements Scene {
         this.confirm = new InputAction("Confirm quit");
     }
     
+    public void addPoints(int _points)
+    {
+        this.points += _points;
+        font = PacmanApp.getInstance().getFont();
+        pointsImage = font.renderString(""+this.points,400);
+    }
+    
+    public void resetPoints()
+    {
+        this.points = 0;
+        font = PacmanApp.getInstance().getFont();
+        pointsImage = font.renderString(""+this.points,400);
+    }
+    
     public void loadLevel(File _level)
     {
         this.level = _level;
-        field.loadFrom(this.level);
+        this.field = new Field();
+        this.field.loadFrom(this.level);
+        this.entities = field.getEntityRenderers();
     }
     
     public void draw(Graphics2D _g) {
-        clip = _g.getClip();
-        _g.setClip(0,25,800,575);
-        field.drawField(_g, new Dimension(800,600));
-        _g.setClip(clip);
+        _g.setColor(Color.BLACK);
+        _g.fillRect(0, 0, 800, 600);
+        
+        if(this.pointsImage == null)
+            this.resetPoints();
+        
+        field.drawField(_g, 0, this.pointsImage.getHeight()+10, new Dimension(800,600));
         
         _g.setColor(Color.WHITE);
         
-        _g.drawString(""+this.points, 700, 20);
+        _g.drawImage(pointsImage, 795 - pointsImage.getWidth(), 5, null);
         
         if (this.paused)
         {
