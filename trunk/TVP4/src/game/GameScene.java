@@ -168,10 +168,6 @@ public class GameScene implements Scene {
     }
     
     public void deinit(InputManager _input) {
-        this.paused = false;
-        this.resetPoints();
-        this.loadLevel(this.level);
-        
         _input.removeKeyAssociation(KeyEvent.VK_SPACE);
         _input.removeKeyAssociation(KeyEvent.VK_Y);
         
