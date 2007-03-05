@@ -101,7 +101,7 @@ public class GameCore {
             this.screen.update();
 
             try {
-                Thread.sleep(30);
+                Thread.sleep(20);
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
             }            
@@ -142,5 +142,14 @@ public class GameCore {
         
         this.scene = _scene;
         this.scene.registerKeys(this.input);
+    }
+    
+    /**
+     * Get ScreenManager
+     *
+     * @return ScreenManager
+     */
+    public ScreenManager getScreenManager() {
+        return this.screen;
     }
 }
