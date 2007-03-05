@@ -13,6 +13,7 @@
  * LMK @ 10. februar 2007 (v 1.3)
  * Fixed isStraightPath() so that it doesn't return true if 3 connections
  * are present.
+ * Entity is now stored in node too.
  * LMK @ 9. februar 2007 (v 1.2)
  * Moved position attribute to Field.
  * LMK @ 9. februar 2007 (v 1.1)
@@ -41,6 +42,7 @@ public class Node implements Serializable {
     private Node[] connectedNodes;
     private boolean pointsTaken;
     private int points;
+    private Entity entity;
     
     /** 
      * Create new node with specified position, no connections and 0 points held
@@ -302,6 +304,33 @@ public class Node implements Serializable {
             this.setNodeAt(null, i);
         }
     }
+        
+    /**
+     * Get entity placed on node.
+     *
+     * @result entity on node.
+     */
+    public Entity getEntity() {
+        return this.entity;
+    }
+        
+    /**
+     * Place entity on node.
+     *
+     * @param entity to place on node.
+     */
+    public void setEntity(Entity entity) {
+        this.entity = null;
+    }
+    
+    /**
+     * Check whether an entity is placed on the node.
+     *
+     * @result true if an entity is placed on the node.
+     */
+    public boolean holdsEntity() {
+        return (this.entity != null);
+    }
     
     /**
      * Retrieve the index associated with the direction opposite of the input 
@@ -336,5 +365,5 @@ public class Node implements Serializable {
             case DOWN: return true;
             default: return false;
         }
-    }
+    }    
 }
