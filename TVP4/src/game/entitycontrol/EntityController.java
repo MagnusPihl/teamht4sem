@@ -19,6 +19,7 @@
 package game.entitycontrol;
 
 import field.Entity;
+import game.input.InputManager;
 
 public abstract class EntityController
 {
@@ -32,6 +33,6 @@ public abstract class EntityController
     
     public abstract void move();
     public abstract void calculateNextMove();
-    public abstract void init();
-    public abstract void deinit();
+    public abstract void init(InputManager _input);
+    public abstract void deinit(InputManager _input);
 }
