@@ -48,12 +48,7 @@ public class PreyAIController extends EntityController {
             Node node = PacmanApp.getInstance().getGameScene().getField().getNodeAt(pos);
             node.setEntity(null);
             node.getConnectedNodes()[this.nextDirection].setEntity(this.entity);
-            switch (this.nextDirection) {
-                case Node.UP : pos.y--; break;
-                case Node.DOWN : pos.y++; break;
-                case Node.LEFT : pos.x--; break;
-                case Node.RIGHT : pos.x++; break;
-            }
+            this.entity.setPosition(node.getConnectedNodes()[this.nextDirection].getPosition());
             this.lastDirection = this.nextDirection;
         }
     }
@@ -73,6 +68,10 @@ public class PreyAIController extends EntityController {
                     break;
                 }
             }
+        }
+        
+        if (this.nextDirection == Node.INVALID_DIRECTION) {
+            this.nextDirection = Node.getOpposite(this.lastDirection);
         }
     }
     
