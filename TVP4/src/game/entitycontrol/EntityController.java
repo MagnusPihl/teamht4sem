@@ -22,7 +22,7 @@ import field.Entity;
 
 public abstract class EntityController
 {
-    Entity entity;
+    protected Entity entity;
     
     /** Creates a new instance of EntityController */
     public EntityController(Entity _entity)
