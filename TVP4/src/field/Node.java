@@ -6,10 +6,12 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.3
+ * @version 1.4
  *
  * 
  * ******VERSION HISTORY******
+ * LMK @ 5. marts 2007 (v 1.4)
+ * Reinstated position :)
  * LMK @ 10. februar 2007 (v 1.3)
  * Fixed isStraightPath() so that it doesn't return true if 3 connections
  * are present.
@@ -30,6 +32,7 @@
 package field;
 
 import java.io.Serializable;
+import java.awt.*;
 
 public class Node implements Serializable {
     
@@ -42,6 +45,7 @@ public class Node implements Serializable {
     private Node[] connectedNodes;
     private boolean pointsTaken;
     private int points;
+    private Point position;
     private Entity entity;
     
     /** 
@@ -49,8 +53,8 @@ public class Node implements Serializable {
      *
      * @param position on the playing field.     
      */
-    public Node() {       
-        this(null, null, null, null, 0);
+    public Node(Point position) {       
+        this(position, null, null, null, null, 0);
     }
     
     /**
@@ -63,7 +67,8 @@ public class Node implements Serializable {
      * @param downNode node on the bottom of the node to be created
      * @param points points to be held by the node     
      */
-    public Node(Node leftNode, Node rightNode, Node upNode, Node downNode, int points) {
+    public Node(Point position, Node leftNode, Node rightNode, Node upNode, Node downNode, int points) {
+        this.position = position;
         this.connectedNodes = new Node[4];
         this.setNodeAt(leftNode, LEFT);
         this.setNodeAt(rightNode, RIGHT);
@@ -90,6 +95,24 @@ public class Node implements Serializable {
         }
         
         return false;
+    }
+    
+    /**
+     * Set position on field.
+     *
+     * @param position on field.
+     */
+    public void setPosition(Point position) {
+        this.position = position;
+    }
+    
+    /**
+     * Get position on field
+     *
+     * @return point on field
+     */
+    public Point getPosition() {
+        return this.position;
     }
     
     /**
