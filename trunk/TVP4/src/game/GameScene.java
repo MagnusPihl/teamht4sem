@@ -50,6 +50,8 @@ public class GameScene implements Scene {
     private BitmapFont font;
     private BufferedImage pointsImage;
     
+    long moveTimer;
+    
     /** Creates a new instance of GameScene */
     public GameScene() {
         this.field = new Field();
@@ -58,6 +60,8 @@ public class GameScene implements Scene {
         
         this.pause = new InputAction("Pause", InputAction.DETECT_FIRST_ACTION);
         this.confirm = new InputAction("Confirm quit");
+        
+        this.moveTimer = 0;
     }
     
     public void addPoints(int _points)
@@ -130,13 +134,18 @@ public class GameScene implements Scene {
         
         if(!this.paused)
         {
+            this.moveTimer += _time;
             EntityRenderer[] entities = this.field.getEntityRenderers();
             for(int i=0; i<entities.length; i++)
                 if(entities[i].getEntity() != null)
                 {
-                    entities[i].getEntity().getController().move();
+                    if(this.moveTimer>200)
+                        entities[i].getEntity().getController().move();
                     entities[i].getEntity().getController().calculateNextMove();
                 }
+            this.addPoints(this.field.getNodeAt(entities[0].getEntity().getPosition()).takePoints());
+            if(this.moveTimer>200)
+                this.moveTimer = 0;
         }
         else if(confirm.isPressed())
         {
