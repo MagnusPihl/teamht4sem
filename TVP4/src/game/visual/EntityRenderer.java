@@ -70,14 +70,14 @@ public class EntityRenderer
         Point position = entity.getPosition();
         int tileSize = TileSet.getInstance().getTileSize();
         
-        if(entity.isMoving())
-        {
+//        if(entity.isMoving())
+//        {
             if((System.currentTimeMillis() - this.lastUpdate) > this.animationDelay)
             {
                 this.frameCounter = (this.frameCounter+1)%2;
                 this.lastUpdate = System.currentTimeMillis();
             }
-        }
+//        }
         
         g.drawImage(
                 TileSet.getInstance().getEntityTile(entity.getID(), entity.getDirection(), this.frameCounter),
