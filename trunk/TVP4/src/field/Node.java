@@ -6,10 +6,12 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.4
+ * @version 1.5
  *
  * 
  * ******VERSION HISTORY******
+ * LMK @ 6. marts 2007 (v 1.5)
+ * Fixed takePoints bug returning points even when points are taken
  * LMK @ 5. marts 2007 (v 1.4)
  * Reinstated position :)
  * LMK @ 10. februar 2007 (v 1.3)
