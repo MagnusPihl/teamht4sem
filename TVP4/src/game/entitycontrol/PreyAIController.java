@@ -49,6 +49,7 @@ public class PreyAIController extends EntityController {
             node.setEntity(null);
             node.getConnectedNodes()[this.nextDirection].setEntity(this.entity);
             this.entity.setPosition(node.getConnectedNodes()[this.nextDirection].getPosition());
+            this.entity.setDirection(this.nextDirection);            
             this.lastDirection = this.nextDirection;
         }
     }

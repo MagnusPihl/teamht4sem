@@ -47,7 +47,7 @@ public class ThreadPool extends ThreadGroup {
         this.isAlive = true;
         taskQueue = new LinkedList();
         for (int i = 0; i < threadCount; i++) {
-            //new PooledThread().start();
+            new PooledThread().start();
         }
     }
     
@@ -122,7 +122,20 @@ public class ThreadPool extends ThreadGroup {
         
         public void run() {
             while(!isInterrupted()) {
-            
+                Runnable task  = null;
+                try {
+                    task = getTask();
+                } catch (InterruptedException ie) {}
+                
+                if (task == null) {
+                    return;
+                }
+                
+                try {
+                    task.run();
+                } catch (Throwable t) {
+                    uncaughtException(this, t);
+                }
             }
         }
     }
