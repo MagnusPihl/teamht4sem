@@ -44,7 +44,6 @@ public class GameScene implements Scene {
     private boolean paused;
     
     private Field field;
-//    private InputAction up, down, left, right;
     private InputAction pause, confirm;
     
     private File level;
@@ -53,12 +52,10 @@ public class GameScene implements Scene {
     
     /** Creates a new instance of GameScene */
     public GameScene() {
+        this.field = new Field();
+        this.level = new File("test.lvl");
         TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "pacman/"));
         
-//        this.up = new InputAction("Move up");
-//        this.down = new InputAction("Move down");
-//        this.left = new InputAction("Move left");
-//        this.right = new InputAction("Move right");
         this.pause = new InputAction("Pause", InputAction.DETECT_FIRST_ACTION);
         this.confirm = new InputAction("Confirm quit");
     }
@@ -77,10 +74,9 @@ public class GameScene implements Scene {
         pointsImage = font.renderString(""+this.points,400);
     }
     
-    public void loadLevel(File _level)
+    public void setLevel(File _level)
     {
         this.level = _level;
-        this.field = new Field();
         this.field.loadFrom(this.level);
     }
     
@@ -151,7 +147,7 @@ public class GameScene implements Scene {
     public void init(InputManager _input) {
         this.paused = false;
         this.resetPoints();
-        this.loadLevel(new File("test.lvl"));
+        this.field.loadFrom(this.level);
         
         _input.mapToKey(pause, KeyEvent.VK_SPACE);
         _input.mapToKey(confirm, KeyEvent.VK_Y);
