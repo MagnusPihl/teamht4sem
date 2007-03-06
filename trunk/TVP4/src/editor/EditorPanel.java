@@ -35,6 +35,7 @@ import java.awt.*;
 import java.util.Iterator;
 import javax.swing.*;
 import java.util.HashMap;
+import game.visual.*;
 
 public class EditorPanel extends JPanel {    
             
@@ -123,7 +124,18 @@ public class EditorPanel extends JPanel {
      */
     public void paint(Graphics g) {
         super.paint(g);
-        this.field.drawField(g, 0, 0, this.getSize());
+        Dimension size = this.getSize();
+        this.field.getRenderer().drawBaseTile(g, 0, 0, size);
+        this.field.getRenderer().drawNodes(g, 0, 0);
+        this.field.getRenderer().drawPoints(g, 0, 0);
+        
+        EntityRenderer[] entities = this.field.getEntityRenderers();
+        for (int i = 0; i < entities.length; i++) {
+            if (entities[i] != null) {
+                entities[i].draw(g, 0, 0);
+            }
+        }
+        
         this.drawGrid(g);
         this.drawPoints(g);
     }

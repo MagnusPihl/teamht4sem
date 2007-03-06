@@ -135,13 +135,17 @@ public class Node implements Serializable {
     
     /**
      * Get the number of points allocated to the node and mark them as haven
-     * been taken.
+     * been taken. If points have already been taken 0 is returned.
      *
      * @return number of points held by the node.
      */
     public int takePoints() {
-        this.pointsTaken = true;
-        return this.points;
+        if (this.pointsTaken) {
+            this.pointsTaken = true;
+            return this.points;
+        } else {
+            return 0;
+        }
     }
     
     /**
