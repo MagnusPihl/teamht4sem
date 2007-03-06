@@ -23,7 +23,7 @@ import game.input.*;
 import field.*;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.ImageIcon;
+import javax.swing.*;
 import java.io.*;
 
 public class TitleScene implements Scene {
@@ -34,6 +34,7 @@ public class TitleScene implements Scene {
     private Image[] menuItems;
     private Image[] menuItemsOn;
     private int currentItem;
+    private JFileChooser openLevelDialog;
     
     /** Creates a new instance of GameScene */
     public TitleScene() {
@@ -51,6 +52,16 @@ public class TitleScene implements Scene {
         }
         
         this.currentItem = 1;
+        
+        this.openLevelDialog = new JFileChooser();
+        this.openLevelDialog.setFileFilter(new javax.swing.filechooser.FileFilter() {
+            public boolean accept(File f) {                
+                return ((f.getName().toLowerCase().endsWith(".lvl") && f.isFile()) || (f.isDirectory()));
+            }
+            public String getDescription() {
+                return "Level files";
+            }
+        });
     }
     
     public void draw(Graphics2D _g) {
@@ -73,8 +84,8 @@ public class TitleScene implements Scene {
         } else if (this.actionEnter.isPressed()) {
             switch (this.currentItem) {
                 case 0: ; break;
-                case 1: PacmanApp.getInstance().showGameScene(); break;
-                case 2: PacmanApp.getInstance().showGameScene(); break;
+                case 1: this.newGame(); break;
+                case 2: this.continueGame(); break;
                 case 3: PacmanApp.getInstance().showGameScene(); break;
                 case 4: PacmanApp.getInstance().showHighScoreScene(); break;
                 case 5: PacmanApp.getInstance().showCreditsScene(); break;
@@ -105,5 +116,18 @@ public class TitleScene implements Scene {
         _input.removeKeyAssociation(KeyEvent.VK_UP);
         _input.removeKeyAssociation(KeyEvent.VK_DOWN);
         _input.removeKeyAssociation(KeyEvent.VK_ESCAPE);
+    }
+    
+    public void newGame() {
+        if (this.openLevelDialog.showOpenDialog(
+                PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow()) == JFileChooser.APPROVE_OPTION) {
+            File file = this.openLevelDialog.getSelectedFile();
+            PacmanApp.getInstance().getGameScene().setLevel(file);
+            PacmanApp.getInstance().showGameScene();             
+        }
+    }
+    
+    public void continueGame() {
+        PacmanApp.getInstance().showGameScene();   
     }
 }
