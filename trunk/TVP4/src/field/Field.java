@@ -484,4 +484,19 @@ public class Field {
     public EntityRenderer[] getEntityRenderers() {
         return this.entities;
     }
+    
+    /**
+     * Get total amount of points held by all nodes on field.
+     *
+     * @result total points.
+     */    
+    public int getTotalPoints() {
+        int total = 0;
+        
+        for (Iterator i = this.nodes.iterator(); i.hasNext();) {            
+            total += ((Node)(i.next())).getPoints();            
+        }
+        
+        return total;
+    }
 }

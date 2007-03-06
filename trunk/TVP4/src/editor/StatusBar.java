@@ -24,11 +24,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class StatusBar extends JPanel implements MouseMotionListener {
+public class StatusBar extends JPanel implements MouseMotionListener, MouseListener {
     
     private EditorPanel editor;
     private JLabel positionLabel;
     private JLabel pointLabel;
+    private JLabel totalPointsLabel;
     
     /** Creates a new instance of ConfigPanel */
     public StatusBar(EditorPanel editor) {       
@@ -36,37 +37,33 @@ public class StatusBar extends JPanel implements MouseMotionListener {
         
         this.pointLabel = new JLabel("-");
         this.positionLabel = new JLabel("(0,0)");
+        this.totalPointsLabel = new JLabel("0");
+        
         JLabel pointText = new JLabel("Points:");
         pointText.setPreferredSize(new Dimension(45,22));
-        pointLabel.setPreferredSize(new Dimension(50,22));        
-        pointLabel.setHorizontalAlignment(JTextField.LEFT);
+        this.pointLabel.setPreferredSize(new Dimension(50,22));        
+        this.pointLabel.setHorizontalAlignment(JTextField.LEFT);
         
         JLabel positionText = new JLabel("Position (x,y):");
         positionText.setPreferredSize(new Dimension(80,22));
-        positionLabel.setPreferredSize(new Dimension(40,22));
+        this.positionLabel.setPreferredSize(new Dimension(40,22));
                 
+        JLabel totalPointText = new JLabel("Total points:");
+        pointText.setPreferredSize(new Dimension(65,22));
+        this.totalPointsLabel.setPreferredSize(new Dimension(50,22));        
+        this.totalPointsLabel.setHorizontalAlignment(JTextField.LEFT);
+               
+        this.add(totalPointText);
+        this.add(this.totalPointsLabel);
+        this.add(new JSeparator(JSeparator.VERTICAL));         
         this.add(positionText);
-        this.add(positionLabel);
+        this.add(this.positionLabel);
         this.add(new JSeparator(JSeparator.VERTICAL));         
         this.add(pointText);
-        this.add(pointLabel);
-        
-        /*JPanel pointPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));        
-        pointPanel.setSize(new Dimension(100,22));
-        pointPanel.add(new JLabel("Position (x,y):"));
-        pointPanel.add(this.positionLabel);*/
-                
-        /*JPanel positionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));  
-        positionPanel.setSize(new Dimension(100,22));
-        positionPanel.add(new JLabel("Point:"));
-        positionPanel.add(this.pointLabel);*/
-                
-        //this.setLayout(new GridLayout(0,1));
-        /*this.add(positionPanel);
-        this.add(new JSeparator(JSeparator.VERTICAL));        
-        this.add(pointPanel);*/
+        this.add(this.pointLabel);
                 
         this.editor = editor;
+        editor.addMouseListener(this);
         editor.addMouseMotionListener(this);        
     }
     
@@ -87,6 +84,12 @@ public class StatusBar extends JPanel implements MouseMotionListener {
         }
     }
     
+    public void mouseReleased(MouseEvent e) {
+        this.totalPointsLabel.setText(Integer.toString(this.editor.getField().getTotalPoints()));
+    }
+        
+    public void mouseClicked(MouseEvent e) {}    
+    public void mousePressed(MouseEvent e) {}
     public void mouseDragged(MouseEvent e) {}
     public void mouseEntered(MouseEvent e) {}
     public void mouseExited(MouseEvent e) {}                    
