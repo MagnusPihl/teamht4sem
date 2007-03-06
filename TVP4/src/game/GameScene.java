@@ -49,6 +49,7 @@ public class GameScene implements Scene {
     private File level;
     private BitmapFont font;
     private BufferedImage pointsImage;
+    private int levelOffsetX, levelOffsetY;
     
     long moveTimer;
     
@@ -81,7 +82,6 @@ public class GameScene implements Scene {
     public void setLevel(File _level)
     {
         this.level = _level;
-        this.field.loadFrom(this.level);
     }
     
     public Field getField()
@@ -96,7 +96,7 @@ public class GameScene implements Scene {
         if(this.pointsImage == null)
             this.resetPoints();
         
-        field.drawField(_g, 0, this.pointsImage.getHeight()+10, new Dimension(800,600));
+        field.drawField(_g, this.levelOffsetX, this.levelOffsetY, new Dimension(800,600));
         
         _g.setColor(Color.WHITE);
         
@@ -157,6 +157,8 @@ public class GameScene implements Scene {
         this.paused = false;
         this.resetPoints();
         this.field.loadFrom(this.level);
+        this.levelOffsetX = (800/2) - ((this.field.getSize().width * TileSet.getInstance().getTileSize())/2);
+        this.levelOffsetY = (600/2) - ((this.field.getSize().height * TileSet.getInstance().getTileSize())/2);
         
         _input.mapToKey(pause, KeyEvent.VK_SPACE);
         _input.mapToKey(confirm, KeyEvent.VK_Y);
