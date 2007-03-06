@@ -142,7 +142,7 @@ public class Node implements Serializable {
      * @return number of points held by the node.
      */
     public int takePoints() {
-        if (this.pointsTaken) {
+        if (!this.pointsTaken) {
             this.pointsTaken = true;
             return this.points;
         } else {
