@@ -69,7 +69,7 @@ public class TitleScene implements Scene {
                 return ((f.getName().toLowerCase().endsWith(".rpl") && f.isFile()) || (f.isDirectory()));
             }
             public String getDescription() {
-                return "Replays";
+                return "Replay files";
             }
         });
     }
@@ -94,9 +94,9 @@ public class TitleScene implements Scene {
         } else if (this.actionEnter.isPressed()) {
             switch (this.currentItem) {
                 case 0: ; break;
-                case 1: this.openLevel(); break;
-                case 2: this.continueGame(); break;                
-                case 3: this.openReplay(); break;
+                case 1: this.newGame(); break;
+                case 2: this.continueGame(); break;
+                case 3: this.replayGame(); break;
                 case 4: PacmanApp.getInstance().showHighScoreScene(); break;
                 case 5: PacmanApp.getInstance().showCreditsScene(); break;
                 //case 5: System.exit(0); break;
@@ -128,25 +128,28 @@ public class TitleScene implements Scene {
         _input.removeKeyAssociation(KeyEvent.VK_ESCAPE);
     }
     
-    public void openLevel() {
+    public void newGame() {
         if (this.openLevelDialog.showOpenDialog(
                 PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow()) == JFileChooser.APPROVE_OPTION) {
             File file = this.openLevelDialog.getSelectedFile();
             PacmanApp.getInstance().getGameScene().setLevel(file);
+            PacmanApp.getInstance().getGameScene().setMode(0);
             PacmanApp.getInstance().showGameScene();             
         }
     }
     
     public void continueGame() {
+        PacmanApp.getInstance().getGameScene().setMode(0);
         PacmanApp.getInstance().showGameScene();   
     }
     
-    public void openReplay() {
+    public void replayGame() {
         if (this.openReplayDialog.showOpenDialog(
                 PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow()) == JFileChooser.APPROVE_OPTION) {
             File file = this.openReplayDialog.getSelectedFile();
-            //PacmanApp.getInstance().getGameScene().setReplay(file);
-            PacmanApp.getInstance().showGameScene();             
+            PacmanApp.getInstance().getGameScene().setReplay(file);
+            PacmanApp.getInstance().getGameScene().setMode(1);
+            PacmanApp.getInstance().showGameScene();
         }
     }
 }
