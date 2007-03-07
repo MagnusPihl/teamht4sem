@@ -45,12 +45,14 @@ public class HunterAIController extends EntityController {
     /**
      * Execute move
      */
-    public void move() {
+    public int move() {
         if (this.nextDirection != Node.INVALID_DIRECTION) {            
             super.entity.setNode(super.entity.getNode().getNodeAt(this.nextDirection));
             this.entity.setDirection(this.nextDirection);            
             this.lastDirection = this.nextDirection;
+            return this.entity.getDirection();
         }
+        return -1;
     }
     
     /**
