@@ -10,7 +10,7 @@
 
     <target name="[Lejos] Firmware download">
         <exec executable="lejosfirmdl.exe" >
-            <arg line="-f --tty=usb"/>
+            <arg line="-f --tty=com2"/>
         </exec>
     </target>
     
@@ -25,7 +25,7 @@
     <!-- 'Run' executes the lejosrun.exe, which downloads the .bin file to the RCX, all that is left is to press 'run' on the rcx -->
     <target name="run" depends="init, compile">
         <exec dir="${build.classes.dir}" executable="lejosrun.exe">
-            <arg line="--tty=usb" />
+            <arg line="--tty=com2" />
             <arg line="robert.bin" />
         </exec>
     </target>
