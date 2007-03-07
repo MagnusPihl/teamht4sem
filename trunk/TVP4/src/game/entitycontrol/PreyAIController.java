@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 7. marts 2007 (v 1.1)
+ * Modified move()-method to return an integer denoting direction of movement.
  *
  * LMK @ 5. marts 2007 (v 1.0)
  * __________ Changes ____________
@@ -42,16 +45,18 @@ public class PreyAIController extends EntityController {
     /**
      * Execute move
      */
-    public void move() {
+    public int move() {
         if (this.nextDirection != Node.INVALID_DIRECTION) {
             Point pos = this.entity.getPosition();
             Node node = PacmanApp.getInstance().getGameScene().getField().getNodeAt(pos);
             node.setEntity(null);
             node.getConnectedNodes()[this.nextDirection].setEntity(this.entity);
             this.entity.setPosition(node.getConnectedNodes()[this.nextDirection].getPosition());
-            this.entity.setDirection(this.nextDirection);            
+            this.entity.setDirection(this.nextDirection);
             this.lastDirection = this.nextDirection;
+            return this.entity.getDirection();
         }
+        return -1;
     }
     
     /**
