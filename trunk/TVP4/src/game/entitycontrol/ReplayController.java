@@ -44,15 +44,14 @@ public class ReplayController extends EntityController
             if(Node.isValidDirection(dir))
             {
                 this.entity.setDirection(dir);
-                    Point pos = this.entity.getPosition();
-                    Node current_node = PacmanApp.getInstance().getGameScene().getField().getNodeAt(pos);
+                    Node current_node = this.entity.getNode();
                     Node next_node = current_node.getNodeAt(this.entity.getDirection());
                     if(next_node != null)
                         if(next_node.getEntity() == null)
                         {
                             current_node.setEntity(null);
                             next_node.setEntity(this.entity);
-                            this.entity.setPosition(next_node.getPosition());
+                            this.entity.setNode(next_node);
                             return this.entity.getDirection();
                         }
             }
