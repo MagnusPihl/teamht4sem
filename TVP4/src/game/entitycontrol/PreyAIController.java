@@ -51,7 +51,7 @@ public class PreyAIController extends EntityController {
             Node node = PacmanApp.getInstance().getGameScene().getField().getNodeAt(pos);
             node.setEntity(null);
             node.getConnectedNodes()[this.nextDirection].setEntity(this.entity);
-            this.entity.setPosition(node.getConnectedNodes()[this.nextDirection].getPosition());
+            this.entity.setNode(node.getConnectedNodes()[this.nextDirection]);
             this.entity.setDirection(this.nextDirection);
             this.lastDirection = this.nextDirection;
             return this.entity.getDirection();

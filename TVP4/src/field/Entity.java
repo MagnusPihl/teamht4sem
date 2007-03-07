@@ -6,11 +6,12 @@
  * Company: HT++
  *
  * @author Mikkel Brøndsholm Nielsen
- * @version 1.1
+ * @version 1.2
  *
  *
  * ******VERSION HISTORY******
- *
+ * LMK @ 7. marts 2007 (v 1.2)
+ * Position is no longer held by Entity instead a reference to Node is held.
  * Magnus Hemmer Pihl @ 5. marts 2007 (v 1.1)
  * Added EntityController field and get/set methods.
  *
@@ -28,7 +29,7 @@ import java.io.*;
 public class Entity implements Serializable {
     
     private boolean isMoving;
-    private Point position;
+    private Node node;
     private int direction;
     private int speed;
     private int ID;
@@ -36,20 +37,32 @@ public class Entity implements Serializable {
     private EntityController controller;
     
     /** Creates a new instance of Entity */
-    public Entity(Point _position, int _ID) {
+    public Entity(Node _node, int _ID) {
         this.isMoving = false;
-        this.position = _position;
+        this.node = _node;
         this.direction = Node.UP;
         this.speed = 0;
         this.ID = _ID;
     }
     
+    
+    public void setNode(Node _node) {
+        if (this.node != null) {
+            this.node.setEntity(null);
+        }        
+        if (_node != null) {
+            _node.setEntity(this);
+        }
+        
+        this.node = _node;
+    }
+
+    public Node getNode(){return this.node;}    
     public void setIsMoving(boolean _isMoving){this.isMoving = _isMoving;}
     public boolean isMoving(){return this.isMoving;}
     public int getDirection(){return this.direction;}
     public void setDirection(int dir){this.direction = dir;}
-    public void setPosition(Point _position){this.position = _position;}
-    public Point getPosition(){return this.position;}
+    public Point getPosition(){return this.node.getPosition();}
     public void setSpeed(int _speed){this.speed = _speed;}
     public int getSpeed(){return this.speed;}
     public void setID(int _ID){this.ID = _ID;}

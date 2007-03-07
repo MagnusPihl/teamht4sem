@@ -26,8 +26,7 @@
 
 package game;
 
-import game.entitycontrol.KeyboardController;
-import game.entitycontrol.PreyAIController;
+import game.entitycontrol.*;
 import game.system.*;
 import game.input.*;
 import field.*;
@@ -165,7 +164,7 @@ public class GameScene implements Scene {
         
         EntityRenderer[] entities = this.field.getEntityRenderers();
         entities[0].getEntity().setController(new KeyboardController(entities[0].getEntity()));
-        entities[1].getEntity().setController(new PreyAIController(entities[1].getEntity()));
+        entities[1].getEntity().setController(new HunterAIController(entities[1].getEntity(), entities[0].getEntity()));
         entities[2].getEntity().setController(new PreyAIController(entities[2].getEntity()));
         for(int i=0; i<entities.length; i++)
         {

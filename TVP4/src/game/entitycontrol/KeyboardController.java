@@ -75,7 +75,7 @@ public class KeyboardController extends EntityController
             {
                 current_node.setEntity(null);
                 next_node.setEntity(this.entity);
-                this.entity.setPosition(next_node.getPosition());
+                this.entity.setNode(next_node);
                 return this.entity.getDirection();
             }
         return -1;

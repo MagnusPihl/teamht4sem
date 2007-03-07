@@ -6,9 +6,11 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.11
+ * @version 1.12
  *
  * ******VERSION HISTORY******   
+ * LMK @ 06. marts 2007 (v 1.12)
+ * Added method getPointsLeft
  * LMK @ 05. marts 2007 (v 1.11)
  * Added call to drawPoints to drawField method
  * Speeded up drawing by prerendering field
@@ -118,10 +120,9 @@ public class Field {
         if (node != null) {
             if (!node.holdsEntity()) {
                 if (this.entities[id] != null) {
-                    node.setEntity(null);
-                    this.entities[id].getEntity().setPosition(position);                    
+                    this.entities[id].getEntity().setNode(node);                    
                 } else {
-                    this.entities[id] = new EntityRenderer(new Entity(position, id));
+                    this.entities[id] = new EntityRenderer(new Entity(node, id));
                 }
                 this.hasChanged = true;
                 return true;
@@ -160,7 +161,7 @@ public class Field {
         for (int i = 0; i < this.entities.length; i++) {
             if (this.entities[i] != null) {
                 if (this.entities[i].getEntity().getPosition().equals(position)) {
-                    this.getNodeAt(position).setEntity(null);
+                    this.entities[i].getEntity().setNode(null);
                     this.entities[i] = null;
                 }
             }
@@ -486,15 +487,20 @@ public class Field {
     }
     
     /**
-     * Get total amount of points held by all nodes on field.
+     * Get total amount of points left on field.
      *
      * @result total points.
      */    
-    public int getTotalPoints() {
+    public int getPointsLeft() {
         int total = 0;
+        Node current = null;
         
         for (Iterator i = this.nodes.iterator(); i.hasNext();) {            
-            total += ((Node)(i.next())).getPoints();            
+            current = (Node)(i.next());
+            
+            if (!current.pointsTaken()) {
+                total += current.getPoints();       
+            }
         }
         
         return total;

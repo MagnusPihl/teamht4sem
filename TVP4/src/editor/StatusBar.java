@@ -6,13 +6,13 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
  *
- * LMK @ 10. februar 2007 (v 1.0)
- * __________ Changes ____________
+ * LMK @ 6. marts 2007 (v 1.1)
+ * Total points on field are now also shown.
  *
  */
 
@@ -85,7 +85,7 @@ public class StatusBar extends JPanel implements MouseMotionListener, MouseListe
     }
     
     public void mouseReleased(MouseEvent e) {
-        this.totalPointsLabel.setText(Integer.toString(this.editor.getField().getTotalPoints()));
+        this.totalPointsLabel.setText(Integer.toString(this.editor.getField().getPointsLeft()));
     }
         
     public void mouseClicked(MouseEvent e) {}    
