@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
+ * @version 1.3
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 7. marts 2007 (v 1.3)
+ * Added replay functionality.
  *
  * Magnus Hemmer Pihl @ 5. marts 2007 (v 1.2)
  * Shifted the rendering of field to be below the points display.
@@ -128,17 +131,6 @@ public class GameScene implements Scene {
             _g.drawString("Game Paused", 360,295);
             _g.drawString("Press 'Y' to exit to the title screen.", 310,310);
         }
-        
-        //Temp stuff
-//        if (up.isPressed() && !this.paused)
-//            _g.drawString(up.getName(), 350,295);
-//        if (down.isPressed() && !this.paused)
-//            _g.drawString(down.getName(), 350,295);
-//        if (left.isPressed() && !this.paused)
-//            _g.drawString(left.getName(), 350,295);
-//        if (right.isPressed() && !this.paused)
-//            _g.drawString(right.getName(), 350,295);
-        //Temp stuff end
     }            
 
     public void update(long _time) {
@@ -156,7 +148,9 @@ public class GameScene implements Scene {
                 if(entities[i].getEntity() != null)
                 {
                     if(this.moveTimer>200)
+                    {
                         this.replay.list[i].add(entities[i].getEntity().getController().move());
+                    }
                     entities[i].getEntity().getController().calculateNextMove();
                 }
             this.addPoints(entities[0].getEntity().getNode().takePoints());

@@ -33,7 +33,9 @@ public class ReplayController extends EntityController
     public ReplayController(Entity _entity, LinkedList _list)
     {
         super(_entity);
-        this.list = _list;
+        this.list = new LinkedList();
+        for(int i=0; i<_list.size(); i++)
+            this.list.add(_list.get(i));
     }
 
     public int move()
@@ -44,16 +46,16 @@ public class ReplayController extends EntityController
             if(Node.isValidDirection(dir))
             {
                 this.entity.setDirection(dir);
-                    Node current_node = this.entity.getNode();
-                    Node next_node = current_node.getNodeAt(this.entity.getDirection());
-                    if(next_node != null)
-                        if(next_node.getEntity() == null)
-                        {
-                            current_node.setEntity(null);
-                            next_node.setEntity(this.entity);
-                            this.entity.setNode(next_node);
-                            return this.entity.getDirection();
-                        }
+                Node current_node = this.entity.getNode();
+                Node next_node = current_node.getNodeAt(this.entity.getDirection());
+                if(next_node != null)
+                    if(next_node.getEntity() == null)
+                    {
+                        current_node.setEntity(null);
+                        next_node.setEntity(this.entity);
+                        this.entity.setNode(next_node);
+                        return this.entity.getDirection();
+                    }
             }
         }
         return -1;
