@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 7. marts 2007 (v 1.1)
+ * Modified move() to return an integer denoting direction of movement.
  *
  * Magnus Hemmer Pihl @ 5. marts 2007 (v 1.0)
  * __________ Changes ____________
@@ -62,7 +65,7 @@ public class KeyboardController extends EntityController
         this.rightkey = _right;
     }
 
-    public void move()
+    public int move()
     {
         Point pos = this.entity.getPosition();
         Node current_node = PacmanApp.getInstance().getGameScene().getField().getNodeAt(pos);
@@ -73,7 +76,9 @@ public class KeyboardController extends EntityController
                 current_node.setEntity(null);
                 next_node.setEntity(this.entity);
                 this.entity.setPosition(next_node.getPosition());
+                return this.entity.getDirection();
             }
+        return -1;
     }
 
     public void calculateNextMove()
