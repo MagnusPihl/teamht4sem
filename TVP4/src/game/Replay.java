@@ -12,7 +12,7 @@
  * ******VERSION HISTORY******
  *
  * Magnus Hemmer Pihl @ 7. marts 2007 (v 1.0)
- * __________ Changes ____________
+ * Initial.
  *
  */
 
@@ -85,7 +85,6 @@ public class Replay implements Serializable
                 int size = s.readInt();
                 for(int j=0; j<size; j++)
                 {
-                    System.out.println(i+":"+j);
                     this.list[i].add(s.readInt());
                 }
             }
