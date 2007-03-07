@@ -67,8 +67,7 @@ public class KeyboardController extends EntityController
 
     public int move()
     {
-        Point pos = this.entity.getPosition();
-        Node current_node = PacmanApp.getInstance().getGameScene().getField().getNodeAt(pos);
+        Node current_node = this.entity.getNode();
         Node next_node = current_node.getNodeAt(this.entity.getDirection());
         if(next_node != null)
             if(next_node.getEntity() == null)
