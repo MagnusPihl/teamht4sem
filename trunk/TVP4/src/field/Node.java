@@ -10,6 +10,9 @@
  *
  * 
  * ******VERSION HISTORY******
+ * LMK @ 7. marts 2007 (v 1.5)
+ * Added connectedAt() method
+ * Added static final DIRECTION_COUNT
  * LMK @ 6. marts 2007 (v 1.5)
  * Fixed takePoints bug returning points even when points are taken
  * LMK @ 5. marts 2007 (v 1.4)
@@ -42,6 +45,7 @@ public class Node implements Serializable {
     public static final int RIGHT = 1;
     public static final int DOWN = 2;
     public static final int LEFT = 3;
+    public static final int DIRECTION_COUNT = 4;
     public static final int INVALID_DIRECTION = -1;
         
     private Node[] connectedNodes;
@@ -71,7 +75,7 @@ public class Node implements Serializable {
      */
     public Node(Point position, Node leftNode, Node rightNode, Node upNode, Node downNode, int points) {
         this.position = position;
-        this.connectedNodes = new Node[4];
+        this.connectedNodes = new Node[DIRECTION_COUNT];
         this.setNodeAt(leftNode, LEFT);
         this.setNodeAt(rightNode, RIGHT);
         this.setNodeAt(upNode, UP);
@@ -329,7 +333,7 @@ public class Node implements Serializable {
      * Remove all connections to surrounding nodes
      */
     public void removeAllConnections() {
-        for (int i = 0; i < this.connectedNodes.length; i++) {
+        for (int i = 0; i < DIRECTION_COUNT; i++) {
             this.setNodeAt(null, i);
         }
     }
@@ -349,7 +353,7 @@ public class Node implements Serializable {
      * @param entity to place on node.
      */
     public void setEntity(Entity entity) {
-        this.entity = null;
+        this.entity = entity;
     }
     
     /**
@@ -395,4 +399,19 @@ public class Node implements Serializable {
             default: return false;
         }
     }    
+    
+    /**
+     * Get the direction in which the supplied node is connected at.
+     *
+     * @result direction.
+     */
+    public int connectedAt(Node node) {
+        for (int i = 0; i < DIRECTION_COUNT; i ++) {
+            if (this.connectedNodes[i].equals(node)) {
+                return i;
+            }
+        }
+        
+        return INVALID_DIRECTION;
+    }
 }
