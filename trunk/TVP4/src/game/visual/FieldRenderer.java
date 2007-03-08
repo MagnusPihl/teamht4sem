@@ -6,9 +6,11 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.4
+ * @version 1.5
  *
- * ******VERSION HISTORY******  
+ * ******VERSION HISTORY******
+ * Magnus Hemmer Pihl @ 8. marts 2007 (v 1.5)
+ * Removed dimension argument from render()-method. The method will now calculate it, itself.
  * LMK @ 05. marts 2007 (v 1.4)
  * Added drawPoints
  * Added render method to speedup rendering by prerending the none changing field.
@@ -165,7 +167,8 @@ public class FieldRenderer {
      * 
      * @return prerendered basetile and nodes.
      */
-    public BufferedImage render(Dimension size) {
+    public BufferedImage render() {
+        Dimension size = new Dimension(field.getSize().width*TileSet.getInstance().getTileSize(), field.getSize().height*TileSet.getInstance().getTileSize());
         BufferedImage image = PacmanApp.getInstance().getCore().getScreenManager().createCompatibleImage(size.width, size.height, Transparency.TRANSLUCENT);
         this.drawBaseTile(image.getGraphics(), 0, 0, size);
         this.drawNodes(image.getGraphics(), 0, 0);
