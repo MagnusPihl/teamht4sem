@@ -20,6 +20,7 @@ package game;
 
 import game.system.*;
 import game.input.*;
+import game.visual.*;
 import field.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -31,10 +32,14 @@ public class TitleScene implements Scene {
     private Field field;
     private InputAction actionUp, actionDown, actionEnter, actionQuit;
     private Image background;
-    private Image[] menuItems;
-    private Image[] menuItemsOn;
+    private Image[] menuItems;    
+    private Image onlineImage;    
+    private Image pointer;
     private int currentItem;
-    private JFileChooser openLevelDialog, openReplayDialog;
+    private boolean isOnline;
+    private JFileChooser openLevelDialog, openReplayDialog, selectSkinDialog;
+    
+    public static final String[] MENU_ITEMS = new String[] {"Mode - Offline", "New Game", "Continue", "View Replay", "View High Score", "Select Skin" ,"Quit"};
     
     /** Creates a new instance of GameScene */
     public TitleScene() {
@@ -43,17 +48,12 @@ public class TitleScene implements Scene {
         this.actionDown = new TimedInputAction("Down", 500, 100);
         this.actionEnter = new InputAction("Enter", InputAction.DETECT_FIRST_ACTION);
         this.actionQuit = new InputAction("Escape", InputAction.DETECT_FIRST_ACTION);
-        this.menuItems = new Image[6];
-        this.menuItemsOn = new Image[this.menuItems.length];
-        
-        for (int i = 0; i < this.menuItems.length; i++) {
-            this.menuItems[i] = new ImageIcon("images/titleMenu_" + i + ".png").getImage();
-            this.menuItemsOn[i] = new ImageIcon("images/titleMenuOn_" + i + ".png").getImage();
-        }
-        
+        this.pointer = new ImageIcon("images/pointer.png").getImage();        
         this.currentItem = 1;
+        this.isOnline = false;
         
         this.openLevelDialog = new JFileChooser();
+        this.openLevelDialog.setSelectedFile(new File("\\."));
         this.openLevelDialog.setFileFilter(new javax.swing.filechooser.FileFilter() {
             public boolean accept(File f) {                
                 return ((f.getName().toLowerCase().endsWith(".lvl") && f.isFile()) || (f.isDirectory()));
@@ -64,6 +64,7 @@ public class TitleScene implements Scene {
         });
         
         this.openReplayDialog = new JFileChooser();
+        this.openReplayDialog.setSelectedFile(new File(""));
         this.openReplayDialog.setFileFilter(new javax.swing.filechooser.FileFilter() {
             public boolean accept(File f) {                
                 return ((f.getName().toLowerCase().endsWith(".rpl") && f.isFile()) || (f.isDirectory()));
@@ -72,6 +73,10 @@ public class TitleScene implements Scene {
                 return "Replay files";
             }
         });
+        
+        this.selectSkinDialog = new JFileChooser();
+        this.selectSkinDialog.setSelectedFile(new File(""));
+        this.selectSkinDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     }
     
     public void draw(Graphics2D _g) {
@@ -79,12 +84,25 @@ public class TitleScene implements Scene {
         _g.fillRect(0,0,800,600);
         _g.drawImage(background,150,30,null);
         
-        for (int i = 0; i < this.menuItems.length; i++) {
-            if (i == this.currentItem) {
-                _g.drawImage(this.menuItemsOn[i], 250, 300 + i*40, null);
-            } else {
-                _g.drawImage(this.menuItems[i], 250, 300 + i*40, null);                
+        _g.drawImage(this.pointer,200, 275 + 40 * this.currentItem, null);
+        
+        if (this.isOnline) {
+            if (this.currentItem == 0) {
+                _g.drawImage(this.onlineImage, 250, 280 + 0, null);            
             }
+            _g.drawImage(this.onlineImage, 250, 280, null);
+        } else {
+            _g.drawImage(this.menuItems[0], 250, 280, null);
+        }
+        
+        
+        if (!this.isOnline) {
+            _g.drawImage(this.menuItems[this.currentItem], 250, 280 + this.currentItem*40, null);            
+        }
+        
+        for (int i = 1; i < this.menuItems.length; i++) {
+            _g.drawImage(this.menuItems[i], 250, 280 + i*40, null);            
+            
         }        
     }
     
@@ -93,12 +111,13 @@ public class TitleScene implements Scene {
             System.exit(0);
         } else if (this.actionEnter.isPressed()) {
             switch (this.currentItem) {
-                case 0: ; break;
+                case 0: this.isOnline = !this.isOnline; break;
                 case 1: this.newGame(); break;
                 case 2: this.continueGame(); break;
                 case 3: this.replayGame(); break;
                 case 4: PacmanApp.getInstance().showHighScoreScene(); break;
-                case 5: PacmanApp.getInstance().showCreditsScene(); break;
+                case 5: this.selectSkin(); break;
+                case 6: PacmanApp.getInstance().showCreditsScene(); break;
                 //case 5: System.exit(0); break;
             }
         } else if (this.actionUp.isPressed()) {
@@ -115,6 +134,7 @@ public class TitleScene implements Scene {
     }
     
     public void init(InputManager _input) {
+        this.prepareMenu();
         _input.mapToKey(this.actionEnter, KeyEvent.VK_ENTER);
         _input.mapToKey(this.actionUp, KeyEvent.VK_UP);
         _input.mapToKey(this.actionDown, KeyEvent.VK_DOWN);
@@ -150,6 +170,24 @@ public class TitleScene implements Scene {
             PacmanApp.getInstance().getGameScene().setReplay(file);
             PacmanApp.getInstance().getGameScene().setMode(1);
             PacmanApp.getInstance().showGameScene();
+        }
+    }
+    
+    public void prepareMenu() {
+        BitmapFont font = PacmanApp.getInstance().getFont();
+        this.menuItems = new Image[MENU_ITEMS.length];
+        this.onlineImage = font.renderString("Mode - Online", 800);
+                
+        for (int i = 0; i < this.menuItems.length; i++) {
+            this.menuItems[i] = font.renderString(MENU_ITEMS[i], 800);
+        }
+    }
+    
+    
+    public void selectSkin() {
+        if (this.selectSkinDialog.showOpenDialog(
+                PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow()) == JFileChooser.APPROVE_OPTION) {
+            TileSet.getInstance().loadTileSet(this.selectSkinDialog.getSelectedFile().getAbsoluteFile());
         }
     }
 }
