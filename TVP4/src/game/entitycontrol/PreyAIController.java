@@ -32,14 +32,10 @@ import game.input.*;
  */
 public class PreyAIController extends EntityController {
             
-    int lastDirection;
-    int nextDirection;
     
     /** Creates a new instance of PreyAIController */
     public PreyAIController(Entity _entity) {
         super(_entity);
-        this.lastDirection = Node.INVALID_DIRECTION;
-        this.nextDirection = Node.INVALID_DIRECTION;
     }
     
     /**

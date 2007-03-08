@@ -18,7 +18,7 @@ import field.*;
  *
  * @author LMK
  */
-public class BreadthFirstAlgorithm implements SearchAlgorithm {    
+public class BreadthFirstAlgorithm implements SearchAlgorithm {            
     
     /** Creates a new instance of Astar */
     public BreadthFirstAlgorithm() {

@@ -28,16 +28,11 @@ import game.input.*;
 public class HunterAIController extends EntityController {
     
     Entity prey;
-    int lastDirection;
-    int nextDirection;
     SearchAlgorithm algorithm;
     
     /** Creates a new instance of HunterAIController */
     public HunterAIController(Entity _entity, Entity _prey) {
-        super(_entity);
-        
-        this.lastDirection = Node.INVALID_DIRECTION;
-        this.nextDirection = Node.INVALID_DIRECTION;
+        super(_entity);        
         this.prey = _prey;
         this.algorithm = new BreadthFirstAlgorithm();
     }   
