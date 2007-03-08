@@ -38,7 +38,7 @@ public class HunterAIController extends EntityController {
         
         this.lastDirection = Node.INVALID_DIRECTION;
         this.nextDirection = Node.INVALID_DIRECTION;
-        this.prey = prey;
+        this.prey = _prey;
         this.algorithm = new BreadthFirstAlgorithm();
     }   
     
@@ -50,21 +50,17 @@ public class HunterAIController extends EntityController {
             super.entity.setNode(super.entity.getNode().getNodeAt(this.nextDirection));
             this.entity.setDirection(this.nextDirection);            
             this.lastDirection = this.nextDirection;
-            return this.entity.getDirection();
+            return this.nextDirection;
         }
-        return -1;
+        
+        return Node.INVALID_DIRECTION;
     }
     
     /**
      * Calculate next move
      */
     public void calculateNextMove() {           
-        if (this.algorithm == null) {
-            System.out.println("Wahh");
-        }
-        
-        System.out.println("Duhh");
-        //this.nextDirection = this.algorithm.search(super.entity.getNode(), this.prey.getNode());        
+        this.nextDirection = this.algorithm.search(super.entity.getNode(), this.prey.getNode());        
     }
     
     /**
