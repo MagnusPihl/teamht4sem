@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.3
+ * @version 1.4
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus hemmer Pihl @ 8. marts 2007 (v 1.4)
+ * Added support for maps larger than the screen (map scrolling).
  *
  * Magnus Hemmer Pihl @ 7. marts 2007 (v 1.3)
  * Added replay functionality.
@@ -115,9 +118,20 @@ public class GameScene implements Scene {
         if(this.pointsImage == null)
             this.resetPoints();
         
-        field.drawField(_g, this.levelOffsetX, this.levelOffsetY, new Dimension(800,600));
+        Shape clip = _g.getClip();
+        _g.setClip(0, 40, 800, 560);
         
-        _g.setColor(Color.WHITE);
+        if(field.getSize().width * TileSet.getInstance().getTileSize() > 800 ||
+                field.getSize().height * TileSet.getInstance().getTileSize() > 600)
+        {
+            int pacX = field.getEntityRenderers()[0].getEntity().getPosition().x * TileSet.getInstance().getTileSize();
+            int pacY = field.getEntityRenderers()[0].getEntity().getPosition().y * TileSet.getInstance().getTileSize();
+            this.levelOffsetX = (800/2)-pacX;
+            this.levelOffsetY = (600/2)-pacY;
+        }
+        field.drawField(_g, this.levelOffsetX, this.levelOffsetY);
+        
+        _g.setClip(clip);
         
         _g.drawImage(pointsImage, 795 - pointsImage.getWidth(), 5, null);
         
