@@ -7,26 +7,51 @@ Christian Holm
 Lau Maack-Krommes
 Magnus Hemmer Pihl
 
-Game programming
+GAME PROGRAMMING
+Mikkel Brøndsholm Nielsen
+Lau Maack-Krommes
+Magnus Hemmer Pihl
 
-Graphics engine
+GRAPHICS ENGINE
+Lau Maack-Krommes
+Based on code from the book:
+Developing Games in Java 
+by David Brackeen
 
-Artists
+AUDIO ENGINE
+Lau Maack-Krommes
+Based on code from the book:
+Developing Games in Java 
+by David Brackeen
 
-Robot design
+ARTISTS AND TILE
+Lau Maack-Krommes
 
-Robot test and calibration
+LEVEL EDITOR PROGRAMMING
+Mikkel Brøndsholm Nielsen
+Lau Maack-Krommes
+Magnus Hemmer Pihl
 
-Quality assurance
+ROBOT DESIGN
+Troels Hagman-Hansen
+Christian Holm
 
-Team supervisors
+ROBOT TEST AND CALIBRATION
+Troels Hagman-Hansen
+Christian Holm
+
+QUALITY ASSURANCE
+
+TEAM SUPERVISORS
 Henning Haugaard
 Henrik Kold Mikkelsen
 Ole Rydahl
 
-Special thanks to
+SPECIAL THANKS TO
+David Brackeen, Bret Barker, Laurence Vanhelsuwe
+for writing a good book on game programming.
 
-Extra special thanks to
+EXTRA SPECIAL THANKS TO
 
 Copyright 2005
 Team HT++
@@ -52,7 +77,8 @@ Team HT++
 
 
 
-Still here..
+Still here...
+Get a life...
 
 
 
