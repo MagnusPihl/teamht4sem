@@ -128,6 +128,11 @@ public class GameScene implements Scene {
         Shape clip = _g.getClip();
         _g.setClip(0, 40, 800, 560);
         
+        for(int i=0; i<800/TileSet.getInstance().getTileSize()+1; i++)
+            for(int j=0; j<600/TileSet.getInstance().getTileSize()+1; j++)
+                _g.drawImage(TileSet.getInstance().getBaseTile(), i*TileSet.getInstance().getTileSize(),
+                        j*TileSet.getInstance().getTileSize(), null);
+        
         if(field.getSize().width * TileSet.getInstance().getTileSize() > 800 ||
                 field.getSize().height * TileSet.getInstance().getTileSize() > 600)
         {
@@ -289,7 +294,10 @@ public class GameScene implements Scene {
             if (saveReplayDialog.showSaveDialog(
                     PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow()) == JFileChooser.APPROVE_OPTION)
             {
-                this.replay.save(saveReplayDialog.getSelectedFile());
+                File file = saveReplayDialog.getSelectedFile();
+                if (!file.getName().toLowerCase().endsWith(".rpl"))
+                    file = new File(file.getAbsoluteFile() + ".rpl");
+                this.replay.save(file);
             }
         }
         this.replay = new Replay();
