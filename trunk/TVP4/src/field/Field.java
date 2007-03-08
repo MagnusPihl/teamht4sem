@@ -6,9 +6,12 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.12
+ * @version 1.13
  *
- * ******VERSION HISTORY******   
+ * ******VERSION HISTORY******
+ * Magnus Hemmer Pihl @ 8. marts 2007 (v 1.13)
+ * Removed dimension from drawField()-method.
+ * Forced field to re-render every time a new field is loaded.
  * LMK @ 06. marts 2007 (v 1.12)
  * Added method getPointsLeft
  * LMK @ 05. marts 2007 (v 1.11)
@@ -357,6 +360,7 @@ public class Field {
      * @param file to load data from.
      */
     public boolean loadFrom(File file) {
+        this.renderedField = null;
         ObjectInputStream in = null;
         boolean success = true;
             
@@ -453,9 +457,9 @@ public class Field {
      * @param offset y.
      * @param area to draw.
      */
-    public void drawField(Graphics g, int offsetX, int offsetY, Dimension size) {
+    public void drawField(Graphics g, int offsetX, int offsetY) {
         if ((this.hasChanged) || (this.renderedField == null)) {
-            this.renderedField = this.renderer.render(size);
+            this.renderedField = this.renderer.render();
         }        
         
         g.drawImage(this.renderedField, offsetX, offsetY, null);
