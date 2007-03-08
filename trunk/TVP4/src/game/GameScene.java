@@ -6,10 +6,14 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.5
+ * @version 1.6
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 8. marts 2007 (v 1.6)
+ * Added win/lose game logic and temporary messages.
+ * Fixed a bug with replays, which would not discard old replays after a level had been played.
  *
  * Magnus Hemmer Pihl @ 8. marts 2007 (v 1.5)
  * Entities are no longer animated when standing still.
@@ -51,7 +55,7 @@ import javax.swing.JFileChooser;
 public class GameScene implements Scene {
     
     private int points;
-    private boolean paused;
+    private boolean paused, win, lose;
     
     private Field field;
     private InputAction pause, confirm;
@@ -75,7 +79,7 @@ public class GameScene implements Scene {
         TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "pacman/"));
         
         this.pause = new InputAction("Pause", InputAction.DETECT_FIRST_ACTION);
-        this.confirm = new InputAction("Confirm quit");
+        this.confirm = new InputAction("Confirm quit", InputAction.DETECT_FIRST_ACTION);
         
         this.moveTimer = 0;
     }
@@ -148,38 +152,80 @@ public class GameScene implements Scene {
             _g.drawString("Game Paused", 360,295);
             _g.drawString("Press 'Y' to exit to the title screen.", 310,310);
         }
+        if(this.win)
+        {
+            _g.setColor(Color.GRAY);
+            _g.fillRect(300, 250, 200, 100);
+            _g.setColor(Color.DARK_GRAY);
+            _g.fillRect(305, 255, 190, 90);
+            _g.setColor(Color.WHITE);
+            _g.drawString("ZOMG WIN!", 360,295);
+            _g.drawString("Press 'Y' to exit to the title screen.", 310,310);
+        }
+        if(this.lose)
+        {
+            _g.setColor(Color.GRAY);
+            _g.fillRect(300, 250, 200, 100);
+            _g.setColor(Color.DARK_GRAY);
+            _g.fillRect(305, 255, 190, 90);
+            _g.setColor(Color.WHITE);
+            _g.drawString("Lawl Lose!", 360,295);
+            _g.drawString("Press 'Y' to exit to the title screen.", 310,310);
+        }
     }            
 
-    public void update(long _time) {
-        if(pause.isPressed())
+    public void update(long _time)
+    {
+        if(!this.win && !this.lose)
         {
-            this.paused = !this.paused;
-            this.confirm.release();
-        }
-        
-        if(!this.paused)
-        {
-            this.moveTimer += _time;
-            EntityRenderer[] entities = this.field.getEntityRenderers();
-            for(int i=0; i<entities.length; i++)
-                if(entities[i].getEntity() != null)
-                {
-                    if(this.moveTimer>200)
+            if(pause.isPressed())
+            {
+                this.paused = !this.paused;
+                this.confirm.release();
+            }
+
+            if(!this.paused)
+            {
+                this.moveTimer += _time;
+                EntityRenderer[] entities = this.field.getEntityRenderers();
+                for(int i=0; i<entities.length; i++)
+                    if(entities[i].getEntity() != null)
                     {
-                        int dir = entities[i].getEntity().getController().move();
-                        this.replay.list[i].add(dir);
-                        if(Node.isValidDirection(dir))
-                            entities[i].getEntity().setIsMoving(true);
-                        else
-                            entities[i].getEntity().setIsMoving(false);
+                        if(this.moveTimer>200)
+                        {
+                            int dir = entities[i].getEntity().getController().move();
+                            this.replay.list[i].add(dir);
+                            if(Node.isValidDirection(dir))
+                                entities[i].getEntity().setIsMoving(true);
+                            else
+                                entities[i].getEntity().setIsMoving(false);
+                            
+                            if(this.field.getPointsLeft() == 0)
+                            {
+                                this.win = true;
+                            }
+                            else
+                            {
+                                for(int j=0; j<4; j++)
+                                {
+                                    if(entities[0].getEntity().getNode().getNodeAt(j) != null)
+                                        if(entities[0].getEntity().getNode().getNodeAt(j).holdsEntity())
+                                            this.lose = true;
+                                }
+                            }
+                        }
+                        entities[i].getEntity().getController().calculateNextMove();
                     }
-                    entities[i].getEntity().getController().calculateNextMove();
-                }
-            this.addPoints(entities[0].getEntity().getNode().takePoints());
-            if(this.moveTimer>200)
-                this.moveTimer = 0;
+                this.addPoints(entities[0].getEntity().getNode().takePoints());
+                if(this.moveTimer>200)
+                    this.moveTimer = 0;
+            }
+            else if(confirm.isPressed())
+            {
+                PacmanApp.getInstance().showTitleScene();
+            }
         }
-        else if(confirm.isPressed())
+        if(confirm.isPressed())
         {
             PacmanApp.getInstance().showTitleScene();
         }
@@ -187,6 +233,8 @@ public class GameScene implements Scene {
 
     public void init(InputManager _input) {
         this.paused = false;
+        this.win = false;
+        this.lose = false;
         this.resetPoints();
         this.field.loadFrom(this.level);
         this.levelOffsetX = (800/2) - ((this.field.getSize().width * TileSet.getInstance().getTileSize())/2);
@@ -199,7 +247,7 @@ public class GameScene implements Scene {
         if(mode == 0)
         {
             entities[0].getEntity().setController(new KeyboardController(entities[0].getEntity()));
-            entities[1].getEntity().setController(new KeyboardController(entities[1].getEntity(), KeyEvent.VK_W, KeyEvent.VK_D, KeyEvent.VK_S, KeyEvent.VK_A));
+            entities[1].getEntity().setController(new PreyAIController(entities[1].getEntity()));
             entities[2].getEntity().setController(new PreyAIController(entities[2].getEntity()));
         }
         else if(mode == 1)
@@ -244,5 +292,6 @@ public class GameScene implements Scene {
                 this.replay.save(saveReplayDialog.getSelectedFile());
             }
         }
+        this.replay = new Replay();
     }
 }
