@@ -39,7 +39,7 @@ package field;
 import java.io.Serializable;
 import java.awt.*;
 
-public class Node implements Serializable {
+public class Node implements Serializable, Comparable {
     
     public static final int UP = 0;
     public static final int RIGHT = 1;
@@ -405,13 +405,33 @@ public class Node implements Serializable {
      *
      * @result direction.
      */
-    public int connectedAt(Node node) {
+    public int connectedAt(Node node) {        
         for (int i = 0; i < DIRECTION_COUNT; i ++) {
-            if (this.connectedNodes[i].equals(node)) {
+            if ((this.connectedNodes[i] != null) && (this.connectedNodes[i].equals(node))) {
                 return i;
             }
         }
         
         return INVALID_DIRECTION;
+    }
+    
+    public int compareTo(Object obj) {
+        if (obj instanceof Node) {
+            Node node = (Node)obj;
+            int result = 0;
+            
+            if ((this.position.x - node.position.x) < 0) {
+                result = 1;
+            } else if ((this.position.x - node.position.x) > 0) {
+                result = 3;
+            }
+            
+            if ((this.position.x - node.position.x) < 0) {
+                result -= 2;
+            } else if ((this.position.x - node.position.x) > 0) {
+                result -= 4;
+            }            
+        }
+        return -1;
     }
 }
