@@ -51,10 +51,15 @@ public class InSightController extends EntityController {
      * Calculate next move
      */
     public void calculateNextMove() {           
-        this.nextDirection = this.targetInSight();
+        this.nextDirection = this.targetInSight();        
         
         if (this.nextDirection == Node.INVALID_DIRECTION) {            
             this.nextDirection = super.getNextDirection();
+        } else {
+            if ((RANDOM.nextInt(10) == 0) && 
+                    (this.entity.getNode().getNodeAt(Node.getOpposite(this.nextDirection)) != null)) {
+                this.nextDirection = Node.getOpposite(this.nextDirection);
+            }
         }
     }
     
