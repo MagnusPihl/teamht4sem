@@ -42,7 +42,6 @@
 package game;
 
 import game.entitycontrol.*;
-import game.entitycontrol.ReplayController;
 import game.system.*;
 import game.input.*;
 import field.*;
@@ -254,8 +253,8 @@ public class GameScene implements Scene {
         if(mode == 0)
         {
             entities[0].getEntity().setController(new KeyboardController(entities[0].getEntity()));
-            entities[1].getEntity().setController(new PreyAIController(entities[1].getEntity()));
-            entities[2].getEntity().setController(new PreyAIController(entities[2].getEntity()));
+            entities[1].getEntity().setController(new InSightController(entities[1].getEntity(), entities[0].getEntity()));
+            entities[2].getEntity().setController(new InSightController(entities[2].getEntity(), entities[0].getEntity()));//new PreyAIController(entities[2].getEntity()));
         }
         else if(mode == 1)
         {
