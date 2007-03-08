@@ -12,6 +12,7 @@
  * ******VERSION HISTORY******
  *
  * Magnus Hemmer Pihl @ 8. marts 2007 (v 1.6)
+ * Now fills the background with background tiles.
  * Added win/lose game logic and temporary messages.
  * Fixed a bug with replays, which would not discard old replays after a level had been played.
  *
