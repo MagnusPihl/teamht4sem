@@ -6,12 +6,15 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.4
+ * @version 1.5
  *
  *
  * ******VERSION HISTORY******
  *
- * Magnus hemmer Pihl @ 8. marts 2007 (v 1.4)
+ * Magnus Hemmer Pihl @ 8. marts 2007 (v 1.5)
+ * Entities are no longer animated when standing still.
+ *
+ * Magnus Hemmer Pihl @ 8. marts 2007 (v 1.4)
  * Added support for maps larger than the screen (map scrolling).
  *
  * Magnus Hemmer Pihl @ 7. marts 2007 (v 1.3)
@@ -163,7 +166,12 @@ public class GameScene implements Scene {
                 {
                     if(this.moveTimer>200)
                     {
-                        this.replay.list[i].add(entities[i].getEntity().getController().move());
+                        int dir = entities[i].getEntity().getController().move();
+                        this.replay.list[i].add(dir);
+                        if(Node.isValidDirection(dir))
+                            entities[i].getEntity().setIsMoving(true);
+                        else
+                            entities[i].getEntity().setIsMoving(false);
                     }
                     entities[i].getEntity().getController().calculateNextMove();
                 }
@@ -191,7 +199,7 @@ public class GameScene implements Scene {
         if(mode == 0)
         {
             entities[0].getEntity().setController(new KeyboardController(entities[0].getEntity()));
-            entities[1].getEntity().setController(new PreyAIController(entities[1].getEntity()));
+            entities[1].getEntity().setController(new KeyboardController(entities[1].getEntity(), KeyEvent.VK_W, KeyEvent.VK_D, KeyEvent.VK_S, KeyEvent.VK_A));
             entities[2].getEntity().setController(new PreyAIController(entities[2].getEntity()));
         }
         else if(mode == 1)
