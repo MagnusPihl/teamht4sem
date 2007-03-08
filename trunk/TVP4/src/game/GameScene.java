@@ -15,6 +15,7 @@
  * Now fills the background with background tiles.
  * Added win/lose game logic and temporary messages.
  * Fixed a bug with replays, which would not discard old replays after a level had been played.
+ * Replays are now automatically saved with the correct extension.
  *
  * Magnus Hemmer Pihl @ 8. marts 2007 (v 1.5)
  * Entities are no longer animated when standing still.
