@@ -6,14 +6,16 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.13
+ * @version 1.14
  *
  * ******VERSION HISTORY******
- * Magnus Hemmer Pihl @ 8. marts 2007 (v 1.13)
+ * Magnus Hemmer Pihl @ 8. marts 2007 (v 1.14)
  * Removed dimension from drawField()-method.
  * Forced field to re-render every time a new field is loaded.
- * LMK @ 06. marts 2007 (v 1.12)
+ * LMK @ 06. marts 2007 (v 1.13)
  * Added method getPointsLeft
+ * Mikkel Nielsen @ 06. marts 2007 (v 1.12)
+ * Added HighScoreList() 
  * LMK @ 05. marts 2007 (v 1.11)
  * Added call to drawPoints to drawField method
  * Speeded up drawing by prerendering field
@@ -61,6 +63,7 @@ import game.visual.*;
 import java.awt.*;
 import java.util.*;
 import java.io.*;
+import game.HighScoreList;
 
 public class Field {
         
@@ -69,6 +72,7 @@ public class Field {
     private java.util.List nodes;
     private boolean hasChanged;
     private int lastEntity;
+    private HighScoreList highScores;
     private Image renderedField;
     
     /** 
@@ -80,13 +84,23 @@ public class Field {
         this.entities = new EntityRenderer[3];
         this.lastEntity = 0;
         this.hasChanged = false;
+        this.highScores = new HighScoreList();
+    }
+    
+    /**
+     *  Returns the highscore-list
+     *
+     *  @return HighScoreList highscores
+     */
+    public HighScoreList getHighScores(){
+        return this.highScores;
     }
     
     /**
      * Set the starting position of Pacman on the field
      *
      * @param position on the field;
-     * @return tue if the entity has been placed
+     * @return true if the entity has been placed
      */
     public boolean placePacman(Point position) {
         return this.placeEntityAt(position, 0);
