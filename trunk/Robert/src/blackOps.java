@@ -34,6 +34,9 @@ public class blackOps implements TimerListener, ButtonListener{
     int[] s3Buffer = new int[bufferLength];//{0,0,0,0,0,0,0,0,0,0};
     int s3BufferIndex = 0;
     int s3Average = 0;
+
+    final static int greenDiff = 4;
+    int greenThreshold = 0;
     
     boolean showThreshold = false;
     int s1Threshold = 0;
@@ -42,9 +45,11 @@ public class blackOps implements TimerListener, ButtonListener{
     
     boolean running = false;
     
+    //boolean toogle = false;
+    
     /** Creates a new instance of blackOps */
     public blackOps() {
-        timer = new Timer(100, this);
+        timer = new Timer(1, this);
         
         Button.RUN.addButtonListener(this);
         Button.PRGM.addButtonListener(this);
@@ -87,6 +92,8 @@ public class blackOps implements TimerListener, ButtonListener{
                 LCD.showNumber(s2Threshold);
             }else if (sensorIndex == 3){
                 LCD.showNumber(s3Threshold);
+            }else if (sensorIndex == 4){
+                LCD.showNumber(greenThreshold);
             }
         } else if (sensorIndex > 0) {
             if (sensorIndex == 1){
@@ -118,17 +125,46 @@ public class blackOps implements TimerListener, ButtonListener{
         value <<= 1;
         value += value3?1:0;
         
-        if (value == 0 || value == 2)
+        
+//        toogle = !toogle;
+//        if (toogle) {
+//            stop();
+//        }
+        if (value == 0 || value == 2) {
             forward();
+        }
 /*        else if (value == 5)
         {
             Sound.beep();
             sharpLeft();
         }
-*/        else if(value == 1 || value == 3)
+ */
+        else if (value == 5 || value == 7){
+            stop();
+        } else if(value == 1 || value == 3) {
             right();
-        else if (value >= 4)
+        } else if (value >= 4){
             left();
+        }
+        
+        // The light part is not pretty, but wtf....
+        if (s2Buffer[s2BufferIndex] > greenThreshold - greenDiff && s2Buffer[s2BufferIndex] < greenThreshold+ greenDiff)
+        {
+            Sound.beep();
+            LightOn();
+        }
+        else
+        {
+            LightOff();
+        }
+    }
+    
+    private void LightOn(){
+        Motor.B.forward();
+    }
+    
+    private void LightOff(){
+        Motor.B.stop();
     }
     
     private void forward() {
@@ -149,6 +185,11 @@ public class blackOps implements TimerListener, ButtonListener{
     private void right() {
         Motor.A.forward();
         Motor.C.stop();
+    }
+    
+    private void coast() {
+        Motor.A.flt();
+        Motor.C.flt();
     }
     
     private void stop() {
@@ -186,7 +227,9 @@ public class blackOps implements TimerListener, ButtonListener{
                 SetSensorSegment(2);
             } else if (sensorIndex == 3){
                 SetSensorSegment(3);
-            } else if (sensorIndex == 4){
+            } else if (sensorIndex == 4) {
+                SetSensorSegment(4);
+            }else if (sensorIndex == 5){
                 sensorIndex = 0;
             }
         }else if (Button.PRGM.isPressed()) {
@@ -210,6 +253,9 @@ public class blackOps implements TimerListener, ButtonListener{
                     } else {
                         s3Threshold += 5;
                     }
+                }else if (sensorIndex == 4)
+                {
+                    greenThreshold = average(s2Buffer);
                 }
             }
         }else if (Button.RUN.isPressed()) {
@@ -253,7 +299,10 @@ public class blackOps implements TimerListener, ButtonListener{
             aCode = 0x300a;
         } else if(index == 3) {
             aCode = 0x300c;
+        } else if (index == 4){
+            aCode = 0x301d;
         }
+        
         LCD.setSegment(aCode);
         LCD.refresh();
     }
@@ -266,6 +315,8 @@ public class blackOps implements TimerListener, ButtonListener{
             aCode = 0x300a;
         } else if(index == 3) {
             aCode = 0x300c;
+        }else if (index == 4){
+            aCode = 0x301d;
         }
         LCD.clearSegment(aCode);
         LCD.refresh();
@@ -278,6 +329,9 @@ public class blackOps implements TimerListener, ButtonListener{
         LCD.clearSegment(aCode);
         aCode = 0x300c;
         LCD.clearSegment(aCode);
+        aCode = 0x301d;
+        LCD.clearSegment(aCode);
+        
         LCD.refresh();
         showThreshold = false;
     }
