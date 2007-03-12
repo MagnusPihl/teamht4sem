@@ -57,7 +57,7 @@ public class HighScoreList extends ArrayList {
     }
     
     public int isHighScore(int score){
-        int index = 1;
+        int index = 0;
         for(Iterator iter = this.iterator(); iter.hasNext(); index++){
             HighScore hScore = (HighScore) iter.next();
             if(score >= hScore.getScore()){
