@@ -253,8 +253,8 @@ public class GameScene implements Scene {
         if(mode == 0)
         {
             entities[0].getEntity().setController(new KeyboardController(entities[0].getEntity()));
-            entities[1].getEntity().setController(new InSightController(entities[1].getEntity(), entities[0].getEntity()));
-            entities[2].getEntity().setController(new InSightController(entities[2].getEntity(), entities[0].getEntity()));//new PreyAIController(entities[2].getEntity()));
+            entities[1].getEntity().setController(new PreyAIController(entities[1].getEntity()));
+            entities[2].getEntity().setController(new PreyAIController(entities[2].getEntity()));
         }
         else if(mode == 1)
         {
@@ -299,6 +299,12 @@ public class GameScene implements Scene {
                 if (!file.getName().toLowerCase().endsWith(".rpl"))
                     file = new File(file.getAbsoluteFile() + ".rpl");
                 this.replay.save(file);
+            }
+            
+            int pos = this.field.getHighScores().isHighScore(this.points);
+            if(pos != -1)
+            {
+//                new HighScoreBox(pos, this.points);
             }
         }
         this.replay = new Replay();
