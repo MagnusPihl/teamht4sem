@@ -33,17 +33,24 @@ import java.io.*;
 public class HighScoreScene implements Scene {
     
     private InputAction actionBack;
+    private HighScoreList highScores;
     
     /** Creates a new instance of HighscoreScene */
-    public HighScoreScene() {        
+    public HighScoreScene() {
         this.actionBack = new InputAction("Escape", InputAction.DETECT_FIRST_ACTION);
+    }
+    
+    private HighScoreList getHighScoreList(){
+        return PacmanApp.getInstance().getGameScene().getField().getHighScores();
     }
     
     public void draw(Graphics2D _g) {
         _g.setColor(Color.BLACK);
         _g.fillRect(0,0,800,600);
-        //this.font.drawString(_g, BitmapFont.CHARACTERS, 10, 10, 780, 5);
-        PacmanApp.getInstance().getFont().drawString(_g, "Hvis din mor hun bare vidste,\nHvis din mor hun bare vidst!\nHvad ville hun så sige til dig?", 10, 10, 780);
+        String writeScores = this.highScores.scoreToString();
+        String writeNames = this.highScores.namesToString();
+        PacmanApp.getInstance().getFont().drawString(_g, writeNames, 10, 10, 780);
+        PacmanApp.getInstance().getFont().drawString(_g, writeScores, 400, 10, 780);
     }
     
     public void update(long _time) {
@@ -53,6 +60,7 @@ public class HighScoreScene implements Scene {
     }
     
     public void init(InputManager _input) {
+        this.highScores = getHighScoreList();
         _input.mapToKey(this.actionBack, KeyEvent.VK_ESCAPE);
     }
     

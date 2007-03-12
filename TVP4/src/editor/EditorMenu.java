@@ -139,7 +139,7 @@ public class EditorMenu extends JPanel {
             }
             
             menu.add(topMenu);
-        }      
+        }
         
         //toolbar        
         JButton gridBtn = new JButton(new ImageIcon(IMAGE_DIR + "grid.png"));
