@@ -52,6 +52,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 public class GameScene implements Scene {
     
@@ -304,7 +305,8 @@ public class GameScene implements Scene {
             int pos = this.field.getHighScores().isHighScore(this.points);
             if(pos != -1)
             {
-//                new HighScoreBox(pos, this.points);
+                String name = JOptionPane.showInputDialog(PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow(), "Congratulations, you have reached rank \nPlease write your name in the box below.");
+                this.field.getHighScores().addHighScore(name, this.points, pos);
             }
         }
         this.replay = new Replay();
