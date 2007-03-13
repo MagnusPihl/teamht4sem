@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.6
+ * @version 1.7
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl / Mikkel Nielsen @ 13. marts 2007 (v 1.7)
+ * Added highscore name entry dialog.
  *
  * Magnus Hemmer Pihl @ 8. marts 2007 (v 1.6)
  * Now fills the background with background tiles.
@@ -301,6 +304,8 @@ public class GameScene implements Scene {
                     file = new File(file.getAbsoluteFile() + ".rpl");
                 this.replay.save(file);
             }
+            
+            PacmanApp.getInstance().getCore().getScreenManager().update();
             
             int pos = this.field.getHighScores().isHighScore(this.points);
             if(pos != -1)
