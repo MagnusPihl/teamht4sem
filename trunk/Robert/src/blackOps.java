@@ -23,6 +23,7 @@ import josx.util.TimerListener;
 public class blackOps implements TimerListener, ButtonListener{
     Timer timer;
     int sensorIndex = 0;
+    private int sampleTime = 5;
     
     static final int bufferLength = 3;
     int[] s1Buffer = new int[bufferLength];// {0,0,0,0,0,0,0,0,0,0};
@@ -34,7 +35,7 @@ public class blackOps implements TimerListener, ButtonListener{
     int[] s3Buffer = new int[bufferLength];//{0,0,0,0,0,0,0,0,0,0};
     int s3BufferIndex = 0;
     int s3Average = 0;
-
+    
     final static int greenDiff = 4;
     int greenThreshold = 0;
     
@@ -45,11 +46,14 @@ public class blackOps implements TimerListener, ButtonListener{
     
     boolean running = false;
     
+    
     //boolean toogle = false;
     
     /** Creates a new instance of blackOps */
     public blackOps() {
-        timer = new Timer(1, this);
+        
+        timer = new Timer(sampleTime, this);
+        
         
         Button.RUN.addButtonListener(this);
         Button.PRGM.addButtonListener(this);
@@ -71,19 +75,7 @@ public class blackOps implements TimerListener, ButtonListener{
     }
     
     public void timedOut() {
-        s1Buffer[s1BufferIndex++] = Sensor.S1.readRawValue();
-        s2Buffer[s2BufferIndex++] = Sensor.S2.readRawValue();
-        s3Buffer[s3BufferIndex++] = Sensor.S3.readRawValue();
-        if (s1BufferIndex == bufferLength)
-            s1BufferIndex = 0;
-        if (s2BufferIndex == bufferLength)
-            s2BufferIndex = 0;
-        if (s3BufferIndex == bufferLength)
-            s3BufferIndex = 0;
-        
-        s1Average = average(s1Buffer);
-        s2Average = average(s2Buffer);
-        s3Average = average(s3Buffer);
+        this.updateSensor();
         
         if (showThreshold) {
             if (sensorIndex == 1){
@@ -126,21 +118,14 @@ public class blackOps implements TimerListener, ButtonListener{
         value += value3?1:0;
         
         
-//        toogle = !toogle;
-//        if (toogle) {
-//            stop();
-//        }
         if (value == 0 || value == 2) {
             forward();
-        }
-/*        else if (value == 5)
-        {
-            Sound.beep();
-            sharpLeft();
-        }
- */
-        else if (value == 5 || value == 7){
-            stop();
+        } else if (value == 5 || value == 7){
+            try {
+                this.Left90();
+            } catch (InterruptedException ex) {
+                
+            }
         } else if(value == 1 || value == 3) {
             right();
         } else if (value >= 4){
@@ -148,13 +133,10 @@ public class blackOps implements TimerListener, ButtonListener{
         }
         
         // The light part is not pretty, but wtf....
-        if (s2Buffer[s2BufferIndex] > greenThreshold - greenDiff && s2Buffer[s2BufferIndex] < greenThreshold+ greenDiff)
-        {
+        if (s2Buffer[s2BufferIndex] > greenThreshold - greenDiff && s2Buffer[s2BufferIndex] < greenThreshold+ greenDiff) {
             Sound.beep();
             LightOn();
-        }
-        else
-        {
+        } else {
             LightOff();
         }
     }
@@ -207,6 +189,55 @@ public class blackOps implements TimerListener, ButtonListener{
         Motor.C.backward();
     }
     
+    private void updateSensor(){
+        s1Buffer[s1BufferIndex++] = Sensor.S1.readRawValue();
+        s2Buffer[s2BufferIndex++] = Sensor.S2.readRawValue();
+        s3Buffer[s3BufferIndex++] = Sensor.S3.readRawValue();
+        if (s1BufferIndex == bufferLength)
+            s1BufferIndex = 0;
+        if (s2BufferIndex == bufferLength)
+            s2BufferIndex = 0;
+        if (s3BufferIndex == bufferLength)
+            s3BufferIndex = 0;
+        
+        s1Average = average(s1Buffer);
+        s2Average = average(s2Buffer);
+        s3Average = average(s3Buffer);
+    }
+    
+    private void Left90() throws InterruptedException{
+        this.left();
+        
+        while(!(this.average(s1Buffer) < s1Threshold)){
+            Thread.sleep(sampleTime);
+            this.updateSensor();
+        }
+        while(this.average(s1Buffer) < s1Threshold){
+            Thread.sleep(sampleTime);
+            this.updateSensor();
+        }
+        while(!(this.average(s1Buffer) < s1Threshold)){
+            Thread.sleep(sampleTime);
+            this.updateSensor();
+        }
+    }
+    
+    private void Right90() throws InterruptedException{
+        this.right();
+        while(!(this.average(s3Buffer) < s3Threshold)){
+            Thread.sleep(sampleTime);
+            this.updateSensor();
+        }
+        while(this.average(s3Buffer) < s3Threshold){
+            Thread.sleep(sampleTime);
+            this.updateSensor();
+        }
+        while(!(this.average(s3Buffer) < s3Threshold)){
+            Thread.sleep(sampleTime);
+            this.updateSensor();
+        }
+    }
+    
     private int average(int[] number) {
         int sum = 0;
         for(int i = 0; i < bufferLength; i++) {
@@ -253,8 +284,7 @@ public class blackOps implements TimerListener, ButtonListener{
                     } else {
                         s3Threshold += 5;
                     }
-                }else if (sensorIndex == 4)
-                {
+                }else if (sensorIndex == 4) {
                     greenThreshold = average(s2Buffer);
                 }
             }
