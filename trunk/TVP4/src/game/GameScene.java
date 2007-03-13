@@ -13,6 +13,7 @@
  *
  * Magnus Hemmer Pihl / Mikkel Nielsen @ 13. marts 2007 (v 1.7)
  * Added highscore name entry dialog.
+ * Adjusted background tiling to line up properly with levels larger than the screen.
  *
  * Magnus Hemmer Pihl @ 8. marts 2007 (v 1.6)
  * Now fills the background with background tiles.
@@ -81,7 +82,7 @@ public class GameScene implements Scene {
         this.mode = 0;
         this.field = new Field();
         this.level = new File("test.lvl");
-        TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "pacman/"));
+        TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "nodes/"));
         
         this.pause = new InputAction("Pause", InputAction.DETECT_FIRST_ACTION);
         this.confirm = new InputAction("Confirm quit", InputAction.DETECT_FIRST_ACTION);
@@ -133,10 +134,10 @@ public class GameScene implements Scene {
         Shape clip = _g.getClip();
         _g.setClip(0, 40, 800, 560);
         
-        for(int i=0; i<800/TileSet.getInstance().getTileSize()+1; i++)
-            for(int j=0; j<600/TileSet.getInstance().getTileSize()+1; j++)
-                _g.drawImage(TileSet.getInstance().getBaseTile(), i*TileSet.getInstance().getTileSize(),
-                        j*TileSet.getInstance().getTileSize(), null);
+//        for(int i=0; i<800/TileSet.getInstance().getTileSize()+1; i++)
+//            for(int j=0; j<600/TileSet.getInstance().getTileSize()+1; j++)
+//                _g.drawImage(TileSet.getInstance().getBaseTile(), i*TileSet.getInstance().getTileSize(),
+//                        j*TileSet.getInstance().getTileSize(), null);
         
         if(field.getSize().width * TileSet.getInstance().getTileSize() > 800 ||
                 field.getSize().height * TileSet.getInstance().getTileSize() > 600)
@@ -146,6 +147,13 @@ public class GameScene implements Scene {
             this.levelOffsetX = (800/2)-pacX;
             this.levelOffsetY = (600/2)-pacY;
         }
+        
+        int startTileX = (this.levelOffsetX % TileSet.getInstance().getTileSize()) - TileSet.getInstance().getTileSize();
+        int startTileY = (this.levelOffsetY % TileSet.getInstance().getTileSize()) - TileSet.getInstance().getTileSize();
+        for(int i=startTileX; i<800; i+=TileSet.getInstance().getTileSize())
+            for(int j=startTileY; j<600; j+=TileSet.getInstance().getTileSize())
+                _g.drawImage(TileSet.getInstance().getBaseTile(), i, j, null);
+        
         field.drawField(_g, this.levelOffsetX, this.levelOffsetY);
         
         _g.setClip(clip);
@@ -235,7 +243,7 @@ public class GameScene implements Scene {
                 PacmanApp.getInstance().showTitleScene();
             }
         }
-        if(confirm.isPressed())
+        else if(confirm.isPressed())
         {
             PacmanApp.getInstance().showTitleScene();
         }
