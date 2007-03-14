@@ -8,6 +8,9 @@
  * @author Magnus Hemmer Pihl
  * @version 1.0
  *
+ * *************NOTE!!**************
+ * JoystickController will ONLY work if the JXInput library is included in the project, and Windows has access to "jxinput.dll".
+ * Get both at http://www.hardcode.de/jxinput/
  *
  * ******VERSION HISTORY******
  *
