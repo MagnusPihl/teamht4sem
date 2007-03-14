@@ -28,7 +28,6 @@ public class RCXSocket {
     private InputStream in;
     
     public static final int INPUT_BUFFER_SIZE = 100;
-    public static final int OUTPUT_BUFFER_SIZE = 50;
     
     /** Creates a new instance of RCXSocket */
     public RCXSocket() {
@@ -63,13 +62,13 @@ public class RCXSocket {
             }            
         }
         
-        public int read(byte b[], int off, int len) throws IOException {
+        public int read(byte[] buffer, int offset, int length) throws IOException {            
             //Start - Taken from InputStream
-            if (b == null) {
+            if (buffer == null) {
                 throw new NullPointerException();
-            } else if (off < 0 || len < 0 || len > b.length - off) {
+            } else if (offset < 0 || length < 0 || length > buffer.length - offset) {
                 throw new IndexOutOfBoundsException();
-            } else if (len == 0) {
+            } else if (length == 0) {
                 return 0;
             }
             //end
@@ -83,7 +82,7 @@ public class RCXSocket {
                     this.readPointer = 0;
                 }
                 
-                b[i] = this.buffer[this.readPointer];
+                buffer[i] = this.buffer[this.readPointer];
             }
             
             return available;
@@ -98,34 +97,35 @@ public class RCXSocket {
         }
         
         public void packetAvailable(byte[] packet, int length) {
-            //ignore opcode and save the rest of the packet
-            for (int i = 1; i < length; i++) {
+            //1 - ignore opcode and save the rest of the packet
+            //0 - opcodes  are also saved if they are present? not sure?
+            for (int i = 0; i < length; i++) {
                 this.inPointer++;
                 if (this.inPointer == INPUT_BUFFER_SIZE) {
                     this.inPointer = 0;
                 }
                 this.buffer[this.inPointer] = packet[i];
             }
-        }
+        }        
     }
     
     private class RCXOutputStream extends OutputStream {
-        public void write(int b) throws IOException {
-            this.write(new byte[] {(byte)b}, 0, 1);
+        public void write(int buffer) throws IOException {
+            this.write(new byte[] {(byte)buffer}, 0, 1);
         }
         
-        public void write(byte[] b) throws IOException {
-            this.write(b, 0, b.length);
+        public void write(byte[] buffer) throws IOException {
+            this.write(buffer, 0, buffer.length);
         }
         
-        public void write(byte[] b, int off, int len) throws IOException {
+        public void write(byte[] buffer, int offset, int length) throws IOException {
             try {
                 while (Serial.isSending()) {
                     Serial.waitTillSent();
                 }
             } catch (InterruptedException ie) {;}
             
-            Serial.sendPacket(b, off, len);
+            Serial.sendPacket(buffer, offset, length);
         }                
     }    
     
