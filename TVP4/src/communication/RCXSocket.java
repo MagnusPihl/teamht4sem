@@ -24,8 +24,8 @@ import java.io.*;
 
 public class RCXSocket {
         
-    private OutputStream out;
-    private InputStream in;
+    private RCXOutputStream out;
+    private RCXInputStream in;
     
     public static final int INPUT_BUFFER_SIZE = 100;
     
@@ -129,11 +129,11 @@ public class RCXSocket {
         }                
     }    
     
-    public OutputStream getOutputStream() {
+    public RCXOutputStream getOutputStream() {
         return this.out;
     }
     
-    public InputStream getInputStream() {
+    public RCXInputStream getInputStream() {
         return this.in;
     }
 }

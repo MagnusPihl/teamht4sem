@@ -22,8 +22,8 @@ import java.io.*;
 
 public class TowerSocket {
         
-    private OutputStream out;
-    private InputStream in;
+    private RCXOutputStream out;
+    private RCXInputStream in;
     private Tower tower;
         
     /** Creates a new instance of RCXSocket */
@@ -108,11 +108,11 @@ public class TowerSocket {
         }               
     }    
     
-    public OutputStream getOutputStream() {
+    public TowerOutputStream getOutputStream() {
         return this.out;
     }
     
-    public InputStream getInputStream() {
+    public TowerInputStream getInputStream() {
         return this.in;
     }
 }

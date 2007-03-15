@@ -6,13 +6,13 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
  *
- * LMK @ 13. marts 2007 (v 1.0)
- * __________ Changes ____________
+ * LMK @ 15. marts 2007 (v 1.1)
+ * Added static methods getSender, getReceiver, getAddressInfo
  *
  */
 
@@ -55,5 +55,17 @@ public class IRDatagram {
     
     public byte[] getData() {
         return this.data;
+    }
+    
+    public static int getSender(int addressInfo) {
+        return (addressInfo & 0xF0);
+    }
+    
+    public static int getReceiver(int addressInfo) {
+        return (addressInfo & 0x0F);
+    }
+    
+    public static int getAdressInfo(int sender, int receiver) {
+        return ((sender & 0x0F) << 4) | (receiver & 0x0F);
     }
 }
