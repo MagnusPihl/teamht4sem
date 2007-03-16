@@ -12,17 +12,14 @@
  * ******VERSION HISTORY******
  *
  * LMK @ 13. marts 2007 (v 1.0)
- * __________ Changes ____________
+ * Current version only supports package of size 2.
  *
  */
 
 package communication;
 
 import java.io.*;
-/**
- *
- * @author LMK
- */
+
 public class IRDatagramSocket {
     
     private int sender;
@@ -33,7 +30,9 @@ public class IRDatagramSocket {
     public static final int INPUT_BUFFER_SIZE = 2;
     public static final int OUTPUT_BUFFER_SIZE = 2;
     
-    /** Creates a new instance of IRSocket */
+    /** 
+     * Creates a new instance of IRDatagramSocket 
+     */
     public IRDatagramSocket(int sender, int receiver, InputStream in, OutputStream out) {
         this.sender = sender;
         this.receiver = receiver;
@@ -41,31 +40,45 @@ public class IRDatagramSocket {
         this.out = new IRDatagramSocket.IROutputStream(out);
     }    
     
-    private class IRInputStream extends InputStream {
+    /**
+     * Input stream that reads address header in each package and only
+     * accepts relevant pacakges.
+     */
+    public class IRInputStream extends InputStream {
         private InputStream in;
-        private int receiveInfo;
+        private int receiveHeader;
         private byte[] buffer;
         private int bufferPosition;
         
+        /**
+         * Create address filtered input stream reading packages from supplied
+         * input stream
+         *
+         * @param stream to read from.
+         */
         protected IRInputStream(InputStream in) {
             this.in = in;
-            this.receiveInfo = IRDatagram.getAdressInfo(receiver, sender);
+            this.receiveHeader = IRDatagram.getAdressHeader(receiver, sender);
             this.buffer = new byte[INPUT_BUFFER_SIZE];
             this.bufferPosition = INPUT_BUFFER_SIZE - 1;
         }
         
-        //needs buffering
+        /**
+         * Read byte from input stream. Bytes are filtered so that only packages
+         * that has matching addressHeader to what you're trying to catch
+         * will be read.
+         */
         public int read() throws IOException {            
             this.bufferPosition++;
             
             if (this.bufferPosition == INPUT_BUFFER_SIZE) {                
-                int addressInfo = -1;
+                int addressHeader = -1;
                 int bytesRead = 0;                
                 this.bufferPosition = 0;
                                 
                 do {
-                    addressInfo = this.in.read();
-                    if (addressInfo == this.receiveInfo) {
+                    addressHeader = this.in.read();
+                    if (addressHeader == this.receiveHeader) {
                         bytesRead = 0;
                         while (bytesRead < INPUT_BUFFER_SIZE) {;
                             bytesRead += this.in.read(this.buffer, bytesRead, INPUT_BUFFER_SIZE - bytesRead);
@@ -74,23 +87,37 @@ public class IRDatagramSocket {
                 } while (bytesRead == INPUT_BUFFER_SIZE);
             } 
             
-            return this.buffer[this.bufferPosition];
+            return this.buffer[this.bufferPosition];                
         }               
     }
     
-    private class IROutputStream extends OutputStream {        
+    /**
+     * Output stream that adds address header to outbound packages.
+     */
+    public class IROutputStream extends OutputStream {        
         private OutputStream out;
-        private int sendInfo;
+        private int sendHeader;
         private byte[] buffer;
         private int bufferPosition;
         
+        /**
+         * Create new output stream that adds address headers to data
+         *
+         * @param output stream to write datagrams to
+         */
         protected IROutputStream(OutputStream out) {
             this.out = out;
-            this.sendInfo = IRDatagram.getAdressInfo(sender, receiver);
+            this.sendHeader = IRDatagram.getAdressHeader(sender, receiver);
             this.buffer = new byte[OUTPUT_BUFFER_SIZE];
             this.bufferPosition = -1;
         }
         
+        /**
+         * Write byte to output stream. For every 2 bytes written
+         * a package is sent.
+         *
+         * @param byte to write to output stream
+         */
         public void write(int b) throws IOException {
             this.bufferPosition++;
             
@@ -101,16 +128,26 @@ public class IRDatagramSocket {
             this.buffer[this.bufferPosition] = (byte)b;
             
             if (this.bufferPosition == OUTPUT_BUFFER_SIZE - 1) {
-                this.out.write(this.sendInfo);
+                this.out.write(this.sendHeader);
                 this.out.write(this.buffer);
             }
-        }        
+        }                        
     }
     
+    /**
+     * Get output stream
+     *
+     * @return IROutputStream
+     */
     public IROutputStream getOutputStream() {
         return this.out;
     }
     
+    /**
+     * Get output stream
+     *
+     * @return IRInputStream
+     */
     public IRInputStream getInputStream() {
         return this.in;
     }

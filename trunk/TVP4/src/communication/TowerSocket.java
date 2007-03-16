@@ -22,11 +22,14 @@ import java.io.*;
 
 public class TowerSocket {
         
-    private RCXOutputStream out;
-    private RCXInputStream in;
+    private TowerOutputStream out;
+    private TowerInputStream in;
     private Tower tower;
         
-    /** Creates a new instance of RCXSocket */
+    /** 
+     * Creates a new instance of TowerSocket that can communicate with
+     * the RCX kit over IR.
+     */
     public TowerSocket() {
         this.tower = new Tower();
         this.tower.open();
@@ -34,6 +37,9 @@ public class TowerSocket {
         this.out = new TowerSocket.TowerOutputStream();
     }            
     
+    /**
+     * Reads IR data directly from source.
+     */
     private class TowerInputStream extends InputStream {
         /*private int readPointer;
         private int inPointer;
@@ -43,6 +49,12 @@ public class TowerSocket {
             //this.buffer = new byte[INPUT_BUFFER_SIZE];
         }
                 
+        /**
+         * Read one byte from IR stream. The data received is not guarenteed
+         * to be meant for you, no addressing is done.
+         *
+         * @return -1 if no bytes could be read.
+         */
         public int read() throws IOException {              
             byte[] b = new byte[1];
             
@@ -53,10 +65,27 @@ public class TowerSocket {
             }
         }
         
+        /**
+         * Fill buffer with data from IR stream. The data received is not guarenteed
+         * to be meant for you, no addressing is done.
+         *
+         * @param buffer to read data to.
+         * @return number of bytes saved in buffer.
+         */
         public int read(byte[] buffer) throws IOException {
             return tower.read(buffer);
         }
         
+        /**
+         * Fill buffer with data starting from offset, filling at most length bytes.
+         * The data received is not guarenteed to be meant for you, 
+         * no addressing is done.
+         *
+         * @param buffer to read data to.
+         * @param offset from zero.
+         * @param amount bytes from offset to read.
+         * @return number of bytes read.
+         */
         public int read(byte[] buffer, int offset, int length) throws IOException {            
             //Start - Taken from InputStream
             if (buffer == null) {
@@ -77,22 +106,39 @@ public class TowerSocket {
             }
             
             return available;
-        }        
-        
-        public void close() throws IOException {
-            tower.close();
-        }
+        }                
     }
     
     private class TowerOutputStream extends OutputStream {
+        
+        /**
+         * Write a single byte to IR Tower. 
+         * Receiption of data is not guarenteed.
+         *
+         * @param byte to write.
+         */
         public void write(int buffer) throws IOException {
             tower.write(new byte[] {(byte)buffer}, 1);
         }
         
+        /**
+         * Write bytes in buffer to IR Tower.
+         * Receiption of data is not guarenteed.
+         *
+         * @param buffer containing data to write.
+         */
         public void write(byte[] buffer) throws IOException {
             tower.write(buffer, buffer.length);
         }
         
+        /**
+         * Write length bytes from offset in buffer to IR Tower.
+         * Receiption of data is not guarenteed.
+         *
+         * @param buffer containing data to write.
+         * @param offset from zero.
+         * @param amount bytes from offset to write.
+         */
         public void write(byte[] buffer, int offset, int length) throws IOException {
             byte[] intermediate = new byte[length];
             
@@ -108,10 +154,21 @@ public class TowerSocket {
         }               
     }    
     
+    /**
+     * Get output stream with which you can write to the 
+     * IR Tower.
+     *
+     * @return TowerOutputStream
+     */
     public TowerOutputStream getOutputStream() {
         return this.out;
     }
     
+    /**
+     * Get input stream to read from IR Tower with
+     * 
+     * @return TowerInputStream
+     */
     public TowerInputStream getInputStream() {
         return this.in;
     }
