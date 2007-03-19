@@ -36,7 +36,7 @@ public class RCXSocket {
         this.out = new RCXSocket.RCXOutputStream();
     }            
     
-    private class RCXInputStream extends InputStream implements SerialListener {
+    public class RCXInputStream extends InputStream implements SerialListener {
         private int readPointer;
         private int inPointer;
         private byte[] buffer;
@@ -46,7 +46,7 @@ public class RCXSocket {
             Serial.addSerialListener(this);
         }
                 
-        public int read() throws IOException {                
+        public int read() throws IOException {      
             if (this.readPointer < this.inPointer) {
                 return this.buffer[++this.readPointer];
             
@@ -106,10 +106,10 @@ public class RCXSocket {
                 }
                 this.buffer[this.inPointer] = packet[i];
             }
-        }        
+        }                        
     }
     
-    private class RCXOutputStream extends OutputStream {
+    public class RCXOutputStream extends OutputStream {
         public void write(int buffer) throws IOException {
             this.write(new byte[] {(byte)buffer}, 0, 1);
         }

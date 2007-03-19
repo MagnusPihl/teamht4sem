@@ -31,8 +31,8 @@ public class IRTransportSocket {
     private IRTransportInputStream in;
     private IRTransportOutputStream out;
     
-    public static final int IS_DATA = 0xFFFF;
-    public static final int IS_ACKNOWLEDGE = 0xFFFF;
+    public static final int DATA = 0x0000;
+    public static final int ACKNOWLEDGE = 0xFFFF;
     public static final int ACKNOWLEDGE_TIMEOUT = 250;
     
     /** Creates a new instance of IRSocket */

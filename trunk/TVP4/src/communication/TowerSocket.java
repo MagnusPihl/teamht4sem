@@ -25,6 +25,11 @@ public class TowerSocket {
     private TowerOutputStream out;
     private TowerInputStream in;
     private Tower tower;
+    
+    private int bufferIndex;
+    private byte[] readBuffer;
+    
+    public static final int INPUT_BUFFER_SIZE = 400;
         
     /** 
      * Creates a new instance of TowerSocket that can communicate with
@@ -33,20 +38,36 @@ public class TowerSocket {
     public TowerSocket() {
         this.tower = new Tower();
         this.tower.open();
-        this.in = new TowerSocket.TowerInputStream();
         this.out = new TowerSocket.TowerOutputStream();
-    }            
+        this.bufferIndex = -1;
+        this.readBuffer = new byte[INPUT_BUFFER_SIZE];
+    }      
+    
+    private int fillBuffer(int bytes) {                  
+        byte[] intermediate = new byte[bytes];
+            
+        int available = this.tower.read(intermediate);
+
+        for (int i = 0; i < available; i++) { 
+            this.bufferIndex++;
+            if (this.bufferIndex == INPUT_BUFFER_SIZE) {
+                this.bufferIndex = 0;
+            } 
+            
+            this.readBuffer[this.bufferIndex] = intermediate[i];
+        }
+
+        return available;                    
+    }
     
     /**
      * Reads IR data directly from source.
      */
-    private class TowerInputStream extends InputStream {
-        /*private int readPointer;
-        private int inPointer;
-        private byte[] buffer;*/
+    public class TowerInputStream extends InputStream {
+        private int readIndex;
         
         protected TowerInputStream() {       
-            //this.buffer = new byte[INPUT_BUFFER_SIZE];
+            this.readIndex = bufferIndex;
         }
                 
         /**
@@ -56,60 +77,19 @@ public class TowerSocket {
          * @return -1 if no bytes could be read.
          */
         public int read() throws IOException {              
-            byte[] b = new byte[1];
-            
-            if (tower.read(b) == 0) {
-                return -1;
-            } else {
-                return b[0];
-            }
-        }
-        
-        /**
-         * Fill buffer with data from IR stream. The data received is not guarenteed
-         * to be meant for you, no addressing is done.
-         *
-         * @param buffer to read data to.
-         * @return number of bytes saved in buffer.
-         */
-        public int read(byte[] buffer) throws IOException {
-            return tower.read(buffer);
-        }
-        
-        /**
-         * Fill buffer with data starting from offset, filling at most length bytes.
-         * The data received is not guarenteed to be meant for you, 
-         * no addressing is done.
-         *
-         * @param buffer to read data to.
-         * @param offset from zero.
-         * @param amount bytes from offset to read.
-         * @return number of bytes read.
-         */
-        public int read(byte[] buffer, int offset, int length) throws IOException {            
-            //Start - Taken from InputStream
-            if (buffer == null) {
-                throw new NullPointerException();
-            } else if (offset < 0 || length < 0 || length > buffer.length - offset) {
-                throw new IndexOutOfBoundsException();
-            } else if (length == 0) {
-                return 0;
-            }
-            //end
-
-            byte[] intermediate = new byte[length];
-            
-            int available = tower.read(intermediate);
-
-            for (int i = 0; i < available; i++) {
-                buffer[i] = intermediate[i + offset];
+            this.readIndex++;
+            if (this.readIndex == INPUT_BUFFER_SIZE) {
+                this.readIndex = 0;
             }
             
-            return available;
+            if ((bufferIndex == -1)||(bufferIndex == this.readIndex)) {
+                fillBuffer(1);
+            } else {                
+                return readBuffer[this.readIndex];
+            }
         }                
-    }
     
-    private class TowerOutputStream extends OutputStream {
+    public class TowerOutputStream extends OutputStream {
         
         /**
          * Write a single byte to IR Tower. 
@@ -170,6 +150,6 @@ public class TowerSocket {
      * @return TowerInputStream
      */
     public TowerInputStream getInputStream() {
-        return this.in;
+        return new TowerSocket.TowerInputStream();
     }
 }
