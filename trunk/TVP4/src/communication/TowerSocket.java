@@ -99,7 +99,8 @@ public class TowerSocket {
          * @param byte to write.
          */
         public void write(int buffer) throws IOException {
-            tower.write(new byte[] {(byte)buffer}, 1);
+            //tower.write(new byte[] {(byte)buffer}, 1)
+            System.out.println(tower.strerror(tower.write(new byte[] {(byte)buffer}, 1)));
         }
         
         /**
@@ -109,7 +110,8 @@ public class TowerSocket {
          * @param buffer containing data to write.
          */
         public void write(byte[] buffer) throws IOException {
-            tower.write(buffer, buffer.length);
+            //tower.write(buffer, buffer.length)
+            System.out.println(tower.strerror(tower.write(buffer, buffer.length)));
         }
         
         /**
@@ -127,7 +129,8 @@ public class TowerSocket {
                 intermediate[i] = buffer[i + offset];
             }
             
-            tower.write(intermediate, length);
+            //tower.write(intermediate, length);
+            System.out.println(tower.strerror(tower.write(intermediate, length)));
         }       
         
         public void close() throws IOException {
