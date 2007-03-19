@@ -82,12 +82,13 @@ public class TowerSocket {
                 this.readIndex = 0;
             }
             
-            if ((bufferIndex == -1)||(bufferIndex == this.readIndex)) {
+            while ((bufferIndex == -1)||(bufferIndex == this.readIndex)) {
                 fillBuffer(1);
-            } else {                
-                return readBuffer[this.readIndex];
-            }
-        }                
+            }                 
+            
+            return readBuffer[this.readIndex];
+        }  
+    }
     
     public class TowerOutputStream extends OutputStream {
         
