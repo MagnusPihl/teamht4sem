@@ -6,10 +6,15 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.7
+ * @version 1.8
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 21. marts 2007 (v 1.8)
+ * Added FPS calculation and display.
+ * Removed setting isMoving in entity, as the EntityController classes should take care of that.
+ * Added getMoveTimer to support fluid entity movement.
  *
  * Magnus Hemmer Pihl / Mikkel Nielsen @ 13. marts 2007 (v 1.7)
  * Added highscore name entry dialog.
@@ -74,7 +79,12 @@ public class GameScene implements Scene {
     private Replay replay;
     private int mode;
     
-    long moveTimer;
+    private long moveTimer;
+    private long roundTime;
+    
+    private Image fps;
+    private int frameCounter;
+    private long frameTimer;
     
     /** Creates a new instance of GameScene */
     public GameScene() {
@@ -82,12 +92,16 @@ public class GameScene implements Scene {
         this.mode = 0;
         this.field = new Field();
         this.level = new File("test.lvl");
-        TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "nodes/"));
+        TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "pacman/"));
         
         this.pause = new InputAction("Pause", InputAction.DETECT_FIRST_ACTION);
         this.confirm = new InputAction("Confirm quit", InputAction.DETECT_FIRST_ACTION);
         
+        this.roundTime = 500;
         this.moveTimer = 0;
+        
+        this.frameCounter = 0;
+        this.frameTimer = System.currentTimeMillis();
     }
     
     public void setMode(int _mode)
@@ -124,6 +138,11 @@ public class GameScene implements Scene {
         return this.field;
     }
     
+    public long getMoveTimer()
+    {
+        return this.moveTimer;
+    }
+    
     public void draw(Graphics2D _g) {
         _g.setColor(Color.BLACK);
         _g.fillRect(0, 0, 800, 600);
@@ -133,11 +152,6 @@ public class GameScene implements Scene {
         
         Shape clip = _g.getClip();
         _g.setClip(0, 40, 800, 560);
-        
-//        for(int i=0; i<800/TileSet.getInstance().getTileSize()+1; i++)
-//            for(int j=0; j<600/TileSet.getInstance().getTileSize()+1; j++)
-//                _g.drawImage(TileSet.getInstance().getBaseTile(), i*TileSet.getInstance().getTileSize(),
-//                        j*TileSet.getInstance().getTileSize(), null);
         
         if(field.getSize().width * TileSet.getInstance().getTileSize() > 800 ||
                 field.getSize().height * TileSet.getInstance().getTileSize() > 600)
@@ -190,6 +204,15 @@ public class GameScene implements Scene {
             _g.drawString("Lawl Lose!", 360,295);
             _g.drawString("Press 'Y' to exit to the title screen.", 310,310);
         }
+        
+        this.frameCounter++;
+        if(System.currentTimeMillis() - this.frameTimer > 1000)
+        {
+            this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.frameCounter,400);
+            this.frameCounter = 0;
+            this.frameTimer = System.currentTimeMillis();
+        }
+        _g.drawImage(this.fps, 5, 5, null);
     }            
 
     public void update(long _time)
@@ -204,39 +227,40 @@ public class GameScene implements Scene {
 
             if(!this.paused)
             {
-                this.moveTimer += _time;
+                this.moveTimer -= _time;
                 EntityRenderer[] entities = this.field.getEntityRenderers();
                 for(int i=0; i<entities.length; i++)
                     if(entities[i].getEntity() != null)
                     {
-                        if(this.moveTimer>200)
+                        if(this.moveTimer<0)
                         {
                             int dir = entities[i].getEntity().getController().move();
                             this.replay.list[i].add(dir);
-                            if(Node.isValidDirection(dir))
-                                entities[i].getEntity().setIsMoving(true);
-                            else
-                                entities[i].getEntity().setIsMoving(false);
-                            
-                            if(this.field.getPointsLeft() == 0)
-                            {
-                                this.win = true;
-                            }
-                            else
-                            {
-                                for(int j=0; j<4; j++)
-                                {
-                                    if(entities[0].getEntity().getNode().getNodeAt(j) != null)
-                                        if(entities[0].getEntity().getNode().getNodeAt(j).holdsEntity())
-                                            this.lose = true;
-                                }
-                            }
+//                            if(Node.isValidDirection(dir))                    //Entity class now handles isMoving
+//                                entities[i].getEntity().setIsMoving(true);
+//                            else
+//                                entities[i].getEntity().setIsMoving(false);
                         }
                         entities[i].getEntity().getController().calculateNextMove();
                     }
                 this.addPoints(entities[0].getEntity().getNode().takePoints());
-                if(this.moveTimer>200)
-                    this.moveTimer = 0;
+                if(this.moveTimer<0)
+                    this.moveTimer = this.roundTime;
+                
+                //Win/Lose condition
+                if(this.field.getPointsLeft() == 0)
+                {
+                    this.win = true;
+                }
+                else
+                {
+                    for(int j=0; j<4; j++)
+                    {
+                        if(entities[0].getEntity().getNode().getNodeAt(j) != null)
+                            if(entities[0].getEntity().getNode().getNodeAt(j).holdsEntity())
+                                this.lose = true;
+                    }
+                }
             }
             else if(confirm.isPressed())
             {
@@ -254,6 +278,7 @@ public class GameScene implements Scene {
         this.win = false;
         this.lose = false;
         this.resetPoints();
+        this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.fps,400);
         this.field.loadFrom(this.level);
         this.levelOffsetX = (800/2) - ((this.field.getSize().width * TileSet.getInstance().getTileSize())/2);
         this.levelOffsetY = (600/2) - ((this.field.getSize().height * TileSet.getInstance().getTileSize())/2);
