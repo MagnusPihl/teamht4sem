@@ -6,10 +6,12 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.1
+ * @version 1.2
  *
  *
  * ******VERSION HISTORY******
+ * Magnus Hemmer Pihl @ 21. marts 2007 (v 1.2)
+ * Added support for ControllerScene (not yet implemented).
  * LMK @ 28. februar 2007 (v 1.1)
  * Moved scene functionality and loop to GameCore
  * Added showGameScene and showTitleScene
@@ -37,6 +39,7 @@ public class PacmanApp {
     private GameScene gameScene;  
     private HighScoreScene highscoreScene;
     private CreditsScene creditsScene;
+    private ControllerScene controllerScene;
     private GameCore core;
     private BitmapFont font;
     
@@ -52,6 +55,7 @@ public class PacmanApp {
         this.titleScene = new TitleScene();
         this.highscoreScene = new HighScoreScene();
         this.creditsScene = new CreditsScene();
+        this.controllerScene = new ControllerScene();
         this.font = new BitmapFont(new File("images/alfa"), 5);
         this.core = new GameCore(this.titleScene);       
     }
@@ -74,6 +78,10 @@ public class PacmanApp {
     
     public void showCreditsScene() {
         this.core.setScene(this.creditsScene);
+    }
+    
+    public void showControllerScene() {
+        this.core.setScene(this.controllerScene);
     }
     
     public GameScene getGameScene() {
