@@ -3,6 +3,7 @@
  * JUnit based test
  *
  * Created on 23. februar 2007, 09:05
+ *
  */
 
 package communication;
