@@ -6,9 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.3
+ * @version 1.4
  *
  * ******VERSION HISTORY******
+ * Magnus Hemmer Pihl @ 21. marts 2007 (v 1.4)
+ * Saved file.getAbsolutePath() + file.separator in an itermediate variable 
+ * instead of constructing over and over again.
+ * Moved to game.visual
  *
  * Magnus Hemmer Pihl @ 5. marts 2007 (v 1.3)
  * Added point tiles, along with getPointsTile method.
@@ -25,7 +29,7 @@
  *
  */
 
-package field;
+package game.visual;
 
 import java.awt.Image;
 import java.io.File;
@@ -105,27 +109,28 @@ public class TileSet
         {
             if(file.isDirectory())
             {
+                String path = file.getAbsolutePath() + file.separator;
                 for(int i=0; i<4; i++)
                 {
                     for(int j=0; j<4; j++)
                     {
                         this.entityTiles[i][j][0] =
-                                (new ImageIcon(file.getAbsolutePath() + file.separator +  i +"_"+ j + "_0.png")).getImage();
+                                (new ImageIcon(path +  i +"_"+ j + "_0.png")).getImage();
                         this.entityTiles[i][j][1] =
-                                (new ImageIcon(file.getAbsolutePath() + file.separator +  i +"_"+ j + "_1.png")).getImage();
+                                (new ImageIcon(path +  i +"_"+ j + "_1.png")).getImage();
                     }
                 }
 
                 for (int i = 0; i < this.pathTiles.length; i++)
                 {
                     //System.out.println(file.getAbsolutePath() + file.separator + this.zeroPad(Integer.toBinaryString(i),4));
-                    this.pathTiles[i] = (new ImageIcon(file.getAbsolutePath() + file.separator + this.zeroPad(Integer.toBinaryString(i),4) + ".png")).getImage();
+                    this.pathTiles[i] = (new ImageIcon(path + this.zeroPad(Integer.toBinaryString(i),4) + ".png")).getImage();
                 }
                 
-                this.pointTiles[0] = new ImageIcon(file.getAbsolutePath() + file.separator + "p10.png").getImage();
-                this.pointTiles[1] = new ImageIcon(file.getAbsolutePath() + file.separator + "p25.png").getImage();
+                this.pointTiles[0] = new ImageIcon(path + "p10.png").getImage();
+                this.pointTiles[1] = new ImageIcon(path + "p25.png").getImage();
 
-                this.baseTile = (new ImageIcon(file.getAbsolutePath() + file.separator +  "base.png")).getImage();
+                this.baseTile = (new ImageIcon(path +  "base.png")).getImage();
                 this.tileSize = this.baseTile.getWidth(null);
             }
             

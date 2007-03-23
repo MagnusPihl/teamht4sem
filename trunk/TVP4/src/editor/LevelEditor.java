@@ -25,6 +25,7 @@ package editor;
 
 import field.*;
 import field.Field;
+import game.visual.TileSet;
 import java.awt.*;
 import javax.swing.*;
 import java.io.*;

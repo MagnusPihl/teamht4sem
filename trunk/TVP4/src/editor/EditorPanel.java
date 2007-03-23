@@ -29,6 +29,7 @@
 package editor;
 
 import field.*;
+import game.visual.TileSet;
 import java.awt.event.*;
 import java.io.File;
 import java.awt.*;

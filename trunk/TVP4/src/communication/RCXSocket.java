@@ -67,7 +67,7 @@ public class RCXSocket {
             if (buffer == null) {
                 throw new NullPointerException();
             } else if (offset < 0 || length < 0 || length > buffer.length - offset) {
-                throw new IndexOutOfBoundsException();
+                //throw new IndexOutOfBoundsException();
             } else if (length == 0) {
                 return 0;
             }
