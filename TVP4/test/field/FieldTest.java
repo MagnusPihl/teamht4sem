@@ -26,6 +26,8 @@
 
 package field;
 
+import field.Field;
+import field.Node;
 import java.awt.Dimension;
 import java.io.File;
 import junit.framework.*;
