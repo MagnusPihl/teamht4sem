@@ -59,9 +59,9 @@ public class IRTransportSocket {
                 this.type = this.in.read();            
                 this.data = this.in.read();
                 
-                if ((this.type == IS_DATA) && (this.data == this.lastData)) {
+                if ((this.type == DATA) && (this.data == this.lastData)) {
                     this.acknowledge();
-                } else if (this.type == IS_DATA) {
+                } else if (this.type == DATA) {
                     break;
                 }
                 
@@ -72,7 +72,7 @@ public class IRTransportSocket {
         }                
         
         private void acknowledge() throws IOException {
-            this.out.write(IS_ACKNOWLEDGE);
+            this.out.write(ACKNOWLEDGE);
             this.out.write(0);
         }        
     }
@@ -94,7 +94,7 @@ public class IRTransportSocket {
                         
             while (true) {
                 this.out.write(b);
-                if (this.in.read() == IS_ACKNOWLEDGE) {
+                if (this.in.read() == ACKNOWLEDGE) {
                     break;
                 } else {
                     this.out.write(b);

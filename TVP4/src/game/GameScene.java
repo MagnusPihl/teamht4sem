@@ -56,6 +56,7 @@ import game.input.*;
 import field.*;
 import game.visual.BitmapFont;
 import game.visual.EntityRenderer;
+import game.visual.TileSet;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;

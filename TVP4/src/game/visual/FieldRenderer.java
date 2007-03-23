@@ -102,8 +102,8 @@ public class FieldRenderer {
      * Draw base tile on the graphics
      *
      * @param g canvas to draw on.
-     * @param offset x
-     * @param offset y
+     * @param offsetX
+     * @param offsetY
      * @param area to cover with base tile.
      */
     public void drawBaseTile(Graphics g, int offSetX, int offSetY, Dimension size) {

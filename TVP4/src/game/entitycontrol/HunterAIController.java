@@ -55,7 +55,7 @@ public class HunterAIController extends EntityController {
      * Calculate next move
      */
     public void calculateNextMove() {           
-        this.nextDirection = this.algorithm.search(super.entity.getNode(), this.prey.getNode());        
+        this.nextDirection = this.algorithm.search(super.entity.getNode(), this.prey.getNode());                
     }
     
     /**

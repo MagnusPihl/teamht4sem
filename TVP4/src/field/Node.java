@@ -168,7 +168,7 @@ public class Node implements Serializable, Comparable {
      *
      * @param isTaken Should be true if the points are taken. False otherwise.
      */
-    public void setPointTaken(boolean isTaken) {
+    public void setPointsTaken(boolean isTaken) {
         this.pointsTaken = isTaken;
     }
     

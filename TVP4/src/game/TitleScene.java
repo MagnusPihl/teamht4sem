@@ -22,6 +22,7 @@ import game.system.*;
 import game.input.*;
 import game.visual.*;
 import field.*;
+import game.visual.TileSet;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
