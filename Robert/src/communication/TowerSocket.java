@@ -6,10 +6,14 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
+ *
+ * LMK @ 23. marts 2007 (v 1.1) 
+ * Moved checksum methods and features common with LLCSocket to LinkLayerSocket
+ * Added timeouts to read methods.
  *
  * LMK @ 14. marts 2007 (v 1.0) 
  * 
@@ -20,10 +24,8 @@ package communication;
 import josx.rcxcomm.*;
 import java.io.*;
 
-public class TowerSocket {
-        
-    private TowerOutputStream out;
-    private TowerInputStream in;
+public class TowerSocket extends LinkLayerSocket {
+    
     private Tower tower;
     
     private int bufferIndex;
@@ -32,10 +34,6 @@ public class TowerSocket {
     private byte[] packetBuffer;
     
     public static final int INPUT_BUFFER_SIZE = 400;    
-    public static final byte PACKET_HEADER = 0x55;
-    public static final int DATA_OFFSET = 2;
-    public static final int CHECKSUM_OFFSET = 8;
-    public static final int PACKET_SIZE = 10;
         
     /** 
      * Creates a new instance of TowerSocket that can communicate with
@@ -43,10 +41,11 @@ public class TowerSocket {
      * No addressing is done.
      */
     public TowerSocket() {
+        super();
         this.tower = new Tower();
         this.tower.open("usb");
-        this.out = new TowerSocket.TowerOutputStream();
-        this.bufferIndex = -1;
+        super.out = new TowerSocket.TowerOutputStream();
+        this.bufferIndex = 0;
         this.readBuffer = new byte[INPUT_BUFFER_SIZE];
         
         this.packetBuffer = new byte[PACKET_SIZE];
@@ -59,61 +58,47 @@ public class TowerSocket {
      * to buffer, or false if the packet was invalid and trashed.
      */
     private boolean readPacket() {
-        byte[] data = new byte[1];
-        //byte[] data = new byte[DATA_OFFSET];
+        byte[] data = new byte[1];        
         int available = 0;
         this.packetIndex = 0;
-        
+        long timeout = System.currentTimeMillis() + TIMEOUT;        
+                
         do {
             available = this.tower.read(data);            
-            
             if (available == 1) {
                 if ((this.packetIndex < DATA_OFFSET)) {
                     //wait for start bytes.
                     if (data[0] == PACKET_HEADER) {
                         this.packetIndex++;
+                        timeout = System.currentTimeMillis() + TIMEOUT;
                     } else {
                         this.packetIndex = 0;
                     }
                 } else {
                     this.packetBuffer[this.packetIndex++] = data[0];
+                    timeout = System.currentTimeMillis() + TIMEOUT;
                 }
+            } else if (System.currentTimeMillis() > timeout) {
+                this.timeoutCount++;
+                return false;
             }
         } while (this.packetIndex < PACKET_SIZE);
                 
         //if checksum is valid add packet to stream.
-        if (this.checksum()) {
-            for (int i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {
+        if (LinkLayerSocket.checksumIsValid(this.packetBuffer)) {
+            for (int i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {                
+                this.readBuffer[this.bufferIndex] = this.packetBuffer[i];
+                
                 this.bufferIndex++;
                 if (this.bufferIndex == INPUT_BUFFER_SIZE) {
                     this.bufferIndex = 0;
                 }
-                this.readBuffer[this.bufferIndex++] = this.packetBuffer[i];
             }
             return true;
         } else {
             return false;
         }
-    }
-        
-    /**
-     * Check that the last packet read from IR is valid.     
-     *
-     * @return true if packet is valid.
-     */
-    private boolean checksum() {                        
-        int checksum = 0;
-        for (int i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {
-            checksum += this.packetBuffer[i];
-        }
-
-        if (checksum - this.packetBuffer[CHECKSUM_OFFSET] == 0) {
-            return true;
-        }        
-
-        return false;                        
-    }
-    
+    }            
     
     /**
      * InputStream that converts incoming packets into an inputstream.
@@ -121,6 +106,7 @@ public class TowerSocket {
      */
     public class TowerInputStream extends InputStream {
         private int readIndex;
+        private byte data;
                 
         protected TowerInputStream() {       
             this.readIndex = bufferIndex;
@@ -132,17 +118,21 @@ public class TowerSocket {
          *
          * @return -1 if no bytes could be read.
          */
-        public int read() throws IOException {              
+        public int read() throws IOException {                                      
+            if ((bufferIndex == this.readIndex)) {
+                if (!readPacket()) {
+                    return -1;
+                }
+            }
+            
+            this.data = readBuffer[this.readIndex];
+            
             this.readIndex++;
             if (this.readIndex == INPUT_BUFFER_SIZE) {
                 this.readIndex = 0;
             }
             
-            while ((bufferIndex == -1)||(bufferIndex == this.readIndex)) {
-                readPacket();
-            }                 
-            
-            return readBuffer[this.readIndex];
+            return data;
         }  
     }
     
@@ -177,40 +167,15 @@ public class TowerSocket {
             this.packetBuffer[this.packetIndex++] = (byte)~buffer;
             
             if (this.packetIndex == CHECKSUM_OFFSET) {
-                this.addChecksum();
+                LinkLayerSocket.addChecksum(this.packetBuffer);
                 System.out.println(tower.strerror(tower.write(this.packetBuffer, PACKET_SIZE)));
                 this.packetIndex = DATA_OFFSET;
             }            
         }
-        
-        /**
-         * Calculate and add checksum to current packet.
-         */
-        private void addChecksum() {            
-            this.packetBuffer[CHECKSUM_OFFSET] = 0;
-            
-            for (int i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {
-                this.packetBuffer[CHECKSUM_OFFSET] += this.packetBuffer[i];
-            }
-            this.packetBuffer[CHECKSUM_OFFSET + 1] = (byte)~this.packetBuffer[CHECKSUM_OFFSET];
-        }                
-    }    
+    }        
     
-    /**
-     * Get output stream with which you can write to the IR Tower.
-     *
-     * @return TowerOutputStream
-     */
-    public TowerOutputStream getOutputStream() {
-        return this.out;
-    }
     
-    /**
-     * Get input stream to read from IR Tower with.
-     * 
-     * @return TowerInputStream
-     */
-    public TowerInputStream getInputStream() {
+    public InputStream getInputStream() {
         return new TowerSocket.TowerInputStream();
     }
 }

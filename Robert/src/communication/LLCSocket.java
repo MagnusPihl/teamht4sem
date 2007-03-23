@@ -11,6 +11,10 @@
  *
  * ******VERSION HISTORY******
  *
+ * LMK @ 23. marts 2007 (v 1.1) 
+ * Moved checksum methods and features common with TowerSocket to LinkLayerSocket
+ * Added timeouts to read methods.
+ *
  * LMK @ 21. marts 2007 (v 1.0)
  * Derived from RCXSocket
  *
@@ -21,18 +25,11 @@ package communication;
 import josx.rcxcomm.*;
 import java.io.*;
 
-public class LLCSocket {
-        
-    private LLCOutputStream out;
-    private LLCInputStream in;   
-        
-    public static final byte PACKET_HEADER = 0x55;
-    public static final byte DATA_OFFSET = 2;
-    public static final byte CHECKSUM_OFFSET = 8;
-    public static final byte PACKET_SIZE = 10;
+public class LLCSocket extends LinkLayerSocket {                
     
     /** Creates a new instance of RCXSocket */
-    public LLCSocket() {        
+    public LLCSocket() { 
+        super();
         this.in = new LLCSocket.LLCInputStream();
         this.out = new LLCSocket.LLCOutputStream();
         LLC.init();
@@ -42,59 +39,62 @@ public class LLCSocket {
         private int readPointer;
         private int inPointer;
         private byte[] buffer;        
+        private int timeout;
+        private int data;
         
         protected LLCInputStream() {       
             this.buffer = new byte[PACKET_SIZE];
+            this.readPointer = 0;
+            this.inPointer = 0;       
         }
         
         private boolean readPacket() {
-            int data;
             this.inPointer = 0;            
+            timeout = (int)System.currentTimeMillis() + TIMEOUT; 
             
             do {
-                data = LLC.read();
-                if (data != -1) {
+                this.data = LLC.read();
+                if (this.data != -1) {
                     if ((this.inPointer < DATA_OFFSET)) {
-                        if (data == PACKET_HEADER) {
+                        if (this.data == PACKET_HEADER) {
                             this.inPointer++;
+                            timeout = (int)System.currentTimeMillis() + TIMEOUT; 
                         } else {
                             this.inPointer = 0;
                         }
                     } else {
-                        this.buffer[this.inPointer++] = (byte)data;
+                        this.buffer[this.inPointer++] = (byte)this.data;
+                        timeout = (int)System.currentTimeMillis() + TIMEOUT; 
                     }
-                }                
+                } else if (timeout < (int)System.currentTimeMillis()) {
+                    this.inPointer = 0;
+                    timeoutCount++;
+                    return false;
+                }
             } while (this.inPointer < PACKET_SIZE);            
             
-            return this.checksum();
-        }
-        
-        private boolean checksum() {                        
-            int checksum = 0;
-            for (int i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {
-                checksum += this.buffer[i];
-            }
-            
-            if (checksum - this.buffer[CHECKSUM_OFFSET] == 0) {
-                return true;
-            }        
-            
             this.inPointer = 0;
-            return false;                        
-        }
+            
+            return LinkLayerSocket.checksumIsValid(this.buffer);                
+        }        
                 
-        public int read() throws IOException {                           
-            if ((this.inPointer != PACKET_SIZE)||(this.readPointer == CHECKSUM_OFFSET)) {
+        public int read() throws IOException {      
+            if (this.readPointer == this.inPointer) {
                 if (!this.readPacket()) {
                     return -1;
                 } else {
                     this.readPointer = DATA_OFFSET;
                 }
             }
-                        
-            byte output = this.buffer[this.readPointer];
+            
+            this.data = this.buffer[this.readPointer];
             this.readPointer += 2;
-            return output;            
+                        
+            if (this.readPointer == CHECKSUM_OFFSET) {
+                this.readPointer = 0;
+            }
+                        
+            return this.data;            
         }                        
     }
     
@@ -120,28 +120,10 @@ public class LLCSocket {
             this.buffer[this.writePointer++] = (byte)(~buffer);
             
             if (this.writePointer == CHECKSUM_OFFSET) {
-                this.addChecksum();
+                LinkLayerSocket.addChecksum(this.buffer);
                 LLC.sendBytes(this.buffer, PACKET_SIZE);
                 this.writePointer = DATA_OFFSET;
             }
-        }
-                
-        private void addChecksum() {            
-            this.buffer[CHECKSUM_OFFSET] = 0;
-            
-            for (int i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {
-                this.buffer[CHECKSUM_OFFSET] += this.buffer[i];
-            }
-            
-            this.buffer[CHECKSUM_OFFSET + 1] = (byte)(~this.buffer[CHECKSUM_OFFSET]);
-        }
+        }                        
     }    
-    
-    public LLCOutputStream getOutputStream() {
-        return this.out;
-    }
-    
-    public LLCInputStream getInputStream() {
-        return this.in;
-    }
 }
