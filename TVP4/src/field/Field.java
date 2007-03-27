@@ -6,16 +6,20 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.14
+ * @version 1.15
  *
  * ******VERSION HISTORY******
+ * LMK @ 27. marts 2007 (v 1.15)
+ * Altered load and save functions so that they no longer serializes
+ * This should make them version independent.
+ * Added method offsetNodes.
  * Magnus Hemmer Pihl @ 8. marts 2007 (v 1.14)
  * Removed dimension from drawField()-method.
  * Forced field to re-render every time a new field is loaded.
  * LMK @ 06. marts 2007 (v 1.13)
  * Added method getPointsLeft
  * Mikkel Nielsen @ 06. marts 2007 (v 1.12)
- * Added HighScoreList() 
+ * Added HighScoreList()
  * LMK @ 05. marts 2007 (v 1.11)
  * Added call to drawPoints to drawField method
  * Speeded up drawing by prerendering field
@@ -59,6 +63,7 @@
 
 package field;
 
+import game.HighScore;
 import game.visual.*;
 import java.awt.*;
 import java.util.*;
@@ -66,7 +71,7 @@ import java.io.*;
 import game.HighScoreList;
 
 public class Field {
-        
+    
     private FieldRenderer renderer;
     private EntityRenderer[] entities;
     private java.util.List nodes;
@@ -75,8 +80,8 @@ public class Field {
     private HighScoreList highScores;
     private Image renderedField;
     
-    /** 
-     * Creates a new empty field 
+    /**
+     * Creates a new empty field
      */
     public Field() {
         this.renderer = new FieldRenderer(this);
@@ -115,7 +120,7 @@ public class Field {
      */
     public boolean placeGhost(Point position) {
         for (int i = 1; i < this.entities.length; i++) {
-            if (this.entities[i] == null) {                
+            if (this.entities[i] == null) {
                 boolean result = this.placeEntityAt(position, i);
                 this.hasChanged = true;
                 return result;
@@ -132,12 +137,12 @@ public class Field {
      * @param id of the entity(, must be unique)
      * @return tue if the entity has been placed
      */
-    private boolean placeEntityAt(Point position, int id) {  
+    private boolean placeEntityAt(Point position, int id) {
         Node node = this.getNodeAt(position);
         if (node != null) {
             if (!node.holdsEntity()) {
                 if (this.entities[id] != null) {
-                    this.entities[id].getEntity().setNode(node);                    
+                    this.entities[id].getEntity().setNode(node);
                 } else {
                     this.entities[id] = new EntityRenderer(new Entity(node, id));
                 }
@@ -167,14 +172,14 @@ public class Field {
         }
         
         return null;
-    }       
+    }
     
     /**
      * Remove entity at position.
      *
      * @param position on field
      */
-    public void removeEntityAt(Point position) {        
+    public void removeEntityAt(Point position) {
         for (int i = 0; i < this.entities.length; i++) {
             if (this.entities[i] != null) {
                 if (this.entities[i].getEntity().getPosition().equals(position)) {
@@ -183,7 +188,7 @@ public class Field {
                 }
             }
         }
-    }   
+    }
     
     /**
      * Add note to field at position with 0 points held
@@ -192,18 +197,18 @@ public class Field {
      * @param y coordinate of node position.
      */
     public void addNodeAt(int x, int y) {
-        this.addNodeAt(x, y, 0);                 
+        this.addNodeAt(x, y, 0);
     }
     
     /**
      * Add note to field at position. If a node is already present at the
      * passed position, the node will have it's points adjusted to match
      * the passed amount.
-     * 
+     *
      * @param position to add node.
      * @param points to be held by node.
-     */    
-    public void addNodeAt(Point position, int points) {    
+     */
+    public void addNodeAt(Point position, int points) {
         if ((0 <= position.x)&&(0 <= position.y)) {
             Node current = this.getNodeAt(position);
             
@@ -226,7 +231,7 @@ public class Field {
     
     /**
      * Same as calling #addNoteAt(Point, int)
-     * 
+     *
      * @param x coordinate of node position.
      * @param y coordinate of node position.
      * @param points to be held by node.
@@ -237,24 +242,24 @@ public class Field {
     
     /**
      * Removes node at position and removes all connections to it.
-     * 
+     *
      * @param position of the node to remove.
      */
     public void removeNodeAt(Point position) {
-        if (this.getEntityAt(position) == null) {        
+        if (this.getEntityAt(position) == null) {
             Node node = this.getNodeAt(position);
             
             if (node != null) {
                 node.removeAllConnections();
                 this.nodes.remove(node);
             }
-
+            
             this.hasChanged = true;
         }
     }
     
     /**
-     * Removes node at the specified coordinates. 
+     * Removes node at the specified coordinates.
      * Same as calling #removeNodeAt(Point).
      *
      * @param x coordinate of node position.
@@ -265,28 +270,28 @@ public class Field {
     }
     
     /**
-     * Get node associated with position on the field. 
-     * 
+     * Get node associated with position on the field.
+     *
      * @param x to search for.
      * @param y to search for.
      * @return The node at position. If no node is associated
      * NULL is returned.
      */
-    public Node getNodeAt(int x, int y) {     
+    public Node getNodeAt(int x, int y) {
         return this.getNodeAt(new Point(x,y));
     }
     
     /**
-     * Get node associated with position on the field. 
-     * 
+     * Get node associated with position on the field.
+     *
      * @param position to search for.
      * @return The node at position. If no node is associated
      * NULL is returned.
      */
-    public Node getNodeAt(Point position) {     
+    public Node getNodeAt(Point position) {
         Node current = null;
         
-        for (Iterator i = this.nodes.iterator(); i.hasNext();) {            
+        for (Iterator i = this.nodes.iterator(); i.hasNext();) {
             current = (Node)(i.next());
             if (current.getPosition().equals(position)) {
                 return current;
@@ -297,7 +302,7 @@ public class Field {
     }
     
     /**
-     * If a node is available at the passed position it will be removed, 
+     * If a node is available at the passed position it will be removed,
      * if none is available one is added.
      *
      * @param position to invert node.
@@ -315,8 +320,8 @@ public class Field {
      * Get the dimension of the field, based on the positions of the nodes.
      * Once the field has been created save the size, this function computes
      * the size anew every time it's called.
-     * 
-     * @return The difference between dimension of the field. 
+     *
+     * @return The difference between dimension of the field.
      * 0,0 if the field is empty.
      */
     public Dimension getSize() {
@@ -326,7 +331,7 @@ public class Field {
             int minY = 0;
             int maxY = 0;
             Point current = null;
-
+            
             for (Iterator i = this.nodes.iterator(); i.hasNext();) {
                 current = ((Node)(i.next())).getPosition();
                 if (current.getX() < minX) {
@@ -342,8 +347,8 @@ public class Field {
                     maxY = (int)current.getY();
                 }
             }
-        
-            return new Dimension(maxX - minX + 1, maxY - minY +1);        
+            
+            return new Dimension(maxX - minX + 1, maxY - minY +1);
         }
         
         return new Dimension(0,0);
@@ -351,7 +356,7 @@ public class Field {
     
     /**
      * Retrieve the list of nodes at the field
-     * 
+     *
      * @return list of nodes on the field
      */
     public java.util.List getNodeList() {
@@ -363,7 +368,7 @@ public class Field {
      */
     public void clearField() {
         //add code to clear entity positions
-        this.nodes.clear();   
+        this.nodes.clear();
         this.entities = new EntityRenderer[3];
         this.hasChanged = false;
     }
@@ -377,24 +382,52 @@ public class Field {
         this.renderedField = null;
         ObjectInputStream in = null;
         boolean success = true;
-            
-        if (file.isFile()) {                                
+        
+        if (file.isFile()) {
             try {
                 in = new ObjectInputStream(new FileInputStream(file));
-                this.entities = new EntityRenderer[in.readInt()];
-                Object current = null;
                 
-                for (int i = 0; i < this.entities.length; i++) {
-                    current = in.readObject();
-                    if (current != null) {
-                        this.entities[i] = new EntityRenderer((Entity)current);
+                this.nodes.clear();
+                this.highScores.clear();
+                
+                int nodeCount = in.readInt();
+                this.entities = new EntityRenderer[in.readInt()];                
+                int highScoreCount = in.readInt();
+                
+                {
+                    int x;
+                    int y;
+                    for (int i = 0; i < nodeCount; i++) {
+                        x = in.readInt();
+                        y = in.readInt();
+                        this.addNodeAt(new Point(x,y), in.readInt());
                     }
                 }
-            
-                this.nodes = (java.util.List)in.readObject();                
+                
+                {
+                    int id;
+                    int x;
+                    int y;
+                    for (int i = 0; i < this.entities.length; i++) {
+                        id = in.readInt();
+                        x = in.readInt();
+                        y = in.readInt();
+                        if (id != -1) {
+                            this.placeEntityAt(new Point(x,y), id);
+                        }
+                    }
+                }
+                
+                {
+                    String name;
+                    for (int i = 0; i < highScoreCount; i++) {
+                        name = in.readUTF();
+                        this.highScores.addHighScore(name, in.readInt(), i);
+                    }
+                }
             } catch (Exception e) {
                 success = false;
-                e.printStackTrace(); 
+                e.printStackTrace();
             } finally {
                 try {
                     in.close();
@@ -402,8 +435,8 @@ public class Field {
                 } finally {
                     in = null;
                 }
-            }    
-        }        
+            }
+        }
         
         if (success) {
             this.hasChanged = false;
@@ -411,7 +444,7 @@ public class Field {
         
         return success;
     }
-        
+    
     /**
      * Save contents of field and entityStatingPositions to file
      *
@@ -420,24 +453,46 @@ public class Field {
     public boolean saveTo(File file) {
         ObjectOutputStream out = null;
         boolean success = true;
-                                                  
+        
         try {
             out = new ObjectOutputStream(new FileOutputStream(file));
-            
+            out.writeInt(this.nodes.size());
             out.writeInt(this.entities.length);
+            out.writeInt(this.highScores.size());
             
-            for (int i = 0; i < this.entities.length; i++) {
-                if (this.entities[i] != null) {
-                    out.writeObject(this.entities[i].getEntity());
-                } else {
-                    out.writeObject(null);
+            {
+                Node current = null;
+                for (Iterator i = this.nodes.iterator(); i.hasNext();) {
+                    current = (Node)i.next();
+                    out.writeInt(current.getPosition().x);
+                    out.writeInt(current.getPosition().y);
+                    out.writeInt(current.getPoints());
                 }
             }
             
-            out.writeObject(this.nodes);                
+            for (int i = 0; i < this.entities.length; i++) {
+                if (this.entities[i] != null) {
+                    out.writeInt(i);
+                    out.writeInt(this.entities[i].getEntity().getPosition().x);
+                    out.writeInt(this.entities[i].getEntity().getPosition().y);
+                } else {
+                    out.writeInt(-1);
+                    out.writeInt(0);
+                    out.writeInt(0);
+                }
+            }
+            
+            {
+                HighScore current = null;
+                for (Iterator i = this.highScores.iterator(); i.hasNext();) {
+                    current = (HighScore)i.next();
+                    out.writeUTF(current.getName());
+                    out.writeInt(current.getScore());
+                }
+            }
         } catch (Exception e) {
             success = false;
-            e.printStackTrace(); 
+            e.printStackTrace();
         } finally {
             try {
                 out.close();
@@ -445,7 +500,7 @@ public class Field {
             } finally {
                 out = null;
             }
-        }    
+        }
         
         if (success) {
             this.hasChanged = false;
@@ -456,7 +511,7 @@ public class Field {
     
     /**
      * Check whether the Field has changed since last save/load.
-     * 
+     *
      * @return true if the state of the Field has changed.
      */
     public boolean hasChanged() {
@@ -465,7 +520,7 @@ public class Field {
     
     /**
      * Draw baseTile, nodes and entities
-     * 
+     *
      * @param g canvas to draw on.
      * @param offset x.
      * @param offset y.
@@ -474,7 +529,7 @@ public class Field {
     public void drawField(Graphics g, int offsetX, int offsetY) {
         if ((this.hasChanged) || (this.renderedField == null)) {
             this.renderedField = this.renderer.render();
-        }        
+        }
         
         g.drawImage(this.renderedField, offsetX, offsetY, null);
         this.renderer.drawPoints(g, offsetX, offsetY);
@@ -508,19 +563,33 @@ public class Field {
      * Get total amount of points left on field.
      *
      * @result total points.
-     */    
+     */
     public int getPointsLeft() {
         int total = 0;
         Node current = null;
         
-        for (Iterator i = this.nodes.iterator(); i.hasNext();) {            
+        for (Iterator i = this.nodes.iterator(); i.hasNext();) {
             current = (Node)(i.next());
             
             if (!current.pointsTaken()) {
-                total += current.getPoints();       
+                total += current.getPoints();
             }
         }
         
         return total;
     }
-}
+    
+    /**
+     * Move the entirety of nodes on field a distance along the x and y axises.
+     * 
+     * @param x axis offset
+     * @param y axis offset
+     */
+    public void offsetNodes(int x, int y) {
+        Node current;
+        
+        for (Iterator i = this.nodes.iterator(); i.hasNext();) {
+            current = (Node)i.next();
+            current.getPosition().translate(x,y);
+        }
+    }

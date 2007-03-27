@@ -8,6 +8,7 @@
  * @author LMK
  * @version 1.0
  *
+ * Should be changed so that the list is rendered "nicely"
  *
  * ******VERSION HISTORY******
  *
@@ -49,8 +50,8 @@ public class HighScoreScene implements Scene {
         _g.fillRect(0,0,800,600);
         String writeScores = this.highScores.scoreToString();
         String writeNames = this.highScores.namesToString();
-        PacmanApp.getInstance().getFont().drawString(_g, writeNames, 10, 10, 780);
-        PacmanApp.getInstance().getFont().drawString(_g, writeScores, 400, 10, 780);
+        PacmanApp.getInstance().getFont().drawString(_g, writeNames, 20, 20, 580);
+        PacmanApp.getInstance().getFont().drawString(_g, writeScores, 600, 20, 780);
     }
     
     public void update(long _time) {
