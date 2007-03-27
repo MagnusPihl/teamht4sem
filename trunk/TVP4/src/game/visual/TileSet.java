@@ -9,7 +9,7 @@
  * @version 1.4
  *
  * ******VERSION HISTORY******
- * Magnus Hemmer Pihl @ 21. marts 2007 (v 1.4)
+ * Lau Maack-Krommes @ 21. marts 2007 (v 1.4)
  * Saved file.getAbsolutePath() + file.separator in an itermediate variable 
  * instead of constructing over and over again.
  * Moved to game.visual
@@ -31,6 +31,7 @@
 
 package game.visual;
 
+import field.*;
 import java.awt.Image;
 import java.io.File;
 import javax.swing.ImageIcon;
@@ -43,6 +44,9 @@ public class TileSet
     private Image baseTile;
     private int tileSize;
     
+    public static final int FRAME_COUNT = 2;
+    public static final int ENTITY_COUNT = 4;
+    public static final int PATH_TILE_COUNT = 16;
     public static final String SKIN_LIBRARY = (new File("skins/")).getAbsolutePath() + File.separator;
     
     private static TileSet instance = new TileSet(SKIN_LIBRARY + "nodes/");
@@ -73,8 +77,8 @@ public class TileSet
      */
     public TileSet(String path)
     {
-        this.entityTiles = new Image[4][4][2];
-        this.pathTiles = new Image[16];
+        this.entityTiles = new Image[ENTITY_COUNT][Node.DIRECTION_COUNT][FRAME_COUNT];
+        this.pathTiles = new Image[PATH_TILE_COUNT];
         this.pointTiles = new Image[2];
         this.loadTileSet(new File(path));
     }
@@ -110,9 +114,9 @@ public class TileSet
             if(file.isDirectory())
             {
                 String path = file.getAbsolutePath() + file.separator;
-                for(int i=0; i<4; i++)
+                for(int i=0; i<ENTITY_COUNT; i++)
                 {
-                    for(int j=0; j<4; j++)
+                    for(int j=0; j<Node.DIRECTION_COUNT; j++)
                     {
                         this.entityTiles[i][j][0] =
                                 (new ImageIcon(path +  i +"_"+ j + "_0.png")).getImage();
@@ -121,7 +125,7 @@ public class TileSet
                     }
                 }
 
-                for (int i = 0; i < this.pathTiles.length; i++)
+                for (int i = 0; i < PATH_TILE_COUNT; i++)
                 {
                     //System.out.println(file.getAbsolutePath() + file.separator + this.zeroPad(Integer.toBinaryString(i),4));
                     this.pathTiles[i] = (new ImageIcon(path + this.zeroPad(Integer.toBinaryString(i),4) + ".png")).getImage();
@@ -207,7 +211,7 @@ public class TileSet
      * @param length The desired length of the string, after reformatting.
      * @return The reformatted string including leading zeroes.
      */
-    private String zeroPad(String string, int length)
+    public static String zeroPad(String string, int length)
     {
         StringBuilder builder = new StringBuilder(length);
         
@@ -219,5 +223,5 @@ public class TileSet
         builder.append(string);
         
         return builder.toString();
-    }
+    }        
 }
