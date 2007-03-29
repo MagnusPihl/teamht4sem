@@ -14,8 +14,8 @@
  * LMK @ 13. marts 2007 (v 1.1)
  * Changed name of class to from IRDatagramSocket to NetworkSocket 
  * to reflect layer and responsibility.
- * Timeout is needed for reads. When adding timeout stream errors could occur
- * if timeout occurs after first byte have been read.
+ * Timeout when reading has been added. Timeout only occurs once 3 bytes have
+ * been read.
  *
  * LMK @ 13. marts 2007 (v 1.0)
  * Current version only supports package of size 2.
@@ -100,7 +100,8 @@ public class NetworkSocket {
                         if (this.packetAccepted) {
                             this.bufferIndex = 0;
                             return true;
-                        }                                                
+                        }                                             
+                        this.timeout = (int)System.currentTimeMillis() + TIMEOUT; 
                         this.bufferIndex = -1;
                     }
                 } else if ((this.bufferIndex == -1)&&(this.timeout < (int)System.currentTimeMillis())) {
