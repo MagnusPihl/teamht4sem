@@ -132,7 +132,7 @@ public class TowerSocket extends LinkLayerSocket {
                 this.readIndex = 0;
             }
             
-            return data;
+            return this.data;
         }  
     }
     
