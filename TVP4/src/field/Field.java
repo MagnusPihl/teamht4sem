@@ -9,6 +9,8 @@
  * @version 1.15
  *
  * ******VERSION HISTORY******
+ * Magnus Hemmer Pihl @ 10. april 2007 (v 1.15.1)
+ * Corrected missing end-bracket to close the class.
  * LMK @ 27. marts 2007 (v 1.15)
  * Altered load and save functions so that they no longer serializes
  * This should make them version independent.
@@ -593,3 +595,4 @@ public class Field {
             current.getPosition().translate(x,y);
         }
     }
+}
