@@ -50,6 +50,7 @@
 
 package game;
 
+import game.audio.SoundManager;
 import game.entitycontrol.*;
 import game.system.*;
 import game.input.*;
@@ -79,6 +80,7 @@ public class GameScene implements Scene {
     
     private Replay replay;
     private int mode;
+    private SoundManager soundManager;
     
     private long moveTimer;
     private long roundTime;
@@ -94,7 +96,8 @@ public class GameScene implements Scene {
         this.field = new Field();
         this.level = new File("test.lvl");
         TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "pacman/"));
-        
+        SoundSet.getInstance().loadSoundSet(new File(SoundSet.SKIN_LIBRARY + "pacman/"));
+        this.soundManager = new SoundManager();
         this.pause = new InputAction("Pause", InputAction.DETECT_FIRST_ACTION);
         this.confirm = new InputAction("Confirm quit", InputAction.DETECT_FIRST_ACTION);
         
@@ -112,6 +115,8 @@ public class GameScene implements Scene {
     
     public void addPoints(int _points)
     {
+        //if (_points != 0)
+        //    this.soundManager.runSound(2, false);
         this.points += _points;
         font = PacmanApp.getInstance().getFont();
         pointsImage = font.renderString(""+this.points,400);
@@ -184,9 +189,11 @@ public class GameScene implements Scene {
             _g.setColor(Color.WHITE);
             _g.drawString("Game Paused", 360,295);
             _g.drawString("Press 'Y' to exit to the title screen.", 310,310);
+            this.soundManager.pause();
         }
         if(this.win)
         {
+            //this.soundManager.runSound(6, false);
             _g.setColor(Color.GRAY);
             _g.fillRect(300, 250, 200, 100);
             _g.setColor(Color.DARK_GRAY);
@@ -197,6 +204,7 @@ public class GameScene implements Scene {
         }
         if(this.lose)
         {
+            this.soundManager.runSound(3, false);
             _g.setColor(Color.GRAY);
             _g.fillRect(300, 250, 200, 100);
             _g.setColor(Color.DARK_GRAY);
@@ -313,17 +321,16 @@ public class GameScene implements Scene {
     public void deinit(InputManager _input) {
         _input.removeKeyAssociation(KeyEvent.VK_SPACE);
         _input.removeKeyAssociation(KeyEvent.VK_Y);
-        
+        this.soundManager.removePreviousPlayers();
         EntityRenderer[] entities = this.field.getEntityRenderers();
         for(int i=0; i<entities.length; i++)
             if(entities[i].getEntity() != null)
                 entities[i].getEntity().getController().deinit(_input);
         
-        if(this.mode == 0)
-        {
+        if(this.mode == 0) {
             JFileChooser saveReplayDialog = new JFileChooser();
             saveReplayDialog.setFileFilter(new javax.swing.filechooser.FileFilter() {
-                public boolean accept(File f) {                
+                public boolean accept(File f) {
                     return ((f.getName().toLowerCase().endsWith(".rpl") && f.isFile()) || (f.isDirectory()));
                 }
                 public String getDescription() {
@@ -331,8 +338,7 @@ public class GameScene implements Scene {
                 }
             });
             if (saveReplayDialog.showSaveDialog(
-                    PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow()) == JFileChooser.APPROVE_OPTION)
-            {
+                    PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow()) == JFileChooser.APPROVE_OPTION) {
                 File file = saveReplayDialog.getSelectedFile();
                 if (!file.getName().toLowerCase().endsWith(".rpl"))
                     file = new File(file.getAbsoluteFile() + ".rpl");
@@ -342,10 +348,16 @@ public class GameScene implements Scene {
             PacmanApp.getInstance().getCore().getScreenManager().update();
             
             int pos = this.field.getHighScores().isHighScore(this.points);
-            if(pos != -1)
-            {
+            if(pos != -1) {
                 String name = JOptionPane.showInputDialog(PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow(), "Congratulations, you have reached rank \nPlease write your name in the box below.");
+                if(name == null){
+                    name = "New player";
+                }
+                Field newField = new Field();
+                newField.loadFrom(this.level);
+                newField.getHighScores().addHighScore(name, this.points, pos);
                 this.field.getHighScores().addHighScore(name, this.points, pos);
+                newField.saveTo(this.level);
             }
         }
         this.replay = new Replay();
