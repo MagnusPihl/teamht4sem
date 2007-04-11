@@ -396,6 +396,8 @@ public class Field {
                 this.entities = new EntityRenderer[in.readInt()];                
                 int highScoreCount = in.readInt();
                 
+                this.highScores = (HighScoreList)in.readObject();
+                this.nodes = (java.util.List)in.readObject();
                 {
                     int x;
                     int y;
@@ -461,7 +463,7 @@ public class Field {
             out.writeInt(this.nodes.size());
             out.writeInt(this.entities.length);
             out.writeInt(this.highScores.size());
-            
+               
             {
                 Node current = null;
                 for (Iterator i = this.nodes.iterator(); i.hasNext();) {
@@ -483,7 +485,7 @@ public class Field {
                     out.writeInt(0);
                 }
             }
-            
+            out.writeObject(this.highScores);
             {
                 HighScore current = null;
                 for (Iterator i = this.highScores.iterator(); i.hasNext();) {
