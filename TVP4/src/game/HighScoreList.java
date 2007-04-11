@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 
-public class HighScoreList extends ArrayList {
+public class HighScoreList extends ArrayList implements Serializable {
     
     /** Creates a new instance of HighScoreList */
     public HighScoreList() {
