@@ -19,8 +19,10 @@
 
 package game;
 
+import java.io.Serializable;
 
-public class HighScore {
+
+public class HighScore implements Serializable{
     
     private String name;
     private int score;
