@@ -193,6 +193,18 @@ public class Field {
     }
     
     /**
+     * Replaces an entity with the one specified.
+     *
+     * @param id The entity (0-2) to replace.
+     * @param entity The entity to insert.
+     */
+    public void setEntity(int id, Entity entity)
+    {
+        if(id>=0 && id<=2)
+            this.entities[id] = new EntityRenderer(entity);
+    }
+    
+    /**
      * Add note to field at position with 0 points held
      *
      * @param x coordinate of node position.
