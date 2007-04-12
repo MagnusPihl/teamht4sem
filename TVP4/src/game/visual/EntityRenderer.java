@@ -6,10 +6,14 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.4
+ * @version 1.5
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 1. april 2007 (v 1.5)
+ * Experimented with smooth animation. Commented out most of it. Still needs a lot of work.
+ *
  * LMK @ 05. marts 2007 (v 1.4)
  * Added offset coordinates to draw method
  *
@@ -30,6 +34,7 @@
 package game.visual;
 
 import field.*;
+import game.PacmanApp;
 import java.awt.*;
 import java.io.IOException;
 import java.io.File;
@@ -41,6 +46,7 @@ public class EntityRenderer
     private long animationDelay;
     private long lastUpdate;
     private int frameCounter;
+    private int lastDirection;
     
     protected Entity entity;
     
@@ -51,9 +57,10 @@ public class EntityRenderer
      */
     public EntityRenderer(Entity entity)
     {
-        this.animationDelay = 100;
+        this.animationDelay = 250;
         this.lastUpdate = System.currentTimeMillis();
         this.frameCounter = 0;
+        this.lastDirection = entity.getDirection();
         
         this.entity = entity;
     }
@@ -70,14 +77,29 @@ public class EntityRenderer
         Point position = entity.getPosition();
         int tileSize = TileSet.getInstance().getTileSize();
         
-        if(entity.isMoving())
-        {
-            if((System.currentTimeMillis() - this.lastUpdate) > this.animationDelay)
-            {
-                this.frameCounter = (this.frameCounter+1)%2;
-                this.lastUpdate = System.currentTimeMillis();
-            }
-        }
+//        if(entity.isMoving())
+//        {
+//            if((System.currentTimeMillis() - this.lastUpdate) > this.animationDelay)
+//            {
+//                this.frameCounter = (this.frameCounter+1)%2;
+//                this.lastUpdate = System.currentTimeMillis();
+//            }
+//            
+//            int adjustment = Math.min((int)(PacmanApp.getInstance().getGameScene().getMoveTimer()/tileSize), tileSize) - tileSize/2;
+//            if(entity.getDirection() == this.lastDirection)
+//            {
+//                if(entity.getDirection() == 0)
+//                    offsetY += adjustment;
+//                if(entity.getDirection() == 1)
+//                    offsetX -= adjustment;
+//                if(entity.getDirection() == 2)
+//                    offsetY -= adjustment;
+//                if(entity.getDirection() == 3)
+//                    offsetX += adjustment;
+//            }
+//            if(adjustment < 3)
+//                this.lastDirection = entity.getDirection();
+//        }
         
         g.drawImage(
                 TileSet.getInstance().getEntityTile(entity.getID(), entity.getDirection(), this.frameCounter),
