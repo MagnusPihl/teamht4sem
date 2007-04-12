@@ -12,7 +12,7 @@
  * ******VERSION HISTORY******
  *
  * Magnus Hemmer Pihl @ 11. april 2007 (v 1.3)
- * Removed skin selection dialog and added options menu.
+ * Removed skin scene and added options scene.
  * Magnus Hemmer Pihl @ 21. marts 2007 (v 1.2)
  * Added support for ControllerScene (not yet implemented).
  * LMK @ 28. februar 2007 (v 1.1)
