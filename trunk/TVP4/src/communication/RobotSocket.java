@@ -15,6 +15,12 @@
  * Administrator @ 9. april 2007 (v 1.0)
  * __________ Changes ____________
  *
+ *
+ * TODO:
+ * Skift navn til RobotProxy
+ * Tilføj isAvailable metode som fortæller om robotten er igang med at lave noget
+ * eller der kan afsendes en ny besked.
+ * Tilføj int i constructoren som fortæller hvilke robot der kontaktes
  */
 
 package communication;
@@ -37,7 +43,7 @@ public class RobotSocket {
     private static final byte SET_MODE_DISCOVERY = 0x20;
     private static final byte SET_MODE_GAME = 0x21;
     private static final byte CALIBRATE = 0x30;
-    private static final byte NOP = 0xFF;
+    private static final byte NOP = -0x01;
     
     private byte mode;
     private int aDirections = -1;
@@ -110,6 +116,7 @@ public class RobotSocket {
     }
     
     public void RobotSocket(int _robotID){
+        //flyt til constructoren
         this.robotID = _robotID;
     }
 }
