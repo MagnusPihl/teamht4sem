@@ -77,7 +77,14 @@ public class Entity implements Serializable {
     public void setID(int _ID){this.ID = _ID;}
     
     //Accessors
-    public boolean isMoving(){return this.isMoving;}
+    public boolean isMoving()
+    {
+        if(this.node.getNodeAt(this.direction) == null)
+            this.isMoving = false;
+        else
+            this.isMoving = true;
+        return this.isMoving;
+    }
     public int getDirection(){return this.direction;}
     public Point getPosition(){return this.node.getPosition();}
     public int getSpeed(){return this.speed;}
