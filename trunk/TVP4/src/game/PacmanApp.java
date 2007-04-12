@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.2
+ * @version 1.3
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 11. april 2007 (v 1.3)
+ * Removed skin selection dialog and added options menu.
  * Magnus Hemmer Pihl @ 21. marts 2007 (v 1.2)
  * Added support for ControllerScene (not yet implemented).
  * LMK @ 28. februar 2007 (v 1.1)
@@ -39,8 +42,7 @@ public class PacmanApp {
     private GameScene gameScene;  
     private HighScoreScene highscoreScene;
     private CreditsScene creditsScene;
-    private SkinSelectScene skinScene;
-    //private ControllerScene controllerScene;
+    private OptionsScene optionsScene;
     private GameCore core;
     private BitmapFont font;
     
@@ -56,8 +58,7 @@ public class PacmanApp {
         this.titleScene = new TitleScene();
         this.highscoreScene = new HighScoreScene();
         this.creditsScene = new CreditsScene();
-        this.skinScene = new SkinSelectScene();
-        //this.controllerScene = new ControllerScene();
+        this.optionsScene = new OptionsScene();
         this.font = new BitmapFont(new File("images/alfa"), 5);
         this.core = new GameCore(this.titleScene);       
     }
@@ -82,12 +83,8 @@ public class PacmanApp {
         this.core.setScene(this.creditsScene);
     }
     
-    public void showSkinScene() {
-        this.core.setScene(this.skinScene);
-    }
-    
-    public void showControllerScene() {
-        //this.core.setScene(this.controllerScene);
+    public void showOptionsScene() {
+        this.core.setScene(this.optionsScene);
     }
     
     public GameScene getGameScene() {
