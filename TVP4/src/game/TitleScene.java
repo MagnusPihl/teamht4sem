@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 11. april 2007 (v 1.1)
+ * Removed skin selection dialog and added options menu.
  *
  * LMK @ 26. februar 2007 (v 1.0)
  * __________ Changes ____________
@@ -40,7 +43,7 @@ public class TitleScene implements Scene {
     private boolean isOnline;
     private JFileChooser openLevelDialog, openReplayDialog, selectSkinDialog;
     
-    public static final String[] MENU_ITEMS = new String[] {"Mode - Offline", "New Game", "Continue", "View Replay", "View High Score", "Select Skin" ,"Quit"};
+    public static final String[] MENU_ITEMS = new String[] {"Mode - Offline", "New Game", "Continue", "View Replay", "View High Score", "Options" ,"Quit"};
     
     /** Creates a new instance of GameScene */
     public TitleScene() {
@@ -74,10 +77,6 @@ public class TitleScene implements Scene {
                 return "Replay files";
             }
         });
-        
-        this.selectSkinDialog = new JFileChooser();
-        this.selectSkinDialog.setSelectedFile(new File(""));
-        this.selectSkinDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     }
     
     public void draw(Graphics2D _g) {
@@ -117,7 +116,7 @@ public class TitleScene implements Scene {
                 case 2: this.continueGame(); break;
                 case 3: this.replayGame(); break;
                 case 4: PacmanApp.getInstance().showHighScoreScene(); break;
-                case 5: PacmanApp.getInstance().showSkinScene(); break;//this.selectSkin(); break;
+                case 5: PacmanApp.getInstance().showOptionsScene(); break;
                 case 6: PacmanApp.getInstance().showCreditsScene(); break;
                 //case 5: System.exit(0); break;
             }
@@ -161,7 +160,7 @@ public class TitleScene implements Scene {
     
     public void continueGame() {
         PacmanApp.getInstance().getGameScene().setMode(0);
-        PacmanApp.getInstance().showGameScene();   
+        PacmanApp.getInstance().showGameScene();
     }
     
     public void replayGame() {
@@ -181,14 +180,6 @@ public class TitleScene implements Scene {
                 
         for (int i = 0; i < this.menuItems.length; i++) {
             this.menuItems[i] = font.renderString(MENU_ITEMS[i], 800);
-        }
-    }
-    
-    
-    public void selectSkin() {
-        if (this.selectSkinDialog.showOpenDialog(
-                PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow()) == JFileChooser.APPROVE_OPTION) {
-            TileSet.getInstance().loadTileSet(this.selectSkinDialog.getSelectedFile().getAbsoluteFile());
         }
     }
 }
