@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.8
+ * @version 1.9
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 12. april 2007 (v 1.9)
+ * Added support for setting controllers outside of this class.
  *
  * Magnus Hemmer Pihl @ 21. marts 2007 (v 1.8)
  * Added FPS calculation and display.
@@ -71,6 +74,7 @@ public class GameScene implements Scene {
     private boolean paused, win, lose;
     
     private Field field;
+    private Entity[] entity;
     private InputAction pause, confirm;
     
     private File level;
@@ -95,6 +99,10 @@ public class GameScene implements Scene {
         this.mode = 0;
         this.field = new Field();
         this.level = new File("test.lvl");
+        this.entity = new Entity[3];
+        this.entity[0] = new Entity(null, 0);
+        this.entity[1] = new Entity(null, 1);
+        this.entity[2] = new Entity(null, 2);
         TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "pacman/"));
         SoundSet.getInstance().loadSoundSet(new File(SoundSet.SKIN_LIBRARY + "pacman/"));
         this.soundManager = new SoundManager();
@@ -132,6 +140,13 @@ public class GameScene implements Scene {
     public void setLevel(File _level)
     {
         this.level = _level;
+    }
+    
+    public Entity getEntity(int id)
+    {
+        if(id>=0 && id<=2)
+            return this.entity[id];
+        return null;
     }
     
     public void setReplay(File _replay)
@@ -289,6 +304,21 @@ public class GameScene implements Scene {
         this.resetPoints();
         this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.fps,400);
         this.field.loadFrom(this.level);
+        this.entity[0].setNode(this.field.getEntityRenderers()[0].getEntity().getNode());
+        this.entity[1].setNode(this.field.getEntityRenderers()[1].getEntity().getNode());
+        this.entity[2].setNode(this.field.getEntityRenderers()[2].getEntity().getNode());
+        this.entity[0].setDirection(this.field.getEntityRenderers()[0].getEntity().getDirection());
+        this.entity[1].setDirection(this.field.getEntityRenderers()[1].getEntity().getDirection());
+        this.entity[2].setDirection(this.field.getEntityRenderers()[2].getEntity().getDirection());
+        if(this.entity[0].getController() == null)
+            this.entity[0].setController(new KeyboardController(this.entity[0]));
+        if(this.entity[1].getController() == null)
+            this.entity[1].setController(new PreyAIController(this.entity[1]));
+        if(this.entity[2].getController() == null)
+            this.entity[2].setController(new PreyAIController(this.entity[2]));
+        this.field.setEntity(0, this.entity[0]);
+        this.field.setEntity(1, this.entity[1]);
+        this.field.setEntity(2, this.entity[2]);
         this.levelOffsetX = (800/2) - ((this.field.getSize().width * TileSet.getInstance().getTileSize())/2);
         this.levelOffsetY = (600/2) - ((this.field.getSize().height * TileSet.getInstance().getTileSize())/2);
         
@@ -296,18 +326,6 @@ public class GameScene implements Scene {
         _input.mapToKey(confirm, KeyEvent.VK_Y);
         
         EntityRenderer[] entities = this.field.getEntityRenderers();
-        if(mode == 0)
-        {
-            entities[0].getEntity().setController(new KeyboardController(entities[0].getEntity()));
-            entities[1].getEntity().setController(new PreyAIController(entities[1].getEntity()));
-            entities[2].getEntity().setController(new PreyAIController(entities[2].getEntity()));
-        }
-        else if(mode == 1)
-        {
-            entities[0].getEntity().setController(new ReplayController(entities[0].getEntity(), this.replay.list[0]));
-            entities[1].getEntity().setController(new ReplayController(entities[1].getEntity(), this.replay.list[1]));
-            entities[2].getEntity().setController(new ReplayController(entities[2].getEntity(), this.replay.list[2]));
-        }
         for(int i=0; i<entities.length; i++)
         {
             if(entities[i].getEntity() != null)
