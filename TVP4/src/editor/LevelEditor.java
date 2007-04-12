@@ -43,6 +43,7 @@ public class LevelEditor {
     private StatusBar statusBar;
     private EditorMenu menu;
     private JFileChooser openSaveDialog, skinDialog;
+    private FieldExplorerDialog fieldExplorer;
     
     private static LevelEditor instance = new LevelEditor();
     
@@ -56,7 +57,7 @@ public class LevelEditor {
         this.menu = new EditorMenu();
         this.editorPanel = new EditorPanel(field);
         this.statusBar = new StatusBar(editorPanel);    
-        
+        this.fieldExplorer = new FieldExplorerDialog();        
         
         JScrollPane scrollPanel = new JScrollPane(editorPanel); //, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         frame.setPreferredSize(new Dimension(640, 480));
@@ -147,7 +148,8 @@ public class LevelEditor {
             this.saveFile = null;
             this.updateTitle();
             this.editorPanel.checkSize();
-            //scan code
+            this.fieldExplorer.reset();
+            this.fieldExplorer.setVisible(true);
         }
     }        
     

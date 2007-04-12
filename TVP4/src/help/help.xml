@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<?DOCTYPE help SYSTEM "help.dtd"?>
+<?xml-stylesheet type="text/xsl" href="help.xsl"?>
+<topics>
+	<topic name="Getting started">
+		<question>		
+			<name>About the game</name>
+			<answer>
+			This program is a bike computer that shows information about your training sessions.
+			The program shows you information about you pulse, how fast you drive, and how fare you have driven and much more.
+			When you have driven a session, the information about that session will be saved so you can view you progress when ever you want in the log.
+			Besides showing the current information about your training session, it gives you the possibility to drive on pre made tracks and drive against ghosts.
+			</answer>
+		</question>
+		<question>
+			<name>Downloading software to the LEGO kit</name>
+			<answer>
+			When the program starts a login dialog will appear where you will need to enter a username and password.
+			If you do not have a user, use the "Create user" button to make one.
+			When you are logged in, then you need to make a new session to get started, you do that by pressing new session under the file menu.
+			Now a dialog box will appear where you can choose a few different training possibilities.
+			If you choose free driving you will just drive and be able to change gear your self.
+			If you choose user defined track a new dialog box will appear where you will be able to make your own track.
+			You also have the possibility to choose a pre made track.
+			When you have chosen what you want to do and pushed the create button the session will start.
+			</answer>
+		</question>				
+	</topic>
+
+	<topic name="Pacman Game">
+		<question>		
+			<name>Goal of the game</name>
+			<answer>
+			<img src=".\pictures\login.png" width="320" height="219" alt="login dialog" />
+			<br/>
+			The login dialog seen above it what you see when the program starts.
+			There are two fields one where you enter your username and one where you enter your password.
+			Both Username and password is case sensitive, which means that you need them exactly as you did the first time.
+			There are two buttons one for creating a new user and one for logging in.
+			</answer>
+		</question>
+		<question>		
+			<name>Starting a game</name>
+			<answer>
+			<img src=".\pictures\main session.png" width="317" height="237" alt="Main window with session shown" />
+			<img src=".\pictures\main log.png" width="317" height="237" alt="Main window with log shown" />
+			<br/>
+			The main window consists of three different parts a menu, the session panel and the log panel.
+			The menu is explained under the menu in more detail under the menu section.
+			When you have logged in you will see the session panel this will be explained in the following point.
+			If you want to change to the log panel press the log tab just under the menu bar or press show log in the view menu.
+			</answer>
+		</question>
+		<question>		
+			<name>Playing the game</name>
+			<answer>
+			The session panel is what you see when you are using the bike.
+			There are three graphs shown on the session panel, the first shows a visual representation of the track. There will also be representation of where the user is on the graph, and where the ghost is. 
+			The second graph shows the speed and the third shows the pulse.
+			To the right of the graphs there is a little chart, showing current information like time and distance driven, energy consumed, pulse and RPM.
+			</answer>
+		</question>
+		<question>		
+			<name>Loading a level</name>
+			<answer>
+			Log panel will show a list of all the sessions you have driven.
+			There you can see the date you drove the session, what track you drove, the distance, the time it took you and how much energy you used.
+			At the bottom of the window there is a graph that will show some information about the selected session. You will have the possibility to choose what information you want to show on the graph.
+			That way you can see if you get better. The sessions you see in the log panel will also be available as ghosts to drive against.
+			</answer>
+		</question>
+		<question>		
+			<name>Changing input device</name>
+			<answer>
+			<img src=".\pictures\session no ghost.png" width="300" height="250" alt="Session dialog with no ghost" />
+			<img src=".\pictures\session ghost.png" width="300" height="250" alt="session dialog with ghosts" />
+			<br/>
+			When you press "New session" in the file menu the session dialog will appear.
+			On the left side you can choose whether you want to drive freely, make your one track or drive one of the already existing tracks.
+			If you choose the User defined track option and press next then the track dialog will appear.
+			If you choose to drive one of the existing tracks then the right side will be enabled so you can choose a ghost to drive against if you whish to.
+			When you choose a ghost then you choose a person to drive against first, it could be your self but it does not have to.
+			When you have chosen a person then all the times the person have driven on the track you have selected will appear and you can chose one.
+			</answer>
+		</question>
+		<question>		
+			<name>Changing skin</name>
+			<answer>
+			<img src=".\pictures\track.png" width="282" height="213" alt="track dialog" />
+			<br/>
+			In the Track dialog you have to choose a difficulty on the left side.
+			You can choose between 5 difficulties, going from very easy to very hard, from this difficulty and the length you have entered on the right side, the program will generate a random track.
+			</answer>
+		</question>
+	</topic>
+
+	<topic name="Level Editor">
+		<question>		
+			<name>About Level Editor</name>
+			<answer>
+			</answer>
+		</question>
+		<question>
+			<name>Interface overview</name>
+			<answer>
+			</answer>
+		</question>	
+		<question>
+			<name>Scanning a level</name>
+			<answer>
+			</answer>
+		</question>		
+		<question>
+			<name>Handcreating a level</name>
+			<answer>
+			</answer>
+		</question>	
+		<question>
+			<name>Saving and loading</name>
+			<answer>
+			</answer>
+		</question>				
+	</topic>
+	
+	<topic name="Support">
+		<question>
+			<name>Known errors</name>
+			<answer>
+				<ul>
+				  <li>Bike - PC communikation is still not up</li>
+				  <li>it is possible to open more than one copy of dialogs, they are not modal</li>
+				  <li>Program never checks that the accompanying board or bicycle is connected</li>
+				  <li>Graphs and session data is not reset when user logs out</li>
+  				  <li>There is no stop button</li>
+				  <li>User gets no errormessage when loading of language data files fail.</li>
+  				  <li>Function handling number formatting of weight accepts more than one dot (.)</li>
+				  <li>No error message is shown when a language file cannot be opened or the language class cannot be initially</li>
+				  <li>Lists are not saved upon program termination.</li>
+				  <li>When language is changed it is not stored upon termination.</li>
+				  <li>User is not prompted to save or to confirm closure of current session, when a new session is created, when the user tries to log out or close the application.</li>
+				  <li>Sessions are created without correct date.</li>
+				  <li>Communication with bike is untested.</li>
+				  <li>There are no predefined tracks.</li>
+				  <li>Login dialog says that user doesn't exist when nothing is written in username field, instead of prompting for a username.</li>
+				</ul>			
+			</answer>
+		</question>
+		<question>
+			<name>List of planned improvements</name>
+			<answer>
+				<ul>
+				  <li>Tests of Model</li>
+				  <li>Tests of Control</li>
+				  <li>Tests of View</li>
+				  <li>Tests of Graph</li>
+				  <li>Add option change between miles and km</li>
+				  <li>A preview of each track can be added to SessionDialog and TrackDialog</li>
+				  <li>A default track should be select when SessionDialog is shown</li>
+				  <li>The ghostlist should be disabled when "Free driving" or "Userdefined track" is chosen in SessionDialog</li>
+				  <li>When in SessionDialog the default user in the ghostlist should be the current user</li>
+  				  <li>Naming and scope of variables in some classes should get a real overhaul. Think about where you define your variables and for how long they are needed. Not all variables are needed troughout whole classes</li>
+  				  <li>Remove setLabels and named JLabels from userdialog, they are not needed</li>
+  				  <li>Track should have a function added that is able to make a GraphModel from its list of gearChanges</li>
+  				  <li>The derivatives of GraphModel should all have addPoints functions</li>
+				  <li>It is not possible to delete a saved session unless you delete the whole log file.</li>
+				  <li>It is not possible to delete user unless you delete the whole user file.</li>
+				  <li>When referencing singletons getInstance() should be used every time, but is not currently.</li>
+				  <li>No backup are created of the data files. If writing fails, all data will be lost.</li>
+				  <li>Many function parameters should be changed to FINAL</li>
+				  <li>Default language should be editable in the userdialog.</li>	
+				  <li>A help button should be placed on the login dialog for convenience.</li>
+				  <li>When the user presses enter while in a dialog it should be handled as a confirmation. When escape is pressed it should be handled as cancelled.</li>
+				  <li>All dialogs are not of the same size.</li>
+				  <li>The position graph should show a vertical bar indicating current position.</li>				  
+				</ul>			
+			</answer>
+		</question>
+		<question>
+			<name>Contact</name>
+			<answer>
+				If you have any further questions or error reports please contact one of our team members. The team currently has no website.
+				<ul>
+					<li>
+						<strong>Troels Hagman-Hansen</strong><br/>
+						E-mail: <a href="mailto:troelshh@hotmail.com">troelsh-h@stofanet.dk</a><br/><br/>
+					</li>
+					<li>
+						<strong>Lau Maack-Krommes</strong><br/>
+						E-mail: <a href="mailto:lmk@lmx.dk">lmk@lmx.dk</a><br/><br/>
+					</li>
+					<li>
+						<strong>Mikkel Brøndsholm Nielsen</strong><br/>
+						E-mail: <a href="mailto:mikkelnielsen@chicks.dk">mikkelnielsen@chicks.dk</a><br/><br/>
+					</li>
+					
+					<li>
+						<strong>Magnus Hemmer Pihl</strong><br/>
+						E-mail: <a href="mailto:magnus.pihl@gmail.com">magnus.pihl@gmail.com</a><br/><br/>
+					</li>
+				</ul>
+			</answer>
+		</question>
+	</topic>
+</topics>
