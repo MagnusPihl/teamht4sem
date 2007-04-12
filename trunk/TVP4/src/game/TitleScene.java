@@ -117,7 +117,7 @@ public class TitleScene implements Scene {
                 case 2: this.continueGame(); break;
                 case 3: this.replayGame(); break;
                 case 4: PacmanApp.getInstance().showHighScoreScene(); break;
-                case 5: this.selectSkin(); break;
+                case 5: PacmanApp.getInstance().showSkinScene(); break;//this.selectSkin(); break;
                 case 6: PacmanApp.getInstance().showCreditsScene(); break;
                 //case 5: System.exit(0); break;
             }

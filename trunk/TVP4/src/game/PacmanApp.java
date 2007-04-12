@@ -39,6 +39,7 @@ public class PacmanApp {
     private GameScene gameScene;  
     private HighScoreScene highscoreScene;
     private CreditsScene creditsScene;
+    private SkinSelectScene skinScene;
     //private ControllerScene controllerScene;
     private GameCore core;
     private BitmapFont font;
@@ -55,6 +56,7 @@ public class PacmanApp {
         this.titleScene = new TitleScene();
         this.highscoreScene = new HighScoreScene();
         this.creditsScene = new CreditsScene();
+        this.skinScene = new SkinSelectScene();
         //this.controllerScene = new ControllerScene();
         this.font = new BitmapFont(new File("images/alfa"), 5);
         this.core = new GameCore(this.titleScene);       
@@ -78,6 +80,10 @@ public class PacmanApp {
     
     public void showCreditsScene() {
         this.core.setScene(this.creditsScene);
+    }
+    
+    public void showSkinScene() {
+        this.core.setScene(this.skinScene);
     }
     
     public void showControllerScene() {

@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<?DOCTYPE help SYSTEM "help.dtd"?>
+<?xml-stylesheet type="text/xsl" href="help.xsl"?>
+<topics>
+	<topic name="Getting started">
+		<question>		
+			<name>About the application</name>
+			<answer>
+			This program is a bike computer that shows information about your training sessions.
+			The program shows you information about you pulse, how fast you drive, and how fare you have driven and much more.
+			When you have driven a session, the information about that session will be saved so you can view you progress when ever you want in the log.
+			Besides showing the current information about your training session, it gives you the possibility to drive on pre made tracks and drive against ghosts.
+			</answer>
+		</question>
+		<!-- husk at skrive at man skal sætte avr kittet til-->
+		<question>
+			<name>Quick intro to the program</name>
+			<answer>
+			When the program starts a login dialog will appear where you will need to enter a username and password.
+			If you do not have a user, use the "Create user" button to make one.
+			When you are logged in, then you need to make a new session to get started, you do that by pressing new session under the file menu.
+			Now a dialog box will appear where you can choose a few different training possibilities.
+			If you choose free driving you will just drive and be able to change gear your self.
+			If you choose user defined track a new dialog box will appear where you will be able to make your own track.
+			You also have the possibility to choose a pre made track.
+			When you have chosen what you want to do and pushed the create button the session will start.
+			</answer>
+		</question>				
+	</topic>
+	
+	<topic name="Interface">
+		<question>		
+			<name>Login dialog</name>
+			<answer>
+			<img src=".\pictures\login.png" width="320" height="219" alt="login dialog" />
+			<br/>
+			The login dialog seen above it what you see when the program starts.
+			There are two fields one where you enter your username and one where you enter your password.
+			Both Username and password is case sensitive, which means that you need them exactly as you did the first time.
+			There are two buttons one for creating a new user and one for logging in.
+			</answer>
+		</question>
+		<question>		
+			<name>Main window</name>
+			<answer>
+			<img src=".\pictures\main session.png" width="317" height="237" alt="Main window with session shown" />
+			<img src=".\pictures\main log.png" width="317" height="237" alt="Main window with log shown" />
+			<br/>
+			The main window consists of three different parts a menu, the session panel and the log panel.
+			The menu is explained under the menu in more detail under the menu section.
+			When you have logged in you will see the session panel this will be explained in the following point.
+			If you want to change to the log panel press the log tab just under the menu bar or press show log in the view menu.
+			</answer>
+		</question>
+		<question>		
+			<name>Session panel</name>
+			<answer>
+			The session panel is what you see when you are using the bike.
+			There are three graphs shown on the session panel, the first shows a visual representation of the track. There will also be representation of where the user is on the graph, and where the ghost is. 
+			The second graph shows the speed and the third shows the pulse.
+			To the right of the graphs there is a little chart, showing current information like time and distance driven, energy consumed, pulse and RPM.
+			</answer>
+		</question>
+		<question>		
+			<name>Log panel</name>
+			<answer>
+			Log panel will show a list of all the sessions you have driven.
+			There you can see the date you drove the session, what track you drove, the distance, the time it took you and how much energy you used.
+			At the bottom of the window there is a graph that will show some information about the selected session. You will have the possibility to choose what information you want to show on the graph.
+			That way you can see if you get better. The sessions you see in the log panel will also be available as ghosts to drive against.
+			</answer>
+		</question>
+		<question>		
+			<name>Session dialog</name>
+			<answer>
+			<img src=".\pictures\session no ghost.png" width="300" height="250" alt="Session dialog with no ghost" />
+			<img src=".\pictures\session ghost.png" width="300" height="250" alt="session dialog with ghosts" />
+			<br/>
+			When you press "New session" in the file menu the session dialog will appear.
+			On the left side you can choose whether you want to drive freely, make your one track or drive one of the already existing tracks.
+			If you choose the User defined track option and press next then the track dialog will appear.
+			If you choose to drive one of the existing tracks then the right side will be enabled so you can choose a ghost to drive against if you whish to.
+			When you choose a ghost then you choose a person to drive against first, it could be your self but it does not have to.
+			When you have chosen a person then all the times the person have driven on the track you have selected will appear and you can chose one.
+			</answer>
+		</question>
+		<question>		
+			<name>Track dialog</name>
+			<answer>
+			<img src=".\pictures\track.png" width="282" height="213" alt="track dialog" />
+			<br/>
+			In the Track dialog you have to choose a difficulty on the left side.
+			You can choose between 5 difficulties, going from very easy to very hard, from this difficulty and the length you have entered on the right side, the program will generate a random track.
+			</answer>
+		</question>
+		<question>		
+			<name>New and edit user dialog</name>
+			<answer>
+			<img src=".\pictures\new user.png" width="350" height="153" alt="new user dialog" />
+			<img src=".\pictures\edit user.png" width="350" height="153" alt="edit user dialog" />
+			<br/>
+			When you create a new user the New user dialog will appear. Here you need to enter some information about you self.
+			Then username is case sensitive so if you use capital letters in it you will have to use them every time.
+			Enter a password you can remember because if you forget it there is no way to get it back or reset it, and it can not be changed without the old password.
+			In the birth year field write the year you where borne on the yyyy form.
+			In the weight field you can enter you weight with decimals. When you have entered all the information press the create button.
+			If you find out that you have made a mistake, or you have lost weight, you can correct you information by pressing "Edit user" under the file menu.
+			The edit user dialog looks and works a lot like the new user dialog, the difference is that there now is a new field where you can enter the old password, if you need to change your current password.
+			If you do not want to change you password you just leave the password fields empty.
+
+ 			</answer>
+		</question>
+	</topic>
+	
+	<topic name="The Bicycle Computer">
+		<question>		
+			<name>About the Bicycle Computer</name>
+			<answer>
+			</answer>
+		</question>
+		<question>
+			<name>Connecting to your PC</name>
+			<answer>
+			</answer>
+		</question>	
+		<question>
+			<name>Resetting</name>
+			<answer>
+			</answer>
+		</question>		
+		<question>
+			<name>Changing gears</name>
+			<answer>
+			</answer>
+		</question>				
+	</topic>
+	
+	<topic name="Menu">
+		<question>
+			<name>File</name>
+			<answer>
+				<ul>
+					<li>
+						New session<br/>
+						With this you can start a new session. If you're already in the middle of a session you will be prompted to end your current session. If you choose to end your current session you will be asked whether you want to save the current session to the log. Whether you choose to save or not the session dialog.
+					</li>
+					<li>
+						Log out<br/> 
+						With this option you can end the current session, log out and later log in as a different user. You will be prompted to save and confirm that you want to end current session.
+					</li>
+					<li>
+						Edit user<br/>
+						Opens a dialog that lets you edit your user information. You cannot edit your username.
+					</li>
+					<li>
+						Quit<br/>
+						This option lets you exit the application, after you've confirmed whether you want to save the current session.
+					</li>
+				</ul>
+			</answer>
+		</question>
+		<question>
+			<name>View</name>
+			<answer>
+				<ul>
+					<li>
+						Show session<br/>
+						When pressed the main window will show graphs and data on the current session.
+					</li>
+					<li>
+						Show log<br/>
+						When pressed the main window will show a list of all saved sessions. From the list you will be able to pick one and have graphs and additional data shown.
+					</li>
+				</ul>
+			</answer>		
+		</question>		
+		<question>
+			<name>Language</name>
+			<answer>
+				From this menu you can choose to set the interface language to one of a number of languages. The default language is english.
+			</answer>			
+		</question>		
+		<question>
+			<name>Help</name>
+			<answer>
+				<ul>
+					<li>
+						Help<br/>
+						Opens the application help.
+					</li>
+					<li>
+						About...<br/>
+						Opens the about dialog showing copyright information.
+					</li>
+				</ul>
+			</answer>
+		</question>
+	</topic>
+	
+	
+		
+	<topic name="User administration">
+		<question>
+			<name>What is a user?</name>
+			<answer>
+			A user is the programs way to identify you and store your information. The user holds all information about you like name, weight and birth year.
+			When you logon you give the program your username and then it finds the information stored about you.
+			</answer>
+		</question>
+		<question>
+			<name>How to login</name>
+			<answer>
+			When you start the program a login dialog will appear.
+			Enter your username and password and press the "Login" button.
+			If you do not already have a user profile press the "New user" button to create a user.
+			If you have forgotten your password contact a system administrator.
+			</answer>
+		</question>
+		<question>
+			<name>Adding a user?</name>
+			<answer>
+			To add a new user press the "New user" at the login screen when pressed a dialog box will appear. You are required to fill out all the fields.
+			You will have the possibility to change your information later using the edit user function in the program.
+			The username you enter will be identifier in the system and you will be required to enter it when you login. 
+			Username and password are case sensitive so if you use capital letters you will need to use them every time.
+			Your password needs to be at least 5 characters long. 
+			Weight is to be entered in kilograms and height in centimetres.		
+			</answer>
+		</question>
+		<question>
+			<name>Editing a user?</name>
+			<answer>
+			To edit a user press edit user under the file menu then the edit user dialog will appear where you can change all information except your username.
+			The information you already have entered about your self will be shown it the fields.
+			Your password is not shown or altered unless you enter a new password and then you need to enter you old password as well.
+			</answer>
+		</question>
+		<question>
+			<name>Deleting a user?</name>
+			<answer>
+			It is currently not possible to delete a user. If you want to delete all users delete the file users.dat in the data directory
+			</answer>
+		</question>
+	</topic>
+	
+	<topic name="Sessions and ghosts">
+		<question>
+			<name>What is a session</name>
+			<answer>A session is the period you spend cycling through a track. If you want to you can store information about a session and view them later.</answer>
+		</question>
+		<question>
+			<name>What is a ghost</name>
+			<answer>
+			A ghost is an opponent you drive against on one of the existing tracks.
+			You have the possibility to choose between driving against some of your previous sessions or against one of the other users who have driven that track.
+			Once you have chosen who you whish to drive against you can choose a session you whish to drive against this will allow you to see whether you get better or compete against another person. 
+			</answer>
+		</question>
+		<question>
+			<name>Creating a new session</name>
+			<answer>To create a new session press Ctrl+N or go to "File->New Session". The Session Dialog will pop up. Here you can choose whether you'd like to drive freely, beeing able to manual change gears, genereate userdefined track, or use of the presets. If you choose to use one of the predefined tracks you can also choose a ghost to race against. When you have chosen what type of session you want to start press "Next"</answer>
+		</question>
+		<question>
+			<name>Creating a userdefined track</name>
+			<answer>If you choose userdefined track in the Session Dialog the Track Dialog will be shown. Here you will be prompted to choose the difficulty and the length of the track in metres. Once you have chosen you have chosen your settings click "Create" and your session will begin.</answer>
+		</question>
+		<question>
+			<name>Ending a session</name>
+			<answer>When you want to stop a session press the "Stop Session" button next to the Graphs on the Session Panel. When you press stop you will be asked if you're sure. If you are press "Yes". When you've confirmed you'll be asked whether you'd like to save the session for later viewing. If you choose to save the session it can be used to race against (only if the track is preset) or viewed in the log. A stopped session cannot be continued</answer>
+		</question>
+	</topic>	
+	
+	<topic name="Support">
+		<question>
+			<name>List of changes and fixes</name>
+			<answer>		
+				Development release 1
+				<ul>
+				  <li>The graph now resizes and scrolls correctly</li> 
+				  <li>The menu now has shortkeys and mnemonics.</li>
+				  <li>Track length now has a default value.</li>
+				  <li>User can now press enter to login or escape to terminate (when the login dialog is showing).</li>
+				  <li>User now receives an errormessage when loading or saving of session, track, or user data files fail.</li>		
+				  <li>While loading or saving multiple lists and one fails the others are no longer affected</li>
+				  <li>User manual added</li>		
+				  <li>Log panel added</li>					  
+				  <li>When a language is selected in the language menu, labels now change properly.</li>
+				  <li>User objects no longer ouput height when weight is asked for and vice versa.</li> 	
+				  <li>User dialog now receives weight in kilogrammes, converts, and saves in grammes properly.</li>		     					
+ 				  <li>The program does now close properly, when the login dialog is closed. The user can also press escape to close the login dialog.</li>
+ 				  <li>Menu items in language menu is now visible.</li>
+			      <li>Track no longer creates random tracks containing null objects.</li>
+			      <li>When a graphmodel is hidden it no longer interferes with the drawing of the rest of the graph.</li>
+				</ul>		
+			</answer>
+		</question>
+		<question>
+			<name>Known errors</name>
+			<answer>
+				<ul>
+				  <li>Bike - PC communikation is still not up</li>
+				  <li>it is possible to open more than one copy of dialogs, they are not modal</li>
+				  <li>Program never checks that the accompanying board or bicycle is connected</li>
+				  <li>Graphs and session data is not reset when user logs out</li>
+  				  <li>There is no stop button</li>
+				  <li>User gets no errormessage when loading of language data files fail.</li>
+  				  <li>Function handling number formatting of weight accepts more than one dot (.)</li>
+				  <li>No error message is shown when a language file cannot be opened or the language class cannot be initially</li>
+				  <li>Lists are not saved upon program termination.</li>
+				  <li>When language is changed it is not stored upon termination.</li>
+				  <li>User is not prompted to save or to confirm closure of current session, when a new session is created, when the user tries to log out or close the application.</li>
+				  <li>Sessions are created without correct date.</li>
+				  <li>Communication with bike is untested.</li>
+				  <li>There are no predefined tracks.</li>
+				  <li>Login dialog says that user doesn't exist when nothing is written in username field, instead of prompting for a username.</li>
+				</ul>			
+			</answer>
+		</question>
+		<question>
+			<name>Todo</name>
+			<answer>
+				<ul>
+				  <li>Tests of Model</li>
+				  <li>Tests of Control</li>
+				  <li>Tests of View</li>
+				  <li>Tests of Graph</li>
+				  <li>Add option change between miles and km</li>
+				  <li>A preview of each track can be added to SessionDialog and TrackDialog</li>
+				  <li>A default track should be select when SessionDialog is shown</li>
+				  <li>The ghostlist should be disabled when "Free driving" or "Userdefined track" is chosen in SessionDialog</li>
+				  <li>When in SessionDialog the default user in the ghostlist should be the current user</li>
+  				  <li>Naming and scope of variables in some classes should get a real overhaul. Think about where you define your variables and for how long they are needed. Not all variables are needed troughout whole classes</li>
+  				  <li>Remove setLabels and named JLabels from userdialog, they are not needed</li>
+  				  <li>Track should have a function added that is able to make a GraphModel from its list of gearChanges</li>
+  				  <li>The derivatives of GraphModel should all have addPoints functions</li>
+				  <li>It is not possible to delete a saved session unless you delete the whole log file.</li>
+				  <li>It is not possible to delete user unless you delete the whole user file.</li>
+				  <li>When referencing singletons getInstance() should be used every time, but is not currently.</li>
+				  <li>No backup are created of the data files. If writing fails, all data will be lost.</li>
+				  <li>Many function parameters should be changed to FINAL</li>
+				  <li>Default language should be editable in the userdialog.</li>	
+				  <li>A help button should be placed on the login dialog for convenience.</li>
+				  <li>When the user presses enter while in a dialog it should be handled as a confirmation. When escape is pressed it should be handled as cancelled.</li>
+				  <li>All dialogs are not of the same size.</li>
+				  <li>The position graph should show a vertical bar indicating current position.</li>				  
+				</ul>			
+			</answer>
+		</question>
+		<question>
+			<name>Contact</name>
+			<answer>
+				If you have any further questions or error reports please contact one of our team members. The team currently has no website.
+				<ul>
+					<li>
+						<strong>Troels Hagman-Hansen</strong><br/>
+						E-mail: <a href="mailto:troelshh@hotmail.com">troelsh-h@stofanet.dk</a><br/><br/>
+					</li>
+					<li>
+						<strong>Lau Maack-Krommes</strong><br/>
+						E-mail: <a href="mailto:lmk@lmx.dk">lmk@lmx.dk</a><br/><br/>
+					</li>
+					<li>
+						<strong>Mikkel Brøndsholm Nielsen</strong><br/>
+						E-mail: <a href="mailto:mikkelnielsen@chicks.dk">mikkelnielsen@chicks.dk</a><br/><br/>
+					</li>
+					
+					<li>
+						<strong>Magnus Hemmer Pihl</strong><br/>
+						E-mail: <a href="mailto:magnus.pihl@gmail.com">magnus.pihl@gmail.com</a><br/><br/>
+					</li>
+				</ul>
+			</answer>
+		</question>
+	</topic>
+</topics>

@@ -6,9 +6,11 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.15
+ * @version 1.16
  *
  * ******VERSION HISTORY******
+ * LMK @ 11. april 2007 (v 1.16)
+ * AddNodeAt methods now return Node when a new Node has been placed.
  * Magnus Hemmer Pihl @ 10. april 2007 (v 1.15.1)
  * Corrected missing end-bracket to close the class.
  * LMK @ 27. marts 2007 (v 1.15)
@@ -209,9 +211,11 @@ public class Field {
      *
      * @param x coordinate of node position.
      * @param y coordinate of node position.
+     * @return a reference to the node created. If a node already exists at the
+     * specified position or could not be placed null is returned.
      */
-    public void addNodeAt(int x, int y) {
-        this.addNodeAt(x, y, 0);
+    public Node addNodeAt(int x, int y) {
+        return this.addNodeAt(x, y, 0);
     }
     
     /**
@@ -221,19 +225,23 @@ public class Field {
      *
      * @param position to add node.
      * @param points to be held by node.
+     * @return a reference to the node created. If a node already exists at the
+     * specified position or could not be placed null is returned.
      */
-    public void addNodeAt(Point position, int points) {
+    public Node addNodeAt(Point position, int points) {
         if ((0 <= position.x)&&(0 <= position.y)) {
             Node current = this.getNodeAt(position);
             
             if (current == null) {
-                this.nodes.add(new Node(
+                current = new Node(
                         position,
                         this.getNodeAt(position.x-1, position.y),
                         this.getNodeAt(position.x+1, position.y),
                         this.getNodeAt(position.x, position.y-1),
                         this.getNodeAt(position.x, position.y+1),
-                        points));
+                        points);
+                this.nodes.add(current);                
+                return current;
                 
             } else {
                 current.setPoints(points);
@@ -241,6 +249,7 @@ public class Field {
             
             this.hasChanged = true;
         }
+        return null;
     }
     
     /**
@@ -248,10 +257,12 @@ public class Field {
      *
      * @param x coordinate of node position.
      * @param y coordinate of node position.
-     * @param points to be held by node.
+     * @param points to be held by node.     
+     * @return a reference to the node created. If a node already exists at the
+     * specified position or could not be placed null is returned.
      */
-    public void addNodeAt(int x, int y, int points) {
-        this.addNodeAt(new Point(x,y), points);
+    public Node addNodeAt(int x, int y, int points) {
+        return this.addNodeAt(new Point(x,y), points);
     }
     
     /**
@@ -408,8 +419,8 @@ public class Field {
                 this.entities = new EntityRenderer[in.readInt()];                
                 int highScoreCount = in.readInt();
                 
-                this.highScores = (HighScoreList)in.readObject();
-                this.nodes = (java.util.List)in.readObject();
+                /*this.highScores = (HighScoreList)in.readObject();
+                this.nodes = (java.util.List)in.readObject();*/
                 {
                     int x;
                     int y;
@@ -497,7 +508,8 @@ public class Field {
                     out.writeInt(0);
                 }
             }
-            out.writeObject(this.highScores);
+            
+            //out.writeObject(this.highScores);
             {
                 HighScore current = null;
                 for (Iterator i = this.highScores.iterator(); i.hasNext();) {
