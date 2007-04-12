@@ -92,7 +92,6 @@ public class TransportSocket
         private InputStream in;
         
         public static final int timeout = 1000;
-        private int timestamp;
         
         protected TransportOutputStream(InputStream in, OutputStream out)
         {
@@ -105,8 +104,6 @@ public class TransportSocket
             int sequence = TransportSocket.getSequenceNumber();
             this.out.write(0x7F & sequence);
             this.out.write(b);
-            
-            this.timestamp = (int)System.currentTimeMillis();
             
             int header, data;
             TransportPackage pack;
