@@ -6,10 +6,16 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.1.1
+ * @version 1.3
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 13. april 2007 (v 1.3)
+ * Added isOnline() and getInterface() methods.
+ *
+ * Magnus Hemmer Pihl @ 13. april 2007 (v 1.2)
+ * Fixed bug that would crash the program if the cursor was moved below the bottom option.
  *
  * Magnus Hemmer Pihl @ 13. april 2007 (v 1.1.1)
  * Changed enter key to not do anything, until detailed options are implemented.
@@ -61,7 +67,7 @@ public class OptionsScene implements Scene
         this.quit = new InputAction("Escape", InputAction.DETECT_FIRST_ACTION);
         
         this.menuItemsStr = new String[] {"Entity0", "Entity1", "Entity2", "Skin", "Volume", "Mode", "Interface"};
-        
+        System.out.println(this.menuItemsStr.length);
         int numJoy = JXInputManager.getNumberOfDevices();
         System.out.println(numJoy);
         for(int i=0; i<numJoy; i++)
@@ -129,7 +135,7 @@ public class OptionsScene implements Scene
     public void update(long _time) {
         if(this.up.isPressed() && this.cursor>0)
             this.cursor--;
-        if(this.down.isPressed() && this.cursor<this.menuItems.length)
+        if(this.down.isPressed() && this.cursor<this.menuItemsStr.length-1)
             this.cursor++;
         if(this.left.isPressed() && this.option[this.cursor]>0)
             this.option[this.cursor]--;
@@ -184,6 +190,18 @@ public class OptionsScene implements Scene
                     this.menuOptions[i][j] = font.renderString(this.menuOptionsStr[i][j], 800);
             this.menuHelp[i] = font.renderString(this.menuHelpStr[i], 800);
         }
+    }
+    
+    public boolean isOnline()
+    {
+        if(this.option[5] == 1)
+            return true;
+        return false;
+    }
+    
+    public String getInterface()
+    {
+        return this.menuOptionsStr[6][this.option[6]].toLowerCase();
     }
     
     public void init(InputManager _input) {
