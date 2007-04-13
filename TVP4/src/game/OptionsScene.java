@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.1
+ * @version 1.1.1
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 13. april 2007 (v 1.1.1)
+ * Changed enter key to not do anything, until detailed options are implemented.
  *
  * Magnus Hemmer Pihl @ 11. april 2007 (v 1.1)
  * Changed ControllerScene to OptionsScene and rewrote most of it.
@@ -129,7 +132,7 @@ public class OptionsScene implements Scene
         if(this.right.isPressed() && this.menuOptions[this.cursor][this.option[this.cursor]+1] != null)
             this.option[this.cursor]++;
         if(this.enter.isPressed())
-            PacmanApp.getInstance().showTitleScene();
+            ;
         if(this.quit.isPressed())
         {
             for(int i=0; i<3; i++)
