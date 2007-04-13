@@ -98,7 +98,7 @@ public class PacmanApp {
     }
     
     public OptionsScene getOptionsScene() {
-        reutrn this.optionsScene;
+        return this.optionsScene;
     }
     
     public GameCore getCore() {
