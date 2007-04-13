@@ -223,7 +223,7 @@ public class GameScene implements Scene {
         }
         if(this.win)
         {
-            //this.soundManager.runSound(6, false);
+            this.soundManager.runSound(6, false);
             _g.setColor(Color.GRAY);
             _g.fillRect(300, 250, 200, 100);
             _g.setColor(Color.DARK_GRAY);
@@ -340,7 +340,7 @@ public class GameScene implements Scene {
         this.field.setEntity(2, this.entity[2]);
         this.levelOffsetX = (800/2) - ((this.field.getSize().width * TileSet.getInstance().getTileSize())/2);
         this.levelOffsetY = (600/2) - ((this.field.getSize().height * TileSet.getInstance().getTileSize())/2);
-        
+        this.soundManager.runSound(1, true);
         _input.mapToKey(pause, KeyEvent.VK_SPACE);
         _input.mapToKey(confirm, KeyEvent.VK_Y);
         
