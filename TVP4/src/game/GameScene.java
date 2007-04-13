@@ -11,6 +11,9 @@
  *
  * ******VERSION HISTORY******
  *
+ * Magnus Hemmer Pihl @ 13. april 2007 (v 2.0)
+ * Added preliminal support for RobotProxies, including a standard semaphore. No actual interaction with RobotProxies yet.
+ *
  * Magnus Hemmer Pihl @ 12. april 2007 (v 1.9)
  * Added support for setting controllers outside of this class.
  *
@@ -53,6 +56,7 @@
 
 package game;
 
+import communication.RobotProxy;
 import game.audio.SoundManager;
 import game.entitycontrol.*;
 import game.system.*;
@@ -65,6 +69,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.concurrent.Semaphore;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -93,6 +98,10 @@ public class GameScene implements Scene {
     private int frameCounter;
     private long frameTimer;
     
+    private boolean online;
+    private Semaphore semaphore;
+    private RobotProxy[] proxy;
+    
     /** Creates a new instance of GameScene */
     public GameScene() {
         this.replay = new Replay();
@@ -114,6 +123,12 @@ public class GameScene implements Scene {
         
         this.frameCounter = 0;
         this.frameTimer = System.currentTimeMillis();
+        
+        this.semaphore = new Semaphore(3);
+        this.proxy = new RobotProxy[3];
+        this.proxy[0] = new RobotProxy(1);
+        this.proxy[1] = new RobotProxy(2);
+        this.proxy[2] = new RobotProxy(3);
     }
     
     public void setMode(int _mode)
@@ -256,15 +271,18 @@ public class GameScene implements Scene {
                 for(int i=0; i<entities.length; i++)
                     if(entities[i].getEntity() != null)
                     {
-                        if(this.moveTimer<0)
+                        //START OF TURN!
+                        if(this.moveTimer<0 && this.semaphore.availablePermits()==3)
                         {
                             int dir = entities[i].getEntity().getController().move();
+                            if(this.online)
+                            {
+                                for(int j=0; j<3; j++)
+                                    ; //Send crap to RobotProxies.
+                            }
                             this.replay.list[i].add(dir);
-//                            if(Node.isValidDirection(dir))                    //Entity class now handles isMoving
-//                                entities[i].getEntity().setIsMoving(true);
-//                            else
-//                                entities[i].getEntity().setIsMoving(false);
                         }
+                        //END OF TURN!
                         entities[i].getEntity().getController().calculateNextMove();
                     }
                 this.addPoints(entities[0].getEntity().getNode().takePoints());
@@ -298,6 +316,7 @@ public class GameScene implements Scene {
     }
 
     public void init(InputManager _input) {
+        this.online = PacmanApp.getInstance().getOptionsScene().isOnline();
         this.paused = false;
         this.win = false;
         this.lose = false;
