@@ -62,6 +62,10 @@ public class OptionsScene implements Scene
         
         this.menuItemsStr = new String[] {"Entity0", "Entity1", "Entity2", "Skin", "Volume", "Mode", "Interface"};
         
+        int numJoy = JXInputManager.getNumberOfDevices();
+        System.out.println(numJoy);
+        for(int i=0; i<numJoy; i++)
+            System.out.println(i+": "+JXInputManager.getJXInputDevice(i).getName());
         this.menuOptionsStr = new String[this.menuItemsStr.length][];
         this.menuOptionsStr[0] = new String[] {"Keyboard", "Joystick"};
         this.menuOptionsStr[1] = new String[] {"Keyboard", "Joystick", "CPU - Easy", "CPU - Normal", "CPU - Hard"};
