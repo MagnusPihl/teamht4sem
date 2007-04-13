@@ -11,6 +11,9 @@
  *
  * ******VERSION HISTORY******
  *
+ * Magnus Hemmer Pihl @ 13. april 2007 (v 1.1)
+ * Added static methods for getType and getSequenceNumber.
+ *
  * Magnus Hemmer Pihl @ 24. marts 2007 (v 1.0)
  * Initial.
  *
@@ -58,5 +61,15 @@ public class TransportPackage
     
     public int getData() {
         return this.data;
+    }
+    
+    public static int getType(int _header)
+    {
+        return (_header & 0x80)>>7;
+    }
+    
+    public static int getSequenceNumber(int _header)
+    {
+        return (_header & 0x7F);
     }
 }
