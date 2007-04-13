@@ -6,11 +6,13 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.3
+ * @version 1.4
  *
  *
  * ******VERSION HISTORY******
  *
+ * Magnus Hemmer Pihl @ 13. april 2007 (v 1.4)
+ * Added getOptionsScene().
  * Magnus Hemmer Pihl @ 11. april 2007 (v 1.3)
  * Removed skin scene and added options scene.
  * Magnus Hemmer Pihl @ 21. marts 2007 (v 1.2)
@@ -93,6 +95,10 @@ public class PacmanApp {
     
     public TitleScene getTitleScene() {
         return this.titleScene;
+    }
+    
+    public OptionsScene getOptionsScene() {
+        reutrn this.optionsScene;
     }
     
     public GameCore getCore() {
