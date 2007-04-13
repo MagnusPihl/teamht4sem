@@ -11,6 +11,11 @@
  *
  * ******VERSION HISTORY******
  *
+ * Magnus Hemmer Pihl @ 13. april 2007 (v 1.1)
+ * Changed write()-method to use static methods rather than creating new objects.
+ * write()-method now throws an IOException on failure.
+ * write()-method will no longer indefinitely repeat sending on timeouts.
+ *
  * Magnus Hemmer Pihl @ 24. marts 2007 (v 1.0)
  * Initial.
  *
@@ -106,15 +111,13 @@ public class TransportSocket
             this.out.write(b);
             
             int header, data;
-            TransportPackage pack;
             int timestamp = (int)System.currentTimeMillis();
             
             do
             {
                 if(((int)System.currentTimeMillis())-timestamp >= timeout)
                 {
-                    this.write(b);
-                    return;
+                    throw new IOException("Transport layer timeout. Message could not be sent.");
                 }
                 header = this.in.read();
             } while(header==-1);
@@ -124,9 +127,7 @@ public class TransportSocket
                 data = this.in.read();
             } while(data==-1);
             
-            pack = new TransportPackage(header, data);
-            
-            if(pack.getType() == TransportSocket.RECEIPT && pack.getSequenceNumber() == sequence)
+            if(TransportPackage.getType(header) == TransportSocket.RECEIPT && TransportPackage.getSequenceNumber(header) == sequence)
                 return;
             else
                 this.write(b);
