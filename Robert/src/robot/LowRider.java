@@ -37,7 +37,7 @@ public class LowRider {
     public void goToGreen(){
         this.forward();
         try {
-            Thread.sleep(100);
+            Thread.sleep(1000);
         } catch (InterruptedException ex) {
             
         }
@@ -107,7 +107,7 @@ public class LowRider {
     public void left90(){
         this.left();
         try {
-            Thread.sleep(100);
+            Thread.sleep(1000);
         } catch (InterruptedException ex) {
             
         }
@@ -117,7 +117,7 @@ public class LowRider {
     public void right90(){
         this.right();
         try {
-            Thread.sleep(100);
+            Thread.sleep(1000);
         } catch (InterruptedException ex) {
             
         }
