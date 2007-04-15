@@ -21,6 +21,7 @@ package communication;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import josx.platform.rcx.LCD;
 import robot.Controller;
 
 
@@ -143,7 +144,7 @@ public class TowerProxy {
     
     public void moveDone(){
         try {
-            out.write(0xff);
+            out.write(0xf0);
         } catch (IOException ex) {
             
         }
