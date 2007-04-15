@@ -28,7 +28,7 @@ public class Controller {
     TowerProxy tower = new TowerProxy();
     private static Controller instance = new Controller();
     
-    private int command = 0;
+    private int command = -1;
     private int directions = 0;
     private int lastCommand = 0;
     private int mode = 0x21;
@@ -47,8 +47,15 @@ public class Controller {
     
     public void run(){
         while(true){
-            lastCommand = command;
-            command = tower.getcommand();
+            if(command != -1){
+                command = tower.getcommand();
+                TextLCD.print("2nd");
+            }else{
+                command = tower.getcommand();
+                lastCommand = command;
+                TextLCD.print("1st run");
+            }
+            
             if(command == 0x20){
                 this.mode = 0x20;
                 tower.moveDone();
@@ -121,6 +128,7 @@ public class Controller {
         if(directions == 15){
             ride.goToCross();
         }
+        lastCommand = command;
     }
     
     public void setCalibrationValues(int sensor1, int sensor2, int sensor3, int minGreen, int maxGreen, int minBlack, int maxBlack){
@@ -145,7 +153,7 @@ public class Controller {
         }else if(command == 0x01){
             if(lastCommand == 0x02){
                 ride.left90();
-            }else if(command == 0x00){
+            }else if(lastCommand == 0x00){
                 ride.right90();
             }else if(lastCommand == 0x03){
                 ride.turn180();
