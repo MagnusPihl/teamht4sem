@@ -30,30 +30,64 @@ public class robotTester {
     /** Creates a new instance of robotTester */
     
     public robotTester(){
-         System.out.println("Making connection");
-        LLCSocket link = new LLCSocket();
-         System.out.println("LLC made");
+        TowerSocket link = new TowerSocket();
         NetworkSocket net = new NetworkSocket(0,1,link.getInputStream(),link.getOutputStream());
-         System.out.println("Network made");
         TransportSocket socket = new TransportSocket(net.getInputStream(), net.getOutputStream());
-         System.out.println("trasport made");
         InputStream in = socket.getInputStream();
-         System.out.println("inputstream made");
         OutputStream out = socket.getOutputStream();
-        System.out.println("start");
         try {
             out.write(0x00);
+            System.out.println("out.write(0x00) sendt");
         } catch (IOException ex) {
             System.out.println("out.write(0x00)");
             //ex.printStackTrace();
         }
         try {
             out.write(10);
+            System.out.println("out.write(10) sendt");
         } catch (IOException ex) {
             System.out.println("out.write(10)");
             //ex.printStackTrace();
         }
+        int i = -1;
+        while(i== -1){
+            try {
+                i = in.read();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            System.out.println(i);
+        }
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            out.write(0x01);
+            System.out.println("out.write(0x01) sendt");
+        } catch (IOException ex) {
+            System.out.println("out.write(0x01)");
+            //ex.printStackTrace();
+        }
+        try {
+            out.write(5);
+            System.out.println("out.write(5) sendt");
+        } catch (IOException ex) {
+            System.out.println("out.write(5)");
+            //ex.printStackTrace();
+        }
+        i = -1;
+        while(i== -1){
+            try {
+                i = in.read();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            System.out.println(i);
+        }
     }
+    
     
     public static void main(String[] args) throws InterruptedException, IOException{
         robotTester noget = new robotTester();
