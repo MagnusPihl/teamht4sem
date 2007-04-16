@@ -6,10 +6,12 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.5
+ * @version 1.6
  *
  * 
  * ******VERSION HISTORY******
+ * LMK @ 16. april 2007 (v 1.6)
+ * Added binary directions, and conversion methods.
  * LMK @ 7. marts 2007 (v 1.5)
  * Added connectedAt() method
  * Added static final DIRECTION_COUNT
@@ -45,6 +47,10 @@ public class Node implements Serializable, Comparable {
     public static final int RIGHT = 1;
     public static final int DOWN = 2;
     public static final int LEFT = 3;
+    public static final int UP_BIN = 1 << UP;
+    public static final int RIGHT_BIN = 1 << RIGHT;
+    public static final int DOWN_BIN = 1 << DOWN;
+    public static final int LEFT_BIN = 1 << LEFT;
     public static final int DIRECTION_COUNT = 4;
     public static final int INVALID_DIRECTION = -1;
         
@@ -433,5 +439,37 @@ public class Node implements Serializable, Comparable {
             }            
         }
         return -1;
+    }
+    
+    public int getBinaryDirections() {
+        int directions = 0;
+        
+        for (int i = 0; i < DIRECTION_COUNT; i++) {
+            if (this.connectedNodes[i] != null) {
+                directions |= 1 << i;
+            }
+        }
+        
+        return directions;
+    }        
+    
+    public int binDirectionToNum(int direction) {
+        switch (direction) {
+            case DOWN_BIN: return DOWN;
+            case UP_BIN: return UP;
+            case LEFT_BIN: return LEFT;
+            case RIGHT_BIN: return RIGHT;
+        }
+        return INVALID_DIRECTION;
+    } 
+    
+    public int numToBinDirection(int direction) {
+        switch (direction) {
+            case DOWN: return DOWN_BIN;
+            case UP: return UP_BIN;
+            case LEFT: return LEFT_BIN;
+            case RIGHT: return RIGHT_BIN;
+        }
+        return INVALID_DIRECTION;
     }
 }

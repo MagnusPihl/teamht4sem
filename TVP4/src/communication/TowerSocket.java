@@ -6,10 +6,12 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.1
+ * @version 1.2
  *
  *
  * ******VERSION HISTORY******
+ * LMK @ 23. marts 2007 (v 1.2) 
+ * Removed printout when sending
  *
  * LMK @ 23. marts 2007 (v 1.1) 
  * Moved checksum methods and features common with LLCSocket to LinkLayerSocket
@@ -168,7 +170,8 @@ public class TowerSocket extends LinkLayerSocket {
             
             if (this.packetIndex == CHECKSUM_OFFSET) {
                 LinkLayerSocket.addChecksum(this.packetBuffer);
-                System.out.println(tower.strerror(tower.write(this.packetBuffer, PACKET_SIZE)));
+                //System.out.println(tower.strerror(tower.write(this.packetBuffer, PACKET_SIZE)));
+                tower.write(this.packetBuffer, PACKET_SIZE);
                 this.packetIndex = DATA_OFFSET;
             }            
         }
