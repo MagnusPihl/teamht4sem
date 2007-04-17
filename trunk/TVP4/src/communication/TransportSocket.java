@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.0
+ * @version 1.2
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 17. april 2007 (v 1.2)
+ * Changed write method to use the same sequence number on retries.
  *
  * Magnus Hemmer Pihl @ 13. april 2007 (v 1.1)
  * Changed write()-method to use static methods rather than creating new objects.
@@ -44,7 +47,7 @@ public class TransportSocket
         this.in = new TransportSocket.TransportInputStream(in, out);
         this.out = new TransportSocket.TransportOutputStream(in, out);
         
-        this.sequence = 1;
+        this.sequence = 0;
     }
     
     public class TransportInputStream extends InputStream
@@ -107,6 +110,18 @@ public class TransportSocket
         public void write(int b) throws IOException
         {
             int sequence = TransportSocket.getSequenceNumber();
+            try
+            {
+                this.write(b, sequence);
+            }
+            catch(IOException e)
+            {
+                throw e;
+            }
+        }
+        
+        private void write(int b, int sequence) throws IOException
+        {
             this.out.write(0x7F & sequence);
             this.out.write(b);
             
@@ -130,7 +145,7 @@ public class TransportSocket
             if(TransportPackage.getType(header) == TransportSocket.RECEIPT && TransportPackage.getSequenceNumber(header) == sequence)
                 return;
             else
-                this.write(b);
+                this.write(b, sequence);
         }
     }
     
@@ -138,7 +153,7 @@ public class TransportSocket
     {
         sequence++;
         if(sequence > 127)
-            sequence = 1;
+            sequence = 0;
         return sequence;
     }
     
