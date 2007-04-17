@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.5
+ * @version 1.6
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 17. april 2007 (v 1.6)
+ * Finalized code for smooth entity animation.
  *
  * Magnus Hemmer Pihl @ 1. april 2007 (v 1.5)
  * Experimented with smooth animation. Commented out most of it. Still needs a lot of work.
@@ -46,7 +49,9 @@ public class EntityRenderer
     private long animationDelay;
     private long lastUpdate;
     private int frameCounter;
+    
     private int lastDirection;
+    private Point lastPosition;
     
     protected Entity entity;
     
@@ -61,6 +66,7 @@ public class EntityRenderer
         this.lastUpdate = System.currentTimeMillis();
         this.frameCounter = 0;
         this.lastDirection = entity.getDirection();
+        this.lastPosition = entity.getPosition();
         
         this.entity = entity;
     }
@@ -77,29 +83,34 @@ public class EntityRenderer
         Point position = entity.getPosition();
         int tileSize = TileSet.getInstance().getTileSize();
         
-//        if(entity.isMoving())
-//        {
-//            if((System.currentTimeMillis() - this.lastUpdate) > this.animationDelay)
-//            {
-//                this.frameCounter = (this.frameCounter+1)%2;
-//                this.lastUpdate = System.currentTimeMillis();
-//            }
-//            
-//            int adjustment = Math.min((int)(PacmanApp.getInstance().getGameScene().getMoveTimer()/tileSize), tileSize) - tileSize/2;
-//            if(entity.getDirection() == this.lastDirection)
-//            {
-//                if(entity.getDirection() == 0)
-//                    offsetY += adjustment;
-//                if(entity.getDirection() == 1)
-//                    offsetX -= adjustment;
-//                if(entity.getDirection() == 2)
-//                    offsetY -= adjustment;
-//                if(entity.getDirection() == 3)
-//                    offsetX += adjustment;
-//            }
-//            if(adjustment < 3)
-//                this.lastDirection = entity.getDirection();
-//        }
+//        g.setColor(Color.CYAN);
+//        g.drawRect(position.x*tileSize+offsetX, position.y*tileSize+offsetY, 30, 30);
+
+        if((System.currentTimeMillis() - this.lastUpdate) > this.animationDelay)// && entity.isMoving())
+        {
+            this.frameCounter = (this.frameCounter+1)%2;
+            this.lastUpdate = System.currentTimeMillis();
+        }
+        //More accurate adjustment algorithm. Does proper decimal rounding.
+//        int adjustment = (int)(Math.floor(tileSize * (PacmanApp.getInstance().getGameScene().getMoveTimer()/500.0) + 0.5));
+        //Faster adjustment algorithm. Does not account for decimal points.
+        int adjustment = (int)(tileSize * (PacmanApp.getInstance().getGameScene().getMoveTimer()/500.0));
+        if(entity.getPosition() != this.lastPosition)
+        {
+            if(entity.getDirection() == Node.UP)
+                offsetY += adjustment;
+            if(entity.getDirection() == Node.RIGHT)
+                offsetX -= adjustment;
+            if(entity.getDirection() == Node.DOWN)
+                offsetY -= adjustment;
+            if(entity.getDirection() == Node.LEFT)
+                offsetX += adjustment;
+        }
+        if(adjustment < 3)
+        {
+            this.lastDirection = entity.getDirection();
+            this.lastPosition = entity.getPosition();
+        }
         
         g.drawImage(
                 TileSet.getInstance().getEntityTile(entity.getID(), entity.getDirection(), this.frameCounter),
