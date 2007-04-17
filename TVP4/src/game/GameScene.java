@@ -122,7 +122,7 @@ public class GameScene implements Scene {
         this.pause = new InputAction("Pause", InputAction.DETECT_FIRST_ACTION);
         this.confirm = new InputAction("Confirm quit", InputAction.DETECT_FIRST_ACTION);
         
-        this.roundTime = 1000;
+        this.roundTime = 250;   //animation problems if set lower than 250
         this.moveTimer = 0;
         
         this.frameCounter = 0;
@@ -272,49 +272,47 @@ public class GameScene implements Scene {
                 this.paused = !this.paused;
                 this.confirm.release();
             }
-
-            if(!this.paused)
-            {
-                this.moveTimer -= _time;
-                EntityRenderer[] entities = this.field.getEntityRenderers();
-                for(int i=0; i<entities.length; i++)
-                    if(entities[i].getEntity() != null)
+            
+            this.moveTimer -= _time;
+            EntityRenderer[] entities = this.field.getEntityRenderers();
+            for(int i=0; i<entities.length; i++)
+                if(entities[i].getEntity() != null)
+                {
+                    //START OF TURN!
+                    if(this.moveTimer<0 && this.semaphore.availablePermits()==3 && !this.paused)
                     {
-                        //START OF TURN!
-                        if(this.moveTimer<0 && this.semaphore.availablePermits()==3)
+                        if(i == 0)
+                            this.addPoints(entities[0].getEntity().getNode().takePoints());
+                        int dir = entities[i].getEntity().getController().move();
+                        if(this.online)
                         {
-                            if(i == 0)
-                                this.addPoints(entities[0].getEntity().getNode().takePoints());
-                            int dir = entities[i].getEntity().getController().move();
-                            if(this.online)
-                            {
-                                for(int j=0; j<3; j++)
-                                    ; //Send crap to RobotProxies.
-                            }
-                            this.replay.list[i].add(dir);
+                            for(int j=0; j<3; j++)
+                                ; //Send crap to RobotProxies.
                         }
-                        //END OF TURN!
-                        entities[i].getEntity().getController().calculateNextMove();
+                        this.replay.list[i].add(dir);
                     }
-                if(this.moveTimer<0)
-                    this.moveTimer = this.roundTime;
-                
-                //Win/Lose condition
-                if(this.field.getPointsLeft() == 0)
-                {
-                    this.win = true;
+                    //END OF TURN!
+                    entities[i].getEntity().getController().calculateNextMove();
                 }
-                else
+            if(this.moveTimer<0)
+                this.moveTimer = this.roundTime;
+
+            //Win/Lose condition
+            if(this.field.getPointsLeft() == 0)
+            {
+                this.win = true;
+            }
+            else
+            {
+                for(int j=0; j<4; j++)
                 {
-                    for(int j=0; j<4; j++)
-                    {
-                        if(entities[0].getEntity().getNode().getNodeAt(j) != null)
-                            if(entities[0].getEntity().getNode().getNodeAt(j).holdsEntity())
-                                this.lose = true;
-                    }
+                    if(entities[0].getEntity().getNode().getNodeAt(j) != null)
+                        if(entities[0].getEntity().getNode().getNodeAt(j).holdsEntity())
+                            this.lose = true;
                 }
             }
-            else if(confirm.isPressed())
+            
+            if(this.paused && confirm.isPressed())
             {
                 PacmanApp.getInstance().showTitleScene();
             }
