@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.1
+ * @version 1.2
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 17. april 2007 (v 1.2)
+ * Altered input code so that direction is only updated when the entity is about to move.
  *
  * Magnus Hemmer Pihl @ 7. marts 2007 (v 1.1)
  * Modified move() to return an integer denoting direction of movement.
@@ -34,6 +37,8 @@ public class KeyboardController extends EntityController
     private int upkey, downkey, leftkey, rightkey;
     private InputAction up, down, left, right;
     
+    private int desiredDir;
+    
     /** Creates a new instance of KeyboardController */
     public KeyboardController(Entity _entity)
     {
@@ -48,6 +53,8 @@ public class KeyboardController extends EntityController
         this.downkey = KeyEvent.VK_DOWN;
         this.leftkey = KeyEvent.VK_LEFT;
         this.rightkey = KeyEvent.VK_RIGHT;
+        
+        this.desiredDir = entity.getDirection();
     }
     
     public KeyboardController(Entity _entity, int _up, int _right, int _down, int _left)
@@ -63,10 +70,13 @@ public class KeyboardController extends EntityController
         this.downkey = _down;
         this.leftkey = _left;
         this.rightkey = _right;
+        
+        this.desiredDir = entity.getDirection();
     }
 
     public int move()
     {
+        entity.setDirection(this.desiredDir);
         Node current_node = this.entity.getNode();
         Node next_node = current_node.getNodeAt(this.entity.getDirection());
         if(next_node != null)
@@ -84,13 +94,13 @@ public class KeyboardController extends EntityController
     {
         Node node = PacmanApp.getInstance().getGameScene().getField().getNodeAt(this.entity.getPosition());
         if(up.isPressed() && node.getNodeAt(Node.UP)!=null)
-            this.entity.setDirection(Node.UP);
+            this.desiredDir = Node.UP;
         if(right.isPressed() && node.getNodeAt(Node.RIGHT)!=null)
-            this.entity.setDirection(Node.RIGHT);
+            this.desiredDir = Node.RIGHT;
         if(down.isPressed() && node.getNodeAt(Node.DOWN)!=null)
-            this.entity.setDirection(Node.DOWN);
+            this.desiredDir = Node.DOWN;
         if(left.isPressed() && node.getNodeAt(Node.LEFT)!=null)
-            this.entity.setDirection(Node.LEFT);
+            this.desiredDir = Node.LEFT;
     }
     
     public void init(InputManager _input)
