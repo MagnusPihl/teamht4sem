@@ -79,7 +79,9 @@ public class FieldExplorer implements Runnable {
         this.moves = null;
         
         field.Field field = LevelEditor.getInstance().getEditorPanel().getField();
+        field.placePacman(new Point(0,0));
         this.currentNode = field.addNodeAt(0,0);        
+        
         //this.robot.setMode(set to calibrate);
         this.availableDirections = Node.INVALID_DIRECTION; //this.robot.getAvaibleDirections();
         
@@ -111,6 +113,7 @@ public class FieldExplorer implements Runnable {
                             //this.robot.move(moves[i], this.currentNode.getNodeAt(moves[i]).getBinaryDirections());
                         }
                         this.currentNode = this.currentNode.getNodeAt(moves[i]);
+                        field.placePacman(this.currentNode.getPosition());
                     }
                 }
             }

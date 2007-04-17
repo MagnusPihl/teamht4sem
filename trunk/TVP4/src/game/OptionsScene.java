@@ -146,7 +146,7 @@ public class OptionsScene implements Scene
             y+=50;
         }
         
-        _g.drawImage(this.menuHelp[this.cursor], 0, 450, null);
+        _g.drawImage(this.menuHelp[this.cursor], 20, 400, null);
     }
     
     public void update(long _time) {
@@ -208,11 +208,11 @@ public class OptionsScene implements Scene
         for(int i=0; i<this.menuItemsStr.length; i++)
         {
             if(i>2)
-                this.menuItems[i] = font.renderString(this.menuItemsStr[i], 800);
+                this.menuItems[i] = font.renderString(this.menuItemsStr[i], 760);
             for(int j=0; j<this.menuOptionsStr[i].length; j++)
                 if(this.menuOptionsStr[i][j] != null)
-                    this.menuOptions[i][j] = font.renderString(this.menuOptionsStr[i][j], 800);
-            this.menuHelp[i] = font.renderString(this.menuHelpStr[i], 800);
+                    this.menuOptions[i][j] = font.renderString(this.menuOptionsStr[i][j], 760);
+            this.menuHelp[i] = font.renderString(this.menuHelpStr[i], 760);
         }
     }
     
