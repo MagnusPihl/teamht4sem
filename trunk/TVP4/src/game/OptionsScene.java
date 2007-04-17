@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.3
+ * @version 1.4
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 17. april 2007 (v 1.4)
+ * Added joystick autodetection.
  *
  * Magnus Hemmer Pihl @ 13. april 2007 (v 1.3)
  * Added isOnline() and getInterface() methods.
@@ -67,15 +70,29 @@ public class OptionsScene implements Scene
         this.quit = new InputAction("Escape", InputAction.DETECT_FIRST_ACTION);
         
         this.menuItemsStr = new String[] {"Entity0", "Entity1", "Entity2", "Skin", "Volume", "Mode", "Interface"};
-        System.out.println(this.menuItemsStr.length);
-        int numJoy = JXInputManager.getNumberOfDevices();
-        System.out.println(numJoy);
-        for(int i=0; i<numJoy; i++)
-            System.out.println(i+": "+JXInputManager.getJXInputDevice(i).getName());
+        
+        String[] joyList = new String[JXInputManager.getNumberOfDevices()];
+        for(int i=0; i<joyList.length; i++)
+            joyList[i] = JXInputManager.getJXInputDevice(i).getName();
+        
         this.menuOptionsStr = new String[this.menuItemsStr.length][];
-        this.menuOptionsStr[0] = new String[] {"Keyboard", "Joystick"};
-        this.menuOptionsStr[1] = new String[] {"Keyboard", "Joystick", "CPU - Easy", "CPU - Normal", "CPU - Hard"};
-        this.menuOptionsStr[2] = new String[] {"Keyboard", "Joystick", "CPU - Easy", "CPU - Normal", "CPU - Hard"};
+        this.menuOptionsStr[0] = new String[3+joyList.length];
+        this.menuOptionsStr[1] = new String[6+joyList.length];
+        this.menuOptionsStr[2] = new String[6+joyList.length];
+        for(int i=0; i<3; i++)
+        {
+            this.menuOptionsStr[i][0] = "Keyboard (arrow keys)";
+            this.menuOptionsStr[i][1] = "Keyboard (W/A/S/D)";
+            this.menuOptionsStr[i][2] = "Keyboard (numpad)";
+            for(int j=0; j<joyList.length; j++)
+                this.menuOptionsStr[i][3+j] = joyList[j];
+            if(i>0)
+            {
+                this.menuOptionsStr[i][3+joyList.length] = "CPU - Easy";
+                this.menuOptionsStr[i][4+joyList.length] = "CPU - Normal";
+                this.menuOptionsStr[i][5+joyList.length] = "CPU - Hard";
+            }
+        }
         
         //Get skin list by getting file list from skins directory, then checking every entry with SkinFileFilter.
         File dir = new File("skins/");
@@ -103,8 +120,8 @@ public class OptionsScene implements Scene
         this.cursor = 0;
         this.option = new int[this.menuItemsStr.length];
         this.option[0] = 0; //Keyboard control for Entity0
-        this.option[1] = 3; //Normal CPU for Entity1
-        this.option[2] = 3; //Normal CPU for Entity2
+        this.option[1] = this.menuOptionsStr[1].length-2; //Normal CPU for Entity1
+        this.option[2] = this.menuOptionsStr[1].length-2; //Normal CPU for Entity2
         this.option[3] = 0; //No fucking clue for skin :p
         this.option[4] = 5; //Average sound volume
         this.option[5] = 0; //Offline mode
@@ -148,17 +165,24 @@ public class OptionsScene implements Scene
             for(int i=0; i<3; i++)
             {
                 Entity e = PacmanApp.getInstance().getGameScene().getEntity(i);
-                switch(this.option[i])
-                {
-                    case 0: e.setController(new KeyboardController(e)); break;
-                    case 1: e.setController(new JoystickController(e)); break;
-                    case 2: e.setController(new PreyAIController(e)); break;
-                    case 3: e.setController(new InSightController(e, PacmanApp.getInstance().getGameScene().getEntity(0))); break;
-                    case 4: e.setController(new HunterAIController(e, PacmanApp.getInstance().getGameScene().getEntity(0))); break;
-                }
+                if(this.option[i] == 0)
+                    e.setController(new KeyboardController(e));
+                if(this.option[i] == 1)
+                    e.setController(new KeyboardController(e, KeyEvent.VK_W,KeyEvent.VK_D,KeyEvent.VK_S,KeyEvent.VK_A));
+                if(this.option[i] == 2)
+                    e.setController(new KeyboardController(e, KeyEvent.VK_NUMPAD8,KeyEvent.VK_NUMPAD6,KeyEvent.VK_NUMPAD2,KeyEvent.VK_NUMPAD4));
+                int numJoy = this.menuOptionsStr[0].length - 3;
+                for(int j=0; j<numJoy; j++)
+                    if(this.option[i] == 3+j)
+                        e.setController(new JoystickController(e, j));
+                if(this.option[i] == 3+numJoy)
+                    e.setController(new PreyAIController(e));
+                if(this.option[i] == 4+numJoy)
+                    e.setController(new InSightController(e, PacmanApp.getInstance().getGameScene().getEntity(0)));
+                if(this.option[i] == 5+numJoy)
+                    e.setController(new HunterAIController(e, PacmanApp.getInstance().getGameScene().getEntity(0)));
             }
             TileSet.getInstance().loadTileSet("skins/"+this.menuOptionsStr[3][this.option[3]]);
-            System.out.println(new File("skins/"+this.menuOptionsStr[3][this.option[3]]).getAbsolutePath());
             //Set volume
             //Set online/offline mode
             //Set tower interface
