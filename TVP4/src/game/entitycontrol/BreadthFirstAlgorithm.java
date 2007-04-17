@@ -3,8 +3,16 @@
  *
  * Created on 9. januar 2007, 18:16
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * Company: HT++
+ *
+ * @author LMK
+ * @version 1.1
+ *
+ *
+ * ******VERSION HISTORY******
+ *
+ * LMK @ 17. april 2007 (v 1.1)
+ * Added fullSearch method.
  */
 
 package game.entitycontrol;

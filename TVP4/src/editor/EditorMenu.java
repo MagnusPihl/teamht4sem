@@ -50,7 +50,7 @@ public class EditorMenu extends JPanel {
             {"Brush","Use Path Brush","Use Pacman Brush","Use Ghost Brush"},
             {"View","Show Grid","Show Points"},
             {"Skin","Nodes","Pac-Man","-","Open Skin..."},
-            {"Help","About...","Open Help"}
+            {"Help",/*"About...",*/"Open Help"}
         };
         
         char[][] mnemonics = {
@@ -58,7 +58,7 @@ public class EditorMenu extends JPanel {
             {'b','p','m','g'},
             {'v','g','p'},
             {'s','n','p','-','o'},
-            {'h','a','h'}
+            {'h',/*'a',*/'h'}
         };
         
         KeyStroke[][] keyStrokes = {
@@ -72,19 +72,19 @@ public class EditorMenu extends JPanel {
              null,                     
              KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.CTRL_MASK)},
             {null,
-             KeyStroke.getKeyStroke(KeyEvent.VK_1, InputEvent.CTRL_MASK | InputEvent.ALT_MASK),
-             KeyStroke.getKeyStroke(KeyEvent.VK_2, InputEvent.CTRL_MASK | InputEvent.ALT_MASK),
-             KeyStroke.getKeyStroke(KeyEvent.VK_3, InputEvent.CTRL_MASK | InputEvent.ALT_MASK)},
+             KeyStroke.getKeyStroke(KeyEvent.VK_1, InputEvent.CTRL_MASK ),
+             KeyStroke.getKeyStroke(KeyEvent.VK_2, InputEvent.CTRL_MASK ),
+             KeyStroke.getKeyStroke(KeyEvent.VK_3, InputEvent.CTRL_MASK )},
             {null,
              KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK),
              KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK)},
             {null, 
-             KeyStroke.getKeyStroke(KeyEvent.VK_1, InputEvent.CTRL_MASK),
-             KeyStroke.getKeyStroke(KeyEvent.VK_2, InputEvent.CTRL_MASK),
+             KeyStroke.getKeyStroke(KeyEvent.VK_1, InputEvent.ALT_MASK),
+             KeyStroke.getKeyStroke(KeyEvent.VK_2, InputEvent.ALT_MASK),
              null,
              KeyStroke.getKeyStroke(KeyEvent.VK_3, InputEvent.ALT_MASK)},
             {null, 
-             null,
+             //null,
              KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)}
         };                
         
@@ -114,7 +114,7 @@ public class EditorMenu extends JPanel {
              null,
              new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().openSkin();}}},
             {null,
-             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().about();}},
+             //new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().about();}},
              new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().openHelp();}}}                      
         };
         

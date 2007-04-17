@@ -2,9 +2,16 @@
  * SearchAlgorithm.java
  *
  * Created on 10. januar 2007, 23:28
+ * Company: HT++
  *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * @author LMK
+ * @version 1.1
+ *
+ *
+ * ******VERSION HISTORY******
+ *
+ * LMK @ 17. april 2007 (v 1.1)
+ * Added fullSearch method.
  */
 
 package game.entitycontrol;
