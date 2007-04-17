@@ -13,6 +13,7 @@
  *
  * Magnus Hemmer Pihl @ 17. april 2007 (v 2.1)
  * Changed the time at which points are taken, to better match smooth animation, also giving a slight optimization.
+ * Added getRoundTime()-method.
  *
  * Magnus Hemmer Pihl @ 13. april 2007 (v 2.0)
  * Added preliminal support for RobotProxies, including a standard semaphore. No actual interaction with RobotProxies yet.
