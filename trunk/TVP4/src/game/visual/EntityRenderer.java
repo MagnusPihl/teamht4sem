@@ -91,10 +91,11 @@ public class EntityRenderer
             this.frameCounter = (this.frameCounter+1)%2;
             this.lastUpdate = System.currentTimeMillis();
         }
-        //More accurate adjustment algorithm. Does proper decimal rounding.
-//        int adjustment = (int)(Math.floor(tileSize * (PacmanApp.getInstance().getGameScene().getMoveTimer()/500.0) + 0.5));
-        //Faster adjustment algorithm. Does not account for decimal points.
-        int adjustment = (int)(tileSize * (PacmanApp.getInstance().getGameScene().getMoveTimer()/500.0));
+        
+        int adjustment = (int)(tileSize * 
+                (new Float(PacmanApp.getInstance().getGameScene().getMoveTimer())
+                /new Float(PacmanApp.getInstance().getGameScene().getRoundTime())));
+        
         if(entity.getPosition() != this.lastPosition)
         {
             if(entity.getDirection() == Node.UP)
