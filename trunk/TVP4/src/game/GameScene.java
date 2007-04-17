@@ -11,6 +11,9 @@
  *
  * ******VERSION HISTORY******
  *
+ * Magnus Hemmer Pihl @ 17. april 2007 (v 2.1)
+ * Changed the time at which points are taken, to better match smooth animation, also giving a slight optimization.
+ *
  * Magnus Hemmer Pihl @ 13. april 2007 (v 2.0)
  * Added preliminal support for RobotProxies, including a standard semaphore. No actual interaction with RobotProxies yet.
  *
@@ -118,7 +121,7 @@ public class GameScene implements Scene {
         this.pause = new InputAction("Pause", InputAction.DETECT_FIRST_ACTION);
         this.confirm = new InputAction("Confirm quit", InputAction.DETECT_FIRST_ACTION);
         
-        this.roundTime = 500;
+        this.roundTime = 1000;
         this.moveTimer = 0;
         
         this.frameCounter = 0;
@@ -177,6 +180,11 @@ public class GameScene implements Scene {
     public long getMoveTimer()
     {
         return this.moveTimer;
+    }
+    
+    public long getRoundTime()
+    {
+        return this.roundTime;
     }
     
     public void draw(Graphics2D _g) {
@@ -274,6 +282,8 @@ public class GameScene implements Scene {
                         //START OF TURN!
                         if(this.moveTimer<0 && this.semaphore.availablePermits()==3)
                         {
+                            if(i == 0)
+                                this.addPoints(entities[0].getEntity().getNode().takePoints());
                             int dir = entities[i].getEntity().getController().move();
                             if(this.online)
                             {
@@ -285,7 +295,6 @@ public class GameScene implements Scene {
                         //END OF TURN!
                         entities[i].getEntity().getController().calculateNextMove();
                     }
-                this.addPoints(entities[0].getEntity().getNode().takePoints());
                 if(this.moveTimer<0)
                     this.moveTimer = this.roundTime;
                 
