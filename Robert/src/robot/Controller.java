@@ -17,20 +17,20 @@
  */
 
 package robot;
-import communication.RCXSocket;
-import communication.TowerProxy;
+
+import communication.GameProxy;
 import josx.platform.rcx.*;
 import java.io.*;
 import josx.rcxcomm.RCXPort;
 
 public class Controller {
     LowRider ride = new LowRider();
-    TowerProxy tower = new TowerProxy();
+    GameProxy tower = new GameProxy();
     private static Controller instance = new Controller();
     
     private int command = -1;
     private int directions = 0;
-    private int lastCommand = 0;
+    private int lastCommand = 0x00;
     private int mode = 0x21;
     private int sensor1 = 0;
     private int sensor2 = 0;
@@ -39,6 +39,29 @@ public class Controller {
     private int maxGreen = 0;
     private int minBlack = 0;
     private int maxBlack = 0;
+    private int address;
+    private boolean addressing = true;
+    
+    private ButtonListener listner = new ButtonListener() {
+        public void buttonPressed(Button button) {
+            Controller ctr = Controller.getInstance();
+            int address = 1;
+            if (Button.VIEW.isPressed()) {
+                Sound.beep();
+                address--;
+                ctr.setAddress(address);
+            }else if (Button.PRGM.isPressed()) {
+                Sound.beep();
+                address++;
+                ctr.setAddress(address);
+            }else if (Button.RUN.isPressed()) {
+                Sound.beep();
+                ctr.setAddressing(false, address);
+            }
+        }
+        public void buttonReleased(Button button) {
+        }
+    };
     
     
     /** Creates a new instance of Controller */
@@ -46,16 +69,9 @@ public class Controller {
     }
     
     public void run(){
+        this.address();
         while(true){
-            if(command != -1){
-                command = tower.getcommand();
-                TextLCD.print("2nd");
-            }else{
-                command = tower.getcommand();
-                lastCommand = command;
-                TextLCD.print("1st run");
-            }
-            
+            command = tower.getcommand();
             if(command == 0x20){
                 this.mode = 0x20;
                 tower.moveDone();
@@ -68,19 +84,19 @@ public class Controller {
             }else if(command < 0x04 && mode == 0x20){
                 this.discover();
             }else if(command == 0x10){
-                ride.flash();
+                this.flash();
                 tower.moveDone();
             }else if(command == 0x11){
-                ride.lightOn();
+                this.lightOn();
                 tower.moveDone();
             }else if(command == 0x12){
-                ride.lightOff();
+                this.lightOff();
                 tower.moveDone();
             }else if(command == 0x13){
-                ride.beepOn();
+                this.beepOn();
                 tower.moveDone();
             }else if(command == 0x14){
-                ride.beepOff();
+                this.beepOff();
                 tower.moveDone();
             }else if(command == 0x30){
                 ride.callibrate(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
@@ -217,4 +233,49 @@ public class Controller {
         }
     }
     
+    private void flash() {
+        //throw new UnsupportedOperationException("Not yet implemented");
+    }
+    
+    private void lightOn() {
+        Motor.B.setPower(7);
+        Motor.B.forward();
+    }
+    
+    private void lightOff() {
+        Motor.B.stop();
+    }
+    
+    private void beepOn() {
+        Sound.twoBeeps();
+    }
+    
+    private void beepOff() {
+        //throw new UnsupportedOperationException("Not yet implemented");
+    }
+    
+    public void setAddressing(boolean addressing, int address){
+        this.addressing = addressing;
+        this.address = address;
+    }
+    
+    public void setAddress(int address){
+        this.address = address;
+    }
+    
+    private void address(){
+//        Button.RUN.addButtonListener(listner);
+//        Button.PRGM.addButtonListener(listner);
+//        Button.VIEW.addButtonListener(listner);
+        while(addressing = true){
+            Button.RUN.addButtonListener(listner);
+            Button.PRGM.addButtonListener(listner);
+            Button.VIEW.addButtonListener(listner);
+            LCD.showNumber(address);
+        }
+    }
+    
+    public int getAddress(){
+        return address;
+    }
 }
