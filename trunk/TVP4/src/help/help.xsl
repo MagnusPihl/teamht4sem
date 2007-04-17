@@ -25,6 +25,11 @@
 				padding: 5px;
 			}
 			
+			I {
+				color: #555555;
+				font-weight: bold;
+			}
+			
 			<!-- A, A:hover, A:link, A:active, A:visited {
 				text-decoration: none;
 				font-color: #FFFFFF;
@@ -128,7 +133,7 @@
 				  <xsl:apply-templates/>
 			  </div>	  
 		  </div>
-		  
+
 	  	<div class="mapCell">	
 			<xsl:for-each select="/topics/topic">	
 				<a class="mapTopic" style="color:black;">

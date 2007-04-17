@@ -1,108 +1,94 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<?DOCTYPE help SYSTEM "help.dtd"?>
+<?DOCTYPE help SYSTEM "help.dtd"?>		
 <?xml-stylesheet type="text/xsl" href="help.xsl"?>
 <topics>
 	<topic name="Getting started">
 		<question>		
 			<name>About the game</name>
 			<answer>
-			This program is a bike computer that shows information about your training sessions.
-			The program shows you information about you pulse, how fast you drive, and how fare you have driven and much more.
-			When you have driven a session, the information about that session will be saved so you can view you progress when ever you want in the log.
-			Besides showing the current information about your training session, it gives you the possibility to drive on pre made tracks and drive against ghosts.
 			</answer>
 		</question>
 		<question>
 			<name>Downloading software to the LEGO kit</name>
 			<answer>
-			When the program starts a login dialog will appear where you will need to enter a username and password.
-			If you do not have a user, use the "Create user" button to make one.
-			When you are logged in, then you need to make a new session to get started, you do that by pressing new session under the file menu.
-			Now a dialog box will appear where you can choose a few different training possibilities.
-			If you choose free driving you will just drive and be able to change gear your self.
-			If you choose user defined track a new dialog box will appear where you will be able to make your own track.
-			You also have the possibility to choose a pre made track.
-			When you have chosen what you want to do and pushed the create button the session will start.
 			</answer>
 		</question>				
 	</topic>
-
+	
 	<topic name="Pacman Game">
 		<question>		
 			<name>Goal of the game</name>
 			<answer>
-			<img src=".\pictures\login.png" width="320" height="219" alt="login dialog" />
-			<br/>
-			The login dialog seen above it what you see when the program starts.
-			There are two fields one where you enter your username and one where you enter your password.
-			Both Username and password is case sensitive, which means that you need them exactly as you did the first time.
-			There are two buttons one for creating a new user and one for logging in.
 			</answer>
 		</question>
 		<question>		
 			<name>Starting a game</name>
 			<answer>
 			<img src=".\pictures\main session.png" width="317" height="237" alt="Main window with session shown" />
-			<img src=".\pictures\main log.png" width="317" height="237" alt="Main window with log shown" />
-			<br/>
-			The main window consists of three different parts a menu, the session panel and the log panel.
-			The menu is explained under the menu in more detail under the menu section.
-			When you have logged in you will see the session panel this will be explained in the following point.
-			If you want to change to the log panel press the log tab just under the menu bar or press show log in the view menu.
 			</answer>
 		</question>
 		<question>		
 			<name>Playing the game</name>
 			<answer>
-			The session panel is what you see when you are using the bike.
-			There are three graphs shown on the session panel, the first shows a visual representation of the track. There will also be representation of where the user is on the graph, and where the ghost is. 
-			The second graph shows the speed and the third shows the pulse.
-			To the right of the graphs there is a little chart, showing current information like time and distance driven, energy consumed, pulse and RPM.
 			</answer>
 		</question>
 		<question>		
 			<name>Loading a level</name>
 			<answer>
-			Log panel will show a list of all the sessions you have driven.
-			There you can see the date you drove the session, what track you drove, the distance, the time it took you and how much energy you used.
-			At the bottom of the window there is a graph that will show some information about the selected session. You will have the possibility to choose what information you want to show on the graph.
-			That way you can see if you get better. The sessions you see in the log panel will also be available as ghosts to drive against.
 			</answer>
 		</question>
 		<question>		
 			<name>Changing input device</name>
 			<answer>
 			<img src=".\pictures\session no ghost.png" width="300" height="250" alt="Session dialog with no ghost" />
-			<img src=".\pictures\session ghost.png" width="300" height="250" alt="session dialog with ghosts" />
-			<br/>
-			When you press "New session" in the file menu the session dialog will appear.
-			On the left side you can choose whether you want to drive freely, make your one track or drive one of the already existing tracks.
-			If you choose the User defined track option and press next then the track dialog will appear.
-			If you choose to drive one of the existing tracks then the right side will be enabled so you can choose a ghost to drive against if you whish to.
-			When you choose a ghost then you choose a person to drive against first, it could be your self but it does not have to.
-			When you have chosen a person then all the times the person have driven on the track you have selected will appear and you can chose one.
 			</answer>
 		</question>
 		<question>		
 			<name>Changing skin</name>
 			<answer>
 			<img src=".\pictures\track.png" width="282" height="213" alt="track dialog" />
-			<br/>
-			In the Track dialog you have to choose a difficulty on the left side.
-			You can choose between 5 difficulties, going from very easy to very hard, from this difficulty and the length you have entered on the right side, the program will generate a random track.
 			</answer>
 		</question>
 	</topic>
+	
+	
+	<topic name="Game Interface Overview">
+		<question>
+			<name>Title screen</name>
+			<answer>
+			</answer>
+		</question>	
+		<question>
+			<name>Game screen</name>
+			<answer>
+			</answer>
+		</question>	
+		<question>		
+			<name>Option screen</name>
+			<answer>
+			</answer>
+		</question>
+		<question>
+			<name>Highscore screen</name>
+			<answer>
+			</answer>
+		</question>		
+	</topic>
+
 
 	<topic name="Level Editor">
 		<question>		
 			<name>About Level Editor</name>
 			<answer>
+				Level Editor is an application with which you can create or scan your own levels and the use them in your Pacman game. Levels can be created using mouse or scanned using a LEGO robot.
 			</answer>
 		</question>
 		<question>
-			<name>Interface overview</name>
+			<name>Handcreating a level</name>
 			<answer>
+				To create a level that is playable, you need to select the path brush button on the toolbar or go to the brush menu and select it there. Once selected left-click or drag the mouse over the tiles you wish to add nodes to. If you've somehow placed a node you wish to delete right-click it.
+				If you wish to add nodes with a special points value, change the number in the points textbox, and draw over the nodes you wish to change value for or the tiles you wish to add new nodes to. <br/>
+				Once you've done drawing nodes select the Pacman or ghost brush to add these. You can only add one Pacman and two ghosts. Ghosts and Pacman can be removed by right-clicking them. Once you've done placing entities save the level and your done.
 			</answer>
 		</question>	
 		<question>
@@ -111,15 +97,157 @@
 			</answer>
 		</question>		
 		<question>
-			<name>Handcreating a level</name>
-			<answer>
-			</answer>
-		</question>	
-		<question>
 			<name>Saving and loading</name>
 			<answer>
 			</answer>
 		</question>				
+	</topic>
+	
+	<topic name="Level Editor Interface Overview">
+		<question>
+			<name>Main window</name>
+			<answer>
+			<img src=".\pictures\leveleditor.png" width="720" height="480" alt="Level Editor main window"/>
+			</answer>
+		</question>				
+		<question>
+			<name>Toolbar</name>
+			<answer>
+			The toolbar is placed below the menu bar and holds buttons for commonly used functions.
+			<ul>
+				<li><img src=".\pictures\brush.png" width="11" height="12" alt="Path brush"/> <strong>Path brush</strong><br />
+					The path brush is used to draw the nodes that the entities of the game traverse. When left-clicking on an empty tile a new node will be added with the amount of points specified in the points textbox. When placing a new node, links will be established to any nodes adjacent to it. It is not possible to remove or add connections seperately. When left-clicking on an already existing node the points held by the node will be changed to reflect the number of points specified in the points textbox. When right-clicking on a node it will be removed and all connections and links to it severed.
+					The path brush can also be selected be pressing <i>"CTRL + 1"</i> or going to <i>"Brush > Use Path Brush"</i>. The path brush is the default brush.
+				</li>				
+				<li>
+					<img src=".\pictures\pacman.png" width="10" height="12" alt="Pacman brush"/> <strong>Pacman brush</strong><br />
+					The Pacman brush is used to place Pacman's starting position on the playing field. You can only place one Pacman. To remove any enitity on the playing field right-click it. To add pacman left click on a none occupied node.					
+					The ghost brush can also be selected be pressing <i>"CTRL + 2"</i> or going to <i>"Brush > Use Pacman Brush"</i>.
+				</li>
+				<li>
+					<img src=".\pictures\ghosts.png" width="12" height="12" alt="Ghost brush"/> <strong>Ghost brush</strong><br />
+					The ghost brush is used to place ghost starting positions on the playing field. You can at maximum place two ghosts. To remove any enitity on the playing field right-click it. To add place a ghost left click on a none occupied node.
+					The Pacman brush can also be selected be pressing <i>"CTRL + 3"</i> or going to <i>"Brush > Use Ghost Brush"</i>.
+				</li>
+				<li>
+					<img src=".\pictures\grid.png" width="12" height="12" alt="Show / hide grid"/> <strong>Show / hide grid</strong><br />
+					When clicked a grid will be layed over the canvas, so that each node can be distinguished. 
+					When clicked again the grid will be hidden. 
+					The grid can also be shown by pressing <i>"CTRL + G"</i> or going to <i>"View > Show Grid"</i>.
+				</li>
+				<li>
+					<img src=".\pictures\points.png" width="13" height="12" alt="Show / hide points"/> <strong>Show / hide points</strong><br />
+					When clicked the points associated with every node will be shown on the canvas.
+					When clicked again points will be hidden. 
+					Points can also be shown by pressing <i>"CTRL + P"</i> or going to <i>"View > Show Points"</i>.
+				</li>
+				<li>
+					<strong>Points textbox</strong><br />
+					The number in the points box denotes how many points will be associated with each new node drawn or old node edited.
+					The number of points a node holds can be checked by moving the mouse over it, whilst checking the points label on the status bar.
+				</li>
+			</ul>
+			</answer>
+		</question>	
+		<question>		
+			<name>File Menu</name>
+			<answer>
+				<ul>
+					<li>
+						<strong>New level - CTRL + N</strong><br />
+						Clears canvas and let's you start creating a new level. If the current level you're working on have not been saved, you'll be asked if you'd like to save it before creating a new one.
+					</li>
+					<li>
+						<strong>Scan New level - CTRL + SHIFT + O</strong><br />
+						Scan new level opens the scan level dialog and let's you scan a physical level using a robot. If the current level you're working on have not been saved, you'll be asked if you'd like to save it before creating a new one.
+					</li>
+					<li>
+						<strong>Open... - CTRL + O</strong><br />
+						Let's you open a previously saved level. Any highscores associated with the level will be removed once it has been changed! If the current level you're working on have not been saved, you'll be asked if you'd like to save it before creating a new one.
+					</li>
+					<li>
+						<strong>Save - CTRL + S</strong><br />
+						Let's you save the level you're currently working on. If you have previously saved the level it will be saved to the file you last saved it to. If you havn't previously saved your level your will be asked to choose a file to save to. When changing a level all highscore data will be removed.
+					</li>
+					<li>
+						<strong>Save As... - CTRL + ALT + S</strong><br />
+						Let's you choose a file to save the level you're currently working on to. When changing a level all highscore data will be removed.
+					</li>
+					<li>
+						<strong>Quit</strong><br />
+						Shuts down the program. You are currently not prompted to save before quitting.
+					</li>
+				</ul>
+			</answer>
+		</question>
+		<question>
+			<name>Brush Menu</name>
+			<answer>
+				<ul>
+					<li><strong>Path brush - CTRL + 1</strong><br />
+					The path brush is used to draw the nodes that the entities of the game traverse. When left-clicking on an empty tile a new node will be added with the amount of points specified in the points textbox. When placing a new node, links will be established to any nodes adjacent to it. It is not possible to remove or add connections seperately. When left-clicking on an already existing node the points held by the node will be changed to reflect the number of points specified in the points textbox. When right-clicking on a node it will be removed and all connections and links to it severed.
+				</li>				
+				<li>
+					<strong>Pacman brush - CTRL + 2</strong><br />
+					The Pacman brush is used to place Pacman's starting position on the playing field. You can only place one Pacman. To remove any enitity on the playing field right-click it. To add pacman left click on a none occupied node.					
+				</li>
+				<li>
+					<strong>Ghost brush - CTRL + 3</strong><br />
+					The ghost brush is used to place ghost starting positions on the playing field. You can at maximum place two ghosts. To remove any enitity on the playing field right-click it. To add place a ghost left click on a none occupied node.
+				</li>
+				</ul>
+			</answer>
+		</question>	
+		<question>
+			<name>View Menu</name>
+			<answer>
+				<ul>					
+					<li>
+						<strong>Show Grid - CTRL + G</strong><br />
+						When clicked a grid will be layed over the canvas, so that each node can be distinguished. 
+						When clicked again the grid will be hidden. 
+					</li>
+					<li>
+						<strong>Show Points - CTRL + P</strong><br />
+						When clicked the points associated with every node will be shown on the canvas.
+						When clicked again points will be hidden. 
+					</li>
+				</ul>
+			</answer>
+		</question>	
+		<question>
+			<name>Skin Menu</name>
+			<answer>
+				<ul>					
+					<li>
+						<strong>Nodes - ALT + 1</strong><br />
+						Changes the skin used to present the level on the canvas to the deafult skin. 
+						Nodes tries to look like what a physical level whould look like.
+					</li>
+					<li>
+						<strong>Pacman - ALT + 2</strong><br />
+						Changes the skin used to present the level on the canvas to the Pacman skin. 
+						Tha Pacman skin tries to emulate the look of the an old school pacman game. This is 
+						the skin used ingame.
+					</li>
+					<li>
+						<strong>Open Skin - ALT + 3</strong><br />
+						Let's you select a directory containing a skin you wish to view level with.
+					</li>
+				</ul>
+			</answer>
+		</question>	
+		<question>
+			<name>Help Menu</name>
+			<answer>
+			
+			</answer>
+		</question>				
+		<question>
+			<name>Scan dialog</name>
+			<answer>
+			</answer>
+		</question>	
 	</topic>
 	
 	<topic name="Support">
@@ -127,21 +255,8 @@
 			<name>Known errors</name>
 			<answer>
 				<ul>
-				  <li>Bike - PC communikation is still not up</li>
-				  <li>it is possible to open more than one copy of dialogs, they are not modal</li>
-				  <li>Program never checks that the accompanying board or bicycle is connected</li>
-				  <li>Graphs and session data is not reset when user logs out</li>
-  				  <li>There is no stop button</li>
-				  <li>User gets no errormessage when loading of language data files fail.</li>
-  				  <li>Function handling number formatting of weight accepts more than one dot (.)</li>
-				  <li>No error message is shown when a language file cannot be opened or the language class cannot be initially</li>
-				  <li>Lists are not saved upon program termination.</li>
-				  <li>When language is changed it is not stored upon termination.</li>
-				  <li>User is not prompted to save or to confirm closure of current session, when a new session is created, when the user tries to log out or close the application.</li>
-				  <li>Sessions are created without correct date.</li>
-				  <li>Communication with bike is untested.</li>
-				  <li>There are no predefined tracks.</li>
-				  <li>Login dialog says that user doesn't exist when nothing is written in username field, instead of prompting for a username.</li>
+				  <li>When closing level editor, user is not prompted to save level.</li>
+				  <li>When closing level editor, you are allowed to view a level using an incomplete skin.</li>
 				</ul>			
 			</answer>
 		</question>
@@ -149,29 +264,7 @@
 			<name>List of planned improvements</name>
 			<answer>
 				<ul>
-				  <li>Tests of Model</li>
-				  <li>Tests of Control</li>
-				  <li>Tests of View</li>
-				  <li>Tests of Graph</li>
-				  <li>Add option change between miles and km</li>
-				  <li>A preview of each track can be added to SessionDialog and TrackDialog</li>
-				  <li>A default track should be select when SessionDialog is shown</li>
-				  <li>The ghostlist should be disabled when "Free driving" or "Userdefined track" is chosen in SessionDialog</li>
-				  <li>When in SessionDialog the default user in the ghostlist should be the current user</li>
-  				  <li>Naming and scope of variables in some classes should get a real overhaul. Think about where you define your variables and for how long they are needed. Not all variables are needed troughout whole classes</li>
-  				  <li>Remove setLabels and named JLabels from userdialog, they are not needed</li>
-  				  <li>Track should have a function added that is able to make a GraphModel from its list of gearChanges</li>
-  				  <li>The derivatives of GraphModel should all have addPoints functions</li>
-				  <li>It is not possible to delete a saved session unless you delete the whole log file.</li>
-				  <li>It is not possible to delete user unless you delete the whole user file.</li>
-				  <li>When referencing singletons getInstance() should be used every time, but is not currently.</li>
-				  <li>No backup are created of the data files. If writing fails, all data will be lost.</li>
-				  <li>Many function parameters should be changed to FINAL</li>
-				  <li>Default language should be editable in the userdialog.</li>	
-				  <li>A help button should be placed on the login dialog for convenience.</li>
-				  <li>When the user presses enter while in a dialog it should be handled as a confirmation. When escape is pressed it should be handled as cancelled.</li>
-				  <li>All dialogs are not of the same size.</li>
-				  <li>The position graph should show a vertical bar indicating current position.</li>				  
+				  <li>In level editor placement and removal of single connections between nodes</li>			  
 				</ul>			
 			</answer>
 		</question>
@@ -183,6 +276,10 @@
 					<li>
 						<strong>Troels Hagman-Hansen</strong><br/>
 						E-mail: <a href="mailto:troelshh@hotmail.com">troelsh-h@stofanet.dk</a><br/><br/>
+					</li>
+					<li>
+						<strong>Christian Holm</strong><br/>
+						E-mail: <a href="mailto:chrholm.dk@gmail.com">chrholm.dk@gmail.com</a><br/><br/>
 					</li>
 					<li>
 						<strong>Lau Maack-Krommes</strong><br/>
