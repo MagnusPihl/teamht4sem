@@ -6,12 +6,15 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.1
+ * @version 1.2
  *
  * Ideas: Add support for direction
  *
  * ******VERSION HISTORY******
  *
+ * LMK @ 17. april 2007 (v 1.2)
+ * Removed offset parameters for getStringBounds
+ * Fixed render errors.
  * LMK @ 3. marts 2007 (v 1.1)
  * Added getStringBounds
  * Added getIndexes
@@ -36,6 +39,8 @@ public class BitmapFont {
     public static final String CHARACTERS = "abcdefghijklmnopqrstuvwxyzæøåABCDEFGHIJKLMNOPQRSTUVWXYZÆØÅ1234567890-_., \\/\"'()[]&%#;?!{}=:+©";
                                              
     private Image[] images;
+    private int[] charWidths;
+    private int[] charHeights;
     private int fontHeight;
     private int lineSpace;
         
@@ -48,6 +53,8 @@ public class BitmapFont {
     public BitmapFont(File directory, int lineSpace) { //throws FileNotFoundException { 
         if (directory.isDirectory()) {
             this.images = new Image[CHARACTERS.length()];
+            this.charWidths = new int[CHARACTERS.length()];
+            this.charHeights = new int[CHARACTERS.length()];
             this.fontHeight = 0;
             
             for (int i = 0; i < this.images.length; i++) {                    
@@ -57,8 +64,11 @@ public class BitmapFont {
                 this.images[i] = new ImageIcon(directory.getAbsolutePath() + File.separator + Integer.toString(CHARACTERS.charAt(i)) + ".png").getImage();
                 
                 if (this.images[i] != null) {
-                    if (this.images[i].getHeight(null) > this.fontHeight) {
-                        this.fontHeight = this.images[i].getHeight(null);
+                    this.charHeights[i] = this.images[i].getHeight(null);
+                    this.charWidths[i] = this.images[i].getWidth(null);
+                    
+                    if (this.charHeights[i] > this.fontHeight) {
+                        this.fontHeight = this.charHeights[i];
                     }
                 } else {
                     //throw new FileNotFoundException("Could not find character " + this.characters.charAt(i) + " in file " + currentFile.getPath());
@@ -85,28 +95,23 @@ public class BitmapFont {
     public int drawString(Graphics g, String string, int[] indexes, int startX, int startY, int maxLineWidth) {
         int lineWidth = 0;
         int currentX = startX;
-        int currentY = startY;
-        int charHeight = 0;
-        int charWidth = 0;
-        Image currentChar = null;
+        int currentY = startY + this.fontHeight;
         
         for (int i = 0; i < string.length(); i++) {
             if (indexes[i] != -1) {            
-                currentChar = this.images[indexes[i]];
-                if (currentChar != null) {
-                    charHeight = currentChar.getHeight(null);
-                    charWidth = currentChar.getWidth(null);
-
-                    if ((lineWidth != 0) && (lineWidth + charWidth > maxLineWidth)) {
-                        currentY += this.fontHeight + lineSpace;
+                if (this.images[indexes[i]] != null) {
+                    
+                    if ((lineWidth != 0) && ((lineWidth + this.charWidths[indexes[i]]) > maxLineWidth)) {
+                        currentY += this.fontHeight + this.lineSpace;                        
                         currentX = startX;
                         lineWidth = 0;
-                    }
-
-                    lineWidth += charWidth;
-                    g.drawImage(currentChar, currentX, currentY + (this.fontHeight - charHeight), null);
-                    currentX += charWidth;
+                    } 
+                    g.drawImage(this.images[indexes[i]], currentX, currentY - this.charHeights[indexes[i]], null);    
+                    
+                    lineWidth += this.charWidths[indexes[i]];                        
+                    currentX += this.charWidths[indexes[i]];
                 }
+                
             } else if (string.charAt(i) == '\n') {
                 currentY += this.fontHeight + lineSpace;
                 currentX = startX;
@@ -114,7 +119,7 @@ public class BitmapFont {
             }
         }
         
-        return currentY - startY + this.fontHeight;
+        return currentY - startY;
     }
     
     /**
@@ -125,8 +130,9 @@ public class BitmapFont {
      * @param Maximum width.
      */
     public BufferedImage renderString(String string, int maxLineWidth) {
+        //string.substring(0,30);
         int[] indexes = this.getIndexes(string);
-        Dimension size = this.getStringBounds(string, indexes, 0, 0, maxLineWidth);
+        Dimension size = this.getStringBounds(string, indexes, maxLineWidth);
         BufferedImage image = PacmanApp.getInstance().getCore().getScreenManager().createCompatibleImage(size.width, size.height, Transparency.TRANSLUCENT);        
         this.drawString(image.getGraphics(), string, indexes, 0, 0, maxLineWidth);
         return image;
@@ -169,46 +175,40 @@ public class BitmapFont {
         return indexes;
     }
     
-    private Dimension getStringBounds(String string, int[] indexes, int startX, int startY, int maxLineWidth) {
-        int lineWidth = 0;
-        int width = 1;
-        int currentX = startX;
-        int currentY = startY;
-        int charHeight = 0;
-        int charWidth = 0;
-        Image currentChar = null;
+    private Dimension getStringBounds(String string, int[] indexes, int maxLineWidth) {        
+        int currentWidth = 0;
+        int maxX = 0;
+        int maxY = this.fontHeight;
         
         for (int i = 0; i < string.length(); i++) {                        
             if (indexes[i] != -1) {            
-                currentChar = this.images[indexes[i]];
-                if (currentChar != null) {
-                    charHeight = currentChar.getHeight(null);
-                    charWidth = currentChar.getWidth(null);
-
-                    if ((lineWidth != 0) && (lineWidth + charWidth > maxLineWidth)) {
-                        currentY += this.fontHeight + lineSpace;
-                        currentX = startX;
-                        lineWidth = 0;
-                    }
-
-                    lineWidth += charWidth;
-                    currentX += charWidth;
+                if (this.images[indexes[i]] != null) {
+                    
+                    if ((currentWidth != 0) && ((currentWidth + this.charWidths[indexes[i]]) > maxLineWidth)) {
+                        maxY += this.fontHeight + this.lineSpace;
+                        if (currentWidth > maxX) {
+                            maxX = currentWidth;
+                        }
+                        currentWidth = 0;
+                    } 
+                    
+                    currentWidth += this.charWidths[indexes[i]];
                 }
             } else if (string.charAt(i) == '\n') {
-                if (lineWidth > width) {
-                    width = lineWidth;
+                if (currentWidth > maxX) {
+                    maxX = currentWidth;
                 }
-                currentY += this.fontHeight + lineSpace;
-                currentX = startX;
-                lineWidth = 0;
+                maxY += this.fontHeight + lineSpace;
+                currentWidth = 0;
             }
         }
         
-        if (lineWidth > width) {
-            width = lineWidth;
+        if (currentWidth > maxX) {
+            maxX = currentWidth;
         }
+        currentWidth = 0;
         
-        return new Dimension(width, currentY - startY + this.fontHeight);
+        return new Dimension(maxX, maxY);
     }
     
     /**

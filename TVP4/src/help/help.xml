@@ -56,16 +56,36 @@
 		<question>
 			<name>Title screen</name>
 			<answer>
+                            <img src=".\pictures\titlescreen.png" width="640" height="480" alt="Game title screen" /><br />
+                            <ul>
+                                <li>
+                                    <strong>New Game</strong><br />
+                                </li>
+                                <li>
+                                    <strong>Continue Game</strong><br />
+                                </li>
+                                <li>
+                                    <strong>Highscores</strong><br />
+                                </li>
+                                <li>
+                                    <strong>Options</strong><br />
+                                </li>
+                                <li>
+                                    <strong>Quit</strong><br />
+                                </li>
+                            </ul>
 			</answer>
 		</question>	
 		<question>
 			<name>Game screen</name>
 			<answer>
+                            <img src=".\pictures\gamescreen.png" width="640" height="480" alt="Game screen" /><br />
 			</answer>
 		</question>	
 		<question>		
 			<name>Option screen</name>
 			<answer>
+                            <img src=".\pictures\optionscreen.png" width="640" height="480" alt="Game screen" /><br />
 			</answer>
 		</question>
 		<question>
@@ -94,13 +114,9 @@
 		<question>
 			<name>Scanning a level</name>
 			<answer>
+                            To scan a level choose "Scan New Level" from the "File" menu and press scan.
 			</answer>
-		</question>		
-		<question>
-			<name>Saving and loading</name>
-			<answer>
-			</answer>
-		</question>				
+		</question>					
 	</topic>
 	
 	<topic name="Level Editor Interface Overview">
@@ -240,12 +256,40 @@
 		<question>
 			<name>Help Menu</name>
 			<answer>
-			
+                            <ul><li>
+                            <strong>Open Skin - F1</strong><br />
+                            Opens this help file.
+                            </li></ul>
 			</answer>
 		</question>				
 		<question>
 			<name>Scan dialog</name>
 			<answer>
+                            <img src=".\pictures\scandialog.png" width="311" height="266" alt="Scan dialog"/><br />
+                            The scan is used to initiate the scanning of a physical level using a LEGO robot. 
+                            The window consists of a log, scan and a cancel button. 
+                            While scanning the already scanned parts of the level will be shown on the canvas.
+                            <ul>
+                                <li>
+                                    <strong>Scan button</strong><br />
+                                    The scan button will start the scanning of a physical level. 
+                                    Before you press the scan button you should make sure 
+                                    that you've turned on the LEGO robot marked 1, 
+                                    downloaded the robot software, placed the LEGO robot on the 
+                                    physical level, and started the software. 
+                                </li>                                
+                                <li>
+                                    <strong>Cancel button</strong><br />
+                                    The cancel button will stop the scanning process. 
+                                    Once you've stopped scanning in a level you cannot continue scanning the current level,
+                                    if you try anyways the scanning process will start over.
+                                </li>
+                                <li>
+                                    <strong>Log</strong>
+                                    The log is large text area in the middle of the scan dialog. 
+                                    Messages and status will be shown here.
+                                </li>
+                            </ul>
 			</answer>
 		</question>	
 	</topic>
