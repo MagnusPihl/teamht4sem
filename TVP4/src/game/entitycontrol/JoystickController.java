@@ -6,13 +6,17 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.0
+ * @version 1.1
  *
  * *************NOTE!!**************
  * JoystickController will ONLY work if the JXInput library is included in the project, and Windows has access to "jxinput.dll".
  * Get both at http://www.hardcode.de/jxinput/
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 17. april 2007 (v 1.1)
+ * Added alternative constructor to specify a joystick ID to use.
+ * Altered input code so that direction is only updated when the entity is about to move.
  *
  * Magnus Hemmer Pihl @ 14. marts 2007 (v 1.0)
  * Initial creation.
@@ -32,14 +36,29 @@ public class JoystickController extends EntityController
 {
     JXInputDevice joystick;
     
+    int desiredDir;
+    int joyID;
+    
     /** Creates a new instance of KeyboardController */
     public JoystickController(Entity _entity)
     {
         super(_entity);
+        
+        this.desiredDir = entity.getDirection();
+        this.joyID = 0;
+    }
+    
+    public JoystickController(Entity _entity, int _joyID)
+    {
+        super(_entity);
+        
+        this.desiredDir = entity.getDirection();
+        this.joyID = _joyID;
     }
 
     public int move()
     {
+        entity.setDirection(this.desiredDir);
         Node current_node = this.entity.getNode();
         Node next_node = current_node.getNodeAt(this.entity.getDirection());
         if(next_node != null)
@@ -58,18 +77,18 @@ public class JoystickController extends EntityController
         Node node = PacmanApp.getInstance().getGameScene().getField().getNodeAt(this.entity.getPosition());
         JXInputManager.updateFeatures();
         if(joystick.getAxis(1).getValue() < -0.5 && node.getNodeAt(Node.UP)!=null)
-            this.entity.setDirection(Node.UP);
+            this.desiredDir = Node.UP;
         if(joystick.getAxis(0).getValue() > 0.5 && node.getNodeAt(Node.RIGHT)!=null)
-            this.entity.setDirection(Node.RIGHT);
+            this.desiredDir = Node.RIGHT;
         if(joystick.getAxis(1).getValue() > 0.5 && node.getNodeAt(Node.DOWN)!=null)
-            this.entity.setDirection(Node.DOWN);
+            this.desiredDir = Node.DOWN;
         if(joystick.getAxis(0).getValue() < -0.5 && node.getNodeAt(Node.LEFT)!=null)
-            this.entity.setDirection(Node.LEFT);
+            this.desiredDir = Node.LEFT;
     }
     
     public void init(InputManager _input)
     {
-        this.joystick = JXInputManager.getJXInputDevice(0);
+        this.joystick = JXInputManager.getJXInputDevice(this.joyID);
     }
     
     public void deinit(InputManager _input)
