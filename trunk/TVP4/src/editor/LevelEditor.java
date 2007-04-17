@@ -259,7 +259,14 @@ public class LevelEditor {
     /**
      * Open help file.
      */
-    public void openHelp() {}
+    public void openHelp() {
+        try {
+            Runtime.getRuntime().exec("explorer build\\classes\\help\\help.xml");
+        } catch (IOException ioe) {
+            JOptionPane.showInternalMessageDialog(this.frame, "Couldn't open help file. Try opening it manual it's located in help/help.xml");
+            ioe.printStackTrace();
+        }
+    }
     
     /**
      * Updates the titlebar to reflect the currently open file.

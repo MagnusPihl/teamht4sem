@@ -59,11 +59,11 @@ public class FieldExplorerDialog extends JFrame implements ActionListener {
         this.pack();
     }    
     
-    public void reset() {
-        JOptionPane.showMessageDialog(this, "Please turn the Robot marked 1 on by " +
+    public void reset() {                 
+        /*JOptionPane.showMessageDialog(this, "Please turn the Robot marked 1 on by " +
                 "pressing the red \"on/off\" button once.\nIf the appropriate software " +
                 "has been downloaded to the unit press the green button marked \"run\". \n" +
-                "For help on software downloading please refer to the help file.");
+                "For help on software downloading please refer to the help file.");*/
         this.log.setText("Before you start please position the Robot " +
                 "currently blinking on the playing field. When ready click scan " +
                 "to start reading field. If you should wish to stop, press cancel" +
@@ -72,7 +72,11 @@ public class FieldExplorerDialog extends JFrame implements ActionListener {
         this.startBtn.setEnabled(true);
     }
     
-    public void actionPerformed(ActionEvent evt) {            
+    public void explorationDone() {        
+        this.startBtn.setEnabled(true);
+    }
+    
+    public void actionPerformed(ActionEvent evt) {             
         if (evt.getActionCommand().equals("Scan")) {
             this.startBtn.setEnabled(false);
             this.explorerThread = new Thread(this.explorer);
