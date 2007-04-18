@@ -130,9 +130,9 @@ public class GameScene implements Scene {
         
         this.semaphore = new Semaphore(3);
         this.proxy = new RobotProxy[3];
-        this.proxy[0] = new RobotProxy(1);
-        this.proxy[1] = new RobotProxy(2);
-        this.proxy[2] = new RobotProxy(3);
+        this.proxy[0] = new RobotProxy(1, this.semaphore);
+        this.proxy[1] = new RobotProxy(2, this.semaphore);
+        this.proxy[2] = new RobotProxy(3, this.semaphore);
     }
     
     public void setMode(int _mode)
