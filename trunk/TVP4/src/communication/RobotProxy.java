@@ -40,6 +40,7 @@ public class RobotProxy {
     private static final byte LIGHT_OFF = 0x12;
     private static final byte BEEP_ON = 0x13;
     private static final byte BEEP_OFF = 0x14;
+    private static final byte SEARCH_CURRENT_NODE = 0x20;
     private static final byte CALIBRATE = 0x30;
     private static final byte NOP = -0x01;
     
@@ -71,7 +72,7 @@ public class RobotProxy {
         sema.release();
     }
     
-    public int move(byte direction) throws IOException{
+    public int search(byte direction) throws IOException{
         timeout = (int)System.currentTimeMillis() + TIMEOUT;
         try {
             sema.acquire();
