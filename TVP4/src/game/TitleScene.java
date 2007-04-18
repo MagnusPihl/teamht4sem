@@ -13,6 +13,7 @@
  *
  * Magnus Hemmer Pihl @ 18. april 2007 (v 1.2)
  * Removed calls to GameScene.setMode (now deprecated). Will need to implement new method of setting Replay mode.
+ * Removed online/offline selection, as that's now in the Options screen.
  *
  * Magnus Hemmer Pihl @ 11. april 2007 (v 1.1)
  * Removed skin selection dialog and added options menu.
@@ -46,7 +47,7 @@ public class TitleScene implements Scene {
     private boolean isOnline;
     private JFileChooser openLevelDialog, openReplayDialog, selectSkinDialog;
     
-    public static final String[] MENU_ITEMS = new String[] {"Mode - Offline", "New Game", "Continue", "View Replay", "View High Score", "Options" ,"Quit"};
+    public static final String[] MENU_ITEMS = new String[] {"New Game", "Continue", "View Replay", "View High Score", "Options" ,"Quit"};
     
     /** Creates a new instance of GameScene */
     public TitleScene() {
@@ -114,13 +115,12 @@ public class TitleScene implements Scene {
             System.exit(0);
         } else if (this.actionEnter.isPressed()) {
             switch (this.currentItem) {
-                case 0: this.isOnline = !this.isOnline; break;
-                case 1: this.newGame(); break;
-                case 2: this.continueGame(); break;
-                case 3: this.replayGame(); break;
-                case 4: PacmanApp.getInstance().showHighScoreScene(); break;
-                case 5: PacmanApp.getInstance().showOptionsScene(); break;
-                case 6: PacmanApp.getInstance().showCreditsScene(); break;
+                case 0: this.newGame(); break;
+                case 1: this.continueGame(); break;
+                case 2: this.replayGame(); break;
+                case 3: PacmanApp.getInstance().showHighScoreScene(); break;
+                case 4: PacmanApp.getInstance().showOptionsScene(); break;
+                case 5: PacmanApp.getInstance().showCreditsScene(); break;
                 //case 5: System.exit(0); break;
             }
         } else if (this.actionUp.isPressed()) {
@@ -176,7 +176,6 @@ public class TitleScene implements Scene {
     public void prepareMenu() {
         BitmapFont font = PacmanApp.getInstance().getFont();
         this.menuItems = new Image[MENU_ITEMS.length];
-        this.onlineImage = font.renderString("Mode - Online", 800);
                 
         for (int i = 0; i < this.menuItems.length; i++) {
             this.menuItems[i] = font.renderString(MENU_ITEMS[i], 800);
