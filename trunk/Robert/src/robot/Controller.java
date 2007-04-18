@@ -23,7 +23,7 @@ import josx.platform.rcx.*;
 import java.io.*;
 import josx.rcxcomm.RCXPort;
 
-public class Controller {
+public class Controller implements ButtonListener{
     LowRider ride = new LowRider();
     GameProxy tower = new GameProxy();
     private static Controller instance = new Controller();
@@ -31,7 +31,6 @@ public class Controller {
     private int command = -1;
     private int directions = 0;
     private int lastCommand = 0x00;
-    private int mode = 0x21;
     private int sensor1 = 0;
     private int sensor2 = 0;
     private int sensor3 = 0;
@@ -39,32 +38,23 @@ public class Controller {
     private int maxGreen = 0;
     private int minBlack = 0;
     private int maxBlack = 0;
-    private int address;
+    private int address = 0;
     private boolean addressing = true;
     
-    private ButtonListener listner = new ButtonListener() {
-        public void buttonPressed(Button button) {
-            Controller ctr = Controller.getInstance();
-            int address = 1;
-            if (Button.VIEW.isPressed()) {
-                Sound.beep();
-                address--;
-                ctr.setAddress(address);
-            }else if (Button.PRGM.isPressed()) {
-                Sound.beep();
-                address++;
-                ctr.setAddress(address);
-            }else if (Button.RUN.isPressed()) {
-                Sound.beep();
-                ctr.setAddressing(false, address);
-            }
-        }
-        public void buttonReleased(Button button) {
-        }
-    };
+    public static int NORTH = 0x08;
+    public static int SOUTH = 0x02;
+    public static int WEST = 0x01;
+    public static int EAST = 0x04;
+    public static int MOVE_UP = 0x00;
+    public static int MOVE_RIGHT = 0x01;
+    public static int MOVE_DOWN = 0x02;
+    public static int MOVE_LEFT = 0x03;
+    public static int DISCOVER = 0x40;
+    public static int DONE = 0x10;
+
+    private int diretions;
     
-    
-    /** Creates a new instance of Controller */
+   /** Creates a new instance of Controller */
     public Controller() {
     }
     
@@ -72,35 +62,33 @@ public class Controller {
         this.address();
         while(true){
             command = tower.getcommand();
-            if(command == 0x20){
-                this.mode = 0x20;
-                tower.moveDone();
-            }else if(command == 0x21){
-                this.mode = 0x21;
-                tower.moveDone();
-            }else if(command < 0x04 && mode == 0x21){
+            if(command == this.MOVE_DOWN || command == this.MOVE_LEFT || command == this.MOVE_RIGHT || command == this.MOVE_UP){
+                LCD.showNumber(command);
                 this.move();
-                tower.moveDone();
-            }else if(command < 0x04 && mode == 0x20){
+                tower.moveDone(this.DONE);
+        }else if(command == (this.DISCOVER & this.MOVE_UP) || command == (this.DISCOVER & this.MOVE_RIGHT) || command == (this.DISCOVER & this.MOVE_DOWN) || command == (this.DISCOVER & this.MOVE_LEFT)){
                 this.discover();
             }else if(command == 0x10){
                 this.flash();
-                tower.moveDone();
+                tower.moveDone(this.DONE);
             }else if(command == 0x11){
                 this.lightOn();
-                tower.moveDone();
+                tower.moveDone(this.DONE);
             }else if(command == 0x12){
                 this.lightOff();
-                tower.moveDone();
+                tower.moveDone(this.DONE);
             }else if(command == 0x13){
                 this.beepOn();
-                tower.moveDone();
+                tower.moveDone(this.DONE);
             }else if(command == 0x14){
                 this.beepOff();
-                tower.moveDone();
+                tower.moveDone(this.DONE);
             }else if(command == 0x30){
                 ride.callibrate(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
-                tower.moveDone();
+                tower.moveDone(this.DONE);
+            }else if(command == 0x20){
+                diretions = ride.searchNode();
+                tower.moveDone(this.DONE | diretions);
             }else{
                 
             }
@@ -111,37 +99,38 @@ public class Controller {
         if(command != lastCommand){
             this.turn();
         }
-        int diretions = ride.goToNext();
-        tower.moveDone();
-        tower.sendDirections(diretions);
+        diretions = ride.goToNext();
+        tower.moveDone(this.DONE | diretions);
     }
     
     private void move(){
+        TextLCD.print("move");
         directions = tower.getDirections();
         if(command != lastCommand){
             this.turn();
         }
-        if(directions == 10 || directions == 5){
+        if(directions == (this.NORTH | this.SOUTH) || directions == (this.EAST | this.WEST)){
+            TextLCD.print("run1");
             ride.goToGreen();
         }
-        if(directions == 7 || directions == 11 || directions == 13 || directions == 14){
+        if(directions == (this.EAST | this.WEST | this.SOUTH) || directions == (this.NORTH | this.SOUTH | this.WEST) || directions == (this.EAST | this.WEST | this.NORTH) || directions == (this.NORTH | this.SOUTH | this.EAST)){
             this.tCross();
         }
-        if(directions == 3 || directions == 12){
-            if(command == 0x00 || command ==0x02){
+        if(directions == (this.SOUTH | this.WEST) || directions == (this.NORTH | this.EAST)){
+            if(command == this.MOVE_UP || command == this.MOVE_DOWN){
                 ride.goToLeftCorner();
-            }else if(command == 0x01 || command ==0x03){
+            }else if(command == this.MOVE_RIGHT || command == this.MOVE_LEFT){
                 ride.goToRightCorner();
             }
         }
-        if(directions == 6 || directions == 9){
-            if(command == 0x00 || command ==0x02){
+        if(directions == (this.SOUTH | this.EAST) || directions == (this.NORTH | this.WEST)){
+            if(command == this.MOVE_UP || command == this.MOVE_DOWN){
                 ride.goToRightCorner();
-            }else if(command == 0x01 || command ==0x03){
+            }else if(command == this.MOVE_RIGHT || command == this.MOVE_LEFT){
                 ride.goToLeftCorner();
             }
         }
-        if(directions == 15){
+        if(directions == (this.SOUTH | this.EAST | this.NORTH | this.WEST)){
             ride.goToCross();
         }
         lastCommand = command;
@@ -158,36 +147,36 @@ public class Controller {
     }
     
     private void turn(){
-        if(command == 0x00){
-            if(lastCommand == 0x01){
+        if(command == this.MOVE_UP || command == (this.DISCOVER | this.MOVE_UP)){
+            if(lastCommand == this.MOVE_RIGHT || lastCommand == (this.DISCOVER | this.MOVE_RIGHT)){
                 ride.left90();
-            }else if(lastCommand == 0x03){
+            }else if(lastCommand == this.MOVE_LEFT || lastCommand == (this.DISCOVER | this.MOVE_LEFT)){
                 ride.right90();
-            }else if(lastCommand == 0x02){
+            }else if(lastCommand == this.MOVE_DOWN || lastCommand == (this.DISCOVER | this.MOVE_DOWN)){
                 ride.turn180();
             }
-        }else if(command == 0x01){
-            if(lastCommand == 0x02){
+        }else if(command == this.MOVE_RIGHT || command == (this.DISCOVER | this.MOVE_RIGHT)){
+            if(lastCommand ==  this.MOVE_DOWN || lastCommand == (this.DISCOVER | this.MOVE_DOWN)){
                 ride.left90();
-            }else if(lastCommand == 0x00){
+            }else if(lastCommand == this.MOVE_UP || lastCommand == (this.DISCOVER | this.MOVE_UP)){
                 ride.right90();
-            }else if(lastCommand == 0x03){
+            }else if(lastCommand == this.MOVE_LEFT || lastCommand == (this.DISCOVER | this.MOVE_LEFT)){
                 ride.turn180();
             }
-        }else if(command == 0x02){
-            if(lastCommand == 0x00){
+        }else if(command == this.MOVE_DOWN || lastCommand == (this.DISCOVER | this.MOVE_DOWN)){
+            if(lastCommand == this.MOVE_UP || lastCommand == (this.DISCOVER | this.MOVE_UP)){
                 ride.turn180();
-            }else if(lastCommand == 0x01){
+            }else if(lastCommand == this.MOVE_LEFT || lastCommand == (this.DISCOVER | this.MOVE_LEFT)){
                 ride.right90();
-            }else if(lastCommand == 0x03){
+            }else if(lastCommand == this.MOVE_RIGHT || lastCommand == (this.DISCOVER | this.MOVE_RIGHT)){
                 ride.left90();
             }
-        }else if(command == 0x03){
-            if(lastCommand == 0x00){
+        }else if(command == this.MOVE_LEFT || lastCommand == (this.DISCOVER | this.MOVE_LEFT)){
+            if(lastCommand == this.MOVE_UP || lastCommand == (this.DISCOVER | this.MOVE_UP)){
                 ride.left90();
-            }else if(lastCommand == 0x01){
+            }else if(lastCommand == this.MOVE_RIGHT || lastCommand == (this.DISCOVER | this.MOVE_LEFT)){
                 ride.turn180();
-            }else if(lastCommand == 0x02){
+            }else if(lastCommand == this.MOVE_DOWN || lastCommand == (this.DISCOVER | this.MOVE_DOWN)){
                 ride.right90();
             }
         }
@@ -198,36 +187,36 @@ public class Controller {
     }
     
     private void tCross() {
-        if(directions == 7){
-            if(command == 8){
+        if(directions == (this.EAST | this.WEST | this.SOUTH)){
+            if(command == this.MOVE_UP){
                 ride.goToCross();
-            }else if(command == 4){
+            }else if(command == this.MOVE_RIGHT){
                 ride.goToRightCorner();
-            }else if(command == 1){
+            }else if(command == this.MOVE_LEFT){
                 ride.goToLeftCorner();
             }
-        }else if(directions == 11){
-            if(command == 8){
+        }else if(directions == (this.NORTH | this.SOUTH | this.WEST)){
+            if(command == this.MOVE_UP){
                 ride.goToLeftCorner();
-            }else if(command == 4){
+            }else if(command == this.MOVE_RIGHT){
                 ride.goToCross();
-            }else if(command == 1){
+            }else if(command == this.MOVE_DOWN){
                 ride.goToRightCorner();
             }
-        }else if(directions == 13){
-            if(command == 4){
+        }else if(directions == (this.EAST | this.WEST | this.NORTH)){
+            if(command == this.MOVE_RIGHT){
                 ride.goToLeftCorner();
-            }else if(command == 2){
+            }else if(command == this.MOVE_DOWN){
                 ride.goToCross();
-            }else if(command == 1){
+            }else if(command == this.MOVE_LEFT){
                 ride.goToRightCorner();
             }
-        }else if(directions == 14){
-            if(command == 8){
+        }else if(directions == (this.NORTH | this.SOUTH | this.EAST)){
+            if(command == this.MOVE_UP){
                 ride.goToRightCorner();
-            }else if(command == 2){
+            }else if(command == this.MOVE_DOWN){
                 ride.goToLeftCorner();
-            }else if(command == 1){
+            }else if(command == this.MOVE_LEFT){
                 ride.goToCross();
             }
         }
@@ -254,26 +243,31 @@ public class Controller {
         //throw new UnsupportedOperationException("Not yet implemented");
     }
     
-    public void setAddressing(boolean addressing, int address){
-        this.addressing = addressing;
-        this.address = address;
-    }
-    
-    public void setAddress(int address){
-        this.address = address;
-    }
-    
-    private void address(){
-//        Button.RUN.addButtonListener(listner);
-//        Button.PRGM.addButtonListener(listner);
-//        Button.VIEW.addButtonListener(listner);
-        while(addressing = true){
-            Button.RUN.addButtonListener(listner);
-            Button.PRGM.addButtonListener(listner);
-            Button.VIEW.addButtonListener(listner);
-            LCD.showNumber(address);
+   private void address(){
+        Button.RUN.addButtonListener(this);
+        Button.PRGM.addButtonListener(this);
+        Button.VIEW.addButtonListener(this);
+        while(addressing == true){
+            LCD.showNumber(address+1);
         }
+        TextLCD.print("run");
     }
+    
+    public void buttonPressed(Button button) {
+            if (Button.VIEW.isPressed() && addressing == true) {
+                
+            }else if (Button.PRGM.isPressed() && addressing == true) {
+                Sound.beep();
+                address++;
+                address = address%3;
+            }else if (Button.RUN.isPressed() && addressing == true) {
+                Sound.twoBeeps();
+                address++;
+                addressing = false;
+            }
+        }
+        public void buttonReleased(Button button) {
+        }
     
     public int getAddress(){
         return address;
