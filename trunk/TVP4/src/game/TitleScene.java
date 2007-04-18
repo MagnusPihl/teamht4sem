@@ -11,6 +11,9 @@
  *
  * ******VERSION HISTORY******
  *
+ * Magnus Hemmer Pihl @ 18. april 2007 (v 1.2)
+ * Removed calls to GameScene.setMode (now deprecated). Will need to implement new method of setting Replay mode.
+ *
  * Magnus Hemmer Pihl @ 11. april 2007 (v 1.1)
  * Removed skin selection dialog and added options menu.
  *
@@ -153,13 +156,11 @@ public class TitleScene implements Scene {
                 PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow()) == JFileChooser.APPROVE_OPTION) {
             File file = this.openLevelDialog.getSelectedFile();
             PacmanApp.getInstance().getGameScene().setLevel(file);
-            PacmanApp.getInstance().getGameScene().setMode(0);
             PacmanApp.getInstance().showGameScene();             
         }
     }
     
     public void continueGame() {
-        PacmanApp.getInstance().getGameScene().setMode(0);
         PacmanApp.getInstance().showGameScene();
     }
     
@@ -168,7 +169,6 @@ public class TitleScene implements Scene {
                 PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow()) == JFileChooser.APPROVE_OPTION) {
             File file = this.openReplayDialog.getSelectedFile();
             PacmanApp.getInstance().getGameScene().setReplay(file);
-            PacmanApp.getInstance().getGameScene().setMode(1);
             PacmanApp.getInstance().showGameScene();
         }
     }
