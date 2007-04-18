@@ -11,6 +11,10 @@
  *
  * ******VERSION HISTORY******
  *
+ * Magnus Hemmer Pihl @ 18. april 2007 (v 2.2)
+ * Deprecated method setMode.
+ * Added method setOnline.
+ *
  * Magnus Hemmer Pihl @ 17. april 2007 (v 2.1)
  * Changed the time at which points are taken, to better match smooth animation, also giving a slight optimization.
  * Added getRoundTime()-method.
@@ -135,6 +139,12 @@ public class GameScene implements Scene {
         this.proxy[2] = new RobotProxy(3, this.semaphore);
     }
     
+    public void setOnline(boolean _online)
+    {
+        this.online = _online;
+    }
+    
+    @Deprecated
     public void setMode(int _mode)
     {
         this.mode = _mode;
@@ -186,6 +196,11 @@ public class GameScene implements Scene {
     public long getRoundTime()
     {
         return this.roundTime;
+    }
+    
+    public void setRoundTime(long _time)
+    {
+        this.roundTime = _time;
     }
     
     public void draw(Graphics2D _g) {
@@ -324,7 +339,6 @@ public class GameScene implements Scene {
     }
 
     public void init(InputManager _input) {
-        this.online = PacmanApp.getInstance().getOptionsScene().isOnline();
         this.paused = false;
         this.win = false;
         this.lose = false;
