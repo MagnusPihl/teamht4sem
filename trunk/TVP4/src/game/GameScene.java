@@ -14,6 +14,7 @@
  * Magnus Hemmer Pihl @ 18. april 2007 (v 2.2)
  * Deprecated method setMode.
  * Added method setOnline.
+ * Added method setRoundTime.
  *
  * Magnus Hemmer Pihl @ 17. april 2007 (v 2.1)
  * Changed the time at which points are taken, to better match smooth animation, also giving a slight optimization.
