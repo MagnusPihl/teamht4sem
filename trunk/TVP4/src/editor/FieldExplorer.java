@@ -49,51 +49,51 @@ public class FieldExplorer implements Runnable {
         this.dialog = dialog;
         this.algorithm = new BreadthFirstAlgorithm();
         this.synchronizer = new Semaphore(1);
-        this.robot = new RobotProxy(1);        
+        this.robot = new RobotProxy(1, this.synchronizer);        
         this.open = new LinkedList();
         this.closed = new TreeSet();        
     }
         
     public void run() {
         this.dialog.addToLog("Contacting robot...");
-        //try {
-            this.robot.blink();
-            this.robot.beep(true);
-        //} catch (IOException ioe) {
+        try {
+            this.waitForRobot();
+            this.robot.lights(true);
+        } catch (Exception ioe) {
             this.dialog.addToLog("Unable to contact robot! Make sure it is turned, " +
                 "software has been downloaded and started.");            
             
             this.stop();
-            //return;
-        //}                
+            return;
+        }                
         
         this.dialog.addToLog("Connection established...");
         JOptionPane.showMessageDialog(this.dialog, "Please place the " +
                 "blinking/beeping robot with it's center lightsensor on a node " +
                 "on the field and press okay.");        
         
-        this.robot.lights(false);
-        this.robot.beep(false);
-        this.open.clear();
-        this.closed.clear();
-        this.moves = null;
-        
-        field.Field field = LevelEditor.getInstance().getEditorPanel().getField();
-        field.placePacman(new Point(0,0));
-        this.currentNode = field.addNodeAt(0,0);        
-        
-        //this.robot.setMode(set to calibrate);
-        this.availableDirections = Node.INVALID_DIRECTION; //this.robot.getAvaibleDirections();
-        
-        while (!scanDone || (this.availableDirections == Node.INVALID_DIRECTION)) {            
-            //this.availableDirection = this.robot.getAvaibleDirections();            
-        }
-        this.addDirections();
-        
-        //this.robot.blink();
-        
         try {
-            while(!scanDone || this.open.size() == 0) {                
+            this.waitForRobot();
+            this.robot.lights(false);
+            this.open.clear();
+            this.closed.clear();
+            this.moves = null;
+
+            field.Field field = LevelEditor.getInstance().getEditorPanel().getField();
+            field.placePacman(new Point(0,0));
+            this.currentNode = field.addNodeAt(0,0);        
+
+            this.waitForRobot();
+            //this.robot.search(Node.INVALID_DIRECTION);
+            this.waitForRobot();
+            this.availableDirections = this.robot.getAvaibleDirections();
+            this.addDirections();
+        
+            while(!scanDone || this.open.size() == 0) { 
+                this.waitForRobot();                            
+                this.availableDirections = this.robot.getAvaibleDirections();
+                this.addDirections();
+                
                 this.dialog.addToLog("Hahahamama");
                 this.nextNode = (Node)this.open.remove(0);
                 this.closed.add(this.currentNode);
@@ -101,12 +101,11 @@ public class FieldExplorer implements Runnable {
 
                 if (moves != null) {
                     for (int i = 0; i < moves.length; i++) {                        
-                        while (this.synchronizer.availablePermits() == 0) {
-                            Thread.sleep(200);
-                        }                
+                        this.waitForRobot();              
 
                         if (i == moves.length) {
-                            //this.robot.moveDiscover(moves[i]);                                
+                            //this.robot.search(moves[i]);                                
+                            this.waitForRobot();
                             this.availableDirections = this.robot.getAvaibleDirections();
                             this.addDirections();
                         } else {
@@ -119,11 +118,12 @@ public class FieldExplorer implements Runnable {
             }
             
             this.dialog.addToLog("Scan done");
-            this.stop();
-        //} catch (IOException ioe) {
+        } catch (IOException ioe) {
             
         } catch (InterruptedException ie) {
         
+        } finally {            
+            this.stop();
         }
     }
     
@@ -177,4 +177,10 @@ public class FieldExplorer implements Runnable {
         this.scanDone = true;
         this.dialog.explorationDone();
     }        
+    
+    private void waitForRobot() throws InterruptedException {
+        while (this.synchronizer.availablePermits() == 0) {
+            Thread.sleep(200);
+        }  
+    }
 }
