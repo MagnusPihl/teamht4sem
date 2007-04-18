@@ -59,26 +59,35 @@ public class RobotProxy {
         sema = e;
     }
     
-    public int move(byte direction, byte possDir) throws IOException{
+    public void move(byte direction, byte possDir) throws IOException{
         timeout = (int)System.currentTimeMillis() + TIMEOUT;
         try {
-        
-            
             sema.acquire();
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
-            this.socket.getOutputStream().write(direction);
-            this.socket.getOutputStream().write(possDir);
-            int i = -1;
-            while(i == -1){
-                i = this.socket.getInputStream().read();
-                if (timeout < (int)System.currentTimeMillis()) {
-                    return i;
-                }
+        this.socket.getOutputStream().write(direction);
+        this.socket.getOutputStream().write(possDir);
+        sema.release();
+    }
+    
+    public int move(byte direction) throws IOException{
+        timeout = (int)System.currentTimeMillis() + TIMEOUT;
+        try {
+            sema.acquire();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+        this.socket.getOutputStream().write(direction);
+        int i = -1;
+        while(i == -1){
+            i = this.socket.getInputStream().read();
+            if (timeout < (int)System.currentTimeMillis()) {
+                return i;
             }
-            sema.release();
-            return i;
+        }
+        sema.release();
+        return i;
     }
     
     public int getAvaibleDirections() throws IOException{
@@ -114,14 +123,6 @@ public class RobotProxy {
                 this.socket.getOutputStream().write(this.BEEP_ON);
             } else{
                 this.socket.getOutputStream().write(this.BEEP_OFF);
-            }
-    }
-    
-    public void setMode(int mode) throws IOException{
-            if(mode == 1){
-                this.socket.getOutputStream().write(this.SET_MODE_DISCOVERY);
-            } else if(mode == 0){
-                this.socket.getOutputStream().write(this.SET_MODE_GAME);
             }
     }
     
