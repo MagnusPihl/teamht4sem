@@ -58,14 +58,7 @@ public class GameProxy {
                 
             }
         }
-        if(command == 0x20){
-            discovering = true;
-        }
-        if(command == 0x21){
-            discovering = false;
-        }
-        if(discovering == false){
-            if(command == 0x00 || command == 0x01 || command == 0x02 || command == 0x03){
+        if(command == 0x00 || command == 0x01 || command == 0x02 || command == 0x03){
                 while(directions == -1){
                     try {
                         directions = in.read();
@@ -74,8 +67,7 @@ public class GameProxy {
                     }
                 }
             }
-        }
-        
+        // lav noget timeout her.
         if(command == 0x30){
             int sensor1 = -1;
             int sensor2 = -1;
@@ -144,9 +136,9 @@ public class GameProxy {
         return directions;
     }
     
-    public void moveDone(){
+    public void moveDone(int move){
         try {
-            out.write(0xf0);
+            out.write(move);
         } catch (IOException ex) {
             
         }
