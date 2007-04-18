@@ -131,31 +131,44 @@ public class FieldExplorer implements Runnable {
         if (this.availableDirections != Node.INVALID_DIRECTION) {
             field.Field field = LevelEditor.getInstance().getEditorPanel().getField();
             Node addedNode = null;
-            Point position = this.currentNode.getPosition();
+            Point position = this.currentNode.getPosition();                        
+            int offsetX = 0;
+            int offsetY = 0;                      
             
-            if ((this.availableDirections & (0x01 << Node.UP)) != 0) {
-                addedNode = field.addNodeAt(position.x, position.y-1);
-                if (addedNode != null) {
-                    this.open.add(0,addedNode);
+            
+            if ((this.availableDirections & Node.LEFT_BIN) != 0) {
+                if (position.x == 0) {
+                    offsetX = 1;
                 }
-            }
-            if ((this.availableDirections & (0x01 << Node.UP)) != 0) {
-                addedNode = field.addNodeAt(position.x, position.y+1);
-                if (addedNode != null) {
-                    this.open.add(0,addedNode);
-                }
-            }
-            if ((this.availableDirections & (0x01 << Node.UP)) != 0) {
                 addedNode = field.addNodeAt(position.x-1, position.y);
                 if (addedNode != null) {
                     this.open.add(0,addedNode);
                 }
             }
-            if ((this.availableDirections & (0x01 << Node.UP)) != 0) {
+            if ((this.availableDirections & Node.DOWN_BIN) != 0) {
+                addedNode = field.addNodeAt(position.x, position.y+1);
+                if (addedNode != null) {
+                    this.open.add(0,addedNode);
+                }
+            }
+            if ((this.availableDirections & Node.RIGHT_BIN) != 0) {
                 addedNode = field.addNodeAt(position.x+1, position.y);
                 if (addedNode != null) {
                     this.open.add(0,addedNode);
                 }
+            }
+            if ((this.availableDirections & Node.UP_BIN) != 0) {
+                if (position.y == 0) {
+                    offsetY = 1;
+                }
+                addedNode = field.addNodeAt(position.x, position.y-1);
+                if (addedNode != null) {
+                    this.open.add(0,addedNode);
+                }
+            }
+                        
+            if ((offsetX != 0) || (offsetY != 0)) {
+                field.offsetNodes(offsetX, offsetY);
             }
         }
     }
