@@ -11,6 +11,11 @@
  *
  * ******VERSION HISTORY******
  *
+ * Magnus Hemmer Pihl @ 18. april 2007 (v 1.5)
+ * Removed volume setting.
+ * Added game speed setting.
+ * Implemented full functionality for game speed and online/offline selection. Interface still not implemented.
+ *
  * Magnus Hemmer Pihl @ 17. april 2007 (v 1.4)
  * Added joystick autodetection.
  *
@@ -69,7 +74,7 @@ public class OptionsScene implements Scene
         this.enter = new InputAction("Enter", InputAction.DETECT_FIRST_ACTION);
         this.quit = new InputAction("Escape", InputAction.DETECT_FIRST_ACTION);
         
-        this.menuItemsStr = new String[] {"Entity0", "Entity1", "Entity2", "Skin", "Volume", "Mode", "Interface"};
+        this.menuItemsStr = new String[] {"Entity0", "Entity1", "Entity2", "Skin", "Game Speed", "Mode", "Interface"};
         
         String[] joyList = new String[JXInputManager.getNumberOfDevices()];
         for(int i=0; i<joyList.length; i++)
@@ -101,7 +106,7 @@ public class OptionsScene implements Scene
         for(int i=0; i<skinList.length; i++)
             this.menuOptionsStr[3][i] = skinList[i].getName();
         
-        this.menuOptionsStr[4] = new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9"};
+        this.menuOptionsStr[4] = new String[] {"Slow", "Normal", "Fast"};
         this.menuOptionsStr[5] = new String[] {"Offline", "Online"};
         this.menuOptionsStr[6] = new String[] {"USB", "COM1", "COM2", "COM3", "COM4"};
         
@@ -122,8 +127,8 @@ public class OptionsScene implements Scene
         this.option[0] = 0; //Keyboard control for Entity0
         this.option[1] = this.menuOptionsStr[1].length-2; //Normal CPU for Entity1
         this.option[2] = this.menuOptionsStr[1].length-2; //Normal CPU for Entity2
-        this.option[3] = 0; //No fucking clue for skin :p
-        this.option[4] = 5; //Average sound volume
+        this.option[3] = 0; //Whatever the first skin is. Might want to change this to select "pacman" by default.
+        this.option[4] = 1; //Normal game speed
         this.option[5] = 0; //Offline mode
         this.option[6] = 0; //USB interface
     }
@@ -182,9 +187,22 @@ public class OptionsScene implements Scene
                 if(this.option[i] == 5+numJoy)
                     e.setController(new HunterAIController(e, PacmanApp.getInstance().getGameScene().getEntity(0)));
             }
+            
             TileSet.getInstance().loadTileSet("skins/"+this.menuOptionsStr[3][this.option[3]]);
-            //Set volume
-            //Set online/offline mode
+            
+            switch(this.option[4])
+            {
+                case 0: PacmanApp.getInstance().getGameScene().setRoundTime(1000);  break;
+                case 1: PacmanApp.getInstance().getGameScene().setRoundTime(500);   break;
+                case 2: PacmanApp.getInstance().getGameScene().setRoundTime(250);   break;
+            }
+            
+            switch(this.option[5])
+            {
+                case 0: PacmanApp.getInstance().getGameScene().setOnline(false);    break;
+                case 1: PacmanApp.getInstance().getGameScene().setOnline(true);     break;
+            }
+            
             //Set tower interface
             
             PacmanApp.getInstance().showTitleScene();
@@ -214,18 +232,6 @@ public class OptionsScene implements Scene
                     this.menuOptions[i][j] = font.renderString(this.menuOptionsStr[i][j], 760);
             this.menuHelp[i] = font.renderString(this.menuHelpStr[i], 760);
         }
-    }
-    
-    public boolean isOnline()
-    {
-        if(this.option[5] == 1)
-            return true;
-        return false;
-    }
-    
-    public String getInterface()
-    {
-        return this.menuOptionsStr[6][this.option[6]].toLowerCase();
     }
     
     public void init(InputManager _input) {
