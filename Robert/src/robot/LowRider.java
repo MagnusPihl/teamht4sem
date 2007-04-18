@@ -34,6 +34,10 @@ public class LowRider {
         
     }
     
+    public int searchNode(){
+        return 1;
+    }
+    
     public void goToGreen(){
         this.forward();
         try {
