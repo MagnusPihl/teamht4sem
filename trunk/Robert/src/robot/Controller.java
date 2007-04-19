@@ -25,7 +25,7 @@ import josx.rcxcomm.RCXPort;
 
 public class Controller implements ButtonListener{
     LowRider ride = new LowRider();
-    GameProxy tower = new GameProxy();
+    GameProxy tower;
     private static Controller instance = new Controller();
     
     private int command = -1;
@@ -60,6 +60,7 @@ public class Controller implements ButtonListener{
     
     public void run(){
         this.address();
+        tower = new GameProxy(address);
         while(true){
             command = tower.getcommand();
             if(command == this.MOVE_DOWN || command == this.MOVE_LEFT || command == this.MOVE_RIGHT || command == this.MOVE_UP){

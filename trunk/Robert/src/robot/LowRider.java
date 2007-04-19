@@ -131,7 +131,7 @@ public class LowRider {
     public void turn180(){
         this.right();
         try {
-            Thread.sleep(200);
+            Thread.sleep(2000);
         } catch (InterruptedException ex) {
             
         }
