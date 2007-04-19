@@ -40,8 +40,8 @@ public class GameProxy {
     /**
      * Creates a new instance of GameProxy
      */
-    public GameProxy() {
-        address = 1;
+    public GameProxy(int add) {
+        this.address = add;//OS.getAddress();
         net = new NetworkSocket(address,0,link.getInputStream(),link.getOutputStream());
         socket = new TransportSocket(net.getInputStream(), net.getOutputStream());
         in = socket.getInputStream();
