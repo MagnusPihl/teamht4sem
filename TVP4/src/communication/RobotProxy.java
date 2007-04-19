@@ -20,6 +20,7 @@
 
 package communication;
 
+import field.Node;
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
 
@@ -72,14 +73,30 @@ public class RobotProxy {
         sema.release();
     }
     
-    public int search(byte direction) throws IOException{
+    public int search(int _direction) throws IOException{
+        byte searchDir;
+        if(Node.DOWN == _direction){
+            searchDir = this.MOVE_DOWN_DISCOVERY;
+        }
+        else if(Node.LEFT == _direction){
+            searchDir = this.MOVE_LEFT_DISCOVERY;
+        }
+        else if(Node.RIGHT == _direction){
+            searchDir = this.MOVE_RIGHT_DISCOVERY;
+        }
+        else if(Node.UP == _direction){
+            searchDir = this.MOVE_UP_DISCOVERY;
+        }
+        else{
+            searchDir = this.SEARCH_CURRENT_NODE;
+        }
         timeout = (int)System.currentTimeMillis() + TIMEOUT;
         try {
             sema.acquire();
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
-        this.socket.getOutputStream().write(direction);
+        this.socket.getOutputStream().write(searchDir);
         int i = -1;
         while(i == -1){
             i = this.socket.getInputStream().read();
