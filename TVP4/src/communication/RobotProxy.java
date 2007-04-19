@@ -21,11 +21,12 @@
 package communication;
 
 import field.Node;
+import java.awt.RadialGradientPaint;
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
 
 
-public class RobotProxy {
+public class RobotProxy extends Thread{
     public int robotID;
     private IRTransportSocket socket;
     private static final byte MOVE_UP = 0x00;
@@ -47,10 +48,11 @@ public class RobotProxy {
     
     private static final int TIMEOUT = 300;
     
-    private Semaphore sema;
+    protected Semaphore sema;
     private byte mode;
     private int aDirections = -1;
     private int timeout;
+    private ReadInput read;
     
     
     /**
@@ -59,6 +61,56 @@ public class RobotProxy {
     public RobotProxy(int _robotID, Semaphore e) {
         robotID = _robotID;
         sema = e;
+        read = new ReadInput();
+    }
+    
+    public class ReadInput extends Thread {
+        private IRTransportSocket socket;
+        private boolean isActive = false;
+        protected int input = -1;
+        private int i = -1;
+        
+        
+        public ReadInput(){
+        }
+        
+        public void run(){
+            while(true){
+                while(isActive == true){
+                    try {
+                        i = this.socket.getInputStream().read();
+                        if(i != -1){
+                            handleInput(i);
+                        }
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                if(isActive == false){
+                    if(i!=-1){
+                        i = -1;
+                        input = -1;
+                    }
+                    try {
+                        this.sleep(200);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }
+        
+        public void handleInput(int i){
+            if((i & 0xf0)==0x10){
+                input = i & 0x0f;
+                isActive = false;
+                sema.release();
+            }
+        }
+        
+        public void doRead(boolean read){
+            isActive = read;
+        }
     }
     
     public void move(byte direction, byte possDir) throws IOException{
@@ -70,50 +122,40 @@ public class RobotProxy {
         }
         this.socket.getOutputStream().write(direction);
         this.socket.getOutputStream().write(possDir);
-        sema.release();
+        read.doRead(true);
     }
     
-    public int search(int _direction) throws IOException{
+    public void search(int _direction) throws IOException{
         byte searchDir;
-        if(Node.DOWN == _direction){
-            searchDir = this.MOVE_DOWN_DISCOVERY;
-        }
-        else if(Node.LEFT == _direction){
-            searchDir = this.MOVE_LEFT_DISCOVERY;
-        }
-        else if(Node.RIGHT == _direction){
-            searchDir = this.MOVE_RIGHT_DISCOVERY;
-        }
-        else if(Node.UP == _direction){
-            searchDir = this.MOVE_UP_DISCOVERY;
-        }
-        else{
-            searchDir = this.SEARCH_CURRENT_NODE;
-        }
-        timeout = (int)System.currentTimeMillis() + TIMEOUT;
         try {
             sema.acquire();
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
-        this.socket.getOutputStream().write(searchDir);
-        int i = -1;
-        while(i == -1){
-            i = this.socket.getInputStream().read();
-            if (timeout < (int)System.currentTimeMillis()) {
-                return i;
+        switch(_direction){
+            case(Node.DOWN): {
+                searchDir = this.MOVE_DOWN_DISCOVERY;
             }
+            case(Node.LEFT): {
+                searchDir = this.MOVE_LEFT_DISCOVERY;
+            }
+            case(Node.RIGHT): {
+                searchDir = this.MOVE_RIGHT_DISCOVERY;
+            }
+            case(Node.UP): {
+                searchDir = this.MOVE_UP_DISCOVERY;
+            }
+            default:{
+                searchDir = this.SEARCH_CURRENT_NODE;
+            }
+            
         }
-        sema.release();
-        return i;
+        this.socket.getOutputStream().write(searchDir);
+        read.doRead(true);
     }
     
-    public int getAvaibleDirections() throws IOException{
-        timeout = (int)System.currentTimeMillis() + TIMEOUT;
-            if (timeout < (int)System.currentTimeMillis()) {
-                return this.socket.getInputStream().read();
-                }
-        return -1;
+    public int getAvaibleDirections(){
+        return read.input;
     }
     
     /**
