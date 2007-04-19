@@ -16,78 +16,183 @@
  *
  */
 import communication.*;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
-public class robotTester {
+public class robotTester extends JFrame{
+    private JButton r1Up;
+    private JButton r1Right;
+    private JButton r1Down;
+    private JButton r1Left;
+    private JButton r2Up;
+    private JButton r2Right;
+    private JButton r2Down;
+    private JButton r2Left;
+    private Container cont;
+    private TowerSocket link = new TowerSocket();
     
-    /*LLCSocket link = new LLCSocket();
-    NetworkSocket net = new NetworkSocket(0,1,link.getInputStream(),link.getOutputStream());
-    TransportSocket socket = new TransportSocket(net.getInputStream(), net.getOutputStream());
-    InputStream in = socket.getInputStream();
-    OutputStream out = socket.getOutputStream();*/
-    /** Creates a new instance of robotTester */
+    private NetworkSocket net1 = new NetworkSocket(0,1,link.getInputStream(),link.getOutputStream());
+    private TransportSocket socket1 = new TransportSocket(net1.getInputStream(), net1.getOutputStream());
+    private InputStream in1 = socket1.getInputStream();
+    private OutputStream out1 = socket1.getOutputStream();
+    
+    private NetworkSocket net2 = new NetworkSocket(0,2,link.getInputStream(),link.getOutputStream());
+    private TransportSocket socket2 = new TransportSocket(net2.getInputStream(), net2.getOutputStream());
+    private InputStream in2 = socket2.getInputStream();
+    private OutputStream out2 = socket2.getOutputStream();
+    
     
     public robotTester(){
-        TowerSocket link = new TowerSocket();
-        NetworkSocket net = new NetworkSocket(0,1,link.getInputStream(),link.getOutputStream());
-        TransportSocket socket = new TransportSocket(net.getInputStream(), net.getOutputStream());
-        InputStream in = socket.getInputStream();
-        OutputStream out = socket.getOutputStream();
-        try {
-            out.write(0x00);
-            System.out.println("out.write(0x00) sendt");
-        } catch (IOException ex) {
-            System.out.println("out.write(0x00)");
-            //ex.printStackTrace();
-        }
-        try {
-            out.write(10);
-            System.out.println("out.write(10) sendt");
-        } catch (IOException ex) {
-            System.out.println("out.write(10)");
-            //ex.printStackTrace();
-        }
-        int i = -1;
-        while(i== -1){
-            try {
-                i = in.read();
-            } catch (IOException ex) {
-                ex.printStackTrace();
+        
+        cont = this.getContentPane();
+        JPanel design1 = new JPanel();
+        design1.setLayout(new FlowLayout());
+        JPanel robot1 = new JPanel();
+        robot1.setLayout(new GridLayout(4,3));
+        
+        
+        r1Up = new JButton("Up");
+        r1Up.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                robot1Send(0x00);
             }
-            System.out.println(i);
-        }
+        });
+        
+        r1Down = new JButton("Down");
+        r1Down.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                robot1Send(0x02);
+            }
+        });
+        
+        r1Right = new JButton("Right");
+        r1Right.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                robot1Send(0x03);
+            }
+        });
+        
+        r1Left = new JButton("Left");
+        r1Left.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                robot1Send(0x01);
+            }
+        });
+        
+        JPanel robot2 = new JPanel();
+        robot2.setLayout(new GridLayout(4,3));
+        r2Up = new JButton("Up");
+        r2Up.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                robot2Send(0x00);
+            }
+        });
+        r2Down = new JButton("Down");
+        r2Down.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                robot2Send(0x02);
+            }
+        });
+        r2Right = new JButton("Right");
+        r2Right.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                robot2Send(0x03);
+            }
+        });
+        r2Left = new JButton("Left");
+        r2Left.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                robot2Send(0x01);
+            }
+        });
+        robot1.add(new JLabel(""));
+        robot1.add(new JLabel("Robot 1"));
+        robot1.add(new JLabel(""));
+        robot1.add(new JLabel(""));
+        robot1.add(r1Up);
+        robot1.add(new JLabel(""));
+        robot1.add(r1Left);
+        robot1.add(new JLabel(""));
+        robot1.add(r1Right);
+        robot1.add(new JLabel(""));
+        robot1.add(r1Down);
+        robot1.add(new JLabel(""));
+        
+        robot2.add(new JLabel(""));
+        robot2.add(new JLabel("Robot 2"));
+        robot2.add(new JLabel(""));
+        robot2.add(new JLabel(""));
+        robot2.add(r2Up);
+        robot2.add(new JLabel(""));
+        robot2.add(r2Left);
+        robot2.add(new JLabel(""));
+        robot2.add(r2Right);
+        robot2.add(new JLabel(""));
+        robot2.add(r2Down);
+        robot2.add(new JLabel(""));
+        
+        design1.add(robot1);
+        design1.add(robot2);
+        cont.add(design1);
+        
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.pack();
+        this.setVisible(true);
+    }
+    
+    private void robot1Send(int i){
+        int j = -1;
         try {
-            Thread.sleep(100);
-        } catch (InterruptedException ex) {
+            out1.write(i);
+        } catch (IOException ex) {
+            System.out.println("felj 1");
             ex.printStackTrace();
         }
         try {
-            out.write(0x01);
-            System.out.println("out.write(0x01) sendt");
+            out1.write(10);
         } catch (IOException ex) {
-            System.out.println("out.write(0x01)");
-            //ex.printStackTrace();
+            System.out.println("felj 2");
+            ex.printStackTrace();
         }
-        try {
-            out.write(5);
-            System.out.println("out.write(5) sendt");
-        } catch (IOException ex) {
-            System.out.println("out.write(5)");
-            //ex.printStackTrace();
-        }
-        i = -1;
-        while(i== -1){
+        while(j == -1){
             try {
-                i = in.read();
+                j = in1.read();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-            System.out.println(i);
         }
     }
     
+    private void robot2Send(int i){
+        int j = -1;
+        try {
+            out2.write(i);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        try {
+            out2.write(10);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        while(j == -1){
+            try {
+                j = in2.read();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
     
     public static void main(String[] args) throws InterruptedException, IOException{
         robotTester noget = new robotTester();
