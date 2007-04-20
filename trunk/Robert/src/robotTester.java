@@ -78,14 +78,14 @@ public class robotTester extends JFrame{
         r1Right = new JButton("Right");
         r1Right.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                robot1Send(0x03);
+                robot1Send(0x01);
             }
         });
         
         r1Left = new JButton("Left");
         r1Left.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                robot1Send(0x01);
+                robot1Send(0x03);
             }
         });
         
@@ -106,13 +106,13 @@ public class robotTester extends JFrame{
         r2Right = new JButton("Right");
         r2Right.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                robot2Send(0x03);
+                robot2Send(0x01);
             }
         });
         r2Left = new JButton("Left");
         r2Left.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                robot2Send(0x01);
+                robot2Send(0x03);
             }
         });
         robot1.add(new JLabel(""));
