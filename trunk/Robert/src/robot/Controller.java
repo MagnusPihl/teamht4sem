@@ -64,29 +64,22 @@ public class Controller implements ButtonListener{
         while(true){
             command = tower.getcommand();
             if(command == this.MOVE_DOWN || command == this.MOVE_LEFT || command == this.MOVE_RIGHT || command == this.MOVE_UP){
-                LCD.showNumber(command);
                 this.move();
                 tower.moveDone(this.DONE);
         }else if(command == (this.DISCOVER & this.MOVE_UP) || command == (this.DISCOVER & this.MOVE_RIGHT) || command == (this.DISCOVER & this.MOVE_DOWN) || command == (this.DISCOVER & this.MOVE_LEFT)){
                 this.discover();
             }else if(command == 0x10){
                 this.flash();
-                tower.moveDone(this.DONE);
             }else if(command == 0x11){
                 this.lightOn();
-                tower.moveDone(this.DONE);
             }else if(command == 0x12){
                 this.lightOff();
-                tower.moveDone(this.DONE);
             }else if(command == 0x13){
                 this.beepOn();
-                tower.moveDone(this.DONE);
             }else if(command == 0x14){
                 this.beepOff();
-                tower.moveDone(this.DONE);
             }else if(command == 0x30){
                 ride.callibrate(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
-                tower.moveDone(this.DONE);
             }else if(command == 0x20){
                 diretions = ride.searchNode();
                 tower.moveDone(this.DONE | diretions);
