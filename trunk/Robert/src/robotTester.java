@@ -34,10 +34,18 @@ public class robotTester extends JFrame{
     private JButton r1Right;
     private JButton r1Down;
     private JButton r1Left;
+    private JButton r1Sound;
+    private JButton r1LightOn;
+    private JButton r1LightOff;
+    
     private JButton r2Up;
     private JButton r2Right;
     private JButton r2Down;
     private JButton r2Left;
+    private JButton r2Sound;
+    private JButton r2LightOn;
+    private JButton r2LightOff;
+    
     private Container cont;
     private TowerSocket link = new TowerSocket();
     
@@ -58,7 +66,7 @@ public class robotTester extends JFrame{
         JPanel design1 = new JPanel();
         design1.setLayout(new FlowLayout());
         JPanel robot1 = new JPanel();
-        robot1.setLayout(new GridLayout(4,3));
+        robot1.setLayout(new GridLayout(6,3));
         
         
         r1Up = new JButton("Up");
@@ -88,9 +96,27 @@ public class robotTester extends JFrame{
                 robot1Send(0x03);
             }
         });
+        r1Sound = new JButton("Sound");
+        r1Sound.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                robot1(0x13);
+            }
+        });
+        r1LightOn = new JButton("Light on");
+        r1LightOn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                robot1(0x11);
+            }
+        });
+        r1LightOff = new JButton("Light off");
+        r1LightOff.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                robot1(0x12);
+            }
+        });
         
         JPanel robot2 = new JPanel();
-        robot2.setLayout(new GridLayout(4,3));
+        robot2.setLayout(new GridLayout(6,3));
         r2Up = new JButton("Up");
         r2Up.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -115,6 +141,26 @@ public class robotTester extends JFrame{
                 robot2Send(0x03);
             }
         });
+        r2Sound = new JButton("Sound");
+        r2Sound.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                robot2(0x13);
+            }
+        });
+        r2LightOn = new JButton("Light on");
+        r2LightOn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                robot2(0x11);
+            }
+        });
+        
+        r2LightOff = new JButton("Light off");
+        r2LightOff.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                robot2(0x12);
+            }
+        });
+        
         robot1.add(new JLabel(""));
         robot1.add(new JLabel("Robot 1"));
         robot1.add(new JLabel(""));
@@ -127,6 +173,12 @@ public class robotTester extends JFrame{
         robot1.add(new JLabel(""));
         robot1.add(r1Down);
         robot1.add(new JLabel(""));
+        robot1.add(new JLabel(""));
+        robot1.add(new JLabel(""));
+        robot1.add(new JLabel(""));
+        robot1.add(r1Sound);
+        robot1.add(r1LightOn);
+        robot1.add(r1LightOff);
         
         robot2.add(new JLabel(""));
         robot2.add(new JLabel("Robot 2"));
@@ -140,6 +192,12 @@ public class robotTester extends JFrame{
         robot2.add(new JLabel(""));
         robot2.add(r2Down);
         robot2.add(new JLabel(""));
+        robot2.add(new JLabel(""));
+        robot2.add(new JLabel(""));
+        robot2.add(new JLabel(""));
+        robot2.add(r2Sound);
+        robot2.add(r2LightOn);
+        robot2.add(r2LightOff);
         
         design1.add(robot1);
         design1.add(robot2);
@@ -172,6 +230,15 @@ public class robotTester extends JFrame{
             }
         }
     }
+    private void robot1(int i){
+        try {
+            out1.write(i);
+        } catch (IOException ex) {
+            System.out.println("felj 1");
+            ex.printStackTrace();
+        }
+    }
+    
     
     private void robot2Send(int i){
         int j = -1;
@@ -191,6 +258,13 @@ public class robotTester extends JFrame{
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
+        }
+    }
+    private void robot2(int i){
+        try {
+            out2.write(i);
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
     
