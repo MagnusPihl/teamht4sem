@@ -168,9 +168,9 @@ public class Controller implements ButtonListener{
             if(lastCommand == this.MOVE_UP || lastCommand == (this.DISCOVER | this.MOVE_UP)){
                 ride.turn180();
             }else if(lastCommand == this.MOVE_LEFT || lastCommand == (this.DISCOVER | this.MOVE_LEFT)){
-                ride.right90();
-            }else if(lastCommand == this.MOVE_RIGHT || lastCommand == (this.DISCOVER | this.MOVE_RIGHT)){
                 ride.left90();
+            }else if(lastCommand == this.MOVE_RIGHT || lastCommand == (this.DISCOVER | this.MOVE_RIGHT)){
+                ride.right90();
             }
         }else if(command == this.MOVE_LEFT || lastCommand == (this.DISCOVER | this.MOVE_LEFT)){
             if(lastCommand == this.MOVE_UP || lastCommand == (this.DISCOVER | this.MOVE_UP)){

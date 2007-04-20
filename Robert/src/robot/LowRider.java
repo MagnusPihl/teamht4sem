@@ -49,8 +49,8 @@ public class LowRider {
     }
 
     private void forward() {
-        Motor.A.forward();
-        Motor.C.backward();
+        Motor.C.forward();
+        Motor.A.backward();
     }
     
     private void backward() {
@@ -59,13 +59,13 @@ public class LowRider {
     }
     
     private void left() {
-        Motor.A.stop();
-        Motor.C.backward();
+        Motor.C.stop();
+        Motor.A.backward();
     }
     
     private void right() {
-        Motor.C.stop();
-        Motor.A.forward();
+        Motor.A.stop();
+        Motor.C.forward();
     }
     
     public void flash(){
@@ -111,7 +111,7 @@ public class LowRider {
     public void left90(){
         this.left();
         try {
-            Thread.sleep(1000);
+            Thread.sleep(1500);
         } catch (InterruptedException ex) {
             
         }
@@ -121,7 +121,7 @@ public class LowRider {
     public void right90(){
         this.right();
         try {
-            Thread.sleep(1000);
+            Thread.sleep(1500);
         } catch (InterruptedException ex) {
             
         }
@@ -131,7 +131,7 @@ public class LowRider {
     public void turn180(){
         this.right();
         try {
-            Thread.sleep(2000);
+            Thread.sleep(3800);
         } catch (InterruptedException ex) {
             
         }
