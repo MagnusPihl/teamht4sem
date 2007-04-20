@@ -59,15 +59,15 @@ public class GameProxy {
             }
         }
         if(command == 0x00 || command == 0x01 || command == 0x02 || command == 0x03){
-                while(directions == -1){
-                    try {
-                        directions = in.read();
-                    } catch (IOException ex) {
-                        
-                    }
+            while(directions == -1){
+                try {
+                    directions = in.read();
+                } catch (IOException ex) {
+                    
                 }
             }
-        // lav noget timeout her.
+        }
+        // lav noget timeout here.
         if(command == 0x30){
             int sensor1 = -1;
             int sensor2 = -1;
@@ -127,9 +127,16 @@ public class GameProxy {
             }
             OS.setCalibrationValues(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
         }
-        
+        int i = 0;
+        while(i <= 100){
+            i++;
+            try {
+                in.read();
+            } catch (IOException ex) {
+                
+            }
+        }
         return command;
-        
     }
     
     public int getDirections(){
@@ -139,15 +146,6 @@ public class GameProxy {
     public void moveDone(int move){
         try {
             out.write(move);
-        } catch (IOException ex) {
-            
-        }
-    }
-        
-    public void sendDirections(int directions){
-        this.directions = directions;
-        try {
-            out.write(directions);
         } catch (IOException ex) {
             
         }
