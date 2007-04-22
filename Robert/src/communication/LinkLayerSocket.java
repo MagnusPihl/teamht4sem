@@ -33,7 +33,7 @@ public abstract class LinkLayerSocket {
     public static final byte DATA_OFFSET = 2;
     public static final byte CHECKSUM_OFFSET = 8;
     public static final byte PACKET_SIZE = 10;
-    public static final int TIMEOUT = 50; //millis approximately one frame
+    public static final int TIMEOUT = 250; //millis approximately one frame
     
     /** Creates a new instance of LinkLayerSocket */
     public LinkLayerSocket() {        
