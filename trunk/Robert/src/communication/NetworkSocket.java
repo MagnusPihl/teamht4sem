@@ -35,7 +35,7 @@ public class NetworkSocket {
     
     public static final int INPUT_BUFFER_SIZE = 2;
     public static final int OUTPUT_BUFFER_SIZE = 2;
-    public static final int TIMEOUT = 60;
+    public static final int TIMEOUT = 500;
     
     /** 
      * Creates a new instance of IRDatagramSocket 
