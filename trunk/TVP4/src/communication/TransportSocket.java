@@ -11,6 +11,9 @@
  *
  * ******VERSION HISTORY******
  *
+ * Magnus Hemmer Pihl @ 23. april 2007 (v 1.3)
+ * General code cleanup. Added comments and organized code better.
+ *
  * Magnus Hemmer Pihl @ 17. april 2007 (v 1.2)
  * Changed write method to use the same sequence number on retries.
  *
@@ -37,6 +40,7 @@ public class TransportSocket
     
     public static final int DATA = 0;
     public static final int RECEIPT = 1;
+    public static final int READ_TIMEOUT = 250;
     public static final int ACKNOWLEDGE_TIMEOUT = 250;
     
     private static int sequence;
@@ -55,13 +59,14 @@ public class TransportSocket
         private InputStream in;
         private OutputStream out;
         
-        private TransportPackage pack;
-        public static final int timeout = 500;
+        private int last_sequence;
         
         protected TransportInputStream(InputStream in, OutputStream out)
         {
             this.in = in;
             this.out = out;
+            
+            this.last_sequence = -1;
         }
         
         public int read() throws IOException
@@ -71,25 +76,33 @@ public class TransportSocket
             
             do
             {
-                if(((int)System.currentTimeMillis())-timestamp >= timeout)
+                if(((int)System.currentTimeMillis())-timestamp >= TransportSocket.READ_TIMEOUT)
                     return -1;
                 header = this.in.read();
             } while(header==-1);
             
-            do
+            //Only continue if byte received is Data header.
+            if(TransportPackage.getType(header) == DATA)
             {
-                data = this.in.read();
-            } while(data==-1);
-            
-            pack = new TransportPackage(header, data);
-
-            if(pack.getType() == DATA)
-            {
-                this.out.write(0x80 | pack.getSequenceNumber());
-                this.out.write(0x00);
-            }
+                //Check indefinitely for second byte.
+                do
+                {
+                    data = this.in.read();
+                } while(data==-1);
                 
-            return pack.getData();
+                //Send receipt.
+                this.out.write(0x80 | TransportPackage.getSequenceNumber(header));
+                this.out.write(RobotProxy.NOP);
+                
+                //Return data only if not a repeat of the last sequence
+                if(TransportPackage.getSequenceNumber(header) != this.last_sequence)
+                {
+                    this.last_sequence = TransportPackage.getSequenceNumber(header);
+                    return data;
+                }
+            }
+            
+            return -1;
         }
     }
     
@@ -98,8 +111,6 @@ public class TransportSocket
         
         private OutputStream out;
         private InputStream in;
-        
-        public static final int timeout = 1000;
         
         protected TransportOutputStream(InputStream in, OutputStream out)
         {
@@ -122,26 +133,30 @@ public class TransportSocket
         
         private void write(int b, int sequence) throws IOException
         {
+            //Write header and data bytes.
             this.out.write(0x7F & sequence);
             this.out.write(b);
             
             int header, data;
             int timestamp = (int)System.currentTimeMillis();
             
+            //Try to read acknowledge header. Timeout if needed.
             do
             {
-                if(((int)System.currentTimeMillis())-timestamp >= timeout)
+                if(((int)System.currentTimeMillis())-timestamp >= TransportSocket.ACKNOWLEDGE_TIMEOUT)
                 {
-                    throw new IOException("Transport layer timeout. Message could not be sent.");
+                    throw new IOException("Transport layer timeout. No acknowledge received.");
                 }
                 header = this.in.read();
             } while(header==-1);
             
+            //Acknowledge header received. Wait for data byte (NOP).
             do
             {
                 data = this.in.read();
             } while(data==-1);
             
+            //End method if the proper acknowledge was received. Retry if it didn't match sent package.
             if(TransportPackage.getType(header) == TransportSocket.RECEIPT && TransportPackage.getSequenceNumber(header) == sequence)
                 return;
             else
@@ -151,9 +166,7 @@ public class TransportSocket
     
     public static int getSequenceNumber()
     {
-        sequence++;
-        if(sequence > 127)
-            sequence = 0;
+        sequence = (sequence+1)%128;
         return sequence;
     }
     
