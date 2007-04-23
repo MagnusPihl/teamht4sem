@@ -49,63 +49,68 @@ public class LowRider {
     }
 
     private void forward() {
-        Motor.C.forward();
-        Motor.A.backward();
+        Motor.A.forward();
+        Motor.C.backward();
     }
     
     private void backward() {
-        Motor.A.backward();
-        Motor.C.forward();
+        Motor.C.backward();
+        Motor.A.forward();
     }
     
     private void left() {
-        Motor.C.stop();
-        Motor.A.backward();
+        Motor.A.stop();
+        Motor.C.backward();
     }
     
     private void right() {
-        Motor.A.stop();
-        Motor.C.forward();
+        Motor.C.stop();
+        Motor.A.forward();
     }
     
-    public void flash(){
-        
-    }
-    
-    public void lightOn(){
-        
-    }
-    
-    public void lightOff(){
-        
-    }
-    
-    public void beepOn(){
-        
-    }
-    
-    public void beepOff(){
-        
-    }
     
     public int goToNext(){
         return 0;
     }
     
-    public void goToTCross(){
-        
-    }
+//    public void goToTCross(){
+//        this.forward();
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException ex) {
+//            
+//        }
+//        this.stop();
+//    }
     
     public void goToLeftCorner(){
-        
+        this.forward();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            
+        }
+        this.stop();
     }
     
     public void goToRightCorner(){
-        
+        this.forward();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            
+        }
+        this.stop();
     }
     
     public void goToCross(){
-        
+        this.forward();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            
+        }
+        this.stop();
     }
     
     public void left90(){

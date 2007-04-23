@@ -98,13 +98,11 @@ public class Controller implements ButtonListener{
     }
     
     private void move(){
-        TextLCD.print("move");
         directions = tower.getDirections();
         if(command != lastCommand){
             this.turn();
         }
         if(directions == (this.NORTH | this.SOUTH) || directions == (this.EAST | this.WEST)){
-            TextLCD.print("run1");
             ride.goToGreen();
         }
         if(directions == (this.EAST | this.WEST | this.SOUTH) || directions == (this.NORTH | this.SOUTH | this.WEST) || directions == (this.EAST | this.WEST | this.NORTH) || directions == (this.NORTH | this.SOUTH | this.EAST)){
