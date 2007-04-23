@@ -234,9 +234,14 @@ public class robotTester extends JFrame{
         try {
             out1.write(i);
         } catch (IOException ex) {
-            System.out.println("felj 1");
+            System.out.println("felj 3");
             ex.printStackTrace();
         }
+//        try {
+//            out1.write(0xFE);
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        }
     }
     
     
@@ -266,6 +271,11 @@ public class robotTester extends JFrame{
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+//        try {
+//            out2.write(0xFE);
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        }
     }
     
     public static void main(String[] args) throws InterruptedException, IOException{
