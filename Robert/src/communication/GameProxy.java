@@ -58,7 +58,7 @@ public class GameProxy {
                 
             }
         }
-        if(command == 0x00 || command == 0x01 || command == 0x02 || command == 0x03){
+        if(command == GameCommands.MOVE_UP || command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_DOWN || command == GameCommands.MOVE_LEFT){
             while(directions == -1){
                 try {
                     directions = in.read();
@@ -68,7 +68,7 @@ public class GameProxy {
             }
         }
         // lav noget timeout here.
-        if(command == 0x30){
+        if(command == GameCommands.CALIBRATE){
             int sensor1 = -1;
             int sensor2 = -1;
             int sensor3 = -1;
