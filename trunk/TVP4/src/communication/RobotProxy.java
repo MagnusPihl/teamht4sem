@@ -23,31 +23,41 @@ package communication;
 import field.Node;
 import java.awt.RadialGradientPaint;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.concurrent.Semaphore;
 
 
 public class RobotProxy extends Thread{
-    public int robotID;
-    private IRTransportSocket socket;
-    private static final byte MOVE_UP = 0x00;
-    private static final byte MOVE_RIGHT = 0x01;
-    private static final byte MOVE_DOWN = 0x02;
-    private static final byte MOVE_LEFT = 0x03;
-    private static final byte MOVE_UP_DISCOVERY = 0x40;
-    private static final byte MOVE_RIGHT_DISCOVERY = 0x41;
-    private static final byte MOVE_DOWN_DISCOVERY = 0x42;
-    private static final byte MOVE_LEFT_DISCOVERY = 0x43;
-    private static final byte FLASH = 0x10;
-    private static final byte LIGHT_ON = 0x11;
-    private static final byte LIGHT_OFF = 0x12;
-    private static final byte BEEP_ON = 0x13;
-    private static final byte BEEP_OFF = 0x14;
-    private static final byte SEARCH_CURRENT_NODE = 0x20;
-    private static final byte CALIBRATE = 0x30;
-    private static final byte NOP = -0x01;
+    
+    public static final byte MOVE_UP = 0x00;
+    public static final byte MOVE_RIGHT = 0x01;
+    public static final byte MOVE_DOWN = 0x02;
+    public static final byte MOVE_LEFT = 0x03;
+    public static final byte MOVE_UP_DISCOVERY = 0x40;
+    public static final byte MOVE_RIGHT_DISCOVERY = 0x41;
+    public static final byte MOVE_DOWN_DISCOVERY = 0x42;
+    public static final byte MOVE_LEFT_DISCOVERY = 0x43;
+    public static final byte FLASH = 0x10;
+    public static final byte LIGHT_ON = 0x11;
+    public static final byte LIGHT_OFF = 0x12;
+    public static final byte BEEP_ON = 0x13;
+    public static final byte BEEP_OFF = 0x14;
+    public static final byte SEARCH_CURRENT_NODE = 0x20;
+    public static final byte CALIBRATE = 0x30;
+    public static final byte NOP = -0x01;
     
     private static final int TIMEOUT = 300;
     
+    public int robotID;
+    
+    private int address;
+    private LLCSocket link = new LLCSocket();
+    private NetworkSocket net;// = new NetworkSocket(1,0,link.getInputStream(),link.getOutputStream());
+    private TransportSocket socket;// = new TransportSocket(net.getInputStream(), net.getOutputStream());
+    protected InputStream in;// = socket.getInputStream();
+    protected OutputStream out;// = socket.getOutputStream();
+    //private IRTransportSocket socket;
     protected Semaphore sema;
     private byte mode;
     private int aDirections = -1;
@@ -60,12 +70,16 @@ public class RobotProxy extends Thread{
      */
     public RobotProxy(int _robotID, Semaphore e) {
         robotID = _robotID;
+        net = new NetworkSocket(0,robotID,link.getInputStream(),link.getOutputStream());
+        socket = new TransportSocket(net.getInputStream(), net.getOutputStream());
+        in = socket.getInputStream();
+        out = socket.getOutputStream();
+        
         sema = e;
         read = new ReadInput();
     }
     
     public class ReadInput extends Thread {
-        private IRTransportSocket socket;
         private boolean isActive = false;
         protected int input = -1;
         private int i = -1;
@@ -76,27 +90,22 @@ public class RobotProxy extends Thread{
         
         public void run(){
             while(true){
-                while(isActive == true){
                     try {
-                        i = this.socket.getInputStream().read();
+                        i = in.read();
                         if(i != -1){
                             handleInput(i);
+                            i = -1;
+                        }
+                        else{
+                            try {
+                                this.sleep(300);
+                            } catch (InterruptedException ex) {
+                                ex.printStackTrace();
+                            }
                         }
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
-                }
-                if(isActive == false){
-                    if(i!=-1){
-                        i = -1;
-                        input = -1;
-                    }
-                    try {
-                        this.sleep(200);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                }
             }
         }
         
@@ -114,14 +123,13 @@ public class RobotProxy extends Thread{
     }
     
     public void move(byte direction, byte possDir) throws IOException{
-        timeout = (int)System.currentTimeMillis() + TIMEOUT;
         try {
             sema.acquire();
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
-        this.socket.getOutputStream().write(direction);
-        this.socket.getOutputStream().write(possDir);
+        this.out.write(direction);
+        this.out.write(possDir);
         read.doRead(true);
     }
     
@@ -150,7 +158,7 @@ public class RobotProxy extends Thread{
             }
             
         }
-        this.socket.getOutputStream().write(searchDir);
+        this.out.write(searchDir);
         read.doRead(true);
     }
     
@@ -163,14 +171,14 @@ public class RobotProxy extends Thread{
      */
     @Deprecated
     public void blink() throws IOException{
-            this.socket.getOutputStream().write(this.FLASH);
+            this.out.write(this.FLASH);
     }
     
     public void lights(boolean on) throws IOException{
             if(on){
-                this.socket.getOutputStream().write(this.LIGHT_ON);
+                this.out.write(this.LIGHT_ON);
             } else{
-                this.socket.getOutputStream().write(this.LIGHT_OFF);
+                this.out.write(this.LIGHT_OFF);
             }
     }
     
@@ -180,9 +188,9 @@ public class RobotProxy extends Thread{
     @Deprecated
     public void beep(boolean on) throws IOException{
             if(on){
-                this.socket.getOutputStream().write(this.BEEP_ON);
+                this.out.write(this.BEEP_ON);
             } else{
-                this.socket.getOutputStream().write(this.BEEP_OFF);
+                this.out.write(this.BEEP_OFF);
             }
     }
     
@@ -195,6 +203,6 @@ public class RobotProxy extends Thread{
         outPacket[4] = minGreen;
         outPacket[5] = maxGreen;
         outPacket[6] = minBlack;
-        this.socket.getOutputStream().write(outPacket);
+        this.out.write(outPacket);
     }
 }
