@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.4
+ * @version 1.5
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 23. april 2007 (v 1.6)
+ * Corrected help text.
  *
  * Magnus Hemmer Pihl @ 18. april 2007 (v 1.5)
  * Removed volume setting.
@@ -112,14 +115,14 @@ public class OptionsScene implements Scene
         
         this.menuHelpStr = new String[]
         {
-            "Choose which device to control Pac-Man with by pressing left or right.\nPress enter to customize controls for your device.",
-            "Choose which device to control Ghost A with by pressing left or right.\nPress enter to customize controls for your device.",
-            "Choose which device to control Ghost B with by pressing left or right.\nPress enter to customize controls for your device.",
-            "Press left or right to choose a skin.\nPress enter to see a preview of the currently selected skin.",
-            "Press left or right to decrease or increase sound volume.",
-            "Press left or right to choose either offline or online mode.\n"+
-                "In online mode, robots will physically mimic the game - in offline you don't need any robots.",
-            "Press left or right to choose the port at which a Lego Mindstorm Tower is connected.\nOnly needed for Online mode."
+            "Choose which device to control Pac-Man  with by pressing left or right.\nPress enter to customize controls for\nyour device.",
+            "Choose which device to control Ghost A with by pressing left or right.\nPress enter to customize controls for\nyour device.",
+            "Choose which device to control Ghost B with by pressing left or right.\nPress enter to customize controls for\nyour device.",
+            "Press left or right to choose a skin.\nPress enter to see a preview of the\ncurrently selected skin.",
+            "Press left or right to decrease or\nincrease game speed.",
+            "Press left or right to choose either\noffline or online mode.\n"+
+                "In online mode, robots will physically\nmimic the game - in offline you don't\nneed any robots.",
+            "Press left or right to choose the port\nat which a Lego Mindstorm Tower is\nconnected.\nOnly needed for Online mode."
         };
         
         this.cursor = 0;
