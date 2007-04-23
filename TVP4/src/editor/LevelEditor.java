@@ -6,10 +6,12 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.2
+ * @version 1.3
  *
  *
  * ******VERSION HISTORY******
+ * LMK @ 23. april 2007 (v 1.3)
+ * Added showHighScoreDialog method
  * LMK @ 16. februar 2007 (v 1.2)
  * Refactored new, save, open and scan functions
  * Created confirmClearField()
@@ -44,6 +46,7 @@ public class LevelEditor {
     private EditorMenu menu;
     private JFileChooser openSaveDialog, skinDialog;
     private FieldExplorerDialog fieldExplorer;
+    private HighScoreDialog highScoreDialog;
     
     private static LevelEditor instance = new LevelEditor();
     
@@ -58,6 +61,7 @@ public class LevelEditor {
         this.editorPanel = new EditorPanel(field);
         this.statusBar = new StatusBar(editorPanel);    
         this.fieldExplorer = new FieldExplorerDialog();        
+        this.highScoreDialog = new HighScoreDialog();
         
         JScrollPane scrollPanel = new JScrollPane(editorPanel); //, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         frame.setPreferredSize(new Dimension(640, 480));
@@ -296,4 +300,12 @@ public class LevelEditor {
     public EditorPanel getEditorPanel() {
         return this.editorPanel;
     }        
+    
+    /**
+     * Show the High Score List
+     */
+    public void showHighScoreDialog() {
+        this.highScoreDialog.update();
+        this.highScoreDialog.setVisible(true);
+    }       
 }

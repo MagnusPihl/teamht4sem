@@ -6,9 +6,12 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.16
+ * @version 1.17
  *
  * ******VERSION HISTORY******
+ * LMK @ 23. april 2007 (v 1.17)
+ * Fixed so that hasChanged is set consistently.
+ * Changed loading and saving HighScores to reflect changes in HighScore class.
  * LMK @ 11. april 2007 (v 1.16)
  * AddNodeAt methods now return Node when a new Node has been placed.
  * Magnus Hemmer Pihl @ 10. april 2007 (v 1.15.1)
@@ -189,6 +192,7 @@ public class Field {
                 if (this.entities[i].getEntity().getPosition().equals(position)) {
                     this.entities[i].getEntity().setNode(null);
                     this.entities[i] = null;
+                    this.hasChanged = true;
                 }
             }
         }
@@ -241,6 +245,7 @@ public class Field {
                         this.getNodeAt(position.x, position.y+1),
                         points);
                 this.nodes.add(current);                
+                this.hasChanged = true;
                 return current;
                 
             } else {
@@ -446,7 +451,7 @@ public class Field {
                     String name;
                     for (int i = 0; i < highScoreCount; i++) {
                         name = in.readUTF();
-                        this.highScores.addHighScore(name, in.readInt(), i);
+                        this.highScores.add(new HighScore(name, in.readInt()));
                     }
                 }
             } catch (Exception e) {
@@ -490,7 +495,7 @@ public class Field {
                     current = (Node)i.next();
                     out.writeInt(current.getPosition().x);
                     out.writeInt(current.getPosition().y);
-                    out.writeInt(current.getPoints());
+                    out.writeInt(current.getPoints());  
                 }
             }
             
@@ -506,6 +511,10 @@ public class Field {
                 }
             }
             {
+                if (this.hasChanged) {
+                    //this.highScores.reset();
+                }   
+                
                 HighScore current = null;
                 for (Iterator i = this.highScores.iterator(); i.hasNext();) {
                     current = (HighScore)i.next();
@@ -615,5 +624,5 @@ public class Field {
             current = (Node)i.next();
             current.getPosition().translate(x,y);
         }
-    }
+    }    
 }

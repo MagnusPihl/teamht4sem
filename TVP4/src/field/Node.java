@@ -43,10 +43,10 @@ import java.awt.*;
 
 public class Node implements Serializable, Comparable {
     
-    public static final int UP = 0;
-    public static final int RIGHT = 1;
-    public static final int DOWN = 2;
-    public static final int LEFT = 3;
+    public static final int UP = 3;
+    public static final int RIGHT = 2;
+    public static final int DOWN = 1;
+    public static final int LEFT = 0;
     public static final int UP_BIN = 1 << UP;
     public static final int RIGHT_BIN = 1 << RIGHT;
     public static final int DOWN_BIN = 1 << DOWN;

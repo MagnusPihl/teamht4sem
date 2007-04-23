@@ -108,10 +108,12 @@ public class SoundManager{
     
     public void runSound(int i, boolean repeat){
         try{
-            Sound sound = (Sound) this.players.get(i-1);
-            sound.setRepeat(repeat);
-            //sound.startSound();
-            sound.run();
+            if (this.players.size() != 0) {
+                Sound sound = (Sound) this.players.get(i-1);
+                sound.setRepeat(repeat);
+                //sound.startSound();
+                sound.run();
+            }
         }
         catch(IndexOutOfBoundsException e){
             e.printStackTrace();

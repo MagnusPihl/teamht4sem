@@ -47,7 +47,7 @@ public class TitleScene implements Scene {
     private boolean isOnline;
     private JFileChooser openLevelDialog, openReplayDialog, selectSkinDialog;
     
-    public static final String[] MENU_ITEMS = new String[] {"New Game", "Continue", "View Replay", "View High Score", "Options" ,"Quit"};
+    public static final String[] MENU_ITEMS = new String[] {"New Game", "Continue", "View Replay", "View High Scores", "Options" ,"Quit"};
     
     /** Creates a new instance of GameScene */
     public TitleScene() {

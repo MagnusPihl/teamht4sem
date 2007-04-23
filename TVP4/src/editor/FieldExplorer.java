@@ -143,7 +143,7 @@ public class FieldExplorer implements Runnable {
                 addedNode = field.addNodeAt(position.x-1, position.y);
                 if (addedNode != null) {
                     this.open.add(0,addedNode);
-                }
+                }           
             }
             if ((this.availableDirections & Node.DOWN_BIN) != 0) {
                 addedNode = field.addNodeAt(position.x, position.y+1);

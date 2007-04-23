@@ -6,12 +6,11 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
- *
- * Should be changed so that the list is rendered "nicely"
+ * @version 1.1
  *
  * ******VERSION HISTORY******
- *
+ * LMK @ 23. april 2007 (v 1.1)
+ * Reflowed scores so that they are displayed nicely.
  * LMK @ 1. marts 2007 (v 1.0)
  * __________ Changes ____________
  *
@@ -26,11 +25,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.ImageIcon;
 import java.io.*;
+import java.util.Iterator;
 
-/**
- *
- * @author LMK
- */
 public class HighScoreScene implements Scene {
     
     private InputAction actionBack;
@@ -46,12 +42,24 @@ public class HighScoreScene implements Scene {
     }
     
     public void draw(Graphics2D _g) {
+        BitmapFont font = PacmanApp.getInstance().getFont();
         _g.setColor(Color.BLACK);
         _g.fillRect(0,0,800,600);
-        String writeScores = this.highScores.scoreToString();
-        String writeNames = this.highScores.namesToString();
-        PacmanApp.getInstance().getFont().drawString(_g, writeNames, 20, 20, 580);
-        PacmanApp.getInstance().getFont().drawString(_g, writeScores, 600, 20, 780);
+        HighScore current;
+        
+        int offset = 80;        
+        int j = 0;
+        font.drawString(_g, "#", 20, 20, 80);
+        font.drawString(_g, "Name:", 100, 20, 500);
+        font.drawString(_g, "Score:", 600, 20, 200);
+            
+        
+        for (Iterator i = this.highScores.iterator(); i.hasNext(); j++) {
+            current = (HighScore)i.next();
+            font.drawString(_g, (j + 1) + ".", 20, offset);
+            font.drawString(_g, Integer.toString(current.getScore()), 600, offset, 180);
+            offset += font.drawString(_g, current.getName(), 100, offset, 500) + 13;
+        }
     }
     
     public void update(long _time) {

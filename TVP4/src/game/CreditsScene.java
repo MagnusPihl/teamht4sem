@@ -37,6 +37,8 @@ public class CreditsScene implements Scene {
     private InputAction actionBack;
     private String[] credits;
     private BufferedImage[] rendereredCredits;
+    private int[] lineWidths;
+    private int[] lineHeights;
     private int linePointer;
     private float yOffset;
     private float speed = -0.05F;
@@ -92,9 +94,19 @@ public class CreditsScene implements Scene {
     private void prerender() {        
         BitmapFont font = PacmanApp.getInstance().getFont();
         this.rendereredCredits = new BufferedImage[this.credits.length];
+        this.lineWidths = new int[this.credits.length];
+        this.lineHeights = new int[this.credits.length];
         
         for (int i = 0; i < this.rendereredCredits.length; i++) {
             this.rendereredCredits[i] = font.renderString(this.credits[i], 780);
+            
+            if (this.rendereredCredits[i] != null) {
+                this.lineWidths[i] = this.rendereredCredits[i].getWidth();
+                this.lineHeights[i] = this.rendereredCredits[i].getHeight();            
+            } else {
+                this.lineWidths[i] = 0;
+                this.lineHeights[i] = font.getHeight();
+            }
         }
     }
     
@@ -110,8 +122,10 @@ public class CreditsScene implements Scene {
                 
         for (int i = linePointer; i < this.credits.length; i++) {
             /*heightUsed += font.drawString(_g, this.credits[i], 10, 10 + heightUsed, 780);*/            
-            _g.drawImage(this.rendereredCredits[i], 400 - (int)(this.rendereredCredits[i].getWidth()/2), 5 + heightUsed, null);
-            heightUsed += this.rendereredCredits[i].getHeight(null);
+            if (this.rendereredCredits[i] != null) {
+                _g.drawImage(this.rendereredCredits[i], 400 - (int)(this.lineWidths[i]/2), 5 + heightUsed, null);
+            }
+            heightUsed += this.lineHeights[i];
             
             if (heightUsed < 0) {
                 this.yOffset = heightUsed;
