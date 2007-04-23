@@ -29,10 +29,10 @@ public class GameProxy {
     Controller OS = Controller.getInstance();
     int address;
     LLCSocket link = new LLCSocket();
-    NetworkSocket net;// = new NetworkSocket(1,0,link.getInputStream(),link.getOutputStream());
-    TransportSocket socket;// = new TransportSocket(net.getInputStream(), net.getOutputStream());
-    InputStream in;// = socket.getInputStream();
-    OutputStream out;// = socket.getOutputStream();
+    NetworkSocket net;
+    TransportSocket socket;
+    InputStream in;
+    OutputStream out;
     int command = -1;
     boolean discovering = false;
     private int directions = -1;
@@ -41,7 +41,7 @@ public class GameProxy {
      * Creates a new instance of GameProxy
      */
     public GameProxy(int add) {
-        this.address = add;//OS.getAddress();
+        this.address = add;
         net = new NetworkSocket(address,0,link.getInputStream(),link.getOutputStream());
         socket = new TransportSocket(net.getInputStream(), net.getOutputStream());
         in = socket.getInputStream();
@@ -128,7 +128,7 @@ public class GameProxy {
             OS.setCalibrationValues(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
         }
         int i = 0;
-        while(i <= 100){
+        while(i <= 5){
             i++;
             try {
                 in.read();
