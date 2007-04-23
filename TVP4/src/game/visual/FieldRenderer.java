@@ -72,9 +72,9 @@ public class FieldRenderer {
         
         for (Iterator i = this.field.getNodeList().iterator(); i.hasNext();) {
             current = (Node)(i.next());
-            tileNumber = 0;
+            tileNumber = current.getBinaryDirections();
             
-            if (current.getNodeAt(Node.UP) != null) {
+            /*if (current.getNodeAt(Node.UP) != null) {
                 tileNumber += 8;
             }            
             
@@ -88,7 +88,7 @@ public class FieldRenderer {
             
             if (current.getNodeAt(Node.LEFT) != null) {
                 tileNumber += 1;
-            }            
+            }  */          
                         
             g.drawImage(
                     TileSet.getInstance().getPathTile(tileNumber), 

@@ -6,12 +6,13 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.2
+ * @version 1.3
  *
  * Ideas: Add support for direction
  *
  * ******VERSION HISTORY******
- *
+ * LMK @ 23. april 2007 (v 1.3)
+ * Fixed 0 width and height errors when using renderString.
  * LMK @ 17. april 2007 (v 1.2)
  * Removed offset parameters for getStringBounds
  * Fixed render errors.
@@ -133,9 +134,14 @@ public class BitmapFont {
         //string.substring(0,30);
         int[] indexes = this.getIndexes(string);
         Dimension size = this.getStringBounds(string, indexes, maxLineWidth);
-        BufferedImage image = PacmanApp.getInstance().getCore().getScreenManager().createCompatibleImage(size.width, size.height, Transparency.TRANSLUCENT);        
-        this.drawString(image.getGraphics(), string, indexes, 0, 0, maxLineWidth);
-        return image;
+        
+        if ((size.width != 0)&&(size.height != 0)) {
+            BufferedImage image = PacmanApp.getInstance().getCore().getScreenManager().createCompatibleImage(size.width, size.height, Transparency.TRANSLUCENT);        
+            this.drawString(image.getGraphics(), string, indexes, 0, 0, maxLineWidth);
+            return image;
+        }
+        
+        return null;
     }
     
     /**
