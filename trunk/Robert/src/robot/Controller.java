@@ -18,6 +18,7 @@
 
 package robot;
 
+import communication.GameCommands;
 import communication.GameProxy;
 import josx.platform.rcx.*;
 import java.io.*;
@@ -41,16 +42,16 @@ public class Controller implements ButtonListener{
     private int address = 0;
     private boolean addressing = true;
     
-    public static int NORTH = 0x08;
-    public static int SOUTH = 0x02;
-    public static int WEST = 0x01;
-    public static int EAST = 0x04;
-    public static int MOVE_UP = 0x00;
-    public static int MOVE_RIGHT = 0x01;
-    public static int MOVE_DOWN = 0x02;
-    public static int MOVE_LEFT = 0x03;
-    public static int DISCOVER = 0x40;
-    public static int DONE = 0x10;
+//    public static int NORTH = 0x08;
+//    public static int SOUTH = 0x02;
+//    public static int WEST = 0x01;
+//    public static int EAST = 0x04;
+//    public static int MOVE_UP = 0x00;
+//    public static int MOVE_RIGHT = 0x01;
+//    public static int MOVE_DOWN = 0x02;
+//    public static int MOVE_LEFT = 0x03;
+//    public static int DISCOVER = 0x40;
+//    public static int DONE = 0x10;
 
     private int diretions;
     
@@ -63,10 +64,10 @@ public class Controller implements ButtonListener{
         tower = new GameProxy(address);
         while(true){
             command = tower.getcommand();
-            if(command == this.MOVE_DOWN || command == this.MOVE_LEFT || command == this.MOVE_RIGHT || command == this.MOVE_UP){
+            if(command == GameCommands.MOVE_DOWN || command == GameCommands.MOVE_LEFT || command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_UP){
                 this.move();
-                tower.moveDone(this.DONE);
-        }else if(command == (this.DISCOVER & this.MOVE_UP) || command == (this.DISCOVER & this.MOVE_RIGHT) || command == (this.DISCOVER & this.MOVE_DOWN) || command == (this.DISCOVER & this.MOVE_LEFT)){
+                tower.moveDone(GameCommands.MOVE_DONE);
+        }else if(command == (GameCommands.DISCOVER | GameCommands.MOVE_UP) || command == (GameCommands.DISCOVER | GameCommands.MOVE_RIGHT) || command == (GameCommands.DISCOVER | GameCommands.MOVE_DOWN) || command == (GameCommands.DISCOVER | GameCommands.MOVE_LEFT)){
                 this.discover();
             }else if(command == 0x10){
                 this.flash();
@@ -82,7 +83,7 @@ public class Controller implements ButtonListener{
                 ride.callibrate(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
             }else if(command == 0x20){
                 diretions = ride.searchNode();
-                tower.moveDone(this.DONE | diretions);
+                tower.moveDone(GameCommands.MOVE_DONE | diretions);
             }else{
                 
             }
@@ -94,7 +95,7 @@ public class Controller implements ButtonListener{
             this.turn();
         }
         diretions = ride.goToNext();
-        tower.moveDone(this.DONE | diretions);
+        tower.moveDone(GameCommands.MOVE_DONE | diretions);
     }
     
     private void move(){
@@ -102,27 +103,27 @@ public class Controller implements ButtonListener{
         if(command != lastCommand){
             this.turn();
         }
-        if(directions == (this.NORTH | this.SOUTH) || directions == (this.EAST | this.WEST)){
+        if(directions == (GameCommands.UP | GameCommands.DOWN) || directions == (GameCommands.RIGHT | GameCommands.LEFT)){
             ride.goToGreen();
         }
-        if(directions == (this.EAST | this.WEST | this.SOUTH) || directions == (this.NORTH | this.SOUTH | this.WEST) || directions == (this.EAST | this.WEST | this.NORTH) || directions == (this.NORTH | this.SOUTH | this.EAST)){
+        if(directions == (GameCommands.RIGHT | GameCommands.LEFT | GameCommands.DOWN) || directions == (GameCommands.UP | GameCommands.DOWN | GameCommands.LEFT) || directions == (GameCommands.RIGHT | GameCommands.LEFT | GameCommands.UP) || directions == (GameCommands.UP | GameCommands.DOWN | GameCommands.RIGHT)){
             this.tCross();
         }
-        if(directions == (this.SOUTH | this.WEST) || directions == (this.NORTH | this.EAST)){
-            if(command == this.MOVE_UP || command == this.MOVE_DOWN){
+        if(directions == (GameCommands.DOWN | GameCommands.LEFT) || directions == (GameCommands.UP | GameCommands.RIGHT)){
+            if(command == GameCommands.MOVE_UP || command == GameCommands.MOVE_DOWN){
                 ride.goToLeftCorner();
-            }else if(command == this.MOVE_RIGHT || command == this.MOVE_LEFT){
+            }else if(command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_LEFT){
                 ride.goToRightCorner();
             }
         }
-        if(directions == (this.SOUTH | this.EAST) || directions == (this.NORTH | this.WEST)){
-            if(command == this.MOVE_UP || command == this.MOVE_DOWN){
+        if(directions == (GameCommands.DOWN | GameCommands.RIGHT) || directions == (GameCommands.UP | GameCommands.LEFT)){
+            if(command == GameCommands.MOVE_UP || command == GameCommands.MOVE_DOWN){
                 ride.goToRightCorner();
-            }else if(command == this.MOVE_RIGHT || command == this.MOVE_LEFT){
+            }else if(command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_LEFT){
                 ride.goToLeftCorner();
             }
         }
-        if(directions == (this.SOUTH | this.EAST | this.NORTH | this.WEST)){
+        if(directions == (GameCommands.DOWN | GameCommands.RIGHT | GameCommands.UP | GameCommands.RIGHT)){
             ride.goToCross();
         }
         lastCommand = command;
@@ -139,36 +140,36 @@ public class Controller implements ButtonListener{
     }
     
     private void turn(){
-        if(command == this.MOVE_UP || command == (this.DISCOVER | this.MOVE_UP)){
-            if(lastCommand == this.MOVE_RIGHT || lastCommand == (this.DISCOVER | this.MOVE_RIGHT)){
+        if(command == GameCommands.MOVE_UP || command == (GameCommands.DISCOVER | GameCommands.MOVE_UP)){
+            if(lastCommand == GameCommands.MOVE_RIGHT || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_RIGHT)){
                 ride.left90();
-            }else if(lastCommand == this.MOVE_LEFT || lastCommand == (this.DISCOVER | this.MOVE_LEFT)){
+            }else if(lastCommand == GameCommands.MOVE_LEFT || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_LEFT)){
                 ride.right90();
-            }else if(lastCommand == this.MOVE_DOWN || lastCommand == (this.DISCOVER | this.MOVE_DOWN)){
+            }else if(lastCommand == GameCommands.MOVE_DOWN || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_DOWN)){
                 ride.turn180();
             }
-        }else if(command == this.MOVE_RIGHT || command == (this.DISCOVER | this.MOVE_RIGHT)){
-            if(lastCommand ==  this.MOVE_DOWN || lastCommand == (this.DISCOVER | this.MOVE_DOWN)){
+        }else if(command == GameCommands.MOVE_RIGHT || command == (GameCommands.DISCOVER | GameCommands.MOVE_RIGHT)){
+            if(lastCommand ==  GameCommands.MOVE_DOWN || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_DOWN)){
                 ride.left90();
-            }else if(lastCommand == this.MOVE_UP || lastCommand == (this.DISCOVER | this.MOVE_UP)){
+            }else if(lastCommand == GameCommands.MOVE_UP || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_UP)){
                 ride.right90();
-            }else if(lastCommand == this.MOVE_LEFT || lastCommand == (this.DISCOVER | this.MOVE_LEFT)){
+            }else if(lastCommand == GameCommands.MOVE_LEFT || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_LEFT)){
                 ride.turn180();
             }
-        }else if(command == this.MOVE_DOWN || lastCommand == (this.DISCOVER | this.MOVE_DOWN)){
-            if(lastCommand == this.MOVE_UP || lastCommand == (this.DISCOVER | this.MOVE_UP)){
+        }else if(command == GameCommands.MOVE_DOWN || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_DOWN)){
+            if(lastCommand == GameCommands.MOVE_UP || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_UP)){
                 ride.turn180();
-            }else if(lastCommand == this.MOVE_LEFT || lastCommand == (this.DISCOVER | this.MOVE_LEFT)){
+            }else if(lastCommand == GameCommands.MOVE_LEFT || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_LEFT)){
                 ride.left90();
-            }else if(lastCommand == this.MOVE_RIGHT || lastCommand == (this.DISCOVER | this.MOVE_RIGHT)){
+            }else if(lastCommand == GameCommands.MOVE_RIGHT || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_RIGHT)){
                 ride.right90();
             }
-        }else if(command == this.MOVE_LEFT || lastCommand == (this.DISCOVER | this.MOVE_LEFT)){
-            if(lastCommand == this.MOVE_UP || lastCommand == (this.DISCOVER | this.MOVE_UP)){
+        }else if(command == GameCommands.MOVE_LEFT || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_LEFT)){
+            if(lastCommand == GameCommands.MOVE_UP || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_UP)){
                 ride.left90();
-            }else if(lastCommand == this.MOVE_RIGHT || lastCommand == (this.DISCOVER | this.MOVE_LEFT)){
+            }else if(lastCommand == GameCommands.MOVE_RIGHT || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_LEFT)){
                 ride.turn180();
-            }else if(lastCommand == this.MOVE_DOWN || lastCommand == (this.DISCOVER | this.MOVE_DOWN)){
+            }else if(lastCommand == GameCommands.MOVE_DOWN || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_DOWN)){
                 ride.right90();
             }
         }
@@ -179,36 +180,36 @@ public class Controller implements ButtonListener{
     }
     
     private void tCross() {
-        if(directions == (this.EAST | this.WEST | this.SOUTH)){
-            if(command == this.MOVE_UP){
+        if(directions == (GameCommands.RIGHT | GameCommands.LEFT | GameCommands.DOWN)){
+            if(command == GameCommands.MOVE_UP){
                 ride.goToCross();
-            }else if(command == this.MOVE_RIGHT){
+            }else if(command == GameCommands.MOVE_RIGHT){
                 ride.goToRightCorner();
-            }else if(command == this.MOVE_LEFT){
+            }else if(command == GameCommands.MOVE_LEFT){
                 ride.goToLeftCorner();
             }
-        }else if(directions == (this.NORTH | this.SOUTH | this.WEST)){
-            if(command == this.MOVE_UP){
+        }else if(directions == (GameCommands.UP | GameCommands.DOWN | GameCommands.LEFT)){
+            if(command == GameCommands.MOVE_UP){
                 ride.goToLeftCorner();
-            }else if(command == this.MOVE_RIGHT){
+            }else if(command == GameCommands.MOVE_RIGHT){
                 ride.goToCross();
-            }else if(command == this.MOVE_DOWN){
+            }else if(command == GameCommands.MOVE_DOWN){
                 ride.goToRightCorner();
             }
-        }else if(directions == (this.EAST | this.WEST | this.NORTH)){
-            if(command == this.MOVE_RIGHT){
+        }else if(directions == (GameCommands.RIGHT | GameCommands.LEFT | GameCommands.UP)){
+            if(command == GameCommands.MOVE_RIGHT){
                 ride.goToLeftCorner();
-            }else if(command == this.MOVE_DOWN){
+            }else if(command == GameCommands.MOVE_DOWN){
                 ride.goToCross();
-            }else if(command == this.MOVE_LEFT){
+            }else if(command == GameCommands.MOVE_LEFT){
                 ride.goToRightCorner();
             }
-        }else if(directions == (this.NORTH | this.SOUTH | this.EAST)){
-            if(command == this.MOVE_UP){
+        }else if(directions == (GameCommands.UP | GameCommands.DOWN | GameCommands.RIGHT)){
+            if(command == GameCommands.MOVE_UP){
                 ride.goToRightCorner();
-            }else if(command == this.MOVE_DOWN){
+            }else if(command == GameCommands.MOVE_DOWN){
                 ride.goToLeftCorner();
-            }else if(command == this.MOVE_LEFT){
+            }else if(command == GameCommands.MOVE_LEFT){
                 ride.goToCross();
             }
         }
