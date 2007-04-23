@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.Semaphore;
+import obsolete.IRTransportSocket;
 
 
 public class RobotProxy extends Thread{

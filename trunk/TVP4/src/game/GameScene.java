@@ -406,17 +406,16 @@ public class GameScene implements Scene {
             }
             
             PacmanApp.getInstance().getCore().getScreenManager().update();
-            
-            int pos = this.field.getHighScores().isHighScore(this.points);
-            if(pos != -1) {
+                        
+            if (this.field.getHighScores().isHighScore(this.points)) {
                 String name = JOptionPane.showInputDialog(PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow(), "Congratulations, you have reached rank \nPlease write your name in the box below.");
                 if(name == null){
                     name = "New player";
-                }
+                }                
                 Field newField = new Field();
                 newField.loadFrom(this.level);
-                newField.getHighScores().addHighScore(name, this.points, pos);
-                this.field.getHighScores().addHighScore(name, this.points, pos);
+                newField.getHighScores().add(new HighScore(name, this.points));
+                this.field.getHighScores().add(new HighScore(name, this.points));
                 newField.saveTo(this.level);
             }
         }

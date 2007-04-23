@@ -9,8 +9,10 @@
  * @version 1.0
  *
  *
- * ******VERSION HISTORY******
- *
+ * ******VERSION HISTORY****** 
+ * LMK @ 13. april 2007 (v 1.0)
+ * Made HighScoreList a sorted list
+ * Removed nameToString and scoreToString methods
  * Administrator @ 6. marts 2007 (v 1.0)
  * __________ Changes ____________
  *
@@ -19,11 +21,13 @@
 package game;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Iterator;
 
 
-public class HighScoreList extends ArrayList implements Serializable {
+public class HighScoreList extends LinkedList implements Serializable {
+    
+    public static final int MAXIMUM_SIZE = 10;
     
     /** Creates a new instance of HighScoreList */
     public HighScoreList() {
@@ -31,67 +35,59 @@ public class HighScoreList extends ArrayList implements Serializable {
         reset();
     }
     
+    /**
+     * Reset list.
+     */
     public void reset(){
-        this.addHighScore("NewPlayer", 0, 0);
-        this.addHighScore("NewPlayer", 0, 1);
-        this.addHighScore("NewPlayer", 0, 2);
-        this.addHighScore("NewPlayer", 0, 3);
-        this.addHighScore("NewPlayer", 0, 4);
-        this.addHighScore("NewPlayer", 0, 5);
-        this.addHighScore("NewPlayer", 0, 6);
-        this.addHighScore("NewPlayer", 0, 7);
-        this.addHighScore("NewPlayer", 0, 8);
-        this.addHighScore("NewPlayer", 0, 9);
+        this.clear();
+        for (int i = 0; i < MAXIMUM_SIZE; i++) {
+            this.add(i, new HighScore("NewPlayer", 0));
+        }
     }
-    
-    public boolean addHighScore(String name, int score, int position){
-        HighScore highScore = new HighScore(name, score);
-        if(position <= 9 && position >=0){
-            this.add(position, highScore);
-            if(this.size() > 10){
-                this.remove(this.size()-1);
-            }
+
+    /**
+     * Check whether score is a high enough to be a high score.
+     *
+     * @param score to check.
+     * @return boolean true if score is a highscore.
+     */
+    public boolean isHighScore(int score){        
+        HighScore current;   
+        if (this.size() < MAXIMUM_SIZE) {
             return true;
         }
-        else{ return false;}
-    }
-    
-    public int isHighScore(int score){
-        int index = 0;
-        for(Iterator iter = this.iterator(); iter.hasNext(); index++){
-            HighScore hScore = (HighScore) iter.next();
-            if(score >= hScore.getScore()){
-                return index;
+        for(Iterator iter = this.iterator(); iter.hasNext();){
+            current = (HighScore) iter.next();            
+            //System.out.println(new HighScore("",score).compareTo(current));
+            if(current.getScore() < score){
+                return true;
             }
         }
-        return -1;
-    }
-    
-    private HighScore getHighScore(int i){
-        return (HighScore) this.get(i);
-    }
-    
-    public String scoreToString(){
-        String scoreAsString = "";
-        int index = 1;
-        for(Iterator iter = this.iterator(); iter.hasNext();index++){
-            HighScore hScore = (HighScore) iter.next();
-            if(index >=1 && index <=10){
-                scoreAsString += hScore.getScore() + "\n";
+        return false;
+    }    
+     
+    /**
+     * Add object to highscore to list. Only the first 10 highest scores will be
+     * recorded.
+     * 
+     * @param Comparable object, the highscore to be added.
+     * @return true if the score has been added.
+     */
+    public boolean add(Comparable object) {        
+        for (int i = 0; i < this.size(); i++) {
+            //System.out.println(object.compareTo(this.get(i)));
+            if (object.compareTo(this.get(i)) > 0) {
+                this.add(i, object);
+                if (this.size() > MAXIMUM_SIZE) {
+                    this.removeLast();
+                }
+                return true;
             }
+        }               
+        if (this.size() < MAXIMUM_SIZE) {
+            this.addLast(object);
+            return true;
         }
-        return scoreAsString;
-    }
-    
-    public String namesToString(){
-        String namesAsString = "";
-        int index = 1;
-        for(Iterator iter = this.iterator(); iter.hasNext();index++){
-            HighScore hScore = (HighScore) iter.next();
-            if(index >=1 && index <=10){
-                namesAsString += index + ". " + hScore.getName() + "\n";
-            }
-        }
-        return namesAsString;
-    }
+        return false;
+    }    
 }

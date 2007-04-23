@@ -6,10 +6,12 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.3
+ * @version 1.4
  *
  *
  * ******VERSION HISTORY******
+ * LMK @ 23. april 2007 (v 1.4)
+ * Added High Score List to View menu
  * LMK @ 14. februar 2007 (v 1.3)
  * Keystroke now uses virtual keycodes instead of chars and strings.
  * Fixed noneworking open keystroke
@@ -48,7 +50,7 @@ public class EditorMenu extends JPanel {
         String[][] menuStrings = {
             {"File","New Level","Scan New Level","Open...","-","Save","Save As...","-","Quit"},
             {"Brush","Use Path Brush","Use Pacman Brush","Use Ghost Brush"},
-            {"View","Show Grid","Show Points"},
+            {"View","Show Grid","Show Points","-","Show High Score List"},
             {"Skin","Nodes","Pac-Man","-","Open Skin..."},
             {"Help",/*"About...",*/"Open Help"}
         };
@@ -56,7 +58,7 @@ public class EditorMenu extends JPanel {
         char[][] mnemonics = {
             {'f','n','c','o','-','-','s','-','q'},
             {'b','p','m','g'},
-            {'v','g','p'},
+            {'v','g','p','-','h'},
             {'s','n','p','-','o'},
             {'h',/*'a',*/'h'}
         };
@@ -77,7 +79,9 @@ public class EditorMenu extends JPanel {
              KeyStroke.getKeyStroke(KeyEvent.VK_3, InputEvent.CTRL_MASK )},
             {null,
              KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK),
-             KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK)},
+             KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK),
+             null,             
+             KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_MASK)},
             {null, 
              KeyStroke.getKeyStroke(KeyEvent.VK_1, InputEvent.ALT_MASK),
              KeyStroke.getKeyStroke(KeyEvent.VK_2, InputEvent.ALT_MASK),
@@ -107,7 +111,9 @@ public class EditorMenu extends JPanel {
                  LevelEditor.getInstance().getEditorPanel().setBrush(new GhostBrush(LevelEditor.getInstance().getEditorPanel()));}}},
             {null,
              new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().showHideGrid();}},
-             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().showHidePoints();}}},
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().showHidePoints();}},
+             null,
+             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().showHighScoreDialog();}}},
             {null,
              new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().setSkin("skins/nodes/");}},
              new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().setSkin("skins/pacman/");}},
