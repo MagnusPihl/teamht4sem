@@ -117,6 +117,7 @@ public class TitleScene implements Scene {
     
     public void update(long _time) {
         if (this.actionQuit.isPressed()) {
+            System.gc();
             System.exit(0);
         } else if (this.actionEnter.isPressed()) {
             switch (this.currentItem) {

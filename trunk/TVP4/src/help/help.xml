@@ -336,6 +336,12 @@
                         When clicked the points associated with every node will be shown on the canvas.
                         When clicked again points will be hidden. 
                     </li>
+                    <li>
+                        <strong>Show High Score List - CTRL + H</strong><br />
+                        When clicked the hight score list associated with the current level is shown.
+                        The high score list has only been added for debugging purposes, and can not be changed.
+                        Be warned that if you save, after having altered a level, the list will be reset.
+                    </li>
                 </ul>
             </answer>
         </question>	
