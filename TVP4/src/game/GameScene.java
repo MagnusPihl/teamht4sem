@@ -281,6 +281,8 @@ public class GameScene implements Scene {
 
     public void update(long _time)
     {
+        this.moveTimer -= _time;
+        
         if(!this.win && !this.lose)
         {
             if(pause.isPressed())
@@ -289,17 +291,26 @@ public class GameScene implements Scene {
                 this.confirm.release();
             }
             
-            this.moveTimer -= _time;
             EntityRenderer[] entities = this.field.getEntityRenderers();
+            entities[0].getEntity().getController().calculateNextMove();
             for(int i=0; i<entities.length; i++)
                 if(entities[i].getEntity() != null)
                 {
                     //START OF TURN!
                     if(this.moveTimer<0 && this.semaphore.availablePermits()==3 && !this.paused)
                     {
+                        int dir = -1;
                         if(i == 0)
+                        {
                             this.addPoints(entities[0].getEntity().getNode().takePoints());
-                        int dir = entities[i].getEntity().getController().move();
+                            dir = entities[i].getEntity().getController().move();
+                        }
+                        else
+                        {
+                            entities[i].getEntity().getController().calculateNextMove();
+                            dir = entities[i].getEntity().getController().move();
+                        }
+                        
                         if(this.online)
                         {
                             for(int j=0; j<3; j++)
@@ -308,10 +319,7 @@ public class GameScene implements Scene {
                         this.replay.list[i].add(dir);
                     }
                     //END OF TURN!
-                    entities[i].getEntity().getController().calculateNextMove();
                 }
-            if(this.moveTimer<0)
-                this.moveTimer = this.roundTime;
 
             //Win/Lose condition
             if(this.field.getPointsLeft() == 0)
@@ -320,11 +328,18 @@ public class GameScene implements Scene {
             }
             else
             {
-                for(int j=0; j<4; j++)
+                Node n;
+                Entity e;
+                for(int i=0; i<4; i++)
                 {
-                    if(entities[0].getEntity().getNode().getNodeAt(j) != null)
-                        if(entities[0].getEntity().getNode().getNodeAt(j).holdsEntity())
-                            this.lose = true;
+                    n = this.field.getNodeAt(entities[0].getEntity().getPosition()).getNodeAt(i);
+                    if(n != null)
+                    {
+                        e = n.getEntity();
+                            if(e != null)
+                                if(e.getID() > 0)
+                                    this.lose = true;
+                    }
                 }
             }
             
@@ -337,6 +352,9 @@ public class GameScene implements Scene {
         {
             PacmanApp.getInstance().showTitleScene();
         }
+        
+        if(this.moveTimer<0)
+                this.moveTimer = this.roundTime;
     }
 
     public void init(InputManager _input) {
