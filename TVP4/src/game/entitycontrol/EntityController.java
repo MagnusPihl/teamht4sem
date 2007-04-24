@@ -77,15 +77,26 @@ public abstract class EntityController
                     direction = Node.DOWN;
                 }                        
             }
+            Node current = this.entity.getNode().getNodeAt(direction);
 
-            if (this.entity.getNode().getNodeAt(direction) != null) {
-                return direction;
-            } else if (this.entity.getNode().getNodeAt(Node.getOpposite(direction)) != null) {
-                return Node.getOpposite(direction);
+            if (current != null) {
+                if (current.getEntity() == null) {
+                    return direction;
+                }
+            } 
+            
+            current = this.entity.getNode().getNodeAt(Node.getOpposite(direction));
+            if (current != null) {
+                if (current.getEntity() == null) {
+                    return Node.getOpposite(direction);
+                }
             }
 
-            if (this.entity.getNode().getNodeAt(Node.getOpposite(this.lastDirection)) != null) {
-                return this.lastDirection;
+            current = this.entity.getNode().getNodeAt(Node.getOpposite(this.lastDirection));
+            if (current != null) {
+                if (current.getEntity() == null) {
+                    return this.lastDirection;
+                }
             }
         } else {
             for (int i = 0; i < Node.DIRECTION_COUNT; i++) {
