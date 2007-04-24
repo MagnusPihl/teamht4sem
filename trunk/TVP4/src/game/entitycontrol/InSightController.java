@@ -24,12 +24,10 @@ import game.input.*;
 public class InSightController extends EntityController {    
     
     private Entity prey;
-    private int preyDirection;
     
     /** Creates a new instance of InSightController */
     public InSightController(Entity entity, Entity prey) {
         super(entity);        
-        this.preyDirection = Node.INVALID_DIRECTION;
         this.prey = prey;
     }   
     
@@ -53,7 +51,9 @@ public class InSightController extends EntityController {
     public void calculateNextMove() {           
         this.nextDirection = this.targetInSight();        
         
-        if (this.nextDirection == Node.INVALID_DIRECTION) {            
+        if (this.prey.getNode().equals(this.entity.getNode().getNodeAt(this.nextDirection))) {
+            this.nextDirection = Node.INVALID_DIRECTION;
+        } else if (this.nextDirection == Node.INVALID_DIRECTION) {            
             this.nextDirection = super.getNextDirection();
         } else {
             if ((RANDOM.nextInt(10) == 0) && 
