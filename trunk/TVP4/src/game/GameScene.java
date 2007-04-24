@@ -346,21 +346,19 @@ public class GameScene implements Scene {
         this.resetPoints();
         this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.fps,400);
         this.field.loadFrom(this.level);
-        this.entity[0].setNode(this.field.getEntityRenderers()[0].getEntity().getNode());
-        this.entity[1].setNode(this.field.getEntityRenderers()[1].getEntity().getNode());
-        this.entity[2].setNode(this.field.getEntityRenderers()[2].getEntity().getNode());
-        this.entity[0].setDirection(this.field.getEntityRenderers()[0].getEntity().getDirection());
-        this.entity[1].setDirection(this.field.getEntityRenderers()[1].getEntity().getDirection());
-        this.entity[2].setDirection(this.field.getEntityRenderers()[2].getEntity().getDirection());
-        if(this.entity[0].getController() == null)
-            this.entity[0].setController(new KeyboardController(this.entity[0]));
-        if(this.entity[1].getController() == null)
-            this.entity[1].setController(new PreyAIController(this.entity[1]));
-        if(this.entity[2].getController() == null)
-            this.entity[2].setController(new PreyAIController(this.entity[2]));
-        this.field.setEntity(0, this.entity[0]);
-        this.field.setEntity(1, this.entity[1]);
-        this.field.setEntity(2, this.entity[2]);
+        for(int i=0; i<3; i++)
+        {
+            if(this.field.getEntityRenderers().length > i)
+            {
+                this.entity[i].setNode(this.field.getEntityRenderers()[i].getEntity().getNode());
+                this.entity[i].setDirection(this.field.getEntityRenderers()[i].getEntity().getDirection());
+                if(i==0 && this.entity[0].getController() == null)
+                    this.entity[0].setController(new KeyboardController(this.entity[0]));
+                if(i>0 && this.entity[i].getController() == null)
+                    this.entity[i].setController(new PreyAIController(this.entity[i]));
+                this.field.setEntity(i, this.entity[i]);
+            }
+        }
         this.levelOffsetX = (800/2) - ((this.field.getSize().width * TileSet.getInstance().getTileSize())/2);
         this.levelOffsetY = (600/2) - ((this.field.getSize().height * TileSet.getInstance().getTileSize())/2);
         this.soundManager.runSound(1, true);
