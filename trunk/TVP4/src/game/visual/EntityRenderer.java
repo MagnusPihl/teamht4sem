@@ -83,8 +83,8 @@ public class EntityRenderer
         Point position = entity.getPosition();
         int tileSize = TileSet.getInstance().getTileSize();
         
-        g.setColor(Color.CYAN);
-        g.drawRect(position.x*tileSize+offsetX, position.y*tileSize+offsetY, 30, 30);
+//        g.setColor(Color.CYAN);
+//        g.drawRect(position.x*tileSize+offsetX, position.y*tileSize+offsetY, 30, 30);
 
         if((System.currentTimeMillis() - this.lastUpdate) > this.animationDelay)// && entity.isMoving())
         {
