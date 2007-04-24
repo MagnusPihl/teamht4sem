@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.7
+ * @version 1.8
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 24. april 2007 (v 1.8)
+ * Moved finalizing of settings into new publically accessible apply() method.
  *
  * Magnus Hemmer Pihl @ 24. april 2007 (v 1.7)
  * Minor modification to help text, again.
@@ -174,46 +177,51 @@ public class OptionsScene implements Scene
             ;
         if(this.quit.isPressed())
         {
-            for(int i=0; i<3; i++)
-            {
-                Entity e = PacmanApp.getInstance().getGameScene().getEntity(i);
-                if(this.option[i] == 0)
-                    e.setController(new KeyboardController(e));
-                if(this.option[i] == 1)
-                    e.setController(new KeyboardController(e, KeyEvent.VK_W,KeyEvent.VK_D,KeyEvent.VK_S,KeyEvent.VK_A));
-                if(this.option[i] == 2)
-                    e.setController(new KeyboardController(e, KeyEvent.VK_NUMPAD8,KeyEvent.VK_NUMPAD6,KeyEvent.VK_NUMPAD2,KeyEvent.VK_NUMPAD4));
-                int numJoy = this.menuOptionsStr[0].length - 3;
-                for(int j=0; j<numJoy; j++)
-                    if(this.option[i] == 3+j)
-                        e.setController(new JoystickController(e, j));
-                if(this.option[i] == 3+numJoy)
-                    e.setController(new PreyAIController(e));
-                if(this.option[i] == 4+numJoy)
-                    e.setController(new InSightController(e, PacmanApp.getInstance().getGameScene().getEntity(0)));
-                if(this.option[i] == 5+numJoy)
-                    e.setController(new HunterAIController(e, PacmanApp.getInstance().getGameScene().getEntity(0)));
-            }
-            
-            TileSet.getInstance().loadTileSet("skins/"+this.menuOptionsStr[3][this.option[3]]);
-            
-            switch(this.option[4])
-            {
-                case 0: PacmanApp.getInstance().getGameScene().setRoundTime(1000);  break;
-                case 1: PacmanApp.getInstance().getGameScene().setRoundTime(500);   break;
-                case 2: PacmanApp.getInstance().getGameScene().setRoundTime(250);   break;
-            }
-            
-            switch(this.option[5])
-            {
-                case 0: PacmanApp.getInstance().getGameScene().setOnline(false);    break;
-                case 1: PacmanApp.getInstance().getGameScene().setOnline(true);     break;
-            }
-            
-            //Set tower interface
+            this.apply();
             
             PacmanApp.getInstance().showTitleScene();
         }
+    }
+    
+    public void apply()
+    {
+        for(int i=0; i<3; i++)
+        {
+            Entity e = PacmanApp.getInstance().getGameScene().getEntity(i);
+            if(this.option[i] == 0)
+                e.setController(new KeyboardController(e));
+            if(this.option[i] == 1)
+                e.setController(new KeyboardController(e, KeyEvent.VK_W,KeyEvent.VK_D,KeyEvent.VK_S,KeyEvent.VK_A));
+            if(this.option[i] == 2)
+                e.setController(new KeyboardController(e, KeyEvent.VK_NUMPAD8,KeyEvent.VK_NUMPAD6,KeyEvent.VK_NUMPAD2,KeyEvent.VK_NUMPAD4));
+            int numJoy = this.menuOptionsStr[0].length - 3;
+            for(int j=0; j<numJoy; j++)
+                if(this.option[i] == 3+j)
+                    e.setController(new JoystickController(e, j));
+            if(this.option[i] == 3+numJoy)
+                e.setController(new PreyAIController(e));
+            if(this.option[i] == 4+numJoy)
+                e.setController(new InSightController(e, PacmanApp.getInstance().getGameScene().getEntity(0)));
+            if(this.option[i] == 5+numJoy)
+                e.setController(new HunterAIController(e, PacmanApp.getInstance().getGameScene().getEntity(0)));
+        }
+
+        TileSet.getInstance().loadTileSet("skins/"+this.menuOptionsStr[3][this.option[3]]);
+
+        switch(this.option[4])
+        {
+            case 0: PacmanApp.getInstance().getGameScene().setRoundTime(1000);  break;
+            case 1: PacmanApp.getInstance().getGameScene().setRoundTime(500);   break;
+            case 2: PacmanApp.getInstance().getGameScene().setRoundTime(250);   break;
+        }
+
+        switch(this.option[5])
+        {
+            case 0: PacmanApp.getInstance().getGameScene().setOnline(false);    break;
+            case 1: PacmanApp.getInstance().getGameScene().setOnline(true);     break;
+        }
+
+        //Set tower interface
     }
     
     private void prerender()
