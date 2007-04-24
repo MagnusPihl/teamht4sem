@@ -137,7 +137,12 @@ public class OptionsScene implements Scene
         this.option[0] = 0; //Keyboard control for Entity0
         this.option[1] = this.menuOptionsStr[1].length-2; //Normal CPU for Entity1
         this.option[2] = this.menuOptionsStr[1].length-2; //Normal CPU for Entity2
-        this.option[3] = 0; //Whatever the first skin is. Might want to change this to select "pacman" by default.
+        
+        this.option[3] = 0; //Whatever the first skin is, or "pacman" if it exists.
+        for(int i=0; i<this.menuOptionsStr[3].length; i++)
+            if(this.menuOptionsStr[3][i] == "pacman")
+                this.option[3] = i;
+        
         this.option[4] = 1; //Normal game speed
         this.option[5] = 0; //Offline mode
         this.option[6] = 0; //USB interface
