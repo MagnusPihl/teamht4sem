@@ -153,8 +153,8 @@ public class GameScene implements Scene {
     
     public void addPoints(int _points)
     {
-        //if (_points != 0)
-        //    this.soundManager.runSound(2, false);
+//        if (_points != 0)
+//            this.soundManager.runSound(2, false);
         this.points += _points;
         font = PacmanApp.getInstance().getFont();
         pointsImage = font.renderString(""+this.points,400);
