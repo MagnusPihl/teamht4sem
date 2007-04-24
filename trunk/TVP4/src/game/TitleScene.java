@@ -6,10 +6,14 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.1
+ * @version 1.3
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 24. april 2007 (v 1.3)
+ * New Game and Continue now automatically apply option settings before start, even if the user didn't enter the options scene.
+ * Replay now works again, setting controllers properly.
  *
  * Magnus Hemmer Pihl @ 18. april 2007 (v 1.2)
  * Removed calls to GameScene.setMode (now deprecated). Will need to implement new method of setting Replay mode.
@@ -25,6 +29,7 @@
 
 package game;
 
+import game.entitycontrol.ReplayController;
 import game.system.*;
 import game.input.*;
 import game.visual.*;
@@ -152,6 +157,7 @@ public class TitleScene implements Scene {
     }
     
     public void newGame() {
+        PacmanApp.getInstance().getOptionsScene().apply();
         if (this.openLevelDialog.showOpenDialog(
                 PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow()) == JFileChooser.APPROVE_OPTION) {
             File file = this.openLevelDialog.getSelectedFile();
@@ -161,6 +167,7 @@ public class TitleScene implements Scene {
     }
     
     public void continueGame() {
+        PacmanApp.getInstance().getOptionsScene().apply();
         PacmanApp.getInstance().showGameScene();
     }
     
@@ -169,6 +176,11 @@ public class TitleScene implements Scene {
                 PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow()) == JFileChooser.APPROVE_OPTION) {
             File file = this.openReplayDialog.getSelectedFile();
             PacmanApp.getInstance().getGameScene().setReplay(file);
+            for(int i=0; i<3; i++)
+            {
+                Entity e = PacmanApp.getInstance().getGameScene().getEntity(i);
+                e.setController(new ReplayController(e, PacmanApp.getInstance().getGameScene().getReplay().list[i]));
+            }
             PacmanApp.getInstance().showGameScene();
         }
     }

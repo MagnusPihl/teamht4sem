@@ -6,10 +6,14 @@
  * Company: HT++
  *
  * @author LMK
- * @version 2.1
+ * @version 2.3
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 24. april 2007 (v 2.3)
+ * Changed order of entity move calculation and execution to prevent entities from moving into the same space.
+ * Added getReplay method.
  *
  * Magnus Hemmer Pihl @ 18. april 2007 (v 2.2)
  * Deprecated method setMode.
@@ -182,6 +186,11 @@ public class GameScene implements Scene {
     public void setReplay(File _replay)
     {
         this.replay.load(_replay);
+    }
+    
+    public Replay getReplay()
+    {
+        return this.replay;
     }
     
     public Field getField()
