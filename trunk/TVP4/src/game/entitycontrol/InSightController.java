@@ -35,11 +35,13 @@ public class InSightController extends EntityController {
      * Execute move
      */
     public int move() {
-        if (this.nextDirection != Node.INVALID_DIRECTION) {            
-            super.entity.setNode(super.entity.getNode().getNodeAt(this.nextDirection));
-            this.entity.setDirection(this.nextDirection);            
-            this.lastDirection = this.nextDirection;
-            return this.nextDirection;
+        if (this.nextDirection != Node.INVALID_DIRECTION) {           
+            if (this.entity.getNode().getNodeAt(this.nextDirection).getEntity() == null) {
+                super.entity.setNode(super.entity.getNode().getNodeAt(this.nextDirection));
+                this.entity.setDirection(this.nextDirection);            
+                this.lastDirection = this.nextDirection;
+                return this.nextDirection;
+            }
         }
         
         return Node.INVALID_DIRECTION;
@@ -49,8 +51,12 @@ public class InSightController extends EntityController {
      * Calculate next move
      */
     public void calculateNextMove() {           
-        this.nextDirection = this.targetInSight();        
+        this.nextDirection = this.targetInSight();                
         
+        /**
+         * if (this.entity.getNode().getNodeAt(this.nextDirection) != null) && (this.prey.getNode()) && 
+         *       ())) {
+         */
         if (this.prey.getNode().equals(this.entity.getNode().getNodeAt(this.nextDirection))) {
             this.nextDirection = Node.INVALID_DIRECTION;
         } else if (this.nextDirection == Node.INVALID_DIRECTION) {            
