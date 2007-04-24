@@ -10,6 +10,9 @@
  *
  *
  * ******VERSION HISTORY******
+ * Magnus Hemmer Pihl @ 24. april 2007 (v 1.4)
+ * Corrected null-pointer exception in isMoving().
+ *
  * LMK @ 23. marts 2007 (v 1.3)
  * Fixed error when trying to place to entity on a node already holding an entity. 
  * The old entity now has it's node reference removed. 
@@ -79,11 +82,15 @@ public class Entity implements Serializable {
     //Accessors
     public boolean isMoving()
     {
-        if(this.node.getNodeAt(this.direction) == null)
-            this.isMoving = false;
-        else
-            this.isMoving = true;
-        return this.isMoving;
+        if(node != null)
+        {
+            if(this.node.getNodeAt(this.direction) == null)
+                this.isMoving = false;
+            else
+                this.isMoving = true;
+            return this.isMoving;
+        }
+        return false;
     }
     public int getDirection(){return this.direction;}
     public Point getPosition(){return this.node.getPosition();}
