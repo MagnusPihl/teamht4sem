@@ -118,7 +118,6 @@ public class Sound extends Thread implements ControllerListener{
 	// and control components and add them to the Applet
 	if (event instanceof RealizeCompleteEvent) {
 	    player.setMediaTime(new Time(0));
-            player.setRate(2);
  	} else if (event instanceof CachingControlEvent) {
 	} else if (event instanceof EndOfMediaEvent) {
 	    // We've reached the end of the media; rewind and
