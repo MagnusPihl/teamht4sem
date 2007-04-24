@@ -6,10 +6,14 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.5
+ * @version 1.7
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 24. april 2007 (v 1.7)
+ * Minor modification to help text, again.
+ * Corrected entity images to match new directional integers.
  *
  * Magnus Hemmer Pihl @ 23. april 2007 (v 1.6)
  * Corrected help text.
@@ -121,7 +125,7 @@ public class OptionsScene implements Scene
             "Press left or right to choose a skin.\nPress enter to see a preview of the\ncurrently selected skin.",
             "Press left or right to decrease or\nincrease game speed.",
             "Press left or right to choose either\noffline or online mode.\n"+
-                "In online mode, robots will physically\nmimic the game - in offline you don't\nneed any robots.",
+                "In online mode, robots will physically\nmimic the game.",
             "Press left or right to choose the port\nat which a Lego Mindstorm Tower is\nconnected.\nOnly needed for Online mode."
         };
         
@@ -223,9 +227,9 @@ public class OptionsScene implements Scene
         this.menuOptions = new Image[this.menuOptionsStr.length][length+1];
         this.menuHelp = new Image[this.menuHelpStr.length];
         
-        this.menuItems[0] = TileSet.getInstance().getEntityTile(0,1,0);
-        this.menuItems[1] = TileSet.getInstance().getEntityTile(1,1,0);
-        this.menuItems[2] = TileSet.getInstance().getEntityTile(2,1,0);
+        this.menuItems[0] = TileSet.getInstance().getEntityTile(0,Node.RIGHT,0);
+        this.menuItems[1] = TileSet.getInstance().getEntityTile(1,Node.RIGHT,0);
+        this.menuItems[2] = TileSet.getInstance().getEntityTile(2,Node.RIGHT,0);
         for(int i=0; i<this.menuItemsStr.length; i++)
         {
             if(i>2)
