@@ -43,7 +43,7 @@ public class GameProxy {
     public GameProxy(int add) {
         this.address = add;
         net = new NetworkSocket(address,0,link.getInputStream(),link.getOutputStream());
-        socket = new TransportSocket(net.getInputStream(), net.getOutputStream());
+        socket = new TransportSocket(net.getInputStream(), net.getOutputStream()); //god ordens skyld
         in = socket.getInputStream();
         out = socket.getOutputStream();
     }
@@ -129,7 +129,7 @@ public class GameProxy {
         }
         int i = 0;
         while(i <= 5){
-            i++;
+            i+= 20;
             try {
                 in.read();
             } catch (IOException ex) {
