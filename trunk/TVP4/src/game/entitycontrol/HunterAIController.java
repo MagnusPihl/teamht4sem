@@ -35,21 +35,7 @@ public class HunterAIController extends EntityController {
         super(_entity);        
         this.prey = _prey;
         this.algorithm = new BreadthFirstAlgorithm();
-    }   
-    
-    /**
-     * Execute move
-     */
-    public int move() {
-        if (this.nextDirection != Node.INVALID_DIRECTION) {            
-            super.entity.setNode(super.entity.getNode().getNodeAt(this.nextDirection));
-            this.entity.setDirection(this.nextDirection);            
-            this.lastDirection = this.nextDirection;
-            return this.nextDirection;
-        }
-        
-        return Node.INVALID_DIRECTION;
-    }
+    }       
     
     /**
      * Calculate next move

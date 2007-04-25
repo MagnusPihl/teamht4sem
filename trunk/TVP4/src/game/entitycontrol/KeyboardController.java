@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.2
+ * @version 1.3
  *
  *
  * ******VERSION HISTORY******
+ * LMK @ 25. April 2007 (v 1.3)
+ * Changed nextDirection to nextDirection to match other controller classes
+ * Removed the move function and moved it to EntityController
  *
  * Magnus Hemmer Pihl @ 17. april 2007 (v 1.2)
  * Altered input code so that direction is only updated when the entity is about to move.
@@ -35,9 +38,7 @@ import java.awt.event.KeyEvent;
 public class KeyboardController extends EntityController
 {
     private int upkey, downkey, leftkey, rightkey;
-    private InputAction up, down, left, right;
-    
-    private int desiredDir;
+    private InputAction up, down, left, right;        
     
     /** Creates a new instance of KeyboardController */
     public KeyboardController(Entity _entity)
@@ -54,7 +55,7 @@ public class KeyboardController extends EntityController
         this.leftkey = KeyEvent.VK_LEFT;
         this.rightkey = KeyEvent.VK_RIGHT;
         
-        this.desiredDir = entity.getDirection();
+        this.nextDirection = entity.getDirection();
     }
     
     public KeyboardController(Entity _entity, int _up, int _right, int _down, int _left)
@@ -71,36 +72,20 @@ public class KeyboardController extends EntityController
         this.leftkey = _left;
         this.rightkey = _right;
         
-        this.desiredDir = entity.getDirection();
-    }
-
-    public int move()
-    {
-        entity.setDirection(this.desiredDir);
-        Node current_node = this.entity.getNode();
-        Node next_node = current_node.getNodeAt(this.entity.getDirection());
-        if(next_node != null)
-            if(next_node.getEntity() == null)
-            {
-                current_node.setEntity(null);
-                next_node.setEntity(this.entity);
-                this.entity.setNode(next_node);
-                return this.entity.getDirection();
-            }
-        return -1;
+        this.nextDirection = entity.getDirection();
     }
 
     public void calculateNextMove()
     {
         Node node = PacmanApp.getInstance().getGameScene().getField().getNodeAt(this.entity.getPosition());
         if(up.isPressed() && node.getNodeAt(Node.UP)!=null)
-            this.desiredDir = Node.UP;
+            this.nextDirection = Node.UP;
         if(right.isPressed() && node.getNodeAt(Node.RIGHT)!=null)
-            this.desiredDir = Node.RIGHT;
+            this.nextDirection = Node.RIGHT;
         if(down.isPressed() && node.getNodeAt(Node.DOWN)!=null)
-            this.desiredDir = Node.DOWN;
+            this.nextDirection = Node.DOWN;
         if(left.isPressed() && node.getNodeAt(Node.LEFT)!=null)
-            this.desiredDir = Node.LEFT;
+            this.nextDirection = Node.LEFT;
     }
     
     public void init(InputManager _input)

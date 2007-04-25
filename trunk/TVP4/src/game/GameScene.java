@@ -382,7 +382,7 @@ public class GameScene implements Scene {
                 if(i==0 && this.entity[0].getController() == null)
                     this.entity[0].setController(new KeyboardController(this.entity[0]));
                 if(i>0 && this.entity[i].getController() == null)
-                    this.entity[i].setController(new PreyAIController(this.entity[i]));
+                    this.entity[i].setController(new RandomController(this.entity[i]));
                 this.field.setEntity(i, this.entity[i]);
             }
         }

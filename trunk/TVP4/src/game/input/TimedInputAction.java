@@ -60,7 +60,7 @@ public class TimedInputAction extends InputAction{
         if (state == RELEASED) {
             this.pressTime = currentTime;
             this.amount += amount;
-            this.state = PRESSED;
+            this.state = PRESSED;            
         } else if (state == PRESSED) {
             if (this.pressTime + this.holdTime <= currentTime) {
                 this.pressTime = currentTime;

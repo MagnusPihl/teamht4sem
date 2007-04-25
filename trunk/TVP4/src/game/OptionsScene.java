@@ -204,7 +204,7 @@ public class OptionsScene implements Scene
                 if(this.option[i] == 3+j)
                     e.setController(new JoystickController(e, j));
             if(this.option[i] == 3+numJoy)
-                e.setController(new PreyAIController(e));
+                e.setController(new RandomController(e));
             if(this.option[i] == 4+numJoy)
                 e.setController(new InSightController(e, PacmanApp.getInstance().getGameScene().getEntity(0)));
             if(this.option[i] == 5+numJoy)
