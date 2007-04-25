@@ -108,7 +108,7 @@ public class SoundManager{
     
     public void runSound(int i, boolean repeat){
         try{
-            if (this.players.size() != 0) {
+            if (this.players.size() >= i) {
                 Sound sound = (Sound) this.players.get(i-1);
                 sound.setRepeat(repeat);
                 //sound.startSound();
