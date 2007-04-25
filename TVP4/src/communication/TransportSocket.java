@@ -6,10 +6,15 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.3
+ * @version 1.4
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 25. april 2007 (v 1.4)
+ * Corrected read-method to always read two bytes - no matter what the header contains.
+ * Corrected type-cast to of System.currentMilliseconds to int in write-method, for Mindstorm compatibility.
+ * read-method no longer attempts to use constants from RobotProxy. Constant -0x01 for NOP is used, instead.
  *
  * Magnus Hemmer Pihl @ 23. april 2007 (v 1.3)
  * General code cleanup. Added comments and organized code better.
@@ -45,7 +50,7 @@ public class TransportSocket
     public static final int READ_TIMEOUT = 500;
     //Total time to attempt writing before failing, in milliseconds.
     public static final int WRITE_TIMEOUT = 500;
-    //Time to wait for acknowledge before retrying to write data.
+    //Time to wait for acknowledge before retrying to write data. Should always be lower than WRITE_TIMEOUT.
     public static final int ACKNOWLEDGE_TIMEOUT = 250;
     
     private static int sequence;
@@ -79,25 +84,25 @@ public class TransportSocket
             int header, data;
             int timestamp = (int)System.currentTimeMillis();
             
+            //Read header byte. Timeout if neccessary.
             do
             {
                 if(((int)System.currentTimeMillis())-timestamp >= TransportSocket.READ_TIMEOUT)
                     return -1;
                 header = this.in.read();
             } while(header==-1);
+            //Check indefinitely for second byte.
+            do
+            {
+                data = this.in.read();
+            } while(data==-1);
             
             //Only continue if byte received is Data header.
             if(TransportPackage.getType(header) == DATA)
             {
-                //Check indefinitely for second byte.
-                do
-                {
-                    data = this.in.read();
-                } while(data==-1);
-                
                 //Send receipt.
                 this.out.write(0x80 | TransportPackage.getSequenceNumber(header));
-                this.out.write(RobotProxy.NOP);
+                this.out.write(-0x01);
                 
                 //Return data only if not a repeat of the last sequence
                 if(TransportPackage.getSequenceNumber(header) != this.last_sequence)
@@ -147,7 +152,7 @@ public class TransportSocket
             int ack_timestamp = timestamp;
             
             //Try to read acknowledge header. Timeout if needed.
-            while(System.currentTimeMillis()-timestamp >= TransportSocket.WRITE_TIMEOUT)
+            while((int)System.currentTimeMillis()-timestamp >= TransportSocket.WRITE_TIMEOUT)
             {
                 do
                 {
