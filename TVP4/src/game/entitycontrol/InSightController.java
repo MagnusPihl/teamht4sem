@@ -6,10 +6,12 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
- *
+ * @version 1.1
  *
  * ******VERSION HISTORY******
+ * 
+ * LMK @ 25. April 2007 (v 1.1)
+ * Removed the move function and moved it to EntityController
  *
  * LMK @ 8. marts 2007 (v 1.0)
  * __________ Changes ____________
@@ -32,39 +34,27 @@ public class InSightController extends EntityController {
     }   
     
     /**
-     * Execute move
-     */
-    public int move() {
-        if (this.nextDirection != Node.INVALID_DIRECTION) {           
-            if (this.entity.getNode().getNodeAt(this.nextDirection).getEntity() == null) {
-                super.entity.setNode(super.entity.getNode().getNodeAt(this.nextDirection));
-                this.entity.setDirection(this.nextDirection);            
-                this.lastDirection = this.nextDirection;
-                return this.nextDirection;
-            }
-        }
-        
-        return Node.INVALID_DIRECTION;
-    }
-    
-    /**
      * Calculate next move
      */
     public void calculateNextMove() {           
         this.nextDirection = this.targetInSight();                
+        Node[] nodes = this.entity.getNode().getConnectedNodes();
         
         /**
          * if (this.entity.getNode().getNodeAt(this.nextDirection) != null) && (this.prey.getNode()) && 
          *       ())) {
          */
-        if (this.prey.getNode().equals(this.entity.getNode().getNodeAt(this.nextDirection))) {
-            this.nextDirection = Node.INVALID_DIRECTION;
-        } else if (this.nextDirection == Node.INVALID_DIRECTION) {            
+        if (this.nextDirection == Node.INVALID_DIRECTION) {            
             this.nextDirection = super.getNextDirection();
+        } else if (this.prey.getNode().equals(nodes[this.nextDirection])) {
+            this.nextDirection = Node.INVALID_DIRECTION;
         } else {
-            if ((RANDOM.nextInt(10) == 0) && 
-                    (this.entity.getNode().getNodeAt(Node.getOpposite(this.nextDirection)) != null)) {
-                this.nextDirection = Node.getOpposite(this.nextDirection);
+            if (RANDOM.nextInt(20) == 0) {
+                if (nodes[Node.getOpposite(this.nextDirection)] != null) {
+                    if (nodes[Node.getOpposite(this.nextDirection)].getEntity() == null) {
+                        this.nextDirection = Node.getOpposite(this.nextDirection);
+                    }
+                }
             }
         }
     }
@@ -85,8 +75,7 @@ public class InSightController extends EntityController {
         }
         
         return Node.INVALID_DIRECTION;
-    }
-    
+    }    
     
     /**
      * No initialization neeeded.

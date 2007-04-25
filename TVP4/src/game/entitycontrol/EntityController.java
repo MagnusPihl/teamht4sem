@@ -44,10 +44,27 @@ public abstract class EntityController
         this.nextDirection = Node.INVALID_DIRECTION;
     }
     
-    public abstract int move();
     public abstract void calculateNextMove();
     public abstract void init(InputManager _input);
     public abstract void deinit(InputManager _input);
+            
+    /**
+     * Execute move
+     */
+    public int move() {
+        if (this.nextDirection != Node.INVALID_DIRECTION) {  
+            if (this.entity.getNode().getNodeAt(this.nextDirection) != null) {
+                if (this.entity.getNode().getNodeAt(this.nextDirection).getEntity() == null) {
+                    this.entity.setNode(this.entity.getNode().getNodeAt(this.nextDirection));
+                    this.entity.setDirection(this.nextDirection);            
+                    this.lastDirection = this.nextDirection;
+                    return this.nextDirection;
+                }
+            }
+        }
+        
+        return Node.INVALID_DIRECTION;
+    }
     
     /**
      * Simple method that continues movement in the current direction.
@@ -57,8 +74,10 @@ public abstract class EntityController
      * If no moves are possible an invalid directions
      */
     public int getNextDirection() {        
-        if (this.lastDirection != Node.INVALID_DIRECTION) {
-            if (this.entity.getNode().getNodeAt(this.lastDirection) != null) {
+        Node[] nodes = this.entity.getNode().getConnectedNodes();
+        
+        if (this.lastDirection != Node.INVALID_DIRECTION) {            
+            if (nodes[this.lastDirection] != null) {
                 return this.lastDirection;
             }
 
@@ -76,32 +95,33 @@ public abstract class EntityController
                 } else {
                     direction = Node.DOWN;
                 }                        
-            }
-            Node current = this.entity.getNode().getNodeAt(direction);
+            }            
 
-            if (current != null) {
-                if (current.getEntity() == null) {
+            if (nodes[direction] != null) {
+                if (nodes[direction].getEntity() == null) {
                     return direction;
                 }
             } 
             
-            current = this.entity.getNode().getNodeAt(Node.getOpposite(direction));
-            if (current != null) {
-                if (current.getEntity() == null) {
-                    return Node.getOpposite(direction);
+            direction = Node.getOpposite(direction);
+            if (nodes[direction] != null) {
+                if (nodes[direction].getEntity() == null) {
+                    return direction;
                 }
             }
 
-            current = this.entity.getNode().getNodeAt(Node.getOpposite(this.lastDirection));
-            if (current != null) {
-                if (current.getEntity() == null) {
-                    return this.lastDirection;
+            direction = Node.getOpposite(this.lastDirection);
+            if (nodes[direction] != null) {
+                if (nodes[direction].getEntity() == null) {
+                    return direction;
                 }
             }
         } else {
             for (int i = 0; i < Node.DIRECTION_COUNT; i++) {
-                if (this.entity.getNode().getNodeAt(i) != null) {
-                    return i;
+                if (nodes[i] != null) {
+                    if (nodes[i].getEntity() == null) {
+                        return i;
+                    }
                 }
             }
         }
