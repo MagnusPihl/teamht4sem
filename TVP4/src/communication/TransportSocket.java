@@ -152,7 +152,7 @@ public class TransportSocket
             int ack_timestamp = timestamp;
             
             //Try to read acknowledge header. Timeout if needed.
-            while((int)System.currentTimeMillis()-timestamp >= TransportSocket.WRITE_TIMEOUT)
+            while(((int)System.currentTimeMillis())-timestamp >= TransportSocket.WRITE_TIMEOUT)
             {
                 do
                 {
