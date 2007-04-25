@@ -15,6 +15,7 @@
  * Corrected read-method to always read two bytes - no matter what the header contains.
  * Corrected type-cast to of System.currentMilliseconds to int in write-method, for Mindstorm compatibility.
  * read-method no longer attempts to use constants from RobotProxy. Constant -0x01 for NOP is used, instead.
+ * Corrected less-than symbol from greater-than in write-method.
  *
  * Magnus Hemmer Pihl @ 23. april 2007 (v 1.3)
  * General code cleanup. Added comments and organized code better.
@@ -152,7 +153,7 @@ public class TransportSocket
             int ack_timestamp = timestamp;
             
             //Try to read acknowledge header. Timeout if needed.
-            while(((int)System.currentTimeMillis())-timestamp >= TransportSocket.WRITE_TIMEOUT)
+            while(((int)System.currentTimeMillis())-timestamp <= TransportSocket.WRITE_TIMEOUT)
             {
                 do
                 {
