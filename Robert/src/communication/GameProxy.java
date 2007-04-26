@@ -67,7 +67,7 @@ public class GameProxy {
                 }
             }
         }
-        // lav noget timeout here.
+        // lav evt. noget timeout here.
         if(command == GameCommands.CALIBRATE){
             int sensor1 = -1;
             int sensor2 = -1;
