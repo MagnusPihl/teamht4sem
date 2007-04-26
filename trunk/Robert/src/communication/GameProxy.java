@@ -76,7 +76,7 @@ public class GameProxy {
             int minGreen = -1;
             int maxBlack = -1;
             int minBlack = -1;
-            TextLCD.print("Call");
+            TextLCD.print("Cali");
             while(sensor1 == -1){
                 try {
                     sensor1 = in.read();
