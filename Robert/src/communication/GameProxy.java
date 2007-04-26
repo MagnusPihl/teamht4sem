@@ -131,7 +131,7 @@ public class GameProxy {
         }
         int i = 0;
         while(i <= 5){
-            i+= 20;
+            i++;
             try {
                 in.read();
             } catch (IOException ex) {
