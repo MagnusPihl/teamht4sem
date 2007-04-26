@@ -66,7 +66,7 @@ public class Controller implements ButtonListener{
             command = tower.getcommand();
             if(command == GameCommands.MOVE_DOWN || command == GameCommands.MOVE_LEFT || command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_UP){
                 this.move();
-                tower.moveDone(GameCommands.MOVE_DONE);
+                tower.sendMoveDone(GameCommands.MOVE_DONE);
         }else if(command == (GameCommands.DISCOVER | GameCommands.MOVE_UP) || command == (GameCommands.DISCOVER | GameCommands.MOVE_RIGHT) || command == (GameCommands.DISCOVER | GameCommands.MOVE_DOWN) || command == (GameCommands.DISCOVER | GameCommands.MOVE_LEFT)){
                 this.discover();
             }else if(command == 0x10){
@@ -83,7 +83,7 @@ public class Controller implements ButtonListener{
                 ride.callibrate(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
             }else if(command == 0x20){
                 diretions = ride.searchNode();
-                tower.moveDone(GameCommands.MOVE_DONE | diretions);
+                tower.sendMoveDone(GameCommands.MOVE_DONE | diretions);
             }else{
                 
             }
@@ -95,7 +95,7 @@ public class Controller implements ButtonListener{
             this.turn();
         }
         diretions = ride.goToNext();
-        tower.moveDone(GameCommands.MOVE_DONE | diretions);
+        tower.sendMoveDone(GameCommands.MOVE_DONE | diretions);
     }
     
     private void move(){
