@@ -34,8 +34,7 @@ public class GameProxy {
     TransportSocket socket;
     InputStream in;
     OutputStream out;
-    int command = -1;
-    boolean discovering = false;
+    private int command = -1;
     private int directions = -1;
     
     /**
@@ -44,7 +43,7 @@ public class GameProxy {
     public GameProxy(int add) {
         this.address = add;
         net = new NetworkSocket(address,0,link.getInputStream(),link.getOutputStream());
-        socket = new TransportSocket(net.getInputStream(), net.getOutputStream()); //god ordens skyld
+        socket = new TransportSocket(net.getInputStream(), net.getOutputStream());
         in = socket.getInputStream();
         out = socket.getOutputStream();
     }
@@ -129,6 +128,7 @@ public class GameProxy {
             }
             OS.setCalibrationValues(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
         }
+        
         int i = 0;
         while(i <= 5){
             i++;
@@ -152,5 +152,4 @@ public class GameProxy {
             
         }
     }
-    
 }
