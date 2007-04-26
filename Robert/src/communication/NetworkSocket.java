@@ -89,15 +89,19 @@ public class NetworkSocket {
                 if (this.data != -1) {
                     if (this.bufferIndex == -1) {
                         if (this.data == this.expectedHeader) {
-                            this.bufferIndex++;
+                            this.packetAccepted = true;
                         }
                     } else {
-                        this.buffer[this.bufferIndex++] = (byte)this.data;
+                        this.buffer[this.bufferIndex] = (byte)this.data;
                     }
                     
+                    this.bufferIndex++;
                     if (this.bufferIndex == INPUT_BUFFER_SIZE) {                        
-                        this.bufferIndex = 0;
-                        return true;
+                        if (this.packetAccepted) {
+                            this.bufferIndex = 0;
+                            return true;
+                        }                                                
+                        this.bufferIndex = -1;
                     }
                 } else if ((this.bufferIndex == -1)&&(this.timeout < (int)System.currentTimeMillis())) {
                     this.timeoutCount++;
