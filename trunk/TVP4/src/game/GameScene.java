@@ -13,6 +13,7 @@
  *
  * MHP @ 26. april 2007 (v 2.4)
  * Changed Pause/Win/Lose dialogs to use the new GameDialog.
+ * Added a yes/no dialog before saving a replay.
  *
  * Magnus Hemmer Pihl @ 24. april 2007 (v 2.3)
  * Changed order of entity move calculation and execution to prevent entities from moving into the same space.
@@ -397,28 +398,33 @@ public class GameScene implements Scene {
             if(entities[i].getEntity() != null)
                 entities[i].getEntity().getController().deinit(_input);
         
-        if(this.mode == 0) {
-            JFileChooser saveReplayDialog = new JFileChooser();
-            saveReplayDialog.setFileFilter(new javax.swing.filechooser.FileFilter() {
-                public boolean accept(File f) {
-                    return ((f.getName().toLowerCase().endsWith(".rpl") && f.isFile()) || (f.isDirectory()));
+        if(this.mode == 0 /* This needs to be changed to check that we're not currently replaying. */)
+        {
+            int saveReplay = JOptionPane.showConfirmDialog(PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow(), "Do you wish to save a replay of this game?", "Save Replay...", JOptionPane.YES_NO_OPTION);
+            if(saveReplay == 0)
+            {
+                JFileChooser saveReplayDialog = new JFileChooser();
+                saveReplayDialog.setFileFilter(new javax.swing.filechooser.FileFilter() {
+                    public boolean accept(File f) {
+                        return ((f.getName().toLowerCase().endsWith(".rpl") && f.isFile()) || (f.isDirectory()));
+                    }
+                    public String getDescription() {
+                        return "Replay files";
+                    }
+                });
+                if (saveReplayDialog.showSaveDialog(
+                        PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow()) == JFileChooser.APPROVE_OPTION) {
+                    File file = saveReplayDialog.getSelectedFile();
+                    if (!file.getName().toLowerCase().endsWith(".rpl"))
+                        file = new File(file.getAbsoluteFile() + ".rpl");
+                    this.replay.save(file);
                 }
-                public String getDescription() {
-                    return "Replay files";
-                }
-            });
-            if (saveReplayDialog.showSaveDialog(
-                    PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow()) == JFileChooser.APPROVE_OPTION) {
-                File file = saveReplayDialog.getSelectedFile();
-                if (!file.getName().toLowerCase().endsWith(".rpl"))
-                    file = new File(file.getAbsoluteFile() + ".rpl");
-                this.replay.save(file);
             }
             
             PacmanApp.getInstance().getCore().getScreenManager().update();
                         
             if (this.field.getHighScores().isHighScore(this.points)) {
-                String name = JOptionPane.showInputDialog(PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow(), "Congratulations, you have reached rank \nPlease write your name in the box below.");
+                String name = JOptionPane.showInputDialog(PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow(), "Congratulations, you have reached a new rank.\nPlease enter your name.");
                 if(name == null){
                     name = "New player";
                 }                
