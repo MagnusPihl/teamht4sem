@@ -14,6 +14,7 @@
  * MHP @ 26. april 2007 (v 2.4)
  * Changed Pause/Win/Lose dialogs to use the new GameDialog.
  * Added a yes/no dialog before saving a replay.
+ * Now (again) only shows the save replay and enter hiscore dialogs if not currently playing back a replay.
  *
  * Magnus Hemmer Pihl @ 24. april 2007 (v 2.3)
  * Changed order of entity move calculation and execution to prevent entities from moving into the same space.
@@ -398,7 +399,7 @@ public class GameScene implements Scene {
             if(entities[i].getEntity() != null)
                 entities[i].getEntity().getController().deinit(_input);
         
-        if(this.mode == 0 /* This needs to be changed to check that we're not currently replaying. */)
+        if(entities[0].getEntity().getController().getClass().getName() != "game.entitycontrol.ReplayController")
         {
             int saveReplay = JOptionPane.showConfirmDialog(PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow(), "Do you wish to save a replay of this game?", "Save Replay...", JOptionPane.YES_NO_OPTION);
             if(saveReplay == 0)
