@@ -252,7 +252,6 @@ public class GameScene implements Scene {
         if (this.paused)
         {
             GameDialog.drawDialogCenter(_g, "Game Paused\nPress 'Y' to exit to the title screen.");
-            this.soundManager.pause();
         }
         if(this.win)
         {
@@ -285,6 +284,7 @@ public class GameScene implements Scene {
             {
                 this.confirm.reset();
                 this.paused = !this.paused;
+                this.soundManager.pause();
             }
             
             EntityRenderer[] entities = this.field.getEntityRenderers();
