@@ -23,11 +23,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import josx.platform.rcx.LCD;
 import josx.platform.rcx.TextLCD;
-import robot.Controller;
+//import robot.Controller;
 
 
 public class GameProxy {
-    Controller OS = Controller.getInstance();
+    //Controller OS = Controller.getInstance();
     int address;
     LLCSocket link = new LLCSocket();
     NetworkSocket net;
@@ -126,7 +126,7 @@ public class GameProxy {
                     
                 }
             }
-            OS.setCalibrationValues(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
+            //OS.setCalibrationValues(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
         }
         
         int i = 0;
