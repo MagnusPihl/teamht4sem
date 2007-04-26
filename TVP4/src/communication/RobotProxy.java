@@ -31,23 +31,6 @@ import obsolete.IRTransportSocket;
 
 public class RobotProxy extends Thread{
     
-    public static final byte MOVE_UP = 0x00;
-    public static final byte MOVE_RIGHT = 0x01;
-    public static final byte MOVE_DOWN = 0x02;
-    public static final byte MOVE_LEFT = 0x03;
-    public static final byte MOVE_UP_DISCOVERY = 0x40;
-    public static final byte MOVE_RIGHT_DISCOVERY = 0x41;
-    public static final byte MOVE_DOWN_DISCOVERY = 0x42;
-    public static final byte MOVE_LEFT_DISCOVERY = 0x43;
-    public static final byte FLASH = 0x10;
-    public static final byte LIGHT_ON = 0x11;
-    public static final byte LIGHT_OFF = 0x12;
-    public static final byte BEEP_ON = 0x13;
-    public static final byte BEEP_OFF = 0x14;
-    public static final byte SEARCH_CURRENT_NODE = 0x20;
-    public static final byte CALIBRATE = 0x30;
-    public static final byte NOP = -0x01;
-    
     private static final int TIMEOUT = 300;
     
     public int robotID;
@@ -143,19 +126,19 @@ public class RobotProxy extends Thread{
         }
         switch(_direction){
             case(Node.DOWN): {
-                searchDir = this.MOVE_DOWN_DISCOVERY;
+                searchDir = GameCommands.MOVE_DOWN;
             }
             case(Node.LEFT): {
-                searchDir = this.MOVE_LEFT_DISCOVERY;
+                searchDir = GameCommands.MOVE_LEFT;
             }
             case(Node.RIGHT): {
-                searchDir = this.MOVE_RIGHT_DISCOVERY;
+                searchDir = GameCommands.MOVE_RIGHT;
             }
             case(Node.UP): {
-                searchDir = this.MOVE_UP_DISCOVERY;
+                searchDir = GameCommands.MOVE_UP;
             }
             default:{
-                searchDir = this.SEARCH_CURRENT_NODE;
+                searchDir = GameCommands.SEARCH_NODE;
             }
             
         }
@@ -172,32 +155,27 @@ public class RobotProxy extends Thread{
      */
     @Deprecated
     public void blink() throws IOException{
-            this.out.write(this.FLASH);
+            //this.out.write(GameCommands.);
     }
     
     public void lights(boolean on) throws IOException{
             if(on){
-                this.out.write(this.LIGHT_ON);
+                this.out.write(GameCommands.LIGHT_ON);
             } else{
-                this.out.write(this.LIGHT_OFF);
+                this.out.write(GameCommands.LIGHT_OFF);
             }
     }
     
     /**
      *
      */
-    @Deprecated
-    public void beep(boolean on) throws IOException{
-            if(on){
-                this.out.write(this.BEEP_ON);
-            } else{
-                this.out.write(this.BEEP_OFF);
-            }
+    public void beep() throws IOException{
+                this.out.write(GameCommands.BEEP);
     }
     
     public void calibrate(byte lOffset, byte oOffset, byte rOffset, byte minGreen, byte maxGreen, byte minBlack) throws IOException{
         byte[] outPacket = new byte[5];
-        outPacket[0] = this.CALIBRATE;
+        outPacket[0] = GameCommands.CALIBRATE;
         outPacket[1] = lOffset;
         outPacket[2] = oOffset;
         outPacket[3] = rOffset;
