@@ -10,10 +10,10 @@
  *
  *
  * ******VERSION HISTORY******
- *
- *
+ * Administrator @ 9. april 2007 (v 1.1)
+ *  Towersocket made static
  * Administrator @ 9. april 2007 (v 1.0)
- * __________ Changes ____________
+ * Created
  *
  *
  */
@@ -36,7 +36,7 @@ public class RobotProxy extends Thread{
     public int robotID;
     
     private int address;
-    private TowerSocket link = new TowerSocket();
+    private static TowerSocket link = new TowerSocket();
     private NetworkSocket net;// = new NetworkSocket(1,0,link.getInputStream(),link.getOutputStream());
     private TransportSocket socket;// = new TransportSocket(net.getInputStream(), net.getOutputStream());
     protected InputStream in;// = socket.getInputStream();
