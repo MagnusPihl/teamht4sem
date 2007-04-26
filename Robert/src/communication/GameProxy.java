@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import josx.platform.rcx.LCD;
+import josx.platform.rcx.TextLCD;
 import robot.Controller;
 
 
@@ -76,6 +77,7 @@ public class GameProxy {
             int minGreen = -1;
             int maxBlack = -1;
             int minBlack = -1;
+            TextLCD.print("Call");
             while(sensor1 == -1){
                 try {
                     sensor1 = in.read();
@@ -143,7 +145,7 @@ public class GameProxy {
         return directions;
     }
     
-    public void moveDone(int move){
+    public void sendMoveDone(int move){
         try {
             out.write(move);
         } catch (IOException ex) {
