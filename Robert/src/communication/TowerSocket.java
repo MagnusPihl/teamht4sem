@@ -63,12 +63,16 @@ public class TowerSocket extends LinkLayerSocket {
         byte[] data = new byte[1];        
         int available = 0;
         this.packetIndex = 0;
+            //int j = 1;
         long timeout = System.currentTimeMillis() + TIMEOUT;        
                 
         do {
-            available = this.tower.read(data);            
+            available = this.tower.read(data);
+            //System.out.println("Read: " + j);
+            //j++;
             if (available == 1) {
                 if ((this.packetIndex < DATA_OFFSET)) {
+                //System.out.println("80?");
                     //wait for start bytes.
                     if (data[0] == PACKET_HEADER) {
                         this.packetIndex++;
@@ -77,11 +81,15 @@ public class TowerSocket extends LinkLayerSocket {
                         this.packetIndex = 0;
                     }
                 } else {
+                    
+                //System.out.println("det var mange");
                     this.packetBuffer[this.packetIndex++] = data[0];
                     timeout = System.currentTimeMillis() + TIMEOUT;
                 }
             } else if (System.currentTimeMillis() > timeout) {
                 this.timeoutCount++;
+                //System.out.println("tid: " + System.currentTimeMillis());
+                //System.out.println("timeouttid: " + timeout);
                 return false;
             }
         } while (this.packetIndex < PACKET_SIZE);
@@ -90,7 +98,7 @@ public class TowerSocket extends LinkLayerSocket {
         if (LinkLayerSocket.checksumIsValid(this.packetBuffer)) {
             for (int i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {                
                 this.readBuffer[this.bufferIndex] = this.packetBuffer[i];
-                
+                //System.out.println("Bufferindex: " + this.bufferIndex);
                 this.bufferIndex++;
                 if (this.bufferIndex == INPUT_BUFFER_SIZE) {
                     this.bufferIndex = 0;
@@ -120,7 +128,8 @@ public class TowerSocket extends LinkLayerSocket {
          *
          * @return -1 if no bytes could be read.
          */
-        public int read() throws IOException {                                      
+        public int read() throws IOException {             
+                //System.out.println("readindex: " + this.readIndex);                         
             if ((bufferIndex == this.readIndex)) {
                 if (!readPacket()) {
                     return -1;
@@ -128,7 +137,7 @@ public class TowerSocket extends LinkLayerSocket {
             }
             
             this.data = readBuffer[this.readIndex];
-            
+            //System.out.println("le data: " + this.data);
             this.readIndex++;
             if (this.readIndex == INPUT_BUFFER_SIZE) {
                 this.readIndex = 0;
