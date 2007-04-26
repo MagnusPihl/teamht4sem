@@ -41,8 +41,6 @@ public class Controller implements ButtonListener{
     private int maxBlack = 0;
     private int address = 0;
     private boolean addressing = true;
-
-    private int diretions;
     
    /** Creates a new instance of Controller */
     private Controller() {
@@ -59,21 +57,21 @@ public class Controller implements ButtonListener{
                 tower.sendMoveDone(GameCommands.MOVE_DONE);
         }else if(command == (GameCommands.DISCOVER | GameCommands.MOVE_UP) || command == (GameCommands.DISCOVER | GameCommands.MOVE_RIGHT) || command == (GameCommands.DISCOVER | GameCommands.MOVE_DOWN) || command == (GameCommands.DISCOVER | GameCommands.MOVE_LEFT)){
                 this.discover();
-            }else if(command == 0x10){
+            }else if(command == 0x10){// not implemented yet
                 this.flash();
-            }else if(command == 0x11){
+            }else if(command == GameCommands.LIGHT_ON){
                 this.lightOn();
-            }else if(command == 0x12){
+            }else if(command == GameCommands.LIGHT_OFF){
                 this.lightOff();
-            }else if(command == 0x13){
+            }else if(command == GameCommands.BEEP){
                 this.beepOn();
-            }else if(command == 0x14){
+            }else if(command == 0x14){// not implemented yet
                 this.beepOff();
-            }else if(command == 0x30){
+            }else if(command == GameCommands.CALIBRATE){
                 ride.callibrate(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
-            }else if(command == 0x20){
-                diretions = ride.searchNode();
-                tower.sendMoveDone(GameCommands.MOVE_DONE | diretions);
+            }else if(command == GameCommands.SEARCH_NODE){
+                directions = ride.searchNode();
+                tower.sendMoveDone(GameCommands.MOVE_DONE | directions);
             }else{
                 
             }
@@ -84,8 +82,8 @@ public class Controller implements ButtonListener{
         if(command != lastCommand){
             this.turn();
         }
-        diretions = ride.goToNext();
-        tower.sendMoveDone(GameCommands.MOVE_DONE | diretions);
+        directions = ride.goToNext();
+        tower.sendMoveDone(GameCommands.MOVE_DONE | directions);
     }
     
     private void move(){
@@ -236,22 +234,22 @@ public class Controller implements ButtonListener{
     }
     
     public void buttonPressed(Button button) {
-            if (Button.VIEW.isPressed() && addressing == true) {
-                
-            }else if (Button.PRGM.isPressed() && addressing == true) {
-                Sound.beep();
-                address++;
-                address = address%3;
-            }else if (Button.RUN.isPressed() && addressing == true) {
-                Sound.twoBeeps();
-                address++;
-                addressing = false;
-            }
+        if (Button.VIEW.isPressed() && addressing == true) {
+            
+        }else if (Button.PRGM.isPressed() && addressing == true) {
+            Sound.beep();
+            address++;
+            address = address%3;
+        }else if (Button.RUN.isPressed() && addressing == true) {
+            Sound.twoBeeps();
+            address++;
+            addressing = false;
         }
-        public void buttonReleased(Button button) {
-        }
-    
-    public int getAddress(){
-        return address;
     }
+    public void buttonReleased(Button button) {
+    }
+    
+//    public int getAddress(){
+//        return address;
+//    }
 }
