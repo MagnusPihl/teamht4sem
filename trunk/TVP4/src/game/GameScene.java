@@ -283,8 +283,8 @@ public class GameScene implements Scene {
         {
             if(pause.isPressed())
             {
+                this.confirm.reset();
                 this.paused = !this.paused;
-                this.confirm.release();
             }
             
             EntityRenderer[] entities = this.field.getEntityRenderers();
@@ -295,6 +295,28 @@ public class GameScene implements Scene {
                     //START OF TURN!
                     if(this.moveTimer<0 && this.semaphore.availablePermits()==3 && !this.paused)
                     {
+                        //Win/Lose condition
+                        if(this.field.getPointsLeft() == 0)
+                        {
+                            this.win = true;
+                        }
+                        else
+                        {
+                            Node n;
+                            Entity e;
+                            for(int j=0; j<4; j++)
+                            {
+                                n = this.field.getNodeAt(entities[0].getEntity().getPosition()).getNodeAt(j);
+                                if(n != null)
+                                {
+                                    e = n.getEntity();
+                                        if(e != null)
+                                            if(e.getID() > 0)
+                                                this.lose = true;
+                                }
+                            }
+                        }
+                        
                         int dir = -1;
                         if(i == 0)
                         {
@@ -316,28 +338,6 @@ public class GameScene implements Scene {
                     }
                     //END OF TURN!
                 }
-
-            //Win/Lose condition
-            if(this.field.getPointsLeft() == 0)
-            {
-                this.win = true;
-            }
-            else
-            {
-                Node n;
-                Entity e;
-                for(int i=0; i<4; i++)
-                {
-                    n = this.field.getNodeAt(entities[0].getEntity().getPosition()).getNodeAt(i);
-                    if(n != null)
-                    {
-                        e = n.getEntity();
-                            if(e != null)
-                                if(e.getID() > 0)
-                                    this.lose = true;
-                    }
-                }
-            }
             
             if(this.paused && confirm.isPressed())
             {
