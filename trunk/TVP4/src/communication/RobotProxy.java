@@ -61,6 +61,7 @@ public class RobotProxy extends Thread{
         
         sema = e;
         read = new ReadInput();
+        read.start();
     }
     
     public class ReadInput extends Thread {
