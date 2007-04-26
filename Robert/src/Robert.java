@@ -27,7 +27,7 @@ public class Robert {
          * ;
          * }*/
         
-        Controller noget = new Controller();
+        Controller noget = Controller.getInstance();
         noget.run();
     }
     
