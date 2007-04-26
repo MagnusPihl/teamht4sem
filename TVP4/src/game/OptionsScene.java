@@ -166,6 +166,7 @@ public class OptionsScene implements Scene
             y+=50;
         }
         
+        //GameDialog.drawDialog(_g, 0, 599-226, this.menuHelpStr[this.cursor]);
         _g.drawImage(this.menuHelp[this.cursor], 20, 400, null);
     }
     

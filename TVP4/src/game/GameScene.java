@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author LMK
- * @version 2.3
+ * @version 2.4
  *
  *
  * ******VERSION HISTORY******
+ *
+ * MHP @ 26. april 2007 (v 2.4)
+ * Changed Pause/Win/Lose dialogs to use the new GameDialog.
  *
  * Magnus Hemmer Pihl @ 24. april 2007 (v 2.3)
  * Changed order of entity move calculation and execution to prevent entities from moving into the same space.
@@ -246,36 +249,18 @@ public class GameScene implements Scene {
         
         if (this.paused)
         {
-            _g.setColor(Color.GRAY);
-            _g.fillRect(300, 250, 200, 100);
-            _g.setColor(Color.DARK_GRAY);
-            _g.fillRect(305, 255, 190, 90);
-            _g.setColor(Color.WHITE);
-            _g.drawString("Game Paused", 360,295);
-            _g.drawString("Press 'Y' to exit to the title screen.", 310,310);
+            GameDialog.drawDialogCenter(_g, "Game Paused\nPress 'Y' to exit to the title screen.");
             this.soundManager.pause();
         }
         if(this.win)
         {
             this.soundManager.runSound(6, false);
-            _g.setColor(Color.GRAY);
-            _g.fillRect(300, 250, 200, 100);
-            _g.setColor(Color.DARK_GRAY);
-            _g.fillRect(305, 255, 190, 90);
-            _g.setColor(Color.WHITE);
-            _g.drawString("ZOMG WIN!", 360,295);
-            _g.drawString("Press 'Y' to exit to the title screen.", 310,310);
+            GameDialog.drawDialogCenter(_g, "You Win!\nPress 'Y' to exit to the title screen.");
         }
         if(this.lose)
         {
             this.soundManager.runSound(3, false);
-            _g.setColor(Color.GRAY);
-            _g.fillRect(300, 250, 200, 100);
-            _g.setColor(Color.DARK_GRAY);
-            _g.fillRect(305, 255, 190, 90);
-            _g.setColor(Color.WHITE);
-            _g.drawString("Lawl Lose!", 360,295);
-            _g.drawString("Press 'Y' to exit to the title screen.", 310,310);
+            GameDialog.drawDialogCenter(_g, "You Lose!\nPress 'Y' to exit to the title screen.");
         }
         
         this.frameCounter++;
