@@ -168,7 +168,7 @@ public class TowerSocket extends LinkLayerSocket {
             this.packetBuffer[this.packetIndex++] = (byte)buffer;
             this.packetBuffer[this.packetIndex++] = (byte)~buffer;
             
-            if (this.packetIndex == CHECKSUM_OFFSET) {
+            if (this.packetIndex >= CHECKSUM_OFFSET) {
                 LinkLayerSocket.addChecksum(this.packetBuffer);
                 //System.out.println(tower.strerror(tower.write(this.packetBuffer, PACKET_SIZE)));
                 tower.write(this.packetBuffer, PACKET_SIZE);
