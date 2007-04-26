@@ -41,22 +41,11 @@ public class Controller implements ButtonListener{
     private int maxBlack = 0;
     private int address = 0;
     private boolean addressing = true;
-    
-//    public static int NORTH = 0x08;
-//    public static int SOUTH = 0x02;
-//    public static int WEST = 0x01;
-//    public static int EAST = 0x04;
-//    public static int MOVE_UP = 0x00;
-//    public static int MOVE_RIGHT = 0x01;
-//    public static int MOVE_DOWN = 0x02;
-//    public static int MOVE_LEFT = 0x03;
-//    public static int DISCOVER = 0x40;
-//    public static int DONE = 0x10;
 
     private int diretions;
     
    /** Creates a new instance of Controller */
-    public Controller() {
+    private Controller() {
     }
     
     public void run(){
@@ -64,6 +53,7 @@ public class Controller implements ButtonListener{
         tower = new GameProxy(address);
         while(true){
             command = tower.getcommand();
+            TextLCD.print("run");
             if(command == GameCommands.MOVE_DOWN || command == GameCommands.MOVE_LEFT || command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_UP){
                 this.move();
                 tower.sendMoveDone(GameCommands.MOVE_DONE);
@@ -243,7 +233,6 @@ public class Controller implements ButtonListener{
         while(addressing == true){
             LCD.showNumber(address+1);
         }
-        TextLCD.print("run");
     }
     
     public void buttonPressed(Button button) {
