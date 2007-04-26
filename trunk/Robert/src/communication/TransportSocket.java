@@ -47,9 +47,9 @@ public class TransportSocket
     public static final int RECEIPT = 1;
     
     //Total time to attempt reading before failing, in milliseconds.
-    public static final int READ_TIMEOUT = 5000;
+    public static final int READ_TIMEOUT = 1000;
     //Total time to attempt writing before failing, in milliseconds.
-    public static final int WRITE_TIMEOUT = 5000;
+    public static final int WRITE_TIMEOUT = 1000;
     //Time to wait for acknowledge before retrying to write data. Should always be lower than WRITE_TIMEOUT.
     public static final int ACKNOWLEDGE_TIMEOUT = 250;
     
@@ -102,7 +102,7 @@ public class TransportSocket
             {
                 //Send receipt.
                 this.out.write(0x80 | TransportPackage.getSequenceNumber(header));
-                this.out.write(-0x01);
+                this.out.write(0); //le pas på
                 
                 //Return data only if not a repeat of the last sequence
                 if(TransportPackage.getSequenceNumber(header) != this.last_sequence)
@@ -148,30 +148,36 @@ public class TransportSocket
             this.out.write(b);
             
             int header=-1, data;
-            long timestamp = System.currentTimeMillis();
-            long ack_timestamp = timestamp;
+            int timestamp = (int)System.currentTimeMillis();
+            int ack_timestamp = timestamp;
             
             //Try to read acknowledge header. Timeout if needed.
-            while(System.currentTimeMillis() - timestamp >= TransportSocket.WRITE_TIMEOUT)
+            while((int)System.currentTimeMillis() - timestamp <= TransportSocket.WRITE_TIMEOUT)
             {
                 do
                 {
-                    if((System.currentTimeMillis()-ack_timestamp) >= TransportSocket.ACKNOWLEDGE_TIMEOUT)
+                    if(((int)System.currentTimeMillis()-ack_timestamp) >= TransportSocket.ACKNOWLEDGE_TIMEOUT)
                     {
-                        System.out.println("lawl");
+                        //System.out.println((System.currentTimeMillis()-ack_timestamp) + "");
+                        //System.out.println(TransportSocket.ACKNOWLEDGE_TIMEOUT + "");
                         this.out.write(0x7F & sequence);
                         this.out.write(b);
-                        ack_timestamp = System.currentTimeMillis();
+                        ack_timestamp = (int)System.currentTimeMillis();
                     }
+                    //System.out.println("før header");
                     header = this.in.read();
+                    //System.out.println("Header: " + header);
                 } while(header==-1);
+                //System.out.println("Jeg er unik");
             }
+            //System.out.println("go with the flow");
             if(header == -1)
                 throw new IOException("Transport layer timeout. No acknowledge received.");
             
             //Acknowledge header received. Wait for data byte (NOP).
             do
             {
+                //System.out.println("læs");
                 data = this.in.read();
             } while(data==-1);
             

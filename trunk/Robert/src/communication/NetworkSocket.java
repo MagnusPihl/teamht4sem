@@ -83,16 +83,18 @@ public class NetworkSocket {
             this.timeout = (int)System.currentTimeMillis() + TIMEOUT; 
             this.bufferIndex = -1;
             this.packetAccepted = false;
-            
             do {
                 this.data = this.in.read();
+            //System.out.println("Data: " + data);
                 if (this.data != -1) {
                     if (this.bufferIndex == -1) {
                         if (this.data == this.expectedHeader) {
                             this.packetAccepted = true;
+            //System.out.println("er jeg her2?");
                         }
                     } else {
                         this.buffer[this.bufferIndex] = (byte)this.data;
+            //System.out.println("er jeg her5?");
                     }
                     
                     this.bufferIndex++;
@@ -106,6 +108,7 @@ public class NetworkSocket {
                 } else if ((this.bufferIndex == -1)&&(this.timeout < (int)System.currentTimeMillis())) {
                     this.timeoutCount++;
                     this.bufferIndex = 0;
+            //System.out.println("er jeg her4?");
                     return false;
                 }                                    
             } while (this.bufferIndex < INPUT_BUFFER_SIZE);                             
