@@ -40,6 +40,7 @@ public class GameCommands {
     public final static byte BEEP = 0x13;
     public final static byte CALIBRATE = 0x30;
     public final static byte NOP = -0x01;
+    public final static byte SEARCH_NODE = 0x20;
     
     /** Creates a new instance of GameCommands */
     private GameCommands() {
