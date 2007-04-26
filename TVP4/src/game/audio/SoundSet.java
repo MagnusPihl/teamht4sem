@@ -19,7 +19,7 @@
  *
  */
 
-package field;
+package game.audio;
 
 import game.audio.Sound;
 import java.io.File;
