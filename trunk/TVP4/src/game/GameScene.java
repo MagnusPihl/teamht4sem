@@ -76,6 +76,7 @@ package game;
 
 import communication.RobotProxy;
 import game.audio.SoundManager;
+import game.audio.SoundSet;
 import game.entitycontrol.*;
 import game.system.*;
 import game.input.*;

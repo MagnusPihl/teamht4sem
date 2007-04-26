@@ -20,7 +20,7 @@
  */
 
 package game.audio;
-import field.SoundSet;
+import game.audio.SoundSet;
 import java.awt.BorderLayout; 
 import java.awt.Color; 
 import java.awt.Component; 
