@@ -332,7 +332,15 @@ public class GameScene implements Scene {
                         if(this.online)
                         {
                             for(int j=0; j<3; j++)
-                                ; //Send crap to RobotProxies.
+                            {
+                                try {
+                                    this.proxy[j].move((byte)dir, (byte)entities[j].getEntity().getNode().getBinaryDirections());
+                                }
+                                catch(IOException e)
+                                {
+                                    System.out.println(e.getMessage());
+                                }
+                            }
                         }
                         this.replay.list[i].add(dir);
                     }
