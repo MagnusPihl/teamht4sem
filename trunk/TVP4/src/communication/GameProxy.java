@@ -23,13 +23,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import josx.platform.rcx.LCD;
 import josx.platform.rcx.TextLCD;
-//import robot.Controller;
+import robot.Controller;
 
 
 public class GameProxy {
-    //Controller OS = Controller.getInstance();
+    Controller OS = Controller.getInstance();
     int address;
-    LLCSocket link = new LLCSocket();
+    //LLCSocket link = new LLCSocket();
+    TowerSocket link = new TowerSocket();
     NetworkSocket net;
     TransportSocket socket;
     InputStream in;
@@ -41,7 +42,7 @@ public class GameProxy {
      * Creates a new instance of GameProxy
      */
     public GameProxy(int add) {
-        this.address = add;
+        this.address = 1;
         net = new NetworkSocket(address,0,link.getInputStream(),link.getOutputStream());
         socket = new TransportSocket(net.getInputStream(), net.getOutputStream());
         in = socket.getInputStream();
@@ -51,13 +52,18 @@ public class GameProxy {
     public int getcommand(){
         command = -1;
         directions = -1;
+        int x = 0;
+        System.out.println("start");
         while(command == -1){
             try {
+                x++;
+                System.out.println("start" + x);
                 command = in.read();
             } catch (IOException ex) {
                 
             }
         }
+        System.out.println("done");
         if(command == GameCommands.MOVE_UP || command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_DOWN || command == GameCommands.MOVE_LEFT){
             while(directions == -1){
                 try {
@@ -67,6 +73,7 @@ public class GameProxy {
                 }
             }
         }
+        System.out.println("Dir");
         // lav evt. noget timeout here.
         if(command == GameCommands.CALIBRATE){
             int sensor1 = -1;
