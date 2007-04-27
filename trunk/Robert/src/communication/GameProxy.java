@@ -129,15 +129,6 @@ public class GameProxy {
             OS.setCalibrationValues(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
         }
         
-        int i = 0;
-        while(i <= 5){
-            i++;
-            try {
-                in.read();
-            } catch (IOException ex) {
-                
-            }
-        }
         return command;
     }
     
