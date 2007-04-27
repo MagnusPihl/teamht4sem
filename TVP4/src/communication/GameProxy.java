@@ -60,8 +60,9 @@ public class GameProxy {
                 System.out.println("start " + x);
                 command = in.read();
             } catch (IOException ex) {
-                
+                ex.printStackTrace();
             }
+            
         }
         System.out.println("done");
         if(command == GameCommands.MOVE_UP || command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_DOWN || command == GameCommands.MOVE_LEFT){
@@ -69,7 +70,7 @@ public class GameProxy {
                 try {
                     directions = in.read();
                 } catch (IOException ex) {
-                    
+                    ex.printStackTrace();
                 }
             }
         }
@@ -88,52 +89,52 @@ public class GameProxy {
                 try {
                     sensor1 = in.read();
                 } catch (IOException ex) {
-                    
+                    ex.printStackTrace();
                 }
             }
             while(sensor2 == -1){
                 try {
                     sensor2 = in.read();
                 } catch (IOException ex) {
-                    
+                    ex.printStackTrace();
                 }
             }
             while(sensor3 == -1){
                 try {
                     sensor3 = in.read();
                 } catch (IOException ex) {
-                    
+                    ex.printStackTrace();
                 }
             }
             while(minGreen == -1){
                 try {
                     minGreen = in.read();
                 } catch (IOException ex) {
-                    
+                    ex.printStackTrace();
                 }
             }
             while(maxGreen == -1){
                 try {
                     maxGreen = in.read();
                 } catch (IOException ex) {
-                    
+                    ex.printStackTrace();
                 }
             }
             while(minBlack == -1){
                 try {
                     minBlack = in.read();
                 } catch (IOException ex) {
-                    
+                    ex.printStackTrace();
                 }
             }
             while(maxBlack == -1){
                 try {
                     maxBlack = in.read();
                 } catch (IOException ex) {
-                    
+                    ex.printStackTrace();
                 }
             }
-            //OS.setCalibrationValues(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
+            OS.setCalibrationValues(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
         }
         return command;
     }
@@ -146,7 +147,7 @@ public class GameProxy {
         try {
             out.write(move);
         } catch (IOException ex) {
-            
+            ex.printStackTrace();
         }
     }
 }
