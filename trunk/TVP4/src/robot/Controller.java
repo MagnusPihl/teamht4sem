@@ -47,11 +47,11 @@ public class Controller implements ButtonListener{
     }
     
     public void run(){
-        this.address();
+        //this.address();
         tower = new GameProxy(address);
         while(true){
             command = tower.getcommand();
-            TextLCD.print("run");
+            System.out.println("run" + command);
             if(command == GameCommands.MOVE_DOWN || command == GameCommands.MOVE_LEFT || command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_UP){
                 this.move();
                 tower.sendMoveDone(GameCommands.MOVE_DONE);
@@ -87,6 +87,7 @@ public class Controller implements ButtonListener{
     }
     
     private void move(){
+        System.out.println("move");
         directions = tower.getDirections();
         if(command != lastCommand){
             this.turn();
