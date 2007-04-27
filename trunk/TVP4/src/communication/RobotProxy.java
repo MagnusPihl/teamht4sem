@@ -106,10 +106,6 @@ public class RobotProxy extends Thread{
                 sema.release();
             }
         }
-        
-        public void doRead(boolean read){
-            isActive = read;
-        }
     }
     
     public void move(byte direction, byte possDir) throws IOException{
@@ -118,11 +114,10 @@ public class RobotProxy extends Thread{
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
-        read.setActive(true);
+        read.setActive(false);
         this.out.write(direction);
         this.out.write(possDir);
-        read.setActive(false);
-        read.doRead(true);
+        read.setActive(true);
     }
     
     public void search(int _direction) throws IOException{
@@ -153,7 +148,6 @@ public class RobotProxy extends Thread{
         read.setActive(true);
         this.out.write(searchDir);
         read.setActive(false);
-        read.doRead(true);
     }
     
     public int getAvaibleDirections(){
