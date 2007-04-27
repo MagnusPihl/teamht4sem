@@ -117,12 +117,15 @@ public class GameScene implements Scene {
     private int frameCounter;
     private long frameTimer;
     
+    private int placementState;
+    private boolean placement;
     private boolean online;
     private Semaphore semaphore;
     private RobotProxy[] proxy;
     
     /** Creates a new instance of GameScene */
     public GameScene() {
+        this.placement = false;
         this.replay = new Replay();
         this.mode = 0;
         this.field = new Field();
@@ -276,12 +279,31 @@ public class GameScene implements Scene {
             this.frameTimer = System.currentTimeMillis();
         }
         _g.drawImage(this.fps, 5, 5, null);
+        
+        //This will draw the dialog that tells ze player where to put ze robot
+        if(this.placement == true && placementState%2 == 0){
+            GameDialog.drawDialogCenter(_g, "Place robot # " + placementState + " at the point specified by the picture.\nPush enter when ready to place.");
+        }
+        else if(this.placement == true && placementState%2 == 1){
+            this.field.getEntityRenderers()[(placementState-1)/2].setHighlight(true);
+        }
     }            
 
     public void update(long _time)
     {
         this.moveTimer -= _time;
         
+        if(placement){
+            if(this.confirm.isPressed()){
+                placementState++;
+                if(placementState%2 == 1){
+                    this.field.getEntityRenderers()[(placementState-1)/2].setHighlight(true);
+                }
+                else{
+                    this.field.getEntityRenderers()[(placementState-1)/2].setHighlight(false);
+                }
+            }
+        }
         if(!this.win && !this.lose)
         {
             if(pause.isPressed())
@@ -366,6 +388,13 @@ public class GameScene implements Scene {
     }
 
     public void init(InputManager _input) {
+        if(this.online){
+            this.placementState = 0;
+            this.placement = true;
+        }
+        else{
+            this.placement = false;
+        }
         this.paused = false;
         this.win = false;
         this.lose = false;
@@ -403,6 +432,7 @@ public class GameScene implements Scene {
     }
     
     public void deinit(InputManager _input) {
+        this.placement = false;
         _input.removeKeyAssociation(KeyEvent.VK_SPACE);
         _input.removeKeyAssociation(KeyEvent.VK_Y);
         this.soundManager.removePreviousPlayers();
