@@ -57,7 +57,7 @@ public class GameProxy {
         while(command == -1){
             try {
                 x++;
-                System.out.println("start" + x);
+                System.out.println("start " + x);
                 command = in.read();
             } catch (IOException ex) {
                 
@@ -134,16 +134,6 @@ public class GameProxy {
                 }
             }
             //OS.setCalibrationValues(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
-        }
-        
-        int i = 0;
-        while(i <= 5){
-            i++;
-            try {
-                in.read();
-            } catch (IOException ex) {
-                
-            }
         }
         return command;
     }
