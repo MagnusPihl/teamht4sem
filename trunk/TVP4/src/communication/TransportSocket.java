@@ -11,6 +11,9 @@
  *
  * ******VERSION HISTORY******
  *
+ * Magnus Hemmer Pihl @ 27. april 2007 (v 1.5)
+ * Removed timeout from read-operation. Will now fail immediately if no data is available.
+ *
  * Magnus Hemmer Pihl @ 25. april 2007 (v 1.4)
  * Corrected read-method to always read two bytes - no matter what the header contains.
  * Corrected type-cast to of System.currentMilliseconds to int in write-method, for Mindstorm compatibility.
@@ -47,12 +50,10 @@ public class TransportSocket
     public static final int DATA = 0;
     public static final int RECEIPT = 1;
     
-    //Total time to attempt reading before failing, in milliseconds.
-    public static final int READ_TIMEOUT = 500;
     //Total time to attempt writing before failing, in milliseconds.
-    public static final int WRITE_TIMEOUT = 500;
+    public static final int WRITE_TIMEOUT = 100;
     //Time to wait for acknowledge before retrying to write data. Should always be lower than WRITE_TIMEOUT.
-    public static final int ACKNOWLEDGE_TIMEOUT = 250;
+    public static final int ACKNOWLEDGE_TIMEOUT = 50;
     
     private static int sequence;
     
@@ -86,18 +87,18 @@ public class TransportSocket
             int timestamp = (int)System.currentTimeMillis();
             
             //Read header byte. Timeout if neccessary.
-            do
+            header = this.in.read();
+            if(header != -1)
             {
-                if(((int)System.currentTimeMillis())-timestamp >= TransportSocket.READ_TIMEOUT)
-                    return -1;
-                header = this.in.read();
-            } while(header==-1);
-            //Check indefinitely for second byte.
-            do
-            {
-                data = this.in.read();
-            } while(data==-1);
-            
+                //Check indefinitely for second byte.
+                do
+                {
+                    data = this.in.read();
+                } while(data==-1);
+            }
+            else
+                return -1;
+
             //Only continue if byte received is Data header.
             if(TransportPackage.getType(header) == DATA)
             {
