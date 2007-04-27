@@ -31,7 +31,7 @@ public class Controller implements ButtonListener{
     
     private int command = -1;
     private int directions = 0;
-    private int lastCommand = 0x00;
+    private int lastCommand = GameCommands.MOVE_UP;
     private int sensor1 = 0;
     private int sensor2 = 0;
     private int sensor3 = 0;
