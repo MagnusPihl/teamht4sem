@@ -84,8 +84,11 @@ public class NetworkSocket {
             this.bufferIndex = -1;
             this.packetAccepted = false;
             
+                System.out.println("Reading packet...");
+                        
             do {
-                this.data = this.in.read();
+                this.data = this.in.read();                
+                System.out.println("net data: " + this.data);
                 if (this.data != -1) {
                     if (this.bufferIndex == -1) {
                         if (this.data == this.expectedHeader) {

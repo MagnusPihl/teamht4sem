@@ -66,6 +66,7 @@ public class TowerSocket extends LinkLayerSocket {
         long timeout = System.currentTimeMillis() + TIMEOUT;        
                 
         do {
+            System.out.println("Link num: "+ this.packetIndex);
             available = this.tower.read(data);            
             if (available == 1) {
                 if ((this.packetIndex < DATA_OFFSET)) {

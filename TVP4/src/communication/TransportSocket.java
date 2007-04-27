@@ -151,7 +151,7 @@ public class TransportSocket
             this.out.write(0x7F & sequence);
             this.out.write(b);
             
-//            System.out.println("Data sent");
+            System.out.println("Data sent");
             
             int header=-1, data;
             int timestamp = (int)System.currentTimeMillis();
@@ -166,9 +166,9 @@ public class TransportSocket
                     this.out.write(b);
                     ack_timestamp = (int)System.currentTimeMillis();
                 }
-//                System.out.println("Reading header...");
+                System.out.println("Reading header...");
                 header = this.in.read();
-//                System.out.println("Header == "+header);
+                System.out.println("Header == "+header);
             }
             if(header == -1)
                 throw new IOException("Transport layer timeout. No acknowledge received.");
@@ -177,18 +177,18 @@ public class TransportSocket
             do
             {
                 data = this.in.read();
-//                System.out.println("Data == "+data);
+                System.out.println("Data == "+data);
             } while(data==-1);
             
             //End method if the proper acknowledge was received. Retry if it didn't match sent package.
             if(TransportPackage.getType(header) == TransportSocket.RECEIPT && TransportPackage.getSequenceNumber(header) == sequence)
             {
-//                System.out.println("Returning");
+                System.out.println("Returning");
                 return;
             }
             else
             {
-//                System.out.println("Retrying");
+                System.out.println("Retrying");
                 this.write(b, sequence);
             }
         }
