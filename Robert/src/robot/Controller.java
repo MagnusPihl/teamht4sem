@@ -64,7 +64,7 @@ public class Controller implements ButtonListener{
             }else if(command == GameCommands.LIGHT_OFF){
                 this.lightOff();
             }else if(command == GameCommands.BEEP){
-                this.beepOn();
+                this.beepOn();//only two beeps
             }else if(command == 0x14){// not implemented yet
                 this.beepOff();
             }else if(command == GameCommands.CALIBRATE){
@@ -247,6 +247,11 @@ public class Controller implements ButtonListener{
         }
     }
     public void buttonReleased(Button button) {
+    }
+    
+    public static void main(String[] args) throws InterruptedException, IOException{
+        Controller noget = Controller.getInstance();
+        noget.run();
     }
     
 //    public int getAddress(){
