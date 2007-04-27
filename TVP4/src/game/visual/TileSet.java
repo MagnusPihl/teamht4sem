@@ -45,7 +45,7 @@ public class TileSet
     private int tileSize;
     
     public static final int FRAME_COUNT = 2;
-    public static final int ENTITY_COUNT = 4;
+    public static final int ENTITY_COUNT = 3;
     public static final int PATH_TILE_COUNT = 16;
     public static final String SKIN_LIBRARY = (new File("skins/")).getAbsolutePath() + File.separator;
     

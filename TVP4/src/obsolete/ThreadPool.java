@@ -21,7 +21,7 @@
  *
  */
 
-package game.system;
+package obsolete;
 
 import java.util.*;
 
