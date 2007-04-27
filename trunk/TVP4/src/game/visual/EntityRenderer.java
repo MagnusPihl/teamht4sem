@@ -6,10 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.6
+ * @version 1.7
  *
  *
  * ******VERSION HISTORY******
+ *
+ * Magnus Hemmer Pihl @ 27. april 2007 (v 1.7)
+ * Added setHighlight method.
  *
  * Magnus Hemmer Pihl @ 17. april 2007 (v 1.6)
  * Finalized code for smooth entity animation.
@@ -49,6 +52,7 @@ public class EntityRenderer
     private long animationDelay;
     private long lastUpdate;
     private int frameCounter;
+    private boolean highlight;
     
     private int lastDirection;
     private Point lastPosition;
@@ -83,9 +87,6 @@ public class EntityRenderer
         Point position = entity.getPosition();
         int tileSize = TileSet.getInstance().getTileSize();
         
-//        g.setColor(Color.CYAN);
-//        g.drawRect(position.x*tileSize+offsetX, position.y*tileSize+offsetY, 30, 30);
-
         if((System.currentTimeMillis() - this.lastUpdate) > this.animationDelay)// && entity.isMoving())
         {
             this.frameCounter = (this.frameCounter+1)%2;
@@ -118,6 +119,18 @@ public class EntityRenderer
                 position.x * tileSize + offsetX,
                 position.y * tileSize + offsetY,
                 null);
+        if(this.highlight && this.frameCounter%2 == 0)
+        {
+            Color c = g.getColor();
+            g.setColor(Color.CYAN);
+            g.drawRect(position.x*tileSize+offsetX, position.y*tileSize+offsetY, 30, 30);
+            g.setColor(c);
+        }
+    }
+    
+    public void setHighlight(boolean _state)
+    {
+        this.highlight = _state;
     }
     
     /**
