@@ -49,6 +49,7 @@ public class Controller implements ButtonListener{
     public void run(){
         this.address();
         tower = new GameProxy(address);
+        TextLCD.print("start");
         while(true){
             command = tower.getcommand();
             TextLCD.print("run");
@@ -87,6 +88,7 @@ public class Controller implements ButtonListener{
     }
     
     private void move(){
+        TextLCD.print("move");
         directions = tower.getDirections();
         if(command != lastCommand){
             this.turn();
