@@ -95,7 +95,6 @@ import javax.swing.JOptionPane;
 public class GameScene implements Scene {
     
     private int points;
-    private boolean paused, win, lose;
     
     private Field field;
     private Entity[] entity;
@@ -117,17 +116,21 @@ public class GameScene implements Scene {
     private int frameCounter;
     private long frameTimer;
     
+    private int state;
+    private final int STATE_PLACEMENT = 0;
+    private final int STATE_RUNNING = 1;
+    private final int STATE_WIN = 2;
+    private final int STATE_LOSE = 3;
+    private final int STATE_PAUSE = 4;
     private int placementState;
-    private boolean placement;
+    
     private boolean online;
     private Semaphore semaphore;
     private RobotProxy[] proxy;
     
     /** Creates a new instance of GameScene */
     public GameScene() {
-        this.placement = false;
         this.replay = new Replay();
-        this.mode = 0;
         this.field = new Field();
         this.level = new File("test.lvl");
         this.entity = new Entity[3];
@@ -147,13 +150,13 @@ public class GameScene implements Scene {
         this.frameTimer = System.currentTimeMillis();
         
         this.semaphore = new Semaphore(3);
-        if(this.online)
-        {
+//        if(this.online)
+//        {
             this.proxy = new RobotProxy[3];
             this.proxy[0] = new RobotProxy(1, this.semaphore);
             this.proxy[1] = new RobotProxy(2, this.semaphore);
             this.proxy[2] = new RobotProxy(3, this.semaphore);
-        }
+//        }
     }
     
     public void setOnline(boolean _online)
@@ -225,75 +228,81 @@ public class GameScene implements Scene {
         this.roundTime = _time;
     }
     
-    public void draw(Graphics2D _g) {
-        _g.setColor(Color.BLACK);
-        _g.fillRect(0, 0, 800, 600);
+    public void draw(Graphics2D _g)
+    {
+        //Any state
+            _g.setColor(Color.BLACK);
+            _g.fillRect(0, 0, 800, 600);
+
+            if(this.pointsImage == null)
+                this.resetPoints();
+
+            Shape clip = _g.getClip();
+            _g.setClip(0, 40, 800, 560);
+
+            if(field.getSize().width * TileSet.getInstance().getTileSize() > 800 ||
+                    field.getSize().height * TileSet.getInstance().getTileSize() > 600)
+            {
+                int pacX = field.getEntityRenderers()[0].getEntity().getPosition().x * TileSet.getInstance().getTileSize();
+                int pacY = field.getEntityRenderers()[0].getEntity().getPosition().y * TileSet.getInstance().getTileSize();
+                this.levelOffsetX = (800/2)-pacX;
+                this.levelOffsetY = (600/2)-pacY;
+            }
+
+            int startTileX = (this.levelOffsetX % TileSet.getInstance().getTileSize()) - TileSet.getInstance().getTileSize();
+            int startTileY = (this.levelOffsetY % TileSet.getInstance().getTileSize()) - TileSet.getInstance().getTileSize();
+            for(int i=startTileX; i<800; i+=TileSet.getInstance().getTileSize())
+                for(int j=startTileY; j<600; j+=TileSet.getInstance().getTileSize())
+                    _g.drawImage(TileSet.getInstance().getBaseTile(), i, j, null);
+
+            field.drawField(_g, this.levelOffsetX, this.levelOffsetY);
+
+            _g.setClip(clip);
+
+            _g.drawImage(pointsImage, 795 - pointsImage.getWidth(), 5, null);
+            
+            this.frameCounter++;
+            if(System.currentTimeMillis() - this.frameTimer > 1000)
+            {
+                this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.frameCounter,400);
+                this.frameCounter = 0;
+                this.frameTimer = System.currentTimeMillis();
+            }
+            _g.drawImage(this.fps, 5, 5, null);
+        //Any state done
         
-        if(this.pointsImage == null)
-            this.resetPoints();
-        
-        Shape clip = _g.getClip();
-        _g.setClip(0, 40, 800, 560);
-        
-        if(field.getSize().width * TileSet.getInstance().getTileSize() > 800 ||
-                field.getSize().height * TileSet.getInstance().getTileSize() > 600)
-        {
-            int pacX = field.getEntityRenderers()[0].getEntity().getPosition().x * TileSet.getInstance().getTileSize();
-            int pacY = field.getEntityRenderers()[0].getEntity().getPosition().y * TileSet.getInstance().getTileSize();
-            this.levelOffsetX = (800/2)-pacX;
-            this.levelOffsetY = (600/2)-pacY;
-        }
-        
-        int startTileX = (this.levelOffsetX % TileSet.getInstance().getTileSize()) - TileSet.getInstance().getTileSize();
-        int startTileY = (this.levelOffsetY % TileSet.getInstance().getTileSize()) - TileSet.getInstance().getTileSize();
-        for(int i=startTileX; i<800; i+=TileSet.getInstance().getTileSize())
-            for(int j=startTileY; j<600; j+=TileSet.getInstance().getTileSize())
-                _g.drawImage(TileSet.getInstance().getBaseTile(), i, j, null);
-        
-        field.drawField(_g, this.levelOffsetX, this.levelOffsetY);
-        
-        _g.setClip(clip);
-        
-        _g.drawImage(pointsImage, 795 - pointsImage.getWidth(), 5, null);
-        
-        if (this.paused)
+        if(this.state == this.STATE_PAUSE)
         {
             GameDialog.drawDialogCenter(_g, "Game Paused\nPress 'Y' to exit to the title screen.");
         }
-        if(this.win)
+            
+        if(this.state == this.STATE_WIN)
         {
             this.soundManager.runSound(6, false);
             GameDialog.drawDialogCenter(_g, "You Win!\nPress 'Y' to exit to the title screen.");
         }
-        if(this.lose)
+            
+        if(this.state == this.STATE_LOSE)
         {
             this.soundManager.runSound(3, false);
             GameDialog.drawDialogCenter(_g, "You Lose!\nPress 'Y' to exit to the title screen.");
         }
         
-        this.frameCounter++;
-        if(System.currentTimeMillis() - this.frameTimer > 1000)
+        if(this.state == this.STATE_PLACEMENT)
         {
-            this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.frameCounter,400);
-            this.frameCounter = 0;
-            this.frameTimer = System.currentTimeMillis();
-        }
-        _g.drawImage(this.fps, 5, 5, null);
-        
-        //This will draw the dialog that tells ze player where to put ze robot
-        if(this.placement == true && placementState%2 == 0){
-            GameDialog.drawDialogCenter(_g, "Place robot # " + placementState + " at the point specified by the picture.\nPush enter when ready to place.");
-        }
-        else if(this.placement == true && placementState%2 == 1){
-            this.field.getEntityRenderers()[(placementState-1)/2].setHighlight(true);
+            if(placementState%2 == 0){
+                GameDialog.drawDialogCenter(_g, "Place robot # " + placementState + " at the point specified by the picture.\nPush enter when ready to place.");
+            }
         }
     }            
 
     public void update(long _time)
     {
+        //Any state
         this.moveTimer -= _time;
         
-        if(placement){
+        if(this.state == this.STATE_PLACEMENT)
+        {
             if(this.confirm.isPressed()){
                 placementState++;
                 if(placementState%2 == 1){
@@ -304,45 +313,45 @@ public class GameScene implements Scene {
                 }
             }
         }
-        if(!this.win && !this.lose)
+
+        if(this.state == this.STATE_RUNNING)
         {
             if(pause.isPressed())
             {
-                this.confirm.reset();
-                this.paused = !this.paused;
+                this.state = this.STATE_PAUSE;
                 this.soundManager.pause();
             }
-            
+
+            //START OF TURN!
             EntityRenderer[] entities = this.field.getEntityRenderers();
             entities[0].getEntity().getController().calculateNextMove();
             for(int i=0; i<entities.length; i++)
+            {
                 if(entities[i].getEntity() != null)
                 {
-                    //START OF TURN!
-                    if(this.moveTimer<0 && this.semaphore.availablePermits()==3 && !this.paused)
+                    System.out.println("Sem: "+semaphore.availablePermits());
+                    if(this.moveTimer<0 && this.semaphore.availablePermits()==3)
                     {
                         //Win/Lose condition
                         if(this.field.getPointsLeft() == 0)
                         {
-                            this.win = true;
+                            this.state = this.STATE_WIN;
                         }
                         else
                         {
                             Node n;
-                            Entity e;
+                            Entity e = null;
                             for(int j=0; j<4; j++)
                             {
                                 n = this.field.getNodeAt(entities[0].getEntity().getPosition()).getNodeAt(j);
                                 if(n != null)
-                                {
                                     e = n.getEntity();
                                         if(e != null)
                                             if(e.getID() > 0)
-                                                this.lose = true;
-                                }
+                                                this.state = this.STATE_LOSE;
                             }
                         }
-                        
+
                         int dir = -1;
                         if(i == 0)
                         {
@@ -354,13 +363,15 @@ public class GameScene implements Scene {
                             entities[i].getEntity().getController().calculateNextMove();
                             dir = entities[i].getEntity().getController().move();
                         }
-                        
+
                         if(this.online)
                         {
-                            for(int j=0; j<3; j++)
+                            for(int j=0; j<1; j++)  //j<3
                             {
                                 try {
+                                    System.out.println("Moving entity "+j);
                                     this.proxy[j].move((byte)dir, (byte)entities[j].getEntity().getNode().getBinaryDirections());
+                                    System.out.println("Done moving.");
                                 }
                                 catch(IOException e)
                                 {
@@ -371,16 +382,25 @@ public class GameScene implements Scene {
                         this.replay.list[i].add(dir);
                     }
                     //END OF TURN!
-                }
-            
-            if(this.paused && confirm.isPressed())
-            {
-                PacmanApp.getInstance().showTitleScene();
+                 }
             }
         }
-        else if(confirm.isPressed())
+
+        if(this.state == this.STATE_PAUSE)
         {
-            PacmanApp.getInstance().showTitleScene();
+            if(pause.isPressed())
+            {
+                this.state = this.STATE_RUNNING;
+                this.soundManager.pause();
+            }
+            if(confirm.isPressed())
+                PacmanApp.getInstance().showTitleScene();
+        }
+
+        if(this.state == this.STATE_WIN || this.state == this.STATE_LOSE)
+        {
+            if(confirm.isPressed())
+                PacmanApp.getInstance().showTitleScene();
         }
         
         if(this.moveTimer<0)
@@ -388,16 +408,11 @@ public class GameScene implements Scene {
     }
 
     public void init(InputManager _input) {
+        this.state = this.STATE_RUNNING;
         if(this.online){
+            this.state = this.STATE_PLACEMENT;
             this.placementState = 0;
-            this.placement = true;
         }
-        else{
-            this.placement = false;
-        }
-        this.paused = false;
-        this.win = false;
-        this.lose = false;
         this.resetPoints();
         this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.fps,400);
         this.field.loadFrom(this.level);
@@ -432,7 +447,6 @@ public class GameScene implements Scene {
     }
     
     public void deinit(InputManager _input) {
-        this.placement = false;
         _input.removeKeyAssociation(KeyEvent.VK_SPACE);
         _input.removeKeyAssociation(KeyEvent.VK_Y);
         this.soundManager.removePreviousPlayers();
