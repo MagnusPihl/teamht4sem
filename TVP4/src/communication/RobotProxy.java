@@ -73,24 +73,29 @@ public class RobotProxy extends Thread{
         public ReadInput(){
         }
         
+        public void setActive(boolean _active){
+            this.isActive = _active;
+        }
+        
         public void run(){
             while(true){
-                    try {
+                try {
+                    if(this.isActive){
                         i = in.read();
                         if(i != -1){
                             handleInput(i);
                             i = -1;
                         }
-                        else{
-                            try {
-                                this.sleep(300);
-                            } catch (InterruptedException ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-                    } catch (IOException ex) {
+                    }
+                    try {
+                        this.sleep(300);
+                    } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
+                    
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         }
         
@@ -113,8 +118,10 @@ public class RobotProxy extends Thread{
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
+        read.setActive(true);
         this.out.write(direction);
         this.out.write(possDir);
+        read.setActive(false);
         read.doRead(true);
     }
     
@@ -143,7 +150,9 @@ public class RobotProxy extends Thread{
             }
             
         }
+        read.setActive(true);
         this.out.write(searchDir);
+        read.setActive(false);
         read.doRead(true);
     }
     
