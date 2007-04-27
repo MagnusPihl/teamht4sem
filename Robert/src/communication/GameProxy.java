@@ -30,6 +30,7 @@ public class GameProxy {
     Controller OS = Controller.getInstance();
     int address;
     LLCSocket link = new LLCSocket();
+    //TowerSocket link = new TowerSocket();
     NetworkSocket net;
     TransportSocket socket;
     InputStream in;
