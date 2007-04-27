@@ -58,6 +58,7 @@ public class GameProxy {
                 
             }
         }
+        TextLCD.print("done");
         if(command == GameCommands.MOVE_UP || command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_DOWN || command == GameCommands.MOVE_LEFT){
             while(directions == -1){
                 try {
@@ -67,6 +68,7 @@ public class GameProxy {
                 }
             }
         }
+        TextLCD.print("dir");
         // lav evt. noget timeout here.
         if(command == GameCommands.CALIBRATE){
             int sensor1 = -1;
