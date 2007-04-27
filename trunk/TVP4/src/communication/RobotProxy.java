@@ -82,6 +82,7 @@ public class RobotProxy extends Thread{
                 try {
                     if(this.isActive){
                         i = in.read();
+                        System.out.println("Read: "+i);
                         if(i != -1){
                             handleInput(i);
                             i = -1;
@@ -102,22 +103,50 @@ public class RobotProxy extends Thread{
         public void handleInput(int i){
             if((i & 0xf0)==0x10){
                 input = i & 0x0f;
-                isActive = false;
+                //isActive = false;
                 sema.release();
             }
         }
     }
     
     public void move(byte direction, byte possDir) throws IOException{
+        byte searchDir;
+        switch(direction){
+            case(Node.DOWN): {
+                searchDir = GameCommands.MOVE_DOWN; break;
+            }
+            case(Node.LEFT): {
+                searchDir = GameCommands.MOVE_LEFT; break;
+            }
+            case(Node.RIGHT): {
+                searchDir = GameCommands.MOVE_RIGHT; break;
+            }
+            case(Node.UP): {
+                searchDir = GameCommands.MOVE_UP; break;
+            }
+            default: return;            
+        }
+        
+        System.out.println("1");
         try {
             sema.acquire();
+            System.out.println("2");
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
+        System.out.println("2.5");
         read.setActive(false);
-        this.out.write(direction);
-        this.out.write(possDir);
+        try {
+            this.out.write(searchDir);
+            System.out.println("3");
+            this.out.write(possDir);
+        }
+        catch(IOException e) {
+            System.out.println(e.getMessage());
+        }
+        System.out.println("4");
         read.setActive(true);
+        System.out.println("5");
     }
     
     public void search(int _direction) throws IOException{
@@ -129,24 +158,24 @@ public class RobotProxy extends Thread{
         }
         switch(_direction){
             case(Node.DOWN): {
-                searchDir = GameCommands.MOVE_DOWN;
+                searchDir = GameCommands.MOVE_DOWN; break;
             }
             case(Node.LEFT): {
-                searchDir = GameCommands.MOVE_LEFT;
+                searchDir = GameCommands.MOVE_LEFT; break;
             }
             case(Node.RIGHT): {
-                searchDir = GameCommands.MOVE_RIGHT;
+                searchDir = GameCommands.MOVE_RIGHT; break;
             }
             case(Node.UP): {
-                searchDir = GameCommands.MOVE_UP;
+                searchDir = GameCommands.MOVE_UP; break;
             }
             default:{
-                searchDir = GameCommands.SEARCH_NODE;
+                searchDir = GameCommands.SEARCH_NODE; break;
             }
             
         }
         read.setActive(true);
-        this.out.write(searchDir);
+        this.out.write(searchDir | GameCommands.DISCOVER);
         read.setActive(false);
     }
     
