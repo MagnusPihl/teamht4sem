@@ -46,7 +46,8 @@ public class RobotProxy extends Thread{
     private byte mode;
     private int aDirections = -1;
     private int timeout;
-    private ReadInput read;
+    
+    private int input;
     
     
     /**
@@ -60,53 +61,6 @@ public class RobotProxy extends Thread{
         out = socket.getOutputStream();
         
         sema = e;
-        read = new ReadInput();
-        read.start();
-    }
-    
-    public class ReadInput extends Thread {
-        private boolean isActive = false;
-        protected int input = -1;
-        private int i = -1;
-        
-        
-        public ReadInput(){
-        }
-        
-        public void setActive(boolean _active){
-            this.isActive = _active;
-        }
-        
-        public void run(){
-            while(true){
-                try {
-                    if(this.isActive){
-                        i = in.read();
-                        System.out.println("Read: "+i);
-                        if(i != -1){
-                            handleInput(i);
-                            i = -1;
-                        }
-                    }
-                    try {
-                        this.sleep(300);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                    
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        }
-        
-        public void handleInput(int i){
-            if((i & 0xf0)==0x10){
-                input = i & 0x0f;
-                //isActive = false;
-                sema.release();
-            }
-        }
     }
     
     public void move(byte direction, byte possDir) throws IOException{
@@ -134,18 +88,42 @@ public class RobotProxy extends Thread{
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
-        System.out.println("2.5");
-        read.setActive(false);
-        try {
-            this.out.write(searchDir);
-            System.out.println("3");
-            this.out.write(possDir);
-        }
-        catch(IOException e) {
-            System.out.println(e.getMessage());
+        System.out.println("3");
+        boolean success = false;
+        while(!success)
+        {
+            try {
+                this.out.write(searchDir);
+                success = true;
+            }
+            catch(IOException e) {
+                System.out.println(e.getMessage());
+                success = false;
+            }
         }
         System.out.println("4");
-        read.setActive(true);
+        success = false;
+        while(!success)
+        {
+            try {
+                this.out.write(possDir);
+                success = true;
+            }
+            catch(IOException e) {
+                System.out.println(e.getMessage());
+                success = false;
+            }
+        }
+        
+        int result=-1;
+        while(result == -1)
+            result = in.read();
+        if((result & 0xf0)==0x10)
+        {
+            this.input = result & 0x0f;
+            sema.release();
+        }
+        
         System.out.println("5");
     }
     
@@ -174,13 +152,11 @@ public class RobotProxy extends Thread{
             }
             
         }
-        read.setActive(true);
         this.out.write(searchDir | GameCommands.DISCOVER);
-        read.setActive(false);
     }
     
     public int getAvaibleDirections(){
-        return read.input;
+        return this.input;
     }
     
     /**
