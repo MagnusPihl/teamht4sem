@@ -167,7 +167,7 @@ public class TowerSocket extends LinkLayerSocket {
          *
          * @param byte to write.
          */
-        public void write(int buffer) throws IOException {
+        public synchronized void write(int buffer) throws IOException {
             this.packetBuffer[this.packetIndex++] = (byte)buffer;
             this.packetBuffer[this.packetIndex++] = (byte)~buffer;
             
