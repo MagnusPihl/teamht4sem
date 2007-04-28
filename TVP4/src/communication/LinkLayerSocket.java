@@ -41,7 +41,7 @@ public abstract class LinkLayerSocket {
     }
         
     public static boolean checksumIsValid(byte[] buffer) {                        
-        int checksum = 0;
+        byte checksum = 0;
         for (int i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {
             checksum += buffer[i];
         }
