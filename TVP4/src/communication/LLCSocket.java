@@ -11,6 +11,9 @@
  *
  * ******VERSION HISTORY******
  *
+ * MHP @ 28. april 2007 (v 1.3)
+ * Removed timeout from readPacket. Will now instantly return false if no data is available.
+ *
  * LMK @ 23. marts 2007 (v 1.1) 
  * Moved checksum methods and features common with TowerSocket to LinkLayerSocket
  * Added timeouts to read methods.
@@ -39,7 +42,7 @@ public class LLCSocket extends LinkLayerSocket {
         private int readPointer;
         private int inPointer;
         private byte[] buffer;        
-        private int timeout;
+        //private int timeout;
         private int data;
         
         protected LLCInputStream() {       
@@ -50,7 +53,7 @@ public class LLCSocket extends LinkLayerSocket {
         
         private boolean readPacket() {
             this.inPointer = 0;            
-            timeout = (int)System.currentTimeMillis() + TIMEOUT; 
+            //timeout = (int)System.currentTimeMillis() + TIMEOUT; 
             
             do {
                 this.data = LLC.read();
@@ -58,17 +61,18 @@ public class LLCSocket extends LinkLayerSocket {
                     if ((this.inPointer < DATA_OFFSET)) {
                         if (this.data == PACKET_HEADER) {
                             this.inPointer++;
-                            timeout = (int)System.currentTimeMillis() + TIMEOUT; 
+                            //timeout = (int)System.currentTimeMillis() + TIMEOUT; 
                         } else {
                             this.inPointer = 0;
                         }
                     } else {
                         this.buffer[this.inPointer++] = (byte)this.data;
-                        timeout = (int)System.currentTimeMillis() + TIMEOUT; 
+                        //timeout = (int)System.currentTimeMillis() + TIMEOUT; 
                     }
-                } else if (timeout < (int)System.currentTimeMillis()) {
+                } else// if (timeout < (int)System.currentTimeMillis())
+                {
                     this.inPointer = 0;
-                    timeoutCount++;
+                    //timeoutCount++;
                     return false;
                 }
             } while (this.inPointer < PACKET_SIZE);            
