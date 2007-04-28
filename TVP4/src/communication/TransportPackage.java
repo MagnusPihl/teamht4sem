@@ -73,7 +73,7 @@ public class TransportPackage
         return (_header & 0x7F);
     }
     
-    public static int createAckHeader(int _header)
+    public static int createAcknowledgeHeader(int _header)
     {
         return 0x80 | _header;
     }
