@@ -66,7 +66,6 @@ public class TowerSocket extends LinkLayerSocket {
         long timeout = System.currentTimeMillis() + TIMEOUT;        
                 
         do {
-            System.out.println("Link num: "+ this.packetIndex);
             available = this.tower.read(data);            
             if (available == 1) {
                 if ((this.packetIndex < DATA_OFFSET)) {
@@ -171,7 +170,6 @@ public class TowerSocket extends LinkLayerSocket {
             
             if (this.packetIndex >= CHECKSUM_OFFSET) {
                 LinkLayerSocket.addChecksum(this.packetBuffer);
-                //System.out.println(tower.strerror(tower.write(this.packetBuffer, PACKET_SIZE)));
                 tower.write(this.packetBuffer, PACKET_SIZE);
                 this.packetIndex = DATA_OFFSET;
             }            
