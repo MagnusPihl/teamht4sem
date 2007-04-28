@@ -83,12 +83,9 @@ public class NetworkSocket {
             this.timeout = (int)System.currentTimeMillis() + TIMEOUT; 
             this.bufferIndex = -1;
             this.packetAccepted = false;
-            
-                System.out.println("Reading packet...");
                         
             do {
-                this.data = this.in.read();                
-                System.out.println("net data: " + this.data);
+                this.data = this.in.read();
                 if (this.data != -1) {
                     if (this.bufferIndex == -1) {
                         if (this.data == this.expectedHeader) {
