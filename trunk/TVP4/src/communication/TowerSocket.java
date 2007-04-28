@@ -10,6 +10,9 @@
  *
  *
  * ******VERSION HISTORY******
+ * MHP @ 28. april 2007 (v 1.3)
+ * Removed timeout from readPacket. Will now instantly return false if no data is available.
+ *
  * LMK @ 23. marts 2007 (v 1.2) 
  * Removed printout when sending
  *
@@ -63,7 +66,7 @@ public class TowerSocket extends LinkLayerSocket {
         byte[] data = new byte[1];        
         int available = 0;
         this.packetIndex = 0;
-        long timeout = System.currentTimeMillis() + TIMEOUT;        
+        //long timeout = System.currentTimeMillis() + TIMEOUT;        
                 
         do {
             available = this.tower.read(data);            
@@ -72,18 +75,18 @@ public class TowerSocket extends LinkLayerSocket {
                     //wait for start bytes.
                     if (data[0] == PACKET_HEADER) {
                         this.packetIndex++;
-                        timeout = System.currentTimeMillis() + TIMEOUT;
+                        //timeout = System.currentTimeMillis() + TIMEOUT;
                     } else {
                         this.packetIndex = 0;
                     }
                 } else {
                     this.packetBuffer[this.packetIndex++] = data[0];
-                    timeout = System.currentTimeMillis() + TIMEOUT;
+                    //timeout = System.currentTimeMillis() + TIMEOUT;
                 }
-            } else if (System.currentTimeMillis() > timeout) {
-                this.timeoutCount++;
+            } else// if (System.currentTimeMillis() > timeout) {
+                //this.timeoutCount++;
                 return false;
-            }
+            //}
         } while (this.packetIndex < PACKET_SIZE);
                 
         //if checksum is valid add packet to stream.
