@@ -46,6 +46,9 @@ public class TransportSocket
 {
     private TransportInputStream in;
     private TransportOutputStream out;
+    private int lastAcknowledge;
+    private Thread inputThread;
+    private boolean isWriting;
     
     public static final int DATA = 0;
     public static final int RECEIPT = 1;
@@ -55,86 +58,126 @@ public class TransportSocket
     //Total time to attempt writing before failing, in milliseconds.
     public static final int WRITE_TIMEOUT = 300;
     //Time to wait for acknowledge before retrying to write data. Should always be lower than WRITE_TIMEOUT.
-    public static final int ACKNOWLEDGE_TIMEOUT = 150;
-    
-    private static int sequence;
+    public static final int ACKNOWLEDGE_TIMEOUT = 150;    
     
     /** Creates a new instance of IRSocket */
     public TransportSocket(InputStream in, OutputStream out)
     {
         this.in = new TransportSocket.TransportInputStream(in, out);
-        this.out = new TransportSocket.TransportOutputStream(in, out);
+        this.out = new TransportSocket.TransportOutputStream(in, out);                        
+        this.isWriting = false;
         
-        this.sequence = 0;
+        this.inputThread = new Thread(this.in);
+        this.inputThread.start();        
     }
     
-    public class TransportInputStream extends InputStream
+    public class TransportInputStream extends InputStream implements Runnable
     {
         private InputStream in;
         private OutputStream out;
         
-        private int last_sequence;
+        private byte[] readBuffer;
+        private int readIndex;
+        private int bufferIndex;
+        private int lastSequence;
+        private int header;
+        private int data;         
+        private int readData;
+                
+        public static final int INPUT_BUFFER_SIZE = 20;
         
         protected TransportInputStream(InputStream in, OutputStream out)
         {
             this.in = in;
             this.out = out;
-            
-            this.last_sequence = -1;
+            this.readBuffer = new byte[INPUT_BUFFER_SIZE];
+            this.readIndex = 0;
+            this.bufferIndex = 0;
+            this.lastSequence = -1;
         }
         
-        public int read() throws IOException
-        {
-            int header, data;
-            int timestamp = (int)System.currentTimeMillis();
-            
-            //Read header byte. Timeout if neccessary.
-            header = this.in.read();
-            if(header != -1)
-            {
-                //Check indefinitely for second byte.
-                do
-                {
-                    data = this.in.read();
-                } while(data==-1);
-            }
-            else
-                return -1;
+        public void run() {
+            while (true) {
+                try {
+                    //int timestamp = (int)System.currentTimeMillis();
 
-            //Only continue if byte received is Data header.
-            if(TransportPackage.getType(header) == DATA)
-            {
-                //Send receipt.
-                this.out.write(0x80 | TransportPackage.getSequenceNumber(header));
-                this.out.write(NOP);
-                
-                //Return data only if not a repeat of the last sequence
-                if(TransportPackage.getSequenceNumber(header) != this.last_sequence)
-                {
-                    this.last_sequence = TransportPackage.getSequenceNumber(header);
-                    return data;
+                    //Read header byte. Timeout if neccessary.
+                    this.header = this.in.read();
+
+                    if (this.header != -1) {
+                        //Check indefinitely for second byte.
+                        do {
+                            this.data = this.in.read();
+                        } while (this.data == -1);
+                    } else {
+                        Thread.sleep(100);
+                        continue;
+                    }
+
+                    //Only continue if byte received is Data header.
+                    if (TransportPackage.getType(header) == DATA) {
+                        //Send receipt.
+                        while (isWriting) {
+                            this.wait(50);
+                        }
+                        isWriting = true;
+                        this.out.write(TransportPackage.createAcknowledgeHeader(this.header));
+                        this.out.write(NOP);
+                        isWriting = false;
+                        this.notifyAll();
+
+                        //Return data only if not a repeat of the last sequence
+                        if(TransportPackage.getSequenceNumber(this.header) != this.lastSequence) {
+                            this.lastSequence = TransportPackage.getSequenceNumber(this.header);                                                
+                            this.readBuffer[bufferIndex++] = (byte)this.data;
+
+                            if (bufferIndex == INPUT_BUFFER_SIZE) {
+                                bufferIndex = 0;
+                            }                        
+                        }
+                    } else if (TransportPackage.getType(header) == RECEIPT) {
+                        lastAcknowledge = TransportPackage.getSequenceNumber(this.header);
+                        notifyAll();                    
+                    }
+
+                    Thread.sleep(100);
+                } catch (Exception e) {                    
                 }
             }
-            
-            return -1;
+        }
+        
+        public int read() throws IOException {
+            if (this.readIndex == this.bufferIndex) {
+                return -1;
+            } else {                
+                this.readData = this.readBuffer[this.readIndex++];
+                
+                if (this.readIndex == INPUT_BUFFER_SIZE) {
+                    this.readIndex = 0;
+                }
+                
+                return this.readData;
+            }
         }
     }
     
     public class TransportOutputStream extends OutputStream
-    {
-        
+    {        
         private OutputStream out;
         private InputStream in;
+        private int sequence;
         
         protected TransportOutputStream(InputStream in, OutputStream out)
         {
             this.out = out;
             this.in = in;
+            this.sequence = 0;
         }
         
         public void write(int b) throws IOException
         {
-            int sequence = TransportSocket.getSequenceNumber();
+            sequence = (sequence+1)%127;
+            
             try
             {
                 this.write(b, sequence);
@@ -148,57 +191,60 @@ public class TransportSocket
         private void write(int b, int sequence) throws IOException
         {
             //Write header and data bytes.
-            this.out.write(0x7F & sequence);
-            this.out.write(b);
             
-            System.out.println("Transport layer sending... "+(0x7F&sequence)+", "+b);
-            
-            int header=-1, data;
-            int timestamp = (int)System.currentTimeMillis();
-            int ack_timestamp = timestamp;
-            
-            //Try to read acknowledge header. Timeout if needed.
-            while(((int)System.currentTimeMillis())-timestamp <= TransportSocket.WRITE_TIMEOUT && header==-1)
-            {
-                if(((int)System.currentTimeMillis())-ack_timestamp >= TransportSocket.ACKNOWLEDGE_TIMEOUT)
-                {
-                    this.out.write(0x7F & sequence);
-                    this.out.write(b);
-                    ack_timestamp = (int)System.currentTimeMillis();
+            try {
+                while (isWriting) {
+                    this.wait(50);
                 }
-                header = this.in.read();
-                System.out.println("Transport Header: "+header);
-            }
-            if(header == -1)
-                throw new IOException("Transport layer timeout. No acknowledge received.");
-            
-            //Acknowledge header received. Wait for data byte (NOP).
-            do
-            {
-                data = this.in.read();
-                System.out.println("Data == "+data);
-            } while(data==-1);
-            
-            //End method if the proper acknowledge was received. Retry if it didn't match sent package.
-            if(TransportPackage.getType(header) == TransportSocket.RECEIPT && TransportPackage.getSequenceNumber(header) == sequence)
-            {
-                System.out.println("Returning");
-                return;
-            }
-            else
-            {
-                System.out.println("Retrying");
-                this.write(b, sequence);
+                isWriting = true;
+                this.out.write(0x7F & sequence);
+                this.out.write(b);
+                isWriting = false;
+                this.notifyAll();
+
+                System.out.println("Transport layer sending... "+(0x7F&sequence)+", "+b);
+
+                int timestamp = (int)System.currentTimeMillis();
+                int ack_timestamp = timestamp;
+
+                //Try to read acknowledge header. Timeout if needed.
+                while(((int)System.currentTimeMillis())-timestamp <= TransportSocket.WRITE_TIMEOUT && lastAcknowledge != sequence)
+                {
+                    if(((int)System.currentTimeMillis())-ack_timestamp >= TransportSocket.ACKNOWLEDGE_TIMEOUT)
+                    {
+
+                        while (isWriting) {
+                            this.wait(50);
+                        }
+                        isWriting = true; 
+                        this.out.write(0x7F & sequence);
+                        this.out.write(b);
+                        ack_timestamp = (int)System.currentTimeMillis();
+                        isWriting = false;
+                        this.notifyAll();
+
+                    }                
+
+                    this.wait(ACKNOWLEDGE_TIMEOUT);
+                }            
+
+                //End method if the proper acknowledge was received. Retry if it didn't match sent package.
+                if(lastAcknowledge == sequence)
+                {
+                    System.out.println("Returning");
+                    return;
+                }
+                else
+                {
+                    System.out.println("Retrying");
+                    this.write(b, sequence);
+                }                    
+            } catch (Exception e) {
+
             }
         }
     }
-    
-    public static int getSequenceNumber()
-    {
-        sequence = (sequence+1)%127;
-        return sequence;
-    }
-    
+           
     public TransportOutputStream getOutputStream()
     {
         return this.out;
