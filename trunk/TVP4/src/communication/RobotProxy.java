@@ -26,12 +26,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.Semaphore;
-import obsolete.IRTransportSocket;
 
 
 public class RobotProxy extends Thread{
-    
-    private static final int TIMEOUT = 300;
     
     public int robotID;
     
@@ -44,7 +41,7 @@ public class RobotProxy extends Thread{
     //private IRTransportSocket socket;
     protected Semaphore sema;
     private byte mode;
-    private int aDirections = -1;
+    private int avaibleDirections = -1;
     private int timeout;
     
     private int input;
@@ -55,7 +52,7 @@ public class RobotProxy extends Thread{
      */
     public RobotProxy(int _robotID, Semaphore e) {
         robotID = _robotID;
-        net = new NetworkSocket(0,robotID,link.getInputStream(),link.getOutputStream());
+        net = new NetworkSocket(0,1,link.getInputStream(),link.getOutputStream());
         socket = new TransportSocket(net.getInputStream(), net.getOutputStream());
         in = socket.getInputStream();
         out = socket.getOutputStream();
@@ -81,14 +78,14 @@ public class RobotProxy extends Thread{
             default: return;            
         }
         
-        System.out.println("1");
+        //System.out.println("1");
         try {
             sema.acquire();
-            System.out.println("2");
+            //System.out.println("2");
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
-        System.out.println("3");
+        //System.out.println("3");
         boolean success = false;
         while(!success)
         {
@@ -97,11 +94,11 @@ public class RobotProxy extends Thread{
                 success = true;
             }
             catch(IOException e) {
-                System.out.println(e.getMessage());
+                //System.out.println(e.getMessage());
                 success = false;
             }
         }
-        System.out.println("4");
+        //System.out.println("4");
         success = false;
         while(!success)
         {
@@ -110,7 +107,7 @@ public class RobotProxy extends Thread{
                 success = true;
             }
             catch(IOException e) {
-                System.out.println(e.getMessage());
+                //System.out.println(e.getMessage());
                 success = false;
             }
         }
@@ -125,7 +122,7 @@ public class RobotProxy extends Thread{
             sema.release();
         }
         
-        System.out.println("5");
+        //System.out.println("5");
     }
     
     public void search(int _direction) throws IOException{
@@ -163,18 +160,32 @@ public class RobotProxy extends Thread{
     /**
      *
      */
-    @Deprecated
     public void blink() throws IOException{
             //this.out.write(GameCommands.);
     }
     
     public void lights(boolean on) throws IOException{
             if(on){
-                this.out.write(GameCommands.LIGHT_ON);
+                int i = GameCommands.LIGHT_ON;
+                this.out.write(i);
             } else{
                 this.out.write(GameCommands.LIGHT_OFF);
             }
     }
+    
+    public boolean isDoneMoving(){
+        try {
+            int i = this.in.read();
+            if((i&0xf0) == GameCommands.MOVE_DONE){
+                this.avaibleDirections = (i&0x0f);
+                this.sema.release();
+                return true;
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }    
     
     /**
      *
@@ -193,5 +204,9 @@ public class RobotProxy extends Thread{
         outPacket[5] = maxGreen;
         outPacket[6] = minBlack;
         this.out.write(outPacket);
+    }
+    
+    public void setActive(boolean isActive){
+        //this.socket.setActive(isActive);
     }
 }
