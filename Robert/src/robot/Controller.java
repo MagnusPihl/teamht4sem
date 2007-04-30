@@ -255,8 +255,4 @@ public class Controller implements ButtonListener{
         Controller noget = Controller.getInstance();
         noget.run();
     }
-    
-//    public int getAddress(){
-//        return address;
-//    }
 }
