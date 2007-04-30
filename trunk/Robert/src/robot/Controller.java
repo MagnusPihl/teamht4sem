@@ -96,26 +96,24 @@ public class Controller implements ButtonListener{
         }
         if(directions == (GameCommands.UP | GameCommands.DOWN) || directions == (GameCommands.RIGHT | GameCommands.LEFT)){
             ride.goToGreen();
-        }
-        if(directions == (GameCommands.RIGHT | GameCommands.LEFT | GameCommands.DOWN) || directions == (GameCommands.UP | GameCommands.DOWN | GameCommands.LEFT) || directions == (GameCommands.RIGHT | GameCommands.LEFT | GameCommands.UP) || directions == (GameCommands.UP | GameCommands.DOWN | GameCommands.RIGHT)){
+        }else if(directions == (GameCommands.RIGHT | GameCommands.LEFT | GameCommands.DOWN) || directions == (GameCommands.UP | GameCommands.DOWN | GameCommands.LEFT) || directions == (GameCommands.RIGHT | GameCommands.LEFT | GameCommands.UP) || directions == (GameCommands.UP | GameCommands.DOWN | GameCommands.RIGHT)){
             this.tCross();
-        }
-        if(directions == (GameCommands.DOWN | GameCommands.LEFT) || directions == (GameCommands.UP | GameCommands.RIGHT)){
+        }else if(directions == (GameCommands.DOWN | GameCommands.LEFT) || directions == (GameCommands.UP | GameCommands.RIGHT)){
             if(command == GameCommands.MOVE_UP || command == GameCommands.MOVE_DOWN){
                 ride.goToLeftCorner();
             }else if(command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_LEFT){
                 ride.goToRightCorner();
             }
-        }
-        if(directions == (GameCommands.DOWN | GameCommands.RIGHT) || directions == (GameCommands.UP | GameCommands.LEFT)){
+        }else if(directions == (GameCommands.DOWN | GameCommands.RIGHT) || directions == (GameCommands.UP | GameCommands.LEFT)){
             if(command == GameCommands.MOVE_UP || command == GameCommands.MOVE_DOWN){
                 ride.goToRightCorner();
             }else if(command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_LEFT){
                 ride.goToLeftCorner();
             }
-        }
-        if(directions == (GameCommands.DOWN | GameCommands.RIGHT | GameCommands.UP | GameCommands.RIGHT)){
+        }else if(directions == (GameCommands.DOWN | GameCommands.RIGHT | GameCommands.UP | GameCommands.LEFT)){
             ride.goToCross();
+        }else{
+         Sound.buzz();   
         }
         lastCommand = command;
         tower.startThread();
