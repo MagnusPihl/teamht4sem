@@ -410,7 +410,7 @@ public class GameScene implements Scene {
     public void init(InputManager _input) {
         this.state = this.STATE_RUNNING;
         if(this.online){
-            this.state = this.STATE_PLACEMENT;
+            //this.state = this.STATE_PLACEMENT;
             this.placementState = 0;
         }
         this.resetPoints();
