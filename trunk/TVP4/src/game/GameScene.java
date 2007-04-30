@@ -109,6 +109,8 @@ public class GameScene implements Scene {
     private int mode;
     private SoundManager soundManager;
     
+    private boolean soundOn;
+    
     private long moveTimer;
     private long roundTime;
     
@@ -148,6 +150,8 @@ public class GameScene implements Scene {
         
         this.frameCounter = 0;
         this.frameTimer = System.currentTimeMillis();
+        
+        this.soundOn = true;
         
         this.semaphore = new Semaphore(3);
 //        if(this.online)
@@ -228,6 +232,16 @@ public class GameScene implements Scene {
         this.roundTime = _time;
     }
     
+    public void setSoundOn(boolean _soundOn)
+    {
+        this.soundOn = _soundOn;
+    }
+    
+    public boolean getSoundOn()
+    {
+        return this.soundOn;
+    }
+    
     public void draw(Graphics2D _g)
     {
         //Any state
@@ -278,13 +292,15 @@ public class GameScene implements Scene {
             
         if(this.state == this.STATE_WIN)
         {
-            this.soundManager.runSound(6, false);
+            if(this.soundOn)
+                this.soundManager.runSound(6, false);
             GameDialog.drawDialogCenter(_g, "You Win!\nPress enter to exit to \nthe title screen.");
         }
             
         if(this.state == this.STATE_LOSE)
         {
-            this.soundManager.runSound(3, false);
+            if(this.soundOn)
+                this.soundManager.runSound(3, false);
             GameDialog.drawDialogCenter(_g, "You Lose!\nPress enter to exit to \nthe title screen.");
         }
         
@@ -324,7 +340,8 @@ public class GameScene implements Scene {
             if(cancel.isPressed())
             {
                 this.state = this.STATE_PAUSE;
-                this.soundManager.pause();
+                if(this.soundOn)
+                    this.soundManager.pause();
             }
 
             //START OF TURN!
@@ -396,7 +413,8 @@ public class GameScene implements Scene {
             if(cancel.isPressed())
             {
                 this.state = this.STATE_RUNNING;
-                this.soundManager.pause();
+                if(this.soundOn)
+                    this.soundManager.pause();
             }
             if(confirm.isPressed())
                 PacmanApp.getInstance().showTitleScene();
@@ -436,7 +454,8 @@ public class GameScene implements Scene {
         }
         this.levelOffsetX = (800/2) - ((this.field.getSize().width * TileSet.getInstance().getTileSize())/2);
         this.levelOffsetY = (600/2) - ((this.field.getSize().height * TileSet.getInstance().getTileSize())/2);
-        this.soundManager.runSound(1, true);
+        if(this.soundOn)
+            this.soundManager.runSound(1, true);
         _input.mapToKey(cancel, KeyEvent.VK_ESCAPE);
         _input.mapToKey(confirm, KeyEvent.VK_ENTER);
         
