@@ -135,6 +135,14 @@ public class GameProxy {
         return directions;
     }
     
+    public void stopThread(){
+//        socket.stop();
+    }
+    
+    public void startThread(){
+//        socket.start();
+    }
+    
     public void sendMoveDone(int move){
         try {
             out.write(move);
