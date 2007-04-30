@@ -140,7 +140,7 @@ public class TransportSocket
                     Thread.sleep(50);
                 } catch (Exception e) {
                     isWriting = false;
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
             }
         }        
@@ -254,7 +254,7 @@ public class TransportSocket
                 }                    
             } catch (Exception e) {
                 isWriting = false;
-                e.printStackTrace();
+//                e.printStackTrace();
             }
         }
     }
