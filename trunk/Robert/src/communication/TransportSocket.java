@@ -6,10 +6,12 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.4
+ * @version 1.6
  *
  *
  * ******VERSION HISTORY******
+ * LMK @ 30. april 2007 (1.6)
+ * Added non blocking read and write, via new reading thread. 
  *
  * Magnus Hemmer Pihl @ 27. april 2007 (v 1.5)
  * Removed timeout from read-operation. Will now fail immediately if no data is available.
@@ -46,101 +48,128 @@ public class TransportSocket
 {
     private TransportInputStream in;
     private TransportOutputStream out;
-    private int lastAcknowledge;
-    private Thread inputThread;
-    private boolean isWriting;
-    private int bufferIndex; 
+    private TransportCommunicationThread com;
+    private int readBufferIndex; 
+    private int writeBufferIndex; 
     private byte[] readBuffer;
+    private byte[] writeBuffer;    
     
     public static final int DATA = 0;
-    public static final int RECEIPT = 1;
-    
+    public static final int RECEIPT = 1;    
     private static final byte NOP = 0x00;
     
-    public static final int INPUT_BUFFER_SIZE = 20;
-    //Total time to attempt writing before failing, in milliseconds.
-    public static final int WRITE_TIMEOUT = 300;
+    public static final int BUFFER_SIZE = 20;    
     //Time to wait for acknowledge before retrying to write data. Should always be lower than WRITE_TIMEOUT.
-    public static final int ACKNOWLEDGE_TIMEOUT = 300;    
+    public static final int ACKNOWLEDGE_TIMEOUT = 200;    
     
     /** Creates a new instance of IRSocket */
-    public TransportSocket(InputStream in, OutputStream out)
-    {
-        
-        this.readBuffer = new byte[INPUT_BUFFER_SIZE];   
+    public TransportSocket(InputStream in, OutputStream out) {        
+        this.readBuffer = new byte[BUFFER_SIZE];   
+        this.writeBuffer = new byte[BUFFER_SIZE];
+        this.writeBufferIndex = 0;
+        this.readBufferIndex = 0;
         this.in = new TransportSocket.TransportInputStream();
-        this.out = new TransportSocket.TransportOutputStream(in, out);                        
-        this.isWriting = false;
+        this.out = new TransportSocket.TransportOutputStream();                       
         
-        this.inputThread = new TransportInputThread(in, out);
-        this.inputThread.start();        
+        this.com = new TransportCommunicationThread(in, out);        
+        this.com.start();        
+    }
+        
+    public void setActive(boolean isActive) {
+        this.com.isActive = isActive;
     }
     
-    public class TransportInputThread extends Thread {               
-        private int data;     
-        private int lastSequence;
+    public class TransportCommunicationThread extends Thread {               
         private int header;    
+        private int data;     
+        private int lastPackageReceived;
+        private int lastPackageSent, sentIndex;
+        private boolean readyToSend;
+        protected boolean isActive;
+        private int timeout;
      
         private InputStream in;
         private OutputStream out;   
             
-        protected TransportInputThread(InputStream in, OutputStream out) {        
+        protected TransportCommunicationThread(InputStream in, OutputStream out) {        
             this.in = in;
-            this.out = out;      
-            bufferIndex = 0;
-            this.lastSequence = -1;
+            this.out = out;     
+            this.lastPackageReceived = -1;
+            this.lastPackageSent = -1;
+            this.sentIndex = 0;
+            this.readyToSend = true;
+            this.isActive = false;
+        }
+        
+        public void setActive(boolean isActive) {
+            this.isActive = isActive;
         }
         
         public void run() {
             while (true) {
-//                System.out.println("Reading...");
-                try {
-                    //int timestamp = (int)System.currentTimeMillis();
+                if (isActive) {
+                    try {                    
+                        //System.out.println("le start");
+                        if ((this.readyToSend)&&(this.sentIndex != writeBufferIndex)) {   
+                            //System.out.println("Starter med at skrive");
+                            this.readyToSend = false;
+                            this.lastPackageSent = TransportPackage.getSequenceNumber((lastPackageSent + 1) % 127);
+                            this.out.write(this.lastPackageSent);
+                            this.out.write(writeBuffer[this.sentIndex]);
+                            timeout = (int)System.currentTimeMillis() + ACKNOWLEDGE_TIMEOUT;
+                            //System.out.println("Slut med at skrive");
 
-                    //Read header byte. Timeout if neccessary.
-                    this.header = this.in.read();
-
-                    if (this.header != -1) {
-                        //Check indefinitely for second byte.
-                        do {
-                            this.data = this.in.read();
-                        } while (this.data == -1);
-                    } else {
-                        Thread.sleep(100);
-                        continue;
-                    }
-                                       
-//                        System.out.println("Transport: READING:  "+TransportPackage.getType(header)+", "+TransportPackage.getSequenceNumber(header)+", "+data);
-
-                    //Only continue if byte received is Data header.
-                    if (TransportPackage.getType(header) == DATA) {
-                        //Send receipt.
-//                        while (isWriting) {
-//                            Thread.sleep(50);
-//                        }
-                        isWriting = true;
-                        this.out.write(TransportPackage.createAcknowledgeHeader(this.header));
-                        this.out.write(NOP);
-                        isWriting = false;
-
-                        //Return data only if not a repeat of the last sequence
-                        if(TransportPackage.getSequenceNumber(this.header) != this.lastSequence) {
-                            this.lastSequence = TransportPackage.getSequenceNumber(this.header);                                                
-                            readBuffer[bufferIndex++] = (byte)this.data;
-
-                            if (bufferIndex == INPUT_BUFFER_SIZE) {
-                                bufferIndex = 0;
-                            }                        
+                        } else if ((!this.readyToSend)&&(timeout < (int)System.currentTimeMillis())) {                        
+                            //System.out.println("Gensender");
+                            this.out.write(this.lastPackageSent);
+                            this.out.write(writeBuffer[this.sentIndex]);                            
+                            //System.out.println("Færdig med at gensende");
                         }
-                    } else if (TransportPackage.getType(header) == RECEIPT) {
-                        lastAcknowledge = TransportPackage.getSequenceNumber(this.header);
-//                        System.out.println("Transport Layer ACK sequence: "+(this.header&0x7f));
-                        //notifyAll();                    
+
+                        //Read header byte. 
+                        this.header = this.in.read();
+
+                        if (this.header != -1) {
+                            //Check indefinitely for second byte.
+                            do {
+                                this.data = this.in.read();
+                            } while (this.data == -1);
+                        } else {
+                            Thread.sleep(100);
+                            continue;
+                        }
+
+                        //Only continue if byte received is Data header.
+                        if (TransportPackage.getType(header) == DATA) {
+                            //Send receipt.
+                            this.out.write(TransportPackage.createAcknowledgeHeader(this.header));
+                            this.out.write(NOP);
+
+                            //Return data only if not a repeat of the last sequence
+                            if(TransportPackage.getSequenceNumber(this.header) != this.lastPackageReceived) {
+                                this.lastPackageReceived = TransportPackage.getSequenceNumber(this.header);                                                
+                                readBuffer[readBufferIndex++] = (byte)this.data;
+
+                                if (readBufferIndex == BUFFER_SIZE) {
+                                    readBufferIndex = 0;
+                                }                        
+                            }
+                        } else if (TransportPackage.getType(header) == RECEIPT) {
+                            if (TransportPackage.getSequenceNumber(this.header) == this.lastPackageSent) {
+                                this.sentIndex++;
+                                this.readyToSend = true;
+                            }
+                        }
+                        Thread.sleep(50);
+                    } catch (Exception e) {
+    //                    e.printStackTrace();
                     }
-                    Thread.sleep(50);
-                } catch (Exception e) {
-                    isWriting = false;
-//                    e.printStackTrace();
+                } else {
+                    try {
+                        Thread.sleep(50);
+                    } catch (Exception e) {
+    //                    e.printStackTrace();
+                    }
                 }
             }
         }        
@@ -152,16 +181,16 @@ public class TransportSocket
         private int data;                
         
         protected TransportInputStream() {
-            this.readIndex = bufferIndex;
+            this.readIndex = readBufferIndex;
         }
                 
         public int read() throws IOException {
-            if (this.readIndex == bufferIndex) {
+            if (this.readIndex == readBufferIndex) {
                 return -1;
             } else {                
                 this.data = readBuffer[this.readIndex++];
                 
-                if (this.readIndex == INPUT_BUFFER_SIZE) {
+                if (this.readIndex == BUFFER_SIZE) {
                     this.readIndex = 0;
                 }
                 
@@ -170,94 +199,15 @@ public class TransportSocket
         }
     }
     
-    public class TransportOutputStream extends OutputStream
-    {        
-        private OutputStream out;
-        private InputStream in;
-        private int sequence;
-        
-        protected TransportOutputStream(InputStream in, OutputStream out)
-        {
-            this.out = out;
-            this.in = in;
-            this.sequence = 0;
-        }
-        
-        public void write(int b) throws IOException
-        {
-            sequence = (sequence+1)%127;
-            
-            try
-            {
-                this.write(b, sequence);
+    public class TransportOutputStream extends OutputStream {                
+        public void write(int b) throws IOException {            
+            writeBuffer[writeBufferIndex++] = (byte)b;
+                
+            if (writeBufferIndex == BUFFER_SIZE) {
+                writeBufferIndex = 0;
             }
-            catch(IOException e)
-            {
-                isWriting = false;
-                throw e;
-            }
-        }
-        
-        private void write(int b, int sequence) throws IOException
-        {
-            //Write header and data bytes.
-            
-            try {
-//                while (isWriting) {
-//                    Thread.sleep(100);
-//                }
-                isWriting = true;
-//                System.out.println("isWriting now false");
-                this.out.write(TransportPackage.getSequenceNumber(sequence));
-//                System.out.println("Transport: Header Sent");
-                this.out.write(b);
-//                System.out.println("Transport: SENDING  :  "+TransportPackage.getSequenceNumber(sequence)+", "+b);
-                isWriting = false;
-
-                //System.out.println("Transport layer sending... "+(0x7F&sequence)+", "+b);
-
-                int timestamp = (int)System.currentTimeMillis();
-                int ack_timestamp = timestamp;
-
-                //Try to read acknowledge header. Timeout if needed.
-                while(((int)System.currentTimeMillis())-timestamp <= TransportSocket.WRITE_TIMEOUT && lastAcknowledge != sequence)
-                {
-//                    System.out.println("HUZZAH");
-                    if(((int)System.currentTimeMillis())-ack_timestamp >= TransportSocket.ACKNOWLEDGE_TIMEOUT)
-                    {
-
-//                        while (isWriting) {
-//                            Thread.sleep(50);
-//                        }
-//                        System.out.println("TEST");
-                        isWriting = true; 
-                        this.out.write(TransportPackage.getSequenceNumber(sequence));
-                        this.out.write(b);
-                        ack_timestamp = (int)System.currentTimeMillis();
-                        isWriting = false;
-
-                    }                
-
-                    Thread.sleep(ACKNOWLEDGE_TIMEOUT);
-                }            
-
-                //End method if the proper acknowledge was received. Retry if it didn't match sent package.
-                if(lastAcknowledge == sequence)
-                {
-//                    System.out.println("Returning");
-                    return;
-                }
-                else
-                {
-//                    System.out.println("Retrying");
-                    this.write(b, sequence);
-                }                    
-            } catch (Exception e) {
-                isWriting = false;
-//                e.printStackTrace();
-            }
-        }
-    }
+        }                
+   }
            
     public TransportOutputStream getOutputStream()
     {
