@@ -6,11 +6,12 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
- *
+ * LMK @ 30. april 2007 (v 1.1)
+ * Fixed checksum overflow errors
  * LMK @ 22. marts 2007 (v 1.0)
  * __________ Changes ____________
  *
@@ -41,12 +42,15 @@ public abstract class LinkLayerSocket {
     }
         
     public static boolean checksumIsValid(byte[] buffer) {                        
-        byte checksum = 0;
+        int checksum = 0;
         for (int i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {
-            checksum += buffer[i];
+            checksum += 0xFF & buffer[i];            
+            if ((checksum & 0x0100) == 0x0100) {
+                checksum ^= 0x0101;
+            }
         }
 
-        if (checksum - buffer[CHECKSUM_OFFSET] == 0) {
+        if ((byte)checksum - buffer[CHECKSUM_OFFSET] == 0) {
             return true;
         }        
         
@@ -54,12 +58,16 @@ public abstract class LinkLayerSocket {
     }
     
     public static void addChecksum(byte[] buffer) {            
-        buffer[CHECKSUM_OFFSET] = 0;
+        int checksum = 0;
 
         for (int i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {
-            buffer[CHECKSUM_OFFSET] += buffer[i];
+            checksum += 0xFF & buffer[i];
+            if ((checksum & 0x0100) == 0x0100) {
+                checksum ^= 0x0101;
+            }
         }
 
+        buffer[CHECKSUM_OFFSET] = (byte)checksum;
         buffer[CHECKSUM_OFFSET + 1] = (byte)(~buffer[CHECKSUM_OFFSET]);
     }
 
