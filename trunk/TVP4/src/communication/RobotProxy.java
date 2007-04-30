@@ -207,6 +207,6 @@ public class RobotProxy extends Thread{
     }
     
     public void setActive(boolean isActive){
-        //this.socket.setActive(isActive);
+        this.socket.setActive(isActive);
     }
 }

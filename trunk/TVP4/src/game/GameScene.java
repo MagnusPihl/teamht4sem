@@ -432,8 +432,12 @@ public class GameScene implements Scene {
 
     public void init(InputManager _input) {
         this.state = this.STATE_RUNNING;
+        for(int i=0; i<3; i++)
+                this.proxy[i].setActive(false);
         if(this.online){
             this.state = this.STATE_PLACEMENT;
+            for(int i=0; i<3; i++)
+                this.proxy[i].setActive(true);
             this.placementState = 0;
         }
         this.resetPoints();
