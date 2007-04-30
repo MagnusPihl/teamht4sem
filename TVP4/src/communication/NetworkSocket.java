@@ -89,7 +89,7 @@ public class NetworkSocket {
                 if (this.data != -1) {
 //                    System.out.println("Network: Data = "+this.data);
                     if (this.bufferIndex == -1) {
-                        System.out.println(this.data + " ?= "+this.expectedHeader);
+//                        System.out.println(this.data + " ?= "+this.expectedHeader);
                         if (this.data == this.expectedHeader) {
                             this.packetAccepted = true;
                         }
