@@ -6,11 +6,11 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.0
+ * @version 1.1
  *
  *
  * ******VERSION HISTORY******
- * LMK @ 30. april 2007 (v 1.0)
+ * LMK @ 30. april 2007 (v 1.1)
  * Fixed checksum overflow errors
  * LMK @ 22. marts 2007 (v 1.0)
  * __________ Changes ____________
