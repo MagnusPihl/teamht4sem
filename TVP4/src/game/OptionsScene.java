@@ -84,7 +84,7 @@ public class OptionsScene implements Scene
         this.enter = new InputAction("Enter", InputAction.DETECT_FIRST_ACTION);
         this.quit = new InputAction("Escape", InputAction.DETECT_FIRST_ACTION);
         
-        this.menuItemsStr = new String[] {"Entity0", "Entity1", "Entity2", "Skin", "Game Speed", "Mode", "Interface"};
+        this.menuItemsStr = new String[] {"Entity0", "Entity1", "Entity2", "Skin", "Game Speed", "Sound", "Mode", "Interface"};
         
         String[] joyList = new String[JXInputManager.getNumberOfDevices()];
         for(int i=0; i<joyList.length; i++)
@@ -117,8 +117,9 @@ public class OptionsScene implements Scene
             this.menuOptionsStr[3][i] = skinList[i].getName();
         
         this.menuOptionsStr[4] = new String[] {"Slow", "Normal", "Fast"};
-        this.menuOptionsStr[5] = new String[] {"Offline", "Online"};
-        this.menuOptionsStr[6] = new String[] {"USB", "COM1", "COM2", "COM3", "COM4"};
+        this.menuOptionsStr[5] = new String[] {"On", "Off"};
+        this.menuOptionsStr[6] = new String[] {"Offline", "Online"};
+        this.menuOptionsStr[7] = new String[] {"USB", "COM1", "COM2", "COM3", "COM4"};
         
         this.menuHelpStr = new String[]
         {
@@ -127,6 +128,7 @@ public class OptionsScene implements Scene
             "Choose which device to control Ghost B with by pressing left or right.\nPress enter to customize controls for\nyour device.",
             "Press left or right to choose a skin.\nPress enter to see a preview of the\ncurrently selected skin.",
             "Press left or right to decrease or\nincrease game speed.",
+            "Press left or right to turn sound\non or off.",
             "Press left or right to choose either\noffline or online mode.\n"+
                 "In online mode, robots will physically\nmimic the game.",
             "Press left or right to choose the port\nat which a Lego Mindstorm Tower is\nconnected.\nOnly needed for Online mode."
@@ -140,19 +142,20 @@ public class OptionsScene implements Scene
         
         this.option[3] = 0; //Whatever the first skin is, or "pacman" if it exists.
         for(int i=0; i<this.menuOptionsStr[3].length; i++)
-            if(this.menuOptionsStr[3][i] == "pacman")
+            if(this.menuOptionsStr[3][i].equals("sketch"))
                 this.option[3] = i;
         
         this.option[4] = 1; //Normal game speed
-        this.option[5] = 0; //Offline mode
-        this.option[6] = 0; //USB interface
+        this.option[5] = 0; //Sound on
+        this.option[6] = 1; //Offline mode
+        this.option[7] = 0; //USB interface
     }
     
     public void draw(Graphics2D _g) {
         _g.setColor(Color.BLACK);
         _g.fillRect(0,0,800,600);
         
-        int y = 50;
+        int y = 0;
         for(int i=0; i<this.menuItems.length; i++)
         {
             _g.drawImage(this.menuItems[i], 150, y, null);
@@ -220,8 +223,14 @@ public class OptionsScene implements Scene
             case 1: PacmanApp.getInstance().getGameScene().setRoundTime(500);   break;
             case 2: PacmanApp.getInstance().getGameScene().setRoundTime(250);   break;
         }
-
+        
         switch(this.option[5])
+        {
+            case 0: PacmanApp.getInstance().getGameScene().setSoundOn(true);    break;
+            case 1: PacmanApp.getInstance().getGameScene().setSoundOn(false);   break;
+        }
+
+        switch(this.option[6])
         {
             case 0: PacmanApp.getInstance().getGameScene().setOnline(false);    break;
             case 1: PacmanApp.getInstance().getGameScene().setOnline(true);     break;
