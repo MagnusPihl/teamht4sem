@@ -98,7 +98,7 @@ public class GameScene implements Scene {
     
     private Field field;
     private Entity[] entity;
-    private InputAction pause, confirm;
+    private InputAction cancel, confirm;
     
     private File level;
     private BitmapFont font;
@@ -140,7 +140,7 @@ public class GameScene implements Scene {
         TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "pacman/"));
         SoundSet.getInstance().loadSoundSet(new File(SoundSet.SKIN_LIBRARY + "pacman/"));
         this.soundManager = new SoundManager();
-        this.pause = new InputAction("Pause", InputAction.DETECT_FIRST_ACTION);
+        this.cancel = new InputAction("Cancel", InputAction.DETECT_FIRST_ACTION);
         this.confirm = new InputAction("Confirm quit", InputAction.DETECT_FIRST_ACTION);
         
         this.roundTime = 250;   //animation problems if set lower than 250
@@ -273,25 +273,25 @@ public class GameScene implements Scene {
         
         if(this.state == this.STATE_PAUSE)
         {
-            GameDialog.drawDialogCenter(_g, "Game Paused\nPress 'Y' to exit to the title screen.");
+            GameDialog.drawDialogCenter(_g, "Game Paused.\nPress enter to exit to \nthe title screen.");
         }
             
         if(this.state == this.STATE_WIN)
         {
             this.soundManager.runSound(6, false);
-            GameDialog.drawDialogCenter(_g, "You Win!\nPress 'Y' to exit to the title screen.");
+            GameDialog.drawDialogCenter(_g, "You Win!\nPress enter to exit to \nthe title screen.");
         }
             
         if(this.state == this.STATE_LOSE)
         {
             this.soundManager.runSound(3, false);
-            GameDialog.drawDialogCenter(_g, "You Lose!\nPress 'Y' to exit to the title screen.");
+            GameDialog.drawDialogCenter(_g, "You Lose!\nPress enter to exit to \nthe title screen.");
         }
         
         if(this.state == this.STATE_PLACEMENT)
         {
             if(placementState%2 == 0){
-                GameDialog.drawDialogCenter(_g, "Place robot # " + placementState + " at the point specified by the picture.\nPush enter when ready to place.");
+                GameDialog.drawDialogCenter(_g, "Place robot #" + ((placementState/2)+1) + " where the\nblinking entity is.\nPress enter when done.");
             }
         }
     }            
@@ -305,6 +305,11 @@ public class GameScene implements Scene {
         {
             if(this.confirm.isPressed()){
                 placementState++;
+                if(placementState == 6)
+                {
+                    this.state = this.STATE_RUNNING;
+                    return;
+                }
                 if(placementState%2 == 1){
                     this.field.getEntityRenderers()[(placementState-1)/2].setHighlight(true);
                 }
@@ -316,7 +321,7 @@ public class GameScene implements Scene {
 
         if(this.state == this.STATE_RUNNING)
         {
-            if(pause.isPressed())
+            if(cancel.isPressed())
             {
                 this.state = this.STATE_PAUSE;
                 this.soundManager.pause();
@@ -329,7 +334,7 @@ public class GameScene implements Scene {
             {
                 if(entities[i].getEntity() != null)
                 {
-                    System.out.println("Sem: "+semaphore.availablePermits());
+//                    System.out.println("Sem: "+semaphore.availablePermits());
                     if(this.moveTimer<0 && this.semaphore.availablePermits()==3)
                     {
                         //Win/Lose condition
@@ -369,9 +374,9 @@ public class GameScene implements Scene {
                             for(int j=0; j<1; j++)  //j<3
                             {
                                 try {
-                                    System.out.println("Moving entity "+j);
+//                                    System.out.println("Moving entity "+j);
                                     this.proxy[j].move((byte)dir, (byte)entities[j].getEntity().getNode().getBinaryDirections());
-                                    System.out.println("Done moving.");
+//                                    System.out.println("Done moving.");
                                 }
                                 catch(IOException e)
                                 {
@@ -388,7 +393,7 @@ public class GameScene implements Scene {
 
         if(this.state == this.STATE_PAUSE)
         {
-            if(pause.isPressed())
+            if(cancel.isPressed())
             {
                 this.state = this.STATE_RUNNING;
                 this.soundManager.pause();
@@ -410,7 +415,7 @@ public class GameScene implements Scene {
     public void init(InputManager _input) {
         this.state = this.STATE_RUNNING;
         if(this.online){
-            //this.state = this.STATE_PLACEMENT;
+            this.state = this.STATE_PLACEMENT;
             this.placementState = 0;
         }
         this.resetPoints();
@@ -432,8 +437,8 @@ public class GameScene implements Scene {
         this.levelOffsetX = (800/2) - ((this.field.getSize().width * TileSet.getInstance().getTileSize())/2);
         this.levelOffsetY = (600/2) - ((this.field.getSize().height * TileSet.getInstance().getTileSize())/2);
         this.soundManager.runSound(1, true);
-        _input.mapToKey(pause, KeyEvent.VK_SPACE);
-        _input.mapToKey(confirm, KeyEvent.VK_Y);
+        _input.mapToKey(cancel, KeyEvent.VK_ESCAPE);
+        _input.mapToKey(confirm, KeyEvent.VK_ENTER);
         
         EntityRenderer[] entities = this.field.getEntityRenderers();
         for(int i=0; i<entities.length; i++)
@@ -447,8 +452,8 @@ public class GameScene implements Scene {
     }
     
     public void deinit(InputManager _input) {
-        _input.removeKeyAssociation(KeyEvent.VK_SPACE);
-        _input.removeKeyAssociation(KeyEvent.VK_Y);
+        _input.removeKeyAssociation(KeyEvent.VK_ENTER);
+        _input.removeKeyAssociation(KeyEvent.VK_ESCAPE);
         this.soundManager.removePreviousPlayers();
         EntityRenderer[] entities = this.field.getEntityRenderers();
         for(int i=0; i<entities.length; i++)
