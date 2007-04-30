@@ -88,6 +88,7 @@ public class Controller implements ButtonListener{
     }
     
     private void move(){
+        tower.stopThread();
         TextLCD.print("move");
         directions = tower.getDirections();
         if(command != lastCommand){
@@ -117,6 +118,7 @@ public class Controller implements ButtonListener{
             ride.goToCross();
         }
         lastCommand = command;
+        tower.startThread();
     }
     
     public void setCalibrationValues(int sensor1, int sensor2, int sensor3, int minGreen, int maxGreen, int minBlack, int maxBlack){
