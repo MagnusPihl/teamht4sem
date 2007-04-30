@@ -87,7 +87,9 @@ public class NetworkSocket {
             do {
                 this.data = this.in.read();
                 if (this.data != -1) {
+//                    System.out.println("Network: Data = "+this.data);
                     if (this.bufferIndex == -1) {
+                        System.out.println(this.data + " ?= "+this.expectedHeader);
                         if (this.data == this.expectedHeader) {
                             this.packetAccepted = true;
                         }
@@ -174,8 +176,11 @@ public class NetworkSocket {
             this.buffer[this.bufferPosition] = (byte)b;
             
             if (this.bufferPosition == OUTPUT_BUFFER_SIZE - 1) {
+//                System.out.println("Network: Sending...");
                 this.out.write(this.sendHeader);
+//                System.out.println("Network: Header Sent");
                 this.out.write(this.buffer);
+//                System.out.println("Network: Data Sent");
             }
         }                        
     }

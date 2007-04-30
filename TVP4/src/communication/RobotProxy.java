@@ -118,6 +118,7 @@ public class RobotProxy extends Thread{
         int result=-1;
         while(result == -1)
             result = in.read();
+//        System.out.println("Move done: "+result);
         if((result & 0xf0)==0x10)
         {
             this.input = result & 0x0f;
