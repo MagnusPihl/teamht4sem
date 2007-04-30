@@ -61,7 +61,7 @@ public class TransportSocket
     //Total time to attempt writing before failing, in milliseconds.
     public static final int WRITE_TIMEOUT = 300;
     //Time to wait for acknowledge before retrying to write data. Should always be lower than WRITE_TIMEOUT.
-    public static final int ACKNOWLEDGE_TIMEOUT = 150;    
+    public static final int ACKNOWLEDGE_TIMEOUT = 300;    
     
     /** Creates a new instance of IRSocket */
     public TransportSocket(InputStream in, OutputStream out)
@@ -93,6 +93,7 @@ public class TransportSocket
         
         public void run() {
             while (true) {
+//                System.out.println("Reading...");
                 try {
                     //int timestamp = (int)System.currentTimeMillis();
 
@@ -108,13 +109,15 @@ public class TransportSocket
                         Thread.sleep(100);
                         continue;
                     }
+                                       
+//                        System.out.println("Transport: READING:  "+TransportPackage.getType(header)+", "+TransportPackage.getSequenceNumber(header)+", "+data);
 
                     //Only continue if byte received is Data header.
                     if (TransportPackage.getType(header) == DATA) {
                         //Send receipt.
-                        while (isWriting) {
-                            Thread.sleep(50);
-                        }
+//                        while (isWriting) {
+//                            Thread.sleep(50);
+//                        }
                         isWriting = true;
                         this.out.write(TransportPackage.createAcknowledgeHeader(this.header));
                         this.out.write(NOP);
@@ -130,11 +133,14 @@ public class TransportSocket
                             }                        
                         }
                     } else if (TransportPackage.getType(header) == RECEIPT) {
-                        lastAcknowledge = TransportPackage.getSequenceNumber(this.header);                                 
+                        lastAcknowledge = TransportPackage.getSequenceNumber(this.header);
+//                        System.out.println("Transport Layer ACK sequence: "+(this.header&0x7f));
+                        //notifyAll();                    
                     }
-
                     Thread.sleep(50);
-                } catch (Exception e) {                    
+                } catch (Exception e) {
+                    isWriting = false;
+                    e.printStackTrace();
                 }
             }
         }        
@@ -187,6 +193,7 @@ public class TransportSocket
             }
             catch(IOException e)
             {
+                isWriting = false;
                 throw e;
             }
         }
@@ -196,12 +203,15 @@ public class TransportSocket
             //Write header and data bytes.
             
             try {
-                while (isWriting) {
-                    Thread.sleep(50);
-                }
+//                while (isWriting) {
+//                    Thread.sleep(100);
+//                }
                 isWriting = true;
-                this.out.write(0x7F & sequence);
+//                System.out.println("isWriting now false");
+                this.out.write(TransportPackage.getSequenceNumber(sequence));
+//                System.out.println("Transport: Header Sent");
                 this.out.write(b);
+//                System.out.println("Transport: SENDING  :  "+TransportPackage.getSequenceNumber(sequence)+", "+b);
                 isWriting = false;
 
                 //System.out.println("Transport layer sending... "+(0x7F&sequence)+", "+b);
@@ -212,36 +222,39 @@ public class TransportSocket
                 //Try to read acknowledge header. Timeout if needed.
                 while(((int)System.currentTimeMillis())-timestamp <= TransportSocket.WRITE_TIMEOUT && lastAcknowledge != sequence)
                 {
+//                    System.out.println("HUZZAH");
                     if(((int)System.currentTimeMillis())-ack_timestamp >= TransportSocket.ACKNOWLEDGE_TIMEOUT)
                     {
 
-                        while (isWriting) {
-                            Thread.sleep(50);
-                        }
+//                        while (isWriting) {
+//                            Thread.sleep(50);
+//                        }
+//                        System.out.println("TEST");
                         isWriting = true; 
-                        this.out.write(0x7F & sequence);
+                        this.out.write(TransportPackage.getSequenceNumber(sequence));
                         this.out.write(b);
                         ack_timestamp = (int)System.currentTimeMillis();
                         isWriting = false;
 
                     }                
 
-                    this.wait(ACKNOWLEDGE_TIMEOUT);
+                    Thread.sleep(ACKNOWLEDGE_TIMEOUT);
                 }            
 
                 //End method if the proper acknowledge was received. Retry if it didn't match sent package.
                 if(lastAcknowledge == sequence)
                 {
-                    //System.out.println("Returning");
+//                    System.out.println("Returning");
                     return;
                 }
                 else
                 {
-                    //System.out.println("Retrying");
+//                    System.out.println("Retrying");
                     this.write(b, sequence);
                 }                    
             } catch (Exception e) {
-
+                isWriting = false;
+                e.printStackTrace();
             }
         }
     }

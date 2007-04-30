@@ -26,6 +26,7 @@
 
 package communication;
 
+import java.util.concurrent.Semaphore;
 import josx.rcxcomm.*;
 import java.io.*;
 
@@ -37,6 +38,8 @@ public class TowerSocket extends LinkLayerSocket {
     private byte[] readBuffer;
     private int packetIndex;
     private byte[] packetBuffer;
+    
+    private static Semaphore sem = new Semaphore(1);
     
     public static final int INPUT_BUFFER_SIZE = 400;    
         
@@ -62,7 +65,12 @@ public class TowerSocket extends LinkLayerSocket {
      * @return true if packet received has a valid checksum and has been added
      * to buffer, or false if the packet was invalid and trashed.
      */
-    private boolean readPacket() {
+    private synchronized boolean readPacket() {
+        try {
+            sem.acquire();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
         byte[] data = new byte[1];        
         int available = 0;
         this.packetIndex = 0;
@@ -83,11 +91,14 @@ public class TowerSocket extends LinkLayerSocket {
                     this.packetBuffer[this.packetIndex++] = data[0];
                     //timeout = System.currentTimeMillis() + TIMEOUT;
                 }
-            } else// if (System.currentTimeMillis() > timeout) {
+            } else// if (System.currentTimeMillis() > timeout)
+            {
                 //this.timeoutCount++;
+                sem.release();
                 return false;
-            //}
+            }
         } while (this.packetIndex < PACKET_SIZE);
+        sem.release();
                 
         //if checksum is valid add packet to stream.
         if (LinkLayerSocket.checksumIsValid(this.packetBuffer)) {
@@ -172,9 +183,17 @@ public class TowerSocket extends LinkLayerSocket {
             this.packetBuffer[this.packetIndex++] = (byte)~buffer;
             
             if (this.packetIndex >= CHECKSUM_OFFSET) {
+                try {
+                    sem.acquire();
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
                 LinkLayerSocket.addChecksum(this.packetBuffer);
+//                System.out.println("Link: Sending...");
                 tower.write(this.packetBuffer, PACKET_SIZE);
+//                System.out.println("Link: Sent!");
                 this.packetIndex = DATA_OFFSET;
+                sem.release();
             }            
         }
     }        
@@ -182,5 +201,10 @@ public class TowerSocket extends LinkLayerSocket {
     
     public InputStream getInputStream() {
         return new TowerSocket.TowerInputStream();
+    }
+    
+    public OutputStream getOutputStream()
+    {
+        return new TowerSocket.TowerOutputStream();
     }
 }
