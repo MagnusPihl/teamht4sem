@@ -30,7 +30,6 @@ public class GameProxy {
     Controller OS = Controller.getInstance();
     int address;
     LLCSocket link = new LLCSocket();
-    //TowerSocket link = new TowerSocket();
     NetworkSocket net;
     TransportSocket socket;
     InputStream in;
@@ -59,7 +58,6 @@ public class GameProxy {
                 
             }
         }
-        TextLCD.print("done");
         if(command == GameCommands.MOVE_UP || command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_DOWN || command == GameCommands.MOVE_LEFT){
             while(directions == -1){
                 try {
@@ -69,7 +67,6 @@ public class GameProxy {
                 }
             }
         }
-        TextLCD.print("dir");
         // lav evt. noget timeout here.
         if(command == GameCommands.CALIBRATE){
             int sensor1 = -1;
@@ -79,7 +76,6 @@ public class GameProxy {
             int minGreen = -1;
             int maxBlack = -1;
             int minBlack = -1;
-            TextLCD.print("Cali");
             while(sensor1 == -1){
                 try {
                     sensor1 = in.read();
