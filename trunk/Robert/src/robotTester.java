@@ -72,28 +72,28 @@ public class robotTester extends JFrame{
         r1Up = new JButton("Up");
         r1Up.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                robot1Send(0x00);
+                robot1Send(0x01);
             }
         });
         
         r1Down = new JButton("Down");
         r1Down.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                robot1Send(0x02);
+                robot1Send(0x03);
             }
         });
         
         r1Right = new JButton("Right");
         r1Right.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                robot1Send(0x01);
+                robot1Send(0x02);
             }
         });
         
         r1Left = new JButton("Left");
         r1Left.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                robot1Send(0x03);
+                robot1Send(0x04);
             }
         });
         r1Sound = new JButton("Sound");

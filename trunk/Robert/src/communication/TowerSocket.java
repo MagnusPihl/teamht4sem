@@ -51,7 +51,7 @@ public class TowerSocket extends LinkLayerSocket {
     public TowerSocket() {
         super();
         this.tower = new Tower();
-        this.tower.open("com2");
+        this.tower.open("usb");
         super.out = new TowerSocket.TowerOutputStream();
         this.bufferIndex = 0;
         this.readBuffer = new byte[INPUT_BUFFER_SIZE];
