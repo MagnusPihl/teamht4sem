@@ -133,7 +133,7 @@ public class RobotProxy extends Thread{
         try {
             sema.acquire();
         } catch (InterruptedException ex) {
-            ex.printStackTrace();
+//            ex.printStackTrace();
         }
         switch(_direction){
             case(Node.DOWN): {

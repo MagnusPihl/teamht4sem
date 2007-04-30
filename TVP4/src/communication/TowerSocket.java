@@ -69,7 +69,7 @@ public class TowerSocket extends LinkLayerSocket {
         try {
             sem.acquire();
         } catch (InterruptedException ex) {
-            ex.printStackTrace();
+//            ex.printStackTrace();
         }
         byte[] data = new byte[1];        
         int available = 0;
@@ -186,7 +186,7 @@ public class TowerSocket extends LinkLayerSocket {
                 try {
                     sem.acquire();
                 } catch (InterruptedException ex) {
-                    ex.printStackTrace();
+//                    ex.printStackTrace();
                 }
                 LinkLayerSocket.addChecksum(this.packetBuffer);
 //                System.out.println("Link: Sending...");
