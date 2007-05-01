@@ -96,11 +96,9 @@ public class RobotProxy extends Thread{
         //System.out.println("4");
         try {
             this.out.write(possDir);
-            success = true;
         }
         catch(IOException e) {
             //System.out.println(e.getMessage());
-            success = false;
         }                
     }
     
