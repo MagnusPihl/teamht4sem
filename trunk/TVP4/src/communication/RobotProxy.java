@@ -86,43 +86,22 @@ public class RobotProxy extends Thread{
             ex.printStackTrace();
         }
         //System.out.println("3");
-        boolean success = false;
-        while(!success)
-        {
-            try {
-                this.out.write(searchDir);
-                success = true;
-            }
-            catch(IOException e) {
-                //System.out.println(e.getMessage());
-                success = false;
-            }
+        try {
+            this.out.write(searchDir);
         }
+        catch(IOException e) {
+            //System.out.println(e.getMessage());
+        }
+        
         //System.out.println("4");
-        success = false;
-        while(!success)
-        {
-            try {
-                this.out.write(possDir);
-                success = true;
-            }
-            catch(IOException e) {
-                //System.out.println(e.getMessage());
-                success = false;
-            }
+        try {
+            this.out.write(possDir);
+            success = true;
         }
-        
-        int result=-1;
-        while(result == -1)
-            result = in.read();
-//        System.out.println("Move done: "+result);
-        if((result & 0xf0)==0x10)
-        {
-            this.input = result & 0x0f;
-            sema.release();
-        }
-        
-        //System.out.println("5");
+        catch(IOException e) {
+            //System.out.println(e.getMessage());
+            success = false;
+        }                
     }
     
     public void search(int _direction) throws IOException{
