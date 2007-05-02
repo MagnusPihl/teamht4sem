@@ -41,8 +41,8 @@
 package communication;
 
 import java.io.*;
-import josx.platform.rcx.LCD;
-import josx.util.*;
+//import josx.platform.rcx.*;
+//import josx.util.*;
 
 public class TransportSocket
 {
@@ -58,9 +58,10 @@ public class TransportSocket
     public static final int RECEIPT = 1;    
     private static final byte NOP = 0x00;
     
+    public static final int WRITE_PAUSE = 10;
     public static final int BUFFER_SIZE = 20;    
     //Time to wait for acknowledge before retrying to write data. Should always be lower than WRITE_TIMEOUT.
-    public static final int ACKNOWLEDGE_TIMEOUT = 200;    
+    public static final int ACKNOWLEDGE_TIMEOUT = 1000;     
     
     /** Creates a new instance of IRSocket */
     public TransportSocket(InputStream in, OutputStream out) {        
@@ -87,6 +88,7 @@ public class TransportSocket
         private boolean readyToSend;
         protected boolean isActive;
         private int timeout;
+        private int nextWriteTime;
      
         private InputStream in;
         private OutputStream out;   
@@ -99,6 +101,7 @@ public class TransportSocket
             this.sentIndex = 0;
             this.readyToSend = true;
             this.isActive = false;
+            this.nextWriteTime = 0;
         }
         
         public void setActive(boolean isActive) {
@@ -108,65 +111,82 @@ public class TransportSocket
         public void run() {
             while (true) {
                 if (isActive) {
-                    try {                    
+                    try {                                 
+                        //Read header byte. 
+                        this.header = this.in.read();
+//                        LCD.showNumber(this.header);
+                        if (this.header != -1) {
+//                            LCD.showNumber(this.header);
+                            //Check indefinitely for second byte.
+//                            System.out.println(Integer.toBinaryString(this.header));
+                            do {
+                                this.data = this.in.read();
+                            } while (this.data == -1);                            
+//                            System.out.println(Integer.toBinaryString(this.data));
+                            
+                            //Only continue if byte received is Data header.
+                            if (TransportPackage.getType(this.header) == DATA) {
+                                //Send receipt.
+//                                LCD.showNumber(this.data);
+//                                System.out.println("le data");
+                                this.out.write(TransportPackage.createAcknowledgeHeader(this.header));
+                                this.out.write(NOP);
+
+                                //Return data only if not a repeat of the last sequence
+                                if(TransportPackage.getSequenceNumber(this.header) != this.lastPackageReceived) {
+                                    this.lastPackageReceived = TransportPackage.getSequenceNumber(this.header);                                                
+                                    readBuffer[readBufferIndex++] = (byte)this.data;
+
+                                    if (readBufferIndex == BUFFER_SIZE) {
+                                        readBufferIndex = 0;
+                                    }                        
+                                }
+                            } else if (TransportPackage.getType(header) == RECEIPT) {
+//                                Sound.beep();
+//                                LCD.showNumber(-1);
+//                                    System.out.println("le receipt");
+//                                    System.out.println(Integer.toBinaryString(TransportPackage.getSequenceNumber(this.header)) + " - "+  Integer.toBinaryString(this.lastPackageSent));
+                                if ((!this.readyToSend)&&(TransportPackage.getSequenceNumber(this.header) == this.lastPackageSent)) {
+                                    this.sentIndex++;
+                                    if (this.sentIndex == BUFFER_SIZE) {
+                                        this.sentIndex = 0;
+                                    }
+                                    this.readyToSend = true;
+                                    this.nextWriteTime = (int)System.currentTimeMillis() + WRITE_PAUSE;
+                                }
+                            }
+                        }
+                        
                         //System.out.println("le start");
-                        if ((this.readyToSend)&&(this.sentIndex != writeBufferIndex)) {   
-                            //System.out.println("Starter med at skrive");
+                        if ((this.readyToSend)&&(this.sentIndex != writeBufferIndex)&&(this.nextWriteTime < (int)System.currentTimeMillis())) {   
+//                            System.out.println("Starter med at skrive");
                             this.readyToSend = false;
                             this.lastPackageSent = TransportPackage.getSequenceNumber((lastPackageSent + 1) % 127);
+//                            System.out.println(System.currentTimeMillis());
                             this.out.write(this.lastPackageSent);
                             this.out.write(writeBuffer[this.sentIndex]);
+//                            System.out.println(System.currentTimeMillis());
                             timeout = (int)System.currentTimeMillis() + ACKNOWLEDGE_TIMEOUT;
                             //System.out.println("Slut med at skrive");
 
                         } else if ((!this.readyToSend)&&(timeout < (int)System.currentTimeMillis())) {                        
-                            //System.out.println("Gensender");
+                            //Sound.beep();
+//                            System.out.println("Gensender");
+//                            LCD.showNumber((int)System.currentTimeMillis() - timeout);
+                            System.out.println((int)System.currentTimeMillis() - timeout);
+                            timeout = (int)System.currentTimeMillis() + ACKNOWLEDGE_TIMEOUT;
                             this.out.write(this.lastPackageSent);
                             this.out.write(writeBuffer[this.sentIndex]);                            
                             //System.out.println("Færdig med at gensende");
                         }
-
-                        //Read header byte. 
-                        this.header = this.in.read();
-
-                        if (this.header != -1) {
-                            //Check indefinitely for second byte.
-                            do {
-                                this.data = this.in.read();
-                            } while (this.data == -1);
-                        } else {
-                            Thread.sleep(100);
-                            continue;
-                        }
-
-                        //Only continue if byte received is Data header.
-                        if (TransportPackage.getType(header) == DATA) {
-                            //Send receipt.
-                            this.out.write(TransportPackage.createAcknowledgeHeader(this.header));
-                            this.out.write(NOP);
-
-                            //Return data only if not a repeat of the last sequence
-                            if(TransportPackage.getSequenceNumber(this.header) != this.lastPackageReceived) {
-                                this.lastPackageReceived = TransportPackage.getSequenceNumber(this.header);                                                
-                                readBuffer[readBufferIndex++] = (byte)this.data;
-
-                                if (readBufferIndex == BUFFER_SIZE) {
-                                    readBufferIndex = 0;
-                                }                        
-                            }
-                        } else if (TransportPackage.getType(header) == RECEIPT) {
-                            if (TransportPackage.getSequenceNumber(this.header) == this.lastPackageSent) {
-                                this.sentIndex++;
-                                this.readyToSend = true;
-                            }
-                        }
-                        Thread.sleep(50);
+                        
+                        Thread.yield();
                     } catch (Exception e) {
     //                    e.printStackTrace();
                     }
                 } else {
                     try {
-                        Thread.sleep(50);
+                        Thread.sleep(500);
                     } catch (Exception e) {
     //                    e.printStackTrace();
                     }
