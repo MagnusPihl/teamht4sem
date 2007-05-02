@@ -118,11 +118,11 @@ public class TransportSocket
                         if (this.header != -1) {
 //                            LCD.showNumber(this.header);
                             //Check indefinitely for second byte.
-//                            System.out.println(Integer.toBinaryString(this.header));
+                            System.out.println(Integer.toBinaryString(this.header));
                             do {
                                 this.data = this.in.read();
                             } while (this.data == -1);                            
-//                            System.out.println(Integer.toBinaryString(this.data));
+                            System.out.println(Integer.toBinaryString(this.data));
                             
                             //Only continue if byte received is Data header.
                             if (TransportPackage.getType(this.header) == DATA) {
@@ -151,7 +151,7 @@ public class TransportSocket
                                     if (this.sentIndex == BUFFER_SIZE) {
                                         this.sentIndex = 0;
                                     }
-                                    this.readyToSend = true;
+                                this.readyToSend = true;
                                     this.nextWriteTime = (int)System.currentTimeMillis() + WRITE_PAUSE;
                                 }
                             }
@@ -173,7 +173,8 @@ public class TransportSocket
                             //Sound.beep();
 //                            System.out.println("Gensender");
 //                            LCD.showNumber((int)System.currentTimeMillis() - timeout);
-                            System.out.println((int)System.currentTimeMillis() - timeout);
+                            System.out.println("le arg " + writeBuffer[this.sentIndex]);
+                            System.out.println((int)System.currentTimeMillis() + "    " + System.currentTimeMillis());
                             timeout = (int)System.currentTimeMillis() + ACKNOWLEDGE_TIMEOUT;
                             this.out.write(this.lastPackageSent);
                             this.out.write(writeBuffer[this.sentIndex]);                            

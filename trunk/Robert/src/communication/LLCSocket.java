@@ -124,6 +124,11 @@ public class LLCSocket extends LinkLayerSocket {
             this.buffer[this.writePointer++] = (byte)(~buffer);
             
             if (this.writePointer == CHECKSUM_OFFSET) {
+                while (LLC.isSending()) {
+                    try {
+                        Thread.sleep(40);
+                    } catch (Exception e) {}
+                }
                 LinkLayerSocket.addChecksum(this.buffer);
                 LLC.sendBytes(this.buffer, PACKET_SIZE);
                 this.writePointer = DATA_OFFSET;
