@@ -38,6 +38,7 @@ public class TowerSocket extends LinkLayerSocket {
     private byte[] readBuffer;
     private int packetIndex;
     private byte[] packetBuffer;
+    private boolean isOpen;
     
     private static Semaphore sem = new Semaphore(1);
     
@@ -50,13 +51,20 @@ public class TowerSocket extends LinkLayerSocket {
      */
     public TowerSocket() {
         super();
-        this.tower = new Tower();
-        this.tower.open("usb");
+        this.tower = new Tower();        
         this.bufferIndex = 0;
         this.readBuffer = new byte[INPUT_BUFFER_SIZE];
         
         this.packetBuffer = new byte[PACKET_SIZE];
         this.packetIndex = DATA_OFFSET;        
+    }
+    
+    public void open(String port) {
+        this.tower.open(port);
+    }
+    
+    public void close() {
+        this.tower.close();
     }
         
     /**
