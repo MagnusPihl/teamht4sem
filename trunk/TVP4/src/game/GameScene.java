@@ -96,8 +96,9 @@ import javax.swing.JOptionPane;
 public class GameScene implements Scene {
     
     //Denne konstant bestemmer hvor mange robotter er sat til. Det SKAL være robot 1 der er sat til, hvis det kun er 1. Det
-    //SKAL være robot 1&2, hvis der er 2, osv.
-    //Husk at sætte mode til online i options.
+    // SKAL være robot 1&2, hvis der er 2, osv.
+    //Husk at sætte mode til online i options. Bemærk at alle entiteter bevæger sig i spillet, lige meget hvor mange
+    // robotter der er sat til. Det kan der ikke gøres noget ved. Der sendes kun til det antal du vælger.
     private final int NUM_ROBOTS = 1;
     
     private int points;
