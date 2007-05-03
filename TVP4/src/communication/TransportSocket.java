@@ -46,7 +46,7 @@ public class TransportSocket {
     private TransportInputStream in;
     private TransportOutputStream out;
     private int lastAcknowledge;
-    private Thread inputThread;
+    private TransportInputThread inputThread;
     private int bufferIndex;
     private byte[] readBuffer;
     
@@ -191,7 +191,6 @@ public class TransportSocket {
             try {
                 this.write(b, sequence);
             } catch(IOException e) {
-                isWriting = false;
                 throw e;
             }
         }
@@ -239,7 +238,7 @@ public class TransportSocket {
     }
     
     public void setActive(boolean isActive) {
-        this.in.isActive = isActive;
+        this.inputThread.isActive = isActive;
     }
     
     public void clear() {
