@@ -84,6 +84,8 @@ public class RobotProxy extends Thread{
                 if ((this.isActive)&&(this.sentIndex != writeBufferIndex)) {
                     try {
                         out.write(writeBuffer[this.sentIndex++]);
+                        if(this.sentIndex==BUFFER_SIZE)
+                            this.sentIndex = 0;
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
@@ -190,7 +192,7 @@ public class RobotProxy extends Thread{
             if((i&0xf0) == GameCommands.MOVE_DONE){
                 this.avaibleDirections = (i&0x0f);
                 this.sema.release();
-                setActive(false);
+                this.writer.setActive(false);
                 return true;
             }
         } catch (IOException ex) {
