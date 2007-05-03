@@ -38,13 +38,18 @@ public class RobotProxy extends Thread{
     private TransportSocket socket;// = new TransportSocket(net.getInputStream(), net.getOutputStream());
     protected InputStream in;// = socket.getInputStream();
     protected OutputStream out;// = socket.getOutputStream();
-    //private IRTransportSocket socket;
+    
     protected Semaphore sema;
     private byte mode;
     private int avaibleDirections = -1;
     private int timeout;
     
     private int input;
+    protected byte[] writeBuffer;
+    public static final int BUFFER_SIZE = 20;
+    private int writeBufferIndex; 
+    
+    private NonBlockingWriter writer;
     
     
     /**
@@ -58,7 +63,52 @@ public class RobotProxy extends Thread{
         out = socket.getOutputStream();
         
         sema = e;
+        writeBuffer = new byte[BUFFER_SIZE];
+        this.writeBufferIndex = 0;
+        writer = new NonBlockingWriter();
+        writer.start();
     }
+    
+    //*****************************************************//
+    public class NonBlockingWriter extends Thread {
+        private boolean isActive = false;
+        private int sentIndex;
+        
+        
+        public NonBlockingWriter(){
+            this.sentIndex = 0;
+        }
+        
+        public void run(){
+            while(true){
+                if ((this.isActive)&&(this.sentIndex != writeBufferIndex)) {
+                    try {
+                        out.write(writeBuffer[this.sentIndex++]);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                } else{
+                    try {
+                        this.sleep(200);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }
+        
+        public void setActive(boolean read){
+            isActive = read;
+        }
+    }
+    //************************************************************//
+    private void write(int b) throws IOException {
+            writeBuffer[writeBufferIndex++] = (byte)b;
+            
+            if (writeBufferIndex == BUFFER_SIZE) {
+                writeBufferIndex = 0;
+            }
+        }
     
     public void move(byte direction, byte possDir) throws IOException{
         byte searchDir;
@@ -75,31 +125,16 @@ public class RobotProxy extends Thread{
             case(Node.UP): {
                 searchDir = GameCommands.MOVE_UP; break;
             }
-            default: return;            
+            default: return;
         }
-        
-        //System.out.println("1");
         try {
             sema.acquire();
-            //System.out.println("2");
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
-        //System.out.println("3");
-        try {
-            this.out.write(searchDir);
-        }
-        catch(IOException e) {
-            //System.out.println(e.getMessage());
-        }
-        
-        //System.out.println("4");
-        try {
-            this.out.write(possDir);
-        }
-        catch(IOException e) {
-            //System.out.println(e.getMessage());
-        }                
+        writer.setActive(true);
+        this.write(searchDir);
+        this.write(possDir);
     }
     
     public void search(int _direction) throws IOException{
@@ -127,7 +162,7 @@ public class RobotProxy extends Thread{
             }
             
         }
-        this.out.write(searchDir | GameCommands.DISCOVER);
+        this.write(searchDir | GameCommands.DISCOVER);
     }
     
     public int getAvaibleDirections(){
@@ -138,16 +173,15 @@ public class RobotProxy extends Thread{
      *
      */
     public void blink() throws IOException{
-            //this.out.write(GameCommands.);
+        //this.out.write(GameCommands.);
     }
     
     public void lights(boolean on) throws IOException{
-            if(on){
-                int i = GameCommands.LIGHT_ON;
-                this.out.write(i);
-            } else{
-                this.out.write(GameCommands.LIGHT_OFF);
-            }
+        if(on){
+            this.out.write(GameCommands.LIGHT_ON);
+        } else{
+            this.out.write(GameCommands.LIGHT_OFF);
+        }
     }
     
     public boolean isDoneMoving(){
@@ -156,19 +190,20 @@ public class RobotProxy extends Thread{
             if((i&0xf0) == GameCommands.MOVE_DONE){
                 this.avaibleDirections = (i&0x0f);
                 this.sema.release();
+                setActive(false);
                 return true;
             }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
         return false;
-    }    
+    }
     
     /**
      *
      */
     public void beep() throws IOException{
-                this.out.write(GameCommands.BEEP);
+        this.out.write(GameCommands.BEEP);
     }
     
     public void calibrate(byte lOffset, byte oOffset, byte rOffset, byte minGreen, byte maxGreen, byte minBlack) throws IOException{
@@ -181,9 +216,5 @@ public class RobotProxy extends Thread{
         outPacket[5] = maxGreen;
         outPacket[6] = minBlack;
         this.out.write(outPacket);
-    }
-    
-    public void setActive(boolean isActive){
-        this.socket.setActive(isActive);
     }
 }
