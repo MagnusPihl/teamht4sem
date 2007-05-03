@@ -51,13 +51,12 @@ public class TowerSocket extends LinkLayerSocket {
     public TowerSocket() {
         super();
         this.tower = new Tower();
-        this.tower.open("com5");
-        super.out = new TowerSocket.TowerOutputStream();
+        this.tower.open("com2");
         this.bufferIndex = 0;
         this.readBuffer = new byte[INPUT_BUFFER_SIZE];
         
         this.packetBuffer = new byte[PACKET_SIZE];
-        this.packetIndex = DATA_OFFSET;
+        this.packetIndex = DATA_OFFSET;        
     }
         
     /**
@@ -150,6 +149,10 @@ public class TowerSocket extends LinkLayerSocket {
             
             return this.data;
         }  
+                
+        public synchronized void clear() {    
+            this.readIndex = bufferIndex;
+        }
     }
     
     /**
@@ -196,14 +199,18 @@ public class TowerSocket extends LinkLayerSocket {
                 sem.release();
             }            
         }
+        
+        public synchronized void clear() {
+            this.packetIndex = 0;
+        }
     }        
     
     
-    public InputStream getInputStream() {
+    public TowerInputStream getInputStream() {
         return new TowerSocket.TowerInputStream();
     }
     
-    public OutputStream getOutputStream()
+    public TowerOutputStream getOutputStream()
     {
         return new TowerSocket.TowerOutputStream();
     }

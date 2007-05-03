@@ -21,8 +21,6 @@ package communication;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import josx.platform.rcx.LCD;
-import josx.platform.rcx.TextLCD;
 import robot.Controller;
 
 
@@ -46,6 +44,7 @@ public class GameProxy {
         socket = new TransportSocket(net.getInputStream(), net.getOutputStream());
         in = socket.getInputStream();
         out = socket.getOutputStream();
+        socket.setActive(true);
     }
     
     public int getcommand(){
@@ -136,11 +135,11 @@ public class GameProxy {
     }
     
     public void stopThread(){
-//        socket.stop();
+//        socket.setActive(false);
     }
     
     public void startThread(){
-//        socket.start();
+  //      socket.setActive(true);
     }
     
     public void sendMoveDone(int move){
