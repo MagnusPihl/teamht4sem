@@ -21,7 +21,6 @@
 package communication;
 
 import field.Node;
-import java.awt.RadialGradientPaint;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,9 +29,6 @@ import java.util.concurrent.Semaphore;
 
 public class RobotProxy extends Thread{
     
-    public int robotID;
-    
-    private int address;
     private static TowerSocket link = new TowerSocket();
     private NetworkSocket net;// = new NetworkSocket(1,0,link.getInputStream(),link.getOutputStream());
     private TransportSocket socket;// = new TransportSocket(net.getInputStream(), net.getOutputStream());
@@ -40,11 +36,8 @@ public class RobotProxy extends Thread{
     protected OutputStream out;// = socket.getOutputStream();
     
     protected Semaphore sema;
-    private byte mode;
     private int avaibleDirections = -1;
-    private int timeout;
     
-    private int input;
     protected byte[] writeBuffer;
     public static final int BUFFER_SIZE = 20;
     private int writeBufferIndex; 
@@ -56,24 +49,22 @@ public class RobotProxy extends Thread{
      * Creates a new instance of RobotProxy
      */
     public RobotProxy(int _robotID, Semaphore e) {
-        robotID = _robotID;
-        net = new NetworkSocket(0,1,link.getInputStream(),link.getOutputStream());
+        net = new NetworkSocket(0, _robotID,link.getInputStream(),link.getOutputStream());
         socket = new TransportSocket(net.getInputStream(), net.getOutputStream());
         in = socket.getInputStream();
         out = socket.getOutputStream();
         
+        this.writeBufferIndex = 0;
         sema = e;
         writeBuffer = new byte[BUFFER_SIZE];
-        this.writeBufferIndex = 0;
         writer = new NonBlockingWriter();
         writer.start();
     }
     
-    //*****************************************************//
+    //**************Start of inner-class*********************//
     public class NonBlockingWriter extends Thread {
         private boolean isActive = false;
         private int sentIndex;
-        
         
         public NonBlockingWriter(){
             this.sentIndex = 0;
@@ -103,7 +94,9 @@ public class RobotProxy extends Thread{
             isActive = read;
         }
     }
-    //************************************************************//
+    //**************End of inner-class*********************//
+    
+    
     private void write(int b) throws IOException {
             writeBuffer[writeBufferIndex++] = (byte)b;
             
@@ -134,18 +127,13 @@ public class RobotProxy extends Thread{
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
-        writer.setActive(true);
+        this.writer.setActive(true);
         this.write(searchDir);
         this.write(possDir);
     }
     
     public void search(int _direction) throws IOException{
         byte searchDir;
-        try {
-            sema.acquire();
-        } catch (InterruptedException ex) {
-//            ex.printStackTrace();
-        }
         switch(_direction){
             case(Node.DOWN): {
                 searchDir = GameCommands.MOVE_DOWN; break;
@@ -164,16 +152,22 @@ public class RobotProxy extends Thread{
             }
             
         }
+        try {
+            sema.acquire();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
         this.write(searchDir | GameCommands.DISCOVER);
     }
     
     public int getAvaibleDirections(){
-        return this.input;
+        return this.avaibleDirections;
     }
     
     /**
      *
      */
+    @Deprecated
     public void blink() throws IOException{
         //this.out.write(GameCommands.);
     }
@@ -188,9 +182,9 @@ public class RobotProxy extends Thread{
     
     public boolean isDoneMoving(){
         try {
-            int i = this.in.read();
-            if((i&0xf0) == GameCommands.MOVE_DONE){
-                this.avaibleDirections = (i&0x0f);
+            int input = this.in.read();
+            if((input&0xf0) == GameCommands.MOVE_DONE){
+                this.avaibleDirections = (input&0x0f);
                 this.sema.release();
                 this.writer.setActive(false);
                 return true;
