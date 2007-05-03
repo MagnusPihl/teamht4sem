@@ -24,8 +24,8 @@ import josx.platform.rcx.*;
 import java.io.*;
 
 public class Controller implements ButtonListener{
-//    Drive ride = new Drive();
-    LowRider ride = new LowRider();
+    Drive ride = new Drive();
+//    LowRider ride = new LowRider();
     GameProxy tower;
     private static Controller instance = new Controller();
     
@@ -96,8 +96,8 @@ public class Controller implements ButtonListener{
             this.turn();
         }
         directions = tower.getDirections();
-//        ride.Forward(directions);
-        ride.run(directions,command);
+        ride.Forward(directions);
+//        ride.run(directions,command);
         lastCommand = command;
         tower.startThread();
     }
