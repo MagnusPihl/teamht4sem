@@ -136,7 +136,11 @@ public class NetworkSocket {
             }
             
             return data;
-        }               
+        }             
+        
+        public void clear() {
+            this.bufferIndex = this.readIndex;
+        }
     }
     
     /**
@@ -182,7 +186,11 @@ public class NetworkSocket {
                 this.out.write(this.buffer);
 //                System.out.println("Network: Data Sent");
             }
-        }                        
+        }    
+        
+        public void clear() {
+            this.bufferPosition = -1;
+        }
     }
     
     /**
@@ -201,5 +209,11 @@ public class NetworkSocket {
      */
     public NetworkInputStream getInputStream() {
         return this.in;
+    }
+    
+    
+    public void clear() {
+        this.in.clear();
+        this.out.clear();
     }
 }

@@ -26,8 +26,6 @@ import java.io.*;
  * @author LMK
  */
 public abstract class LinkLayerSocket {
-    protected OutputStream out;
-    protected InputStream in;       
     protected int timeoutCount;
     
     public static final byte PACKET_HEADER = 0x55;
@@ -69,14 +67,6 @@ public abstract class LinkLayerSocket {
 
         buffer[CHECKSUM_OFFSET] = (byte)checksum;
         buffer[CHECKSUM_OFFSET + 1] = (byte)(~buffer[CHECKSUM_OFFSET]);
-    }
-
-    public OutputStream getOutputStream() {
-        return this.out;
-    }
-    
-    public InputStream getInputStream() {
-        return this.in;
     }
     
     public int getTimeoutCount() {
