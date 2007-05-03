@@ -22,10 +22,10 @@ import communication.GameCommands;
 import communication.GameProxy;
 import josx.platform.rcx.*;
 import java.io.*;
-import josx.rcxcomm.RCXPort;
 
 public class Controller implements ButtonListener{
-    LowRider ride = new LowRider();
+    Drive ride = new Drive();
+//    LowRider ride = new LowRider();
     GameProxy tower;
     private static Controller instance = new Controller();
     
@@ -47,14 +47,17 @@ public class Controller implements ButtonListener{
     }
     
     public void run(){
-        //this.address();
+        this.address();
         tower = new GameProxy(address);
+        TextLCD.print("start");
         while(true){
+            TextLCD.print("get");
             command = tower.getcommand();
-            System.out.println("run" + command);
+            TextLCD.print("run");
             if(command == GameCommands.MOVE_DOWN || command == GameCommands.MOVE_LEFT || command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_UP){
                 this.move();
                 tower.sendMoveDone(GameCommands.MOVE_DONE);
+                TextLCD.print("Done");
         }else if(command == (GameCommands.DISCOVER | GameCommands.MOVE_UP) || command == (GameCommands.DISCOVER | GameCommands.MOVE_RIGHT) || command == (GameCommands.DISCOVER | GameCommands.MOVE_DOWN) || command == (GameCommands.DISCOVER | GameCommands.MOVE_LEFT)){
                 this.discover();
             }else if(command == 0x10){// not implemented yet
@@ -64,13 +67,13 @@ public class Controller implements ButtonListener{
             }else if(command == GameCommands.LIGHT_OFF){
                 this.lightOff();
             }else if(command == GameCommands.BEEP){
-                this.beepOn();
+                this.beepOn();//only two beeps
             }else if(command == 0x14){// not implemented yet
                 this.beepOff();
             }else if(command == GameCommands.CALIBRATE){
-                ride.callibrate(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
+                //ride.callibrate(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
             }else if(command == GameCommands.SEARCH_NODE){
-                directions = ride.searchNode();
+                //directions = ride.searchNode();
                 tower.sendMoveDone(GameCommands.MOVE_DONE | directions);
             }else{
                 
@@ -82,40 +85,21 @@ public class Controller implements ButtonListener{
         if(command != lastCommand){
             this.turn();
         }
-        directions = ride.goToNext();
+        //directions = ride.goToNext();
         tower.sendMoveDone(GameCommands.MOVE_DONE | directions);
     }
     
     private void move(){
-        System.out.println("move");
-        directions = tower.getDirections();
+        tower.stopThread();
+        TextLCD.print("move");
         if(command != lastCommand){
             this.turn();
         }
-        if(directions == (GameCommands.UP | GameCommands.DOWN) || directions == (GameCommands.RIGHT | GameCommands.LEFT)){
-            ride.goToGreen();
-        }
-        if(directions == (GameCommands.RIGHT | GameCommands.LEFT | GameCommands.DOWN) || directions == (GameCommands.UP | GameCommands.DOWN | GameCommands.LEFT) || directions == (GameCommands.RIGHT | GameCommands.LEFT | GameCommands.UP) || directions == (GameCommands.UP | GameCommands.DOWN | GameCommands.RIGHT)){
-            this.tCross();
-        }
-        if(directions == (GameCommands.DOWN | GameCommands.LEFT) || directions == (GameCommands.UP | GameCommands.RIGHT)){
-            if(command == GameCommands.MOVE_UP || command == GameCommands.MOVE_DOWN){
-                ride.goToLeftCorner();
-            }else if(command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_LEFT){
-                ride.goToRightCorner();
-            }
-        }
-        if(directions == (GameCommands.DOWN | GameCommands.RIGHT) || directions == (GameCommands.UP | GameCommands.LEFT)){
-            if(command == GameCommands.MOVE_UP || command == GameCommands.MOVE_DOWN){
-                ride.goToRightCorner();
-            }else if(command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_LEFT){
-                ride.goToLeftCorner();
-            }
-        }
-        if(directions == (GameCommands.DOWN | GameCommands.RIGHT | GameCommands.UP | GameCommands.RIGHT)){
-            ride.goToCross();
-        }
+        directions = tower.getDirections();
+        ride.Forward(directions);
+//        ride.run(directions,command);
         lastCommand = command;
+        tower.startThread();
     }
     
     public void setCalibrationValues(int sensor1, int sensor2, int sensor3, int minGreen, int maxGreen, int minBlack, int maxBlack){
@@ -131,77 +115,41 @@ public class Controller implements ButtonListener{
     private void turn(){
         if(command == GameCommands.MOVE_UP || command == (GameCommands.DISCOVER | GameCommands.MOVE_UP)){
             if(lastCommand == GameCommands.MOVE_RIGHT || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_RIGHT)){
-                ride.left90();
+                ride.TurnLeft90();
             }else if(lastCommand == GameCommands.MOVE_LEFT || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_LEFT)){
-                ride.right90();
+                ride.TurnRight90();
             }else if(lastCommand == GameCommands.MOVE_DOWN || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_DOWN)){
-                ride.turn180();
+                this.turn180();
             }
         }else if(command == GameCommands.MOVE_RIGHT || command == (GameCommands.DISCOVER | GameCommands.MOVE_RIGHT)){
             if(lastCommand ==  GameCommands.MOVE_DOWN || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_DOWN)){
-                ride.left90();
+                ride.TurnLeft90();
             }else if(lastCommand == GameCommands.MOVE_UP || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_UP)){
-                ride.right90();
+                ride.TurnRight90();
             }else if(lastCommand == GameCommands.MOVE_LEFT || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_LEFT)){
-                ride.turn180();
+                this.turn180();
             }
         }else if(command == GameCommands.MOVE_DOWN || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_DOWN)){
             if(lastCommand == GameCommands.MOVE_UP || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_UP)){
-                ride.turn180();
+                this.turn180();
             }else if(lastCommand == GameCommands.MOVE_LEFT || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_LEFT)){
-                ride.left90();
+                ride.TurnLeft90();
             }else if(lastCommand == GameCommands.MOVE_RIGHT || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_RIGHT)){
-                ride.right90();
+                ride.TurnRight90();
             }
         }else if(command == GameCommands.MOVE_LEFT || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_LEFT)){
             if(lastCommand == GameCommands.MOVE_UP || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_UP)){
-                ride.left90();
+                ride.TurnLeft90();
             }else if(lastCommand == GameCommands.MOVE_RIGHT || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_LEFT)){
-                ride.turn180();
+                this.turn180();
             }else if(lastCommand == GameCommands.MOVE_DOWN || lastCommand == (GameCommands.DISCOVER | GameCommands.MOVE_DOWN)){
-                ride.right90();
+                ride.TurnRight90();
             }
         }
     }
     
     public static Controller getInstance() {
         return instance;
-    }
-    
-    private void tCross() {
-        if(directions == (GameCommands.RIGHT | GameCommands.LEFT | GameCommands.DOWN)){
-            if(command == GameCommands.MOVE_UP){
-                ride.goToCross();
-            }else if(command == GameCommands.MOVE_RIGHT){
-                ride.goToRightCorner();
-            }else if(command == GameCommands.MOVE_LEFT){
-                ride.goToLeftCorner();
-            }
-        }else if(directions == (GameCommands.UP | GameCommands.DOWN | GameCommands.LEFT)){
-            if(command == GameCommands.MOVE_UP){
-                ride.goToLeftCorner();
-            }else if(command == GameCommands.MOVE_RIGHT){
-                ride.goToCross();
-            }else if(command == GameCommands.MOVE_DOWN){
-                ride.goToRightCorner();
-            }
-        }else if(directions == (GameCommands.RIGHT | GameCommands.LEFT | GameCommands.UP)){
-            if(command == GameCommands.MOVE_RIGHT){
-                ride.goToLeftCorner();
-            }else if(command == GameCommands.MOVE_DOWN){
-                ride.goToCross();
-            }else if(command == GameCommands.MOVE_LEFT){
-                ride.goToRightCorner();
-            }
-        }else if(directions == (GameCommands.UP | GameCommands.DOWN | GameCommands.RIGHT)){
-            if(command == GameCommands.MOVE_UP){
-                ride.goToRightCorner();
-            }else if(command == GameCommands.MOVE_DOWN){
-                ride.goToLeftCorner();
-            }else if(command == GameCommands.MOVE_LEFT){
-                ride.goToCross();
-            }
-        }
     }
     
     private void flash() {
@@ -254,8 +202,61 @@ public class Controller implements ButtonListener{
         Controller noget = Controller.getInstance();
         noget.run();
     }
-    
-//    public int getAddress(){
-//        return address;
-//    }
+
+    private void turn180() {
+        if(directions == (GameCommands.UP | GameCommands.DOWN) || directions == (GameCommands.LEFT | GameCommands.RIGHT)){
+            ride.TurnLeft90();
+        }else if(directions == (GameCommands.UP | GameCommands.RIGHT) || directions == (GameCommands.DOWN | GameCommands.LEFT)){
+            if(command == GameCommands.MOVE_UP | command == GameCommands.MOVE_DOWN){
+                ride.TurnRight90();
+            }else if(command == GameCommands.MOVE_RIGHT | command == GameCommands.MOVE_LEFT){
+                ride.TurnLeft90();
+            }
+        }else if(directions == (GameCommands.UP | GameCommands.LEFT) || directions == (GameCommands.DOWN | GameCommands.RIGHT)){
+            if(command == GameCommands.MOVE_UP | command == GameCommands.MOVE_DOWN){
+               ride.TurnLeft90(); 
+            }else if(command == GameCommands.MOVE_RIGHT | command == GameCommands.MOVE_LEFT){
+                ride.TurnRight90();
+            }
+        }else if(directions == (GameCommands.UP | GameCommands.DOWN |GameCommands.LEFT | GameCommands.RIGHT)){
+            ride.TurnRight90();
+            ride.TurnRight90();
+        }else if(directions == (GameCommands.UP | GameCommands.DOWN | GameCommands.RIGHT)){
+            if(command == GameCommands.MOVE_UP){
+                ride.TurnRight90();
+            }else if(command == GameCommands.MOVE_DOWN){
+                ride.TurnLeft90();
+            }else if(command == GameCommands.MOVE_RIGHT){
+                ride.TurnLeft90();
+                ride.TurnLeft90();
+            }
+        }else if(directions == (GameCommands.UP | GameCommands.DOWN | GameCommands.LEFT)){
+            if(command == GameCommands.MOVE_UP){
+                ride.TurnLeft90();
+            }else if(command == GameCommands.MOVE_DOWN){
+                ride.TurnRight90();
+        }else if(command == GameCommands.MOVE_LEFT){
+                ride.TurnLeft90();
+                ride.TurnLeft90();
+            }
+        }else if(directions == (GameCommands.RIGHT | GameCommands.DOWN | GameCommands.LEFT)){
+            if(command == GameCommands.MOVE_LEFT){
+                ride.TurnLeft90();
+            }else if(command == GameCommands.MOVE_LEFT){
+                ride.TurnRight90();
+        }else if(command == GameCommands.MOVE_DOWN){
+                ride.TurnLeft90();
+                ride.TurnLeft90();
+            }
+        }else if(directions == (GameCommands.UP | GameCommands.RIGHT | GameCommands.LEFT)){
+            if(command == GameCommands.MOVE_RIGHT){
+                ride.TurnLeft90();
+            }else if(command == GameCommands.MOVE_LEFT){
+                ride.TurnRight90();
+        }else if(command == GameCommands.MOVE_UP){
+                ride.TurnLeft90();
+                ride.TurnLeft90();
+            }
+        }
+    }
 }
