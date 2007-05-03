@@ -95,6 +95,11 @@ import javax.swing.JOptionPane;
 
 public class GameScene implements Scene {
     
+    //Denne konstant bestemmer hvor mange robotter er sat til. Det SKAL være robot 1 der er sat til, hvis det kun er 1. Det
+    //SKAL være robot 1&2, hvis der er 2, osv.
+    //Husk at sætte mode til online i options.
+    private final int NUM_ROBOTS = 1;
+    
     private int points;
     
     private Field field;
@@ -371,13 +376,13 @@ public class GameScene implements Scene {
 
             //START OF TURN!
             entities[0].getEntity().getController().calculateNextMove();
-            for(int i=0; i<entities.length; i++)
+            if(this.moveTimer<0 && this.semaphore.availablePermits()==3)
             {
-                if(entities[i].getEntity() != null)
+                for(int i=0; i<entities.length; i++)
                 {
-//                    System.out.println("Sem: "+semaphore.availablePermits());
-                    if(this.moveTimer<0 && this.semaphore.availablePermits()==3)
+                    if(entities[i].getEntity() != null)
                     {
+//                    System.out.println("Sem: "+semaphore.availablePermits());
                         //Win/Lose condition
                         if(this.field.getPointsLeft() == 0)
                         {
@@ -412,11 +417,11 @@ public class GameScene implements Scene {
 
                         if(this.online)
                         {
-                            for(int j=0; j<1; j++)  //j<3
+                            if(i < NUM_ROBOTS)
                             {
                                 try {
 //                                    System.out.println("Moving entity "+j);
-                                    this.proxy[j].move((byte)dir, (byte)entities[j].getEntity().getNode().getBinaryDirections());
+                                    this.proxy[i].move((byte)dir, (byte)entities[i].getEntity().getNode().getBinaryDirections());
 //                                    System.out.println("Done moving.");
                                 }
                                 catch(IOException e)
@@ -427,12 +432,12 @@ public class GameScene implements Scene {
                         }
                         this.replay.list[i].add(dir);
                     }
-                    if(this.online)
-                        for(int j=0; j<1; j++)
-                            this.proxy[j].isDoneMoving();
                     //END OF TURN!
                  }
             }
+            if(this.online)
+                for(int i=0; i < NUM_ROBOTS; i++)
+                    this.proxy[i].isDoneMoving();
         }
 
         if(this.state == this.STATE_PAUSE)
