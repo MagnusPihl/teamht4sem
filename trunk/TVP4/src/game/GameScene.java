@@ -89,6 +89,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.concurrent.Semaphore;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
@@ -99,10 +100,12 @@ public class GameScene implements Scene {
     private Field field;
     private Entity[] entity;
     private InputAction cancel, confirm;
+    private EntityRenderer[] entities;
     
     private File level;
     private BitmapFont font;
     private BufferedImage pointsImage;
+    private BufferedImage tiledBackground;
     private int levelOffsetX, levelOffsetY;
     
     private Replay replay;
@@ -127,6 +130,7 @@ public class GameScene implements Scene {
     private int placementState;
     
     private boolean online;
+    private String towerPort;
     private Semaphore semaphore;
     private RobotProxy[] proxy;
     
@@ -242,35 +246,55 @@ public class GameScene implements Scene {
         return this.soundOn;
     }
     
+    public void setTowerPort(String port)
+    {
+        this.towerPort = port;
+    }
+    
+    public String getTowerPort()
+    {
+        return this.towerPort;
+    }
+    
+    private void updateLevelOffset()
+    {
+        if(field.getSize().width * TileSet.getInstance().getTileSize() > 800 ||
+            field.getSize().height * TileSet.getInstance().getTileSize() > 520)
+        {
+            int pacX = field.getEntityRenderers()[0].getEntity().getPosition().x * TileSet.getInstance().getTileSize();
+            int pacY = field.getEntityRenderers()[0].getEntity().getPosition().y * TileSet.getInstance().getTileSize();
+            this.levelOffsetX = (400)-pacX;
+            this.levelOffsetY = (300)-pacY;
+        }
+    }
+    
+    public void prerender()
+    {
+        this.resetPoints();
+        
+        //START Draw background
+        this.tiledBackground =
+                PacmanApp.getInstance().getCore().getScreenManager().createCompatibleImage(800, 600, Transparency.OPAQUE);
+        this.updateLevelOffset();
+
+        int startTileX = (this.levelOffsetX % TileSet.getInstance().getTileSize()) - TileSet.getInstance().getTileSize();
+        int startTileY = (this.levelOffsetY % TileSet.getInstance().getTileSize()) - TileSet.getInstance().getTileSize();
+        for(int i=startTileX; i<800; i+=TileSet.getInstance().getTileSize())
+            for(int j=startTileY; j<600; j+=TileSet.getInstance().getTileSize())
+                this.tiledBackground.getGraphics().drawImage(TileSet.getInstance().getBaseTile(), i, j, null);
+        this.tiledBackground.getGraphics().drawImage(new ImageIcon("images/top.png").getImage(), 0, 0, null);
+        //DONE Draw background
+    }
+    
     public void draw(Graphics2D _g)
     {
         //Any state
-            _g.setColor(Color.BLACK);
-            _g.fillRect(0, 0, 800, 600);
-
-            if(this.pointsImage == null)
-                this.resetPoints();
-
+            _g.drawImage(this.tiledBackground, 0, 0, null);
+            
             Shape clip = _g.getClip();
             _g.setClip(0, 40, 800, 560);
-
-            if(field.getSize().width * TileSet.getInstance().getTileSize() > 800 ||
-                    field.getSize().height * TileSet.getInstance().getTileSize() > 600)
-            {
-                int pacX = field.getEntityRenderers()[0].getEntity().getPosition().x * TileSet.getInstance().getTileSize();
-                int pacY = field.getEntityRenderers()[0].getEntity().getPosition().y * TileSet.getInstance().getTileSize();
-                this.levelOffsetX = (800/2)-pacX;
-                this.levelOffsetY = (600/2)-pacY;
-            }
-
-            int startTileX = (this.levelOffsetX % TileSet.getInstance().getTileSize()) - TileSet.getInstance().getTileSize();
-            int startTileY = (this.levelOffsetY % TileSet.getInstance().getTileSize()) - TileSet.getInstance().getTileSize();
-            for(int i=startTileX; i<800; i+=TileSet.getInstance().getTileSize())
-                for(int j=startTileY; j<600; j+=TileSet.getInstance().getTileSize())
-                    _g.drawImage(TileSet.getInstance().getBaseTile(), i, j, null);
-
+            this.updateLevelOffset();
             field.drawField(_g, this.levelOffsetX, this.levelOffsetY);
-
             _g.setClip(clip);
 
             _g.drawImage(pointsImage, 795 - pointsImage.getWidth(), 5, null);
@@ -339,13 +363,13 @@ public class GameScene implements Scene {
         {
             if(cancel.isPressed())
             {
+                this.confirm.isPressed();
                 this.state = this.STATE_PAUSE;
                 if(this.soundOn)
                     this.soundManager.pause();
             }
 
             //START OF TURN!
-            EntityRenderer[] entities = this.field.getEntityRenderers();
             entities[0].getEntity().getController().calculateNextMove();
             for(int i=0; i<entities.length; i++)
             {
@@ -403,6 +427,9 @@ public class GameScene implements Scene {
                         }
                         this.replay.list[i].add(dir);
                     }
+                    if(this.online)
+                        for(int j=0; j<1; j++)
+                            this.proxy[j].isDoneMoving();
                     //END OF TURN!
                  }
             }
@@ -432,14 +459,15 @@ public class GameScene implements Scene {
 
     public void init(InputManager _input) {
         this.state = this.STATE_RUNNING;
-        for(int i=0; i<3; i++)
-                this.proxy[i].setActive(false);
         if(this.online){
-            this.state = this.STATE_PLACEMENT;
+            //this.state = this.STATE_PLACEMENT;
+            this.placementState = 0;
+            this.semaphore.release(3-this.semaphore.availablePermits());
+            this.proxy[0].open(this.towerPort);
             for(int i=0; i<3; i++)
                 this.proxy[i].setActive(true);
-            this.placementState = 0;
         }
+        System.out.println(this.towerPort);
         this.resetPoints();
         this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.fps,400);
         this.field.loadFrom(this.level);
@@ -463,7 +491,7 @@ public class GameScene implements Scene {
         _input.mapToKey(cancel, KeyEvent.VK_ESCAPE);
         _input.mapToKey(confirm, KeyEvent.VK_ENTER);
         
-        EntityRenderer[] entities = this.field.getEntityRenderers();
+        entities = this.field.getEntityRenderers();
         for(int i=0; i<entities.length; i++)
         {
             if(entities[i].getEntity() != null)
@@ -472,11 +500,21 @@ public class GameScene implements Scene {
                     entities[i].getEntity().getController().init(_input);
             }
         }
+        
+        this.prerender();
     }
     
     public void deinit(InputManager _input) {
         _input.removeKeyAssociation(KeyEvent.VK_ENTER);
         _input.removeKeyAssociation(KeyEvent.VK_ESCAPE);
+        
+        if(this.online)
+        {
+            this.proxy[0].close();
+            for(int i=0; i<3; i++)
+                this.proxy[i].setActive(false);
+        }
+        
         this.soundManager.removePreviousPlayers();
         EntityRenderer[] entities = this.field.getEntityRenderers();
         for(int i=0; i<entities.length; i++)
