@@ -21,6 +21,7 @@ package communication;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import josx.platform.rcx.Sound;
 import robot.Controller;
 
 
@@ -148,5 +149,6 @@ public class GameProxy {
         } catch (IOException ex) {
             
         }
+        Sound.beep();
     }
 }

@@ -24,7 +24,8 @@ import josx.platform.rcx.*;
 import java.io.*;
 
 public class Controller implements ButtonListener{
-    Drive ride = new Drive();
+//    Drive ride = new Drive();
+    LowRider ride = new LowRider();
     GameProxy tower;
     private static Controller instance = new Controller();
     
@@ -89,14 +90,16 @@ public class Controller implements ButtonListener{
     }
     
     private void move(){
-        //tower.stopThread();
+        tower.stopThread();
         TextLCD.print("move");
         if(command != lastCommand){
             this.turn();
         }
         directions = tower.getDirections();
-        ride.Forward(directions);
-        //tower.startThread();
+//        ride.Forward(directions);
+        ride.run(directions,command);
+        lastCommand = command;
+        tower.startThread();
     }
     
     public void setCalibrationValues(int sensor1, int sensor2, int sensor3, int minGreen, int maxGreen, int minBlack, int maxBlack){
