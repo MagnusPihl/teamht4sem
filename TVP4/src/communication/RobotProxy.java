@@ -90,8 +90,8 @@ public class RobotProxy extends Thread{
             }
         }
         
-        public void setActive(boolean read){
-            isActive = read;
+        public void setActive(boolean isActive){
+            this.isActive = isActive;
         }
     }
     //**************End of inner-class*********************//
@@ -220,5 +220,9 @@ public class RobotProxy extends Thread{
         
     public static void close() {
         link.close();
+    }
+    
+    public void setActive(boolean isActive) {
+        this.socket.setActive(isActive);
     }
 }
