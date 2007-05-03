@@ -219,4 +219,12 @@ public class RobotProxy extends Thread{
         outPacket[6] = minBlack;
         this.out.write(outPacket);
     }
+    
+    public static void open(String port) {
+        link.open(port);
+    }
+        
+    public static void close() {
+        link.close();
+    }
 }
