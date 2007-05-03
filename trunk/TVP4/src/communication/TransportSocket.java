@@ -7,7 +7,7 @@
  *
  * @author Magnus Hemmer Pihl
  * @version 1.4
- *
+ * 
  *
  * ******VERSION HISTORY******
  *
