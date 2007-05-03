@@ -1,225 +1,255 @@
-/*  
- * TowerSocket.java
+/*
+ * TransportSocket.java
  *
- * Created on 13. marts 2007, 10:52
+ * Created on 24. marts 2007, 12:06
  *
  * Company: HT++
  *
- * @author LMK
- * @version 1.2
+ * @author Magnus Hemmer Pihl
+ * @version 1.4
  *
  *
  * ******VERSION HISTORY******
- * MHP @ 28. april 2007 (v 1.3)
- * Removed timeout from readPacket. Will now instantly return false if no data is available.
  *
- * LMK @ 23. marts 2007 (v 1.2) 
- * Removed printout when sending
+ * Magnus Hemmer Pihl @ 27. april 2007 (v 1.5)
+ * Removed timeout from read-operation. Will now fail immediately if no data is available.
  *
- * LMK @ 23. marts 2007 (v 1.1) 
- * Moved checksum methods and features common with LLCSocket to LinkLayerSocket
- * Added timeouts to read methods.
+ * Magnus Hemmer Pihl @ 25. april 2007 (v 1.4)
+ * Corrected read-method to always read two bytes - no matter what the header contains.
+ * Corrected type-cast to of System.currentMilliseconds to int in write-method, for Mindstorm compatibility.
+ * read-method no longer attempts to use constants from RobotProxy. Constant -0x01 for NOP is used, instead.
+ * Corrected less-than symbol from greater-than in write-method.
  *
- * LMK @ 14. marts 2007 (v 1.0) 
- * 
+ * Magnus Hemmer Pihl @ 23. april 2007 (v 1.3)
+ * General code cleanup. Added comments and organized code better.
+ *
+ * Magnus Hemmer Pihl @ 17. april 2007 (v 1.2)
+ * Changed write method to use the same sequence number on retries.
+ *
+ * Magnus Hemmer Pihl @ 13. april 2007 (v 1.1)
+ * Changed write()-method to use static methods rather than creating new objects.
+ * write()-method now throws an IOException on failure.
+ * write()-method will no longer indefinitely repeat sending on timeouts.
+ *
+ * Magnus Hemmer Pihl @ 24. marts 2007 (v 1.0)
+ * Initial.
+ *
  */
 
 package communication;
 
-import java.util.concurrent.Semaphore;
-import josx.rcxcomm.*;
 import java.io.*;
+import josx.platform.rcx.LCD;
+import josx.util.*;
 
-public class TowerSocket extends LinkLayerSocket {
-    
-    private Tower tower;
-    
+public class TransportSocket {
+    private TransportInputStream in;
+    private TransportOutputStream out;
+    private int lastAcknowledge;
+    private TransportInputThread inputThread;
     private int bufferIndex;
     private byte[] readBuffer;
-    private int packetIndex;
-    private byte[] packetBuffer;
-    private boolean isOpen;
     
-    private static Semaphore sem = new Semaphore(1);
+    public static final int DATA = 0;
+    public static final int RECEIPT = 1;
     
-    public static final int INPUT_BUFFER_SIZE = 400;    
-        
-    /** 
-     * Creates a new instance of TowerSocket that can communicate with
-     * the RCX kit over IR. Reception of data is not guaranteed. 
-     * No addressing is done.
-     */
-    public TowerSocket() {
-        super();
-        this.tower = new Tower();        
-        this.bufferIndex = 0;
+    private static final byte NOP = 0x00;
+    
+    public static final int INPUT_BUFFER_SIZE = 20;
+    //Total time to attempt writing before failing, in milliseconds.
+    public static final int WRITE_TIMEOUT = 300;
+    //Time to wait for acknowledge before retrying to write data. Should always be lower than WRITE_TIMEOUT.
+    public static final int ACKNOWLEDGE_TIMEOUT = 300;
+    
+    /** Creates a new instance of IRSocket */
+    public TransportSocket(InputStream in, OutputStream out) {        
         this.readBuffer = new byte[INPUT_BUFFER_SIZE];
+        this.in = new TransportSocket.TransportInputStream();
+        this.out = new TransportSocket.TransportOutputStream(in, out);        
         
-        this.packetBuffer = new byte[PACKET_SIZE];
-        this.packetIndex = DATA_OFFSET;        
+        this.inputThread = new TransportInputThread(in, out);
+        this.inputThread.start();
     }
     
-    public void open(String port) {
-        this.tower.open(port);
-    }
-    
-    public void close() {
-        this.tower.close();
-    }
+    public class TransportInputThread extends Thread {
+        private int data;
+        private int lastSequence;
+        private int header;
+        protected boolean isActive;
         
-    /**
-     * Read packet to input stream buffer. 
-     * @return true if packet received has a valid checksum and has been added
-     * to buffer, or false if the packet was invalid and trashed.
-     */
-    private synchronized boolean readPacket() {
-        try {
-            sem.acquire();
-        } catch (InterruptedException ex) {
-//            ex.printStackTrace();
+        private InputStream in;
+        private OutputStream out;
+        
+        protected TransportInputThread(InputStream in, OutputStream out) {
+            this.in = in;
+            this.out = out;
+            bufferIndex = 0;
+            this.lastSequence = -1;
+            this.isActive = false;
         }
-        byte[] data = new byte[1];        
-        int available = 0;
-        this.packetIndex = 0;
-        //long timeout = System.currentTimeMillis() + TIMEOUT;        
-                
-        do {
-            available = this.tower.read(data);            
-            if (available == 1) {
-                if ((this.packetIndex < DATA_OFFSET)) {
-                    //wait for start bytes.
-                    if (data[0] == PACKET_HEADER) {
-                        this.packetIndex++;
-                        //timeout = System.currentTimeMillis() + TIMEOUT;
-                    } else {
-                        this.packetIndex = 0;
+        
+        public void setActive(boolean isActive) {
+            this.isActive = isActive;
+        }
+        
+        public void run() {
+            while (true) {
+                //                System.out.println("Reading...");
+                if (isActive) {
+                    try {
+                        //int timestamp = (int)System.currentTimeMillis();
+                        
+                        //Read header byte. Timeout if neccessary.
+                        this.header = this.in.read();
+                        
+                        if (this.header != -1) {
+                            //Check indefinitely for second byte.
+                            do {
+                                this.data = this.in.read();
+                            } while (this.data == -1);
+                        } else {
+                            Thread.sleep(100);
+                            continue;
+                        }
+                        
+                        //                        System.out.println("Transport: READING:  "+TransportPackage.getType(header)+", "+TransportPackage.getSequenceNumber(header)+", "+data);
+                        
+                        //Only continue if byte received is Data header.
+                        if (TransportPackage.getType(header) == DATA) {
+                            //Send receipt.
+                            this.out.write(TransportPackage.createAcknowledgeHeader(this.header));
+                            this.out.write(NOP);
+                            
+                            //Return data only if not a repeat of the last sequence
+                            if(TransportPackage.getSequenceNumber(this.header) != this.lastSequence) {
+                                this.lastSequence = TransportPackage.getSequenceNumber(this.header);
+                                readBuffer[bufferIndex++] = (byte)this.data;
+                                
+                                if (bufferIndex == INPUT_BUFFER_SIZE) {
+                                    bufferIndex = 0;
+                                }
+                            }
+                        } else if (TransportPackage.getType(header) == RECEIPT) {
+                            lastAcknowledge = TransportPackage.getSequenceNumber(this.header);
+                            //                        System.out.println("Transport Layer ACK sequence: "+(this.header&0x7f));
+                        }
+                        Thread.sleep(50);
+                    } catch (Exception e) {
+//                        e.printStackTrace();
                     }
                 } else {
-                    this.packetBuffer[this.packetIndex++] = data[0];
-                    //timeout = System.currentTimeMillis() + TIMEOUT;
-                }
-            } else// if (System.currentTimeMillis() > timeout)
-            {
-                //this.timeoutCount++;
-                sem.release();
-                return false;
-            }
-        } while (this.packetIndex < PACKET_SIZE);
-        sem.release();
-                
-        //if checksum is valid add packet to stream.
-        if (LinkLayerSocket.checksumIsValid(this.packetBuffer)) {
-            for (int i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {                
-                this.readBuffer[this.bufferIndex] = this.packetBuffer[i];
-                
-                this.bufferIndex++;
-                if (this.bufferIndex == INPUT_BUFFER_SIZE) {
-                    this.bufferIndex = 0;
+                    try {
+                        Thread.sleep(200);
+                    } catch (Exception e) {}
                 }
             }
-            return true;
-        } else {
-            return false;
         }
-    }            
+    }
     
-    /**
-     * InputStream that converts incoming packets into an inputstream.
-     * Packets are always 3 bytes long. 
-     */
-    public class TowerInputStream extends InputStream {
+    public class TransportInputStream extends InputStream {
+        
         private int readIndex;
-        private byte data;
-                
-        protected TowerInputStream() {       
+        private int data;
+        
+        protected TransportInputStream() {
             this.readIndex = bufferIndex;
         }
+        
+        public int read() throws IOException {
+            if (this.readIndex == bufferIndex) {
+                return -1;
+            } else {
+                this.data = readBuffer[this.readIndex++];
                 
-        /**
-         * Read one byte from IR stream. The data received is not guarenteed
-         * to be meant for you, no addressing is done.
-         *
-         * @return -1 if no bytes could be read.
-         */
-        public int read() throws IOException {                                      
-            if ((bufferIndex == this.readIndex)) {
-                if (!readPacket()) {
-                    return -1;
+                if (this.readIndex == INPUT_BUFFER_SIZE) {
+                    this.readIndex = 0;
                 }
-            }
-            
-            this.data = readBuffer[this.readIndex];
-            
-            this.readIndex++;
-            if (this.readIndex == INPUT_BUFFER_SIZE) {
-                this.readIndex = 0;
-            }
-            
-            return this.data;
-        }  
                 
-        public synchronized void clear() {    
+                return this.data;
+            }
+        }
+        
+        public void clear() {
             this.readIndex = bufferIndex;
         }
     }
     
-    /**
-     * Output stream that let's you write packets to IR.
-     * Each packet can hold 3 bytes. A packet is sent every 3 bytes written.
-     */
-    public class TowerOutputStream extends OutputStream {
+    public class TransportOutputStream extends OutputStream {
+        private OutputStream out;
+        private InputStream in;
+        private int sequence;
         
-        private byte[] packetBuffer;        
-        private int packetIndex;                
-        
-        /**
-         * Create new TowerOutputStream.
-         */
-        protected TowerOutputStream() {
-            this.packetBuffer = new byte[PACKET_SIZE];
-            this.packetBuffer[0] = PACKET_HEADER;
-            this.packetBuffer[1] = PACKET_HEADER;
-            this.packetIndex = DATA_OFFSET;
+        protected TransportOutputStream(InputStream in, OutputStream out) {
+            this.out = out;
+            this.in = in;
+            this.sequence = 0;
         }
         
-        /**
-         * Write a single byte to packet buffer. When 3 bytes have been
-         * written, a packet will be sent.
-         * Reception of data is not guarenteed.
-         *
-         * @param byte to write.
-         */
-        public synchronized void write(int buffer) throws IOException {
-            this.packetBuffer[this.packetIndex++] = (byte)buffer;
-            this.packetBuffer[this.packetIndex++] = (byte)~buffer;
+        public void write(int b) throws IOException {
+            sequence = (sequence+1)%127;
             
-            if (this.packetIndex >= CHECKSUM_OFFSET) {
-                try {
-                    sem.acquire();
-                } catch (InterruptedException ex) {
-//                    ex.printStackTrace();
-                }
-                LinkLayerSocket.addChecksum(this.packetBuffer);
-//                System.out.println("Link: Sending...");
-                tower.write(this.packetBuffer, PACKET_SIZE);
-//                System.out.println("Link: Sent!");
-                this.packetIndex = DATA_OFFSET;
-                sem.release();
-            }            
+            try {
+                this.write(b, sequence);
+            } catch(IOException e) {
+                throw e;
+            }
         }
         
-        public synchronized void clear() {
-            this.packetIndex = 0;
+        private void write(int b, int sequence) throws IOException {
+            //Write header and data bytes.
+            
+            try {
+                //                System.out.println("isWriting now false");
+                this.out.write(TransportPackage.getSequenceNumber(sequence));
+                //                System.out.println("Transport: Header Sent");
+                this.out.write(b);
+                //                System.out.println("Transport: SENDING  :  "+TransportPackage.getSequenceNumber(sequence)+", "+b);
+                
+                //System.out.println("Transport layer sending... "+(0x7F&sequence)+", "+b);
+                
+                int timestamp = (int)System.currentTimeMillis();
+                int ack_timestamp = timestamp;
+                
+                //Try to read acknowledge header. Timeout if needed.
+                while(((int)System.currentTimeMillis())-timestamp <= TransportSocket.WRITE_TIMEOUT && lastAcknowledge != sequence) {
+                    //                    System.out.println("HUZZAH");
+                    if(((int)System.currentTimeMillis())-ack_timestamp >= TransportSocket.ACKNOWLEDGE_TIMEOUT) {
+                        
+                        this.out.write(TransportPackage.getSequenceNumber(sequence));
+                        this.out.write(b);
+                        ack_timestamp = (int)System.currentTimeMillis();
+                    }
+                    
+                    Thread.sleep(50);
+                }
+                
+                //End method if the proper acknowledge was received. Retry if it didn't match sent package.
+                if(lastAcknowledge == sequence) {
+                    //                    System.out.println("Returning");
+                    return;
+                } else {
+                    //                    System.out.println("Retrying");
+                    this.write(b, sequence);
+                }
+            } catch (Exception e) {
+//                e.printStackTrace();
+            }
         }
-    }        
-    
-    
-    public TowerInputStream getInputStream() {
-        return new TowerSocket.TowerInputStream();
     }
     
-    public TowerOutputStream getOutputStream()
-    {
-        return new TowerSocket.TowerOutputStream();
+    public void setActive(boolean isActive) {
+        this.inputThread.isActive = isActive;
+    }
+    
+    public void clear() {
+        this.in.clear();
+    }
+    
+    public TransportOutputStream getOutputStream() {
+        return this.out;
+    }
+    
+    public TransportInputStream getInputStream() {
+        return this.in;
     }
 }
