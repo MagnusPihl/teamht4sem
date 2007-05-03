@@ -30,6 +30,9 @@ import java.io.*;
 
 public class LLCSocket extends LinkLayerSocket {                
     
+    private LLCOutputStream out;
+    private LLCInputStream in;       
+    
     /** Creates a new instance of RCXSocket */
     public LLCSocket() { 
         super();
@@ -99,7 +102,11 @@ public class LLCSocket extends LinkLayerSocket {
             }
                         
             return this.data;            
-        }                        
+        }      
+        
+        public void clear() {
+            this.readPointer = this.inPointer;
+        }
     }
     
     public class LLCOutputStream extends OutputStream {
@@ -124,15 +131,28 @@ public class LLCSocket extends LinkLayerSocket {
             this.buffer[this.writePointer++] = (byte)(~buffer);
             
             if (this.writePointer == CHECKSUM_OFFSET) {
-                while (LLC.isSending()) {
-                    try {
-                        Thread.sleep(40);
-                    } catch (Exception e) {}
-                }
                 LinkLayerSocket.addChecksum(this.buffer);
                 LLC.sendBytes(this.buffer, PACKET_SIZE);
                 this.writePointer = DATA_OFFSET;
             }
-        }                        
+        }   
+        
+        public void clear() {
+            this.writePointer = DATA_OFFSET;
+        }
+    }    
+    
+    
+    public void clear() {
+        this.in.clear();
+        this.out.clear();
+    }
+    
+    public LLCInputStream getInputStream() {
+        return this.in;
+    }
+    
+    public LLCOutputStream getOutputStream() {
+        return this.out;
     }    
 }
