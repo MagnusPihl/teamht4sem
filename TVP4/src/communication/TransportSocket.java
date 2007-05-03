@@ -47,7 +47,6 @@ public class TransportSocket {
     private TransportOutputStream out;
     private int lastAcknowledge;
     private Thread inputThread;
-    private boolean isWriting;
     private int bufferIndex;
     private byte[] readBuffer;
     
@@ -63,12 +62,10 @@ public class TransportSocket {
     public static final int ACKNOWLEDGE_TIMEOUT = 300;
     
     /** Creates a new instance of IRSocket */
-    public TransportSocket(InputStream in, OutputStream out) {
-        
+    public TransportSocket(InputStream in, OutputStream out) {        
         this.readBuffer = new byte[INPUT_BUFFER_SIZE];
         this.in = new TransportSocket.TransportInputStream();
-        this.out = new TransportSocket.TransportOutputStream(in, out);
-        this.isWriting = false;
+        this.out = new TransportSocket.TransportOutputStream(in, out);        
         
         this.inputThread = new TransportInputThread(in, out);
         this.inputThread.start();
@@ -78,7 +75,7 @@ public class TransportSocket {
         private int data;
         private int lastSequence;
         private int header;
-        private boolean isActive;
+        protected boolean isActive;
         
         private InputStream in;
         private OutputStream out;
@@ -88,6 +85,7 @@ public class TransportSocket {
             this.out = out;
             bufferIndex = 0;
             this.lastSequence = -1;
+            this.isActive = false;
         }
         
         public void setActive(boolean isActive) {
@@ -235,10 +233,13 @@ public class TransportSocket {
                     this.write(b, sequence);
                 }
             } catch (Exception e) {
-                isWriting = false;
                 e.printStackTrace();
             }
         }
+    }
+    
+    public void setActive(boolean isActive) {
+        this.in.isActive = isActive;
     }
     
     public void clear() {
