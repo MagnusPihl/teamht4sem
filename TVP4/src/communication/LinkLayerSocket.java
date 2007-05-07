@@ -27,6 +27,8 @@ import java.io.*;
  */
 public abstract class LinkLayerSocket {
     protected int timeoutCount;
+    private int checksum;
+    private int i;
     
     public static final byte PACKET_HEADER = 0x55;
     public static final byte DATA_OFFSET = 2;
@@ -38,13 +40,20 @@ public abstract class LinkLayerSocket {
     public LinkLayerSocket() {        
         this.timeoutCount = 0;
     }
-        
-    public static boolean checksumIsValid(byte[] buffer) {                        
-        int checksum = 0;
-        for (int i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {
-            checksum += 0xFF & buffer[i];            
-            if ((checksum & 0x0100) == 0x0100) {
-                checksum ^= 0x0101;
+     
+    /**
+     * Generate checksum of available data in buffer and compare it to 
+     * checksum in buffer
+     *
+     * @param byte[] buffer
+     * @return true if checksum is valid
+     */
+    protected boolean checksumIsValid(byte[] buffer) {                        
+        this.checksum = 0;
+        for (i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {
+            this.checksum += 0xFF & buffer[i];            
+            if ((this.checksum & 0x0100) == 0x0100) {
+                this.checksum ^= 0x0101;
             }
         }
 
@@ -55,13 +64,18 @@ public abstract class LinkLayerSocket {
         return false;                        
     }
     
-    public static void addChecksum(byte[] buffer) {            
-        int checksum = 0;
+    /**
+     * Add checksum to buffer.
+     *
+     * @param byte[] buffer
+     */
+    protected void addChecksum(byte[] buffer) {            
+        this.checksum = 0;
 
-        for (int i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {
-            checksum += 0xFF & buffer[i];
-            if ((checksum & 0x0100) == 0x0100) {
-                checksum ^= 0x0101;
+        for (i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {
+            this.checksum += 0xFF & buffer[i];
+            if ((this.checksum & 0x0100) == 0x0100) {
+                this.checksum ^= 0x0101;
             }
         }
 
@@ -72,4 +86,7 @@ public abstract class LinkLayerSocket {
     public int getTimeoutCount() {
         return this.timeoutCount;
     }
+    
+    public abstract InputStream getInputStream();
+    public abstract OutputStream getOutputStream();
 }
