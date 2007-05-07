@@ -108,7 +108,7 @@ public class TowerSocket extends LinkLayerSocket {
         sem.release();
                 
         //if checksum is valid add packet to stream.
-        if (LinkLayerSocket.checksumIsValid(this.packetBuffer)) {
+        if (super.checksumIsValid(this.packetBuffer)) {
             for (int i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {                
                 this.readBuffer[this.bufferIndex] = this.packetBuffer[i];
                 
@@ -199,7 +199,7 @@ public class TowerSocket extends LinkLayerSocket {
                 } catch (InterruptedException ex) {
 //                    ex.printStackTrace();
                 }
-                LinkLayerSocket.addChecksum(this.packetBuffer);
+                addChecksum(this.packetBuffer);
 //                System.out.println("Link: Sending...");
                 tower.write(this.packetBuffer, PACKET_SIZE);
 //                System.out.println("Link: Sent!");
