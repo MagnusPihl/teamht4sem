@@ -20,6 +20,7 @@
 
 package communication;
 
+import field.Node;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -89,8 +90,8 @@ public class RobotProxy extends Thread{
             }
         }
         
-        public void setActive(boolean read){
-            isActive = read;
+        public void setActive(boolean isActive){
+            this.isActive = isActive;
         }
     }
     //**************End of inner-class*********************//
@@ -164,9 +165,9 @@ public class RobotProxy extends Thread{
     }
     
     /**
-     *@Deprecated
+     *
      */
-    
+    @Deprecated
     public void blink() throws IOException{
         //this.out.write(GameCommands.);
     }
@@ -219,5 +220,9 @@ public class RobotProxy extends Thread{
         
     public static void close() {
         link.close();
+    }
+    
+    public void setActive(boolean isActive) {
+        this.socket.setActive(isActive);
     }
 }
