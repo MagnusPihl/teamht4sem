@@ -135,7 +135,7 @@ public class NetworkSocket {
                 this.readIndex = 0;
             }
             
-            return data;
+            return data & 0xFF;
         }             
         
         public void clear() {

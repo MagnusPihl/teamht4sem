@@ -1,4 +1,4 @@
-/*  
+/*
  * TowerSocket.java
  *
  * Created on 13. marts 2007, 10:52
@@ -13,15 +13,15 @@
  * MHP @ 28. april 2007 (v 1.3)
  * Removed timeout from readPacket. Will now instantly return false if no data is available.
  *
- * LMK @ 23. marts 2007 (v 1.2) 
+ * LMK @ 23. marts 2007 (v 1.2)
  * Removed printout when sending
  *
- * LMK @ 23. marts 2007 (v 1.1) 
+ * LMK @ 23. marts 2007 (v 1.1)
  * Moved checksum methods and features common with LLCSocket to LinkLayerSocket
  * Added timeouts to read methods.
  *
- * LMK @ 14. marts 2007 (v 1.0) 
- * 
+ * LMK @ 14. marts 2007 (v 1.0)
+ *
  */
 
 package communication;
@@ -42,21 +42,21 @@ public class TowerSocket extends LinkLayerSocket {
     
     private static Semaphore sem = new Semaphore(1);
     
-    public static final int INPUT_BUFFER_SIZE = 400;    
-        
-    /** 
+    public static final int INPUT_BUFFER_SIZE = 400;
+    
+    /**
      * Creates a new instance of TowerSocket that can communicate with
-     * the RCX kit over IR. Reception of data is not guaranteed. 
+     * the RCX kit over IR. Reception of data is not guaranteed.
      * No addressing is done.
      */
     public TowerSocket() {
         super();
-        this.tower = new Tower();        
+        this.tower = new Tower();
         this.bufferIndex = 0;
         this.readBuffer = new byte[INPUT_BUFFER_SIZE];
         
         this.packetBuffer = new byte[PACKET_SIZE];
-        this.packetIndex = DATA_OFFSET;        
+        this.packetIndex = DATA_OFFSET;
     }
     
     public void open(String port) {
@@ -66,9 +66,9 @@ public class TowerSocket extends LinkLayerSocket {
     public void close() {
         this.tower.close();
     }
-        
+    
     /**
-     * Read packet to input stream buffer. 
+     * Read packet to input stream buffer.
      * @return true if packet received has a valid checksum and has been added
      * to buffer, or false if the packet was invalid and trashed.
      */
@@ -78,13 +78,13 @@ public class TowerSocket extends LinkLayerSocket {
         } catch (InterruptedException ex) {
 //            ex.printStackTrace();
         }
-        byte[] data = new byte[1];        
+        byte[] data = new byte[1];
         int available = 0;
         this.packetIndex = 0;
-        //long timeout = System.currentTimeMillis() + TIMEOUT;        
-                
+        //long timeout = System.currentTimeMillis() + TIMEOUT;
+        
         do {
-            available = this.tower.read(data);            
+            available = this.tower.read(data);
             if (available == 1) {
                 if ((this.packetIndex < DATA_OFFSET)) {
                     //wait for start bytes.
@@ -106,10 +106,10 @@ public class TowerSocket extends LinkLayerSocket {
             }
         } while (this.packetIndex < PACKET_SIZE);
         sem.release();
-                
+        
         //if checksum is valid add packet to stream.
         if (super.checksumIsValid(this.packetBuffer)) {
-            for (int i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {                
+            for (int i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {
                 this.readBuffer[this.bufferIndex] = this.packetBuffer[i];
                 
                 this.bufferIndex++;
@@ -121,27 +121,27 @@ public class TowerSocket extends LinkLayerSocket {
         } else {
             return false;
         }
-    }            
+    }
     
     /**
      * InputStream that converts incoming packets into an inputstream.
-     * Packets are always 3 bytes long. 
+     * Packets are always 3 bytes long.
      */
     public class TowerInputStream extends InputStream {
         private int readIndex;
         private byte data;
-                
-        protected TowerInputStream() {       
+        
+        protected TowerInputStream() {
             this.readIndex = bufferIndex;
         }
-                
+        
         /**
          * Read one byte from IR stream. The data received is not guarenteed
          * to be meant for you, no addressing is done.
          *
          * @return -1 if no bytes could be read.
          */
-        public int read() throws IOException {                                      
+        public int read() throws IOException {
             if ((bufferIndex == this.readIndex)) {
                 if (!readPacket()) {
                     return -1;
@@ -155,10 +155,13 @@ public class TowerSocket extends LinkLayerSocket {
                 this.readIndex = 0;
             }
             
-            return this.data;
-        }  
-                
-        public synchronized void clear() {    
+            return this.data & 0xFF;
+        }
+        
+        /**
+         * Clear buffer
+         */
+        public synchronized void clear() {
             this.readIndex = bufferIndex;
         }
     }
@@ -169,8 +172,8 @@ public class TowerSocket extends LinkLayerSocket {
      */
     public class TowerOutputStream extends OutputStream {
         
-        private byte[] packetBuffer;        
-        private int packetIndex;                
+        private byte[] packetBuffer;
+        private int packetIndex;
         
         /**
          * Create new TowerOutputStream.
@@ -197,29 +200,31 @@ public class TowerSocket extends LinkLayerSocket {
                 try {
                     sem.acquire();
                 } catch (InterruptedException ex) {
-//                    ex.printStackTrace();
+                    ex.printStackTrace();
                 }
                 addChecksum(this.packetBuffer);
-//                System.out.println("Link: Sending...");
                 tower.write(this.packetBuffer, PACKET_SIZE);
-//                System.out.println("Link: Sent!");
                 this.packetIndex = DATA_OFFSET;
                 sem.release();
-            }            
+            }
         }
         
         public synchronized void clear() {
             this.packetIndex = 0;
         }
-    }        
+    }
     
-    
+    /**
+     * Get InputStream
+     */
     public TowerInputStream getInputStream() {
         return new TowerSocket.TowerInputStream();
     }
     
-    public TowerOutputStream getOutputStream()
-    {
+    /**
+     * Get OutputStream
+     */
+    public TowerOutputStream getOutputStream() {
         return new TowerSocket.TowerOutputStream();
     }
 }
