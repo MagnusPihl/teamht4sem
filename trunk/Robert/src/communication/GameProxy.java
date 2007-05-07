@@ -48,7 +48,7 @@ public class GameProxy {
      */
     public GameProxy(int add) {
         this.address = add;
-        net = new NetworkSocket(address,0,link.getInputStream(),link.getOuputStream());
+        net = new NetworkSocket(address,0,link.getInputStream(),link.getOutputStream());
         socket = new TransportSocket(net.getInputStream(), net.getOutputStream());
         in = socket.getInputStream();
         out = socket.getOutputStream();
