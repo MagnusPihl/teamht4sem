@@ -196,9 +196,9 @@ public class NetworkSocket {
     /**
      * Get output stream
      *
-     * @return NetworkOutputStream
+     * @return OutputStream
      */
-    public NetworkOutputStream getOutputStream() {
+    public OutputStream getOutputStream() {
         return this.out;
     }
     
@@ -207,11 +207,13 @@ public class NetworkSocket {
      *
      * @return NetworkInputStream
      */
-    public NetworkInputStream getInputStream() {
+    public InputStream getInputStream() {
         return this.in;
     }
     
-    
+    /**
+     * Clear data in all buffers
+     */
     public void clear() {
         this.in.clear();
         this.out.clear();

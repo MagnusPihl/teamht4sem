@@ -49,12 +49,13 @@ public class LLCSocket extends LinkLayerSocket {
         private int data;
         
         protected LLCInputStream() {       
+            super();
             this.buffer = new byte[PACKET_SIZE];
             this.readPointer = 0;
             this.inPointer = 0;       
         }
         
-        private boolean readPacket() {
+        private synchronized boolean readPacket() {
             this.inPointer = 0;            
             //timeout = (int)System.currentTimeMillis() + TIMEOUT; 
             
@@ -82,7 +83,7 @@ public class LLCSocket extends LinkLayerSocket {
             
             this.inPointer = 0;
             
-            return LinkLayerSocket.checksumIsValid(this.buffer);                
+            return checksumIsValid(this.buffer);                
         }        
                 
         public int read() throws IOException {      
@@ -126,12 +127,12 @@ public class LLCSocket extends LinkLayerSocket {
             //checksum, inverse of checksum
         }
         
-        public void write(int buffer) throws IOException {
+        public synchronized void write(int buffer) throws IOException {
             this.buffer[this.writePointer++] = (byte)buffer;
             this.buffer[this.writePointer++] = (byte)(~buffer);
             
             if (this.writePointer == CHECKSUM_OFFSET) {
-                LinkLayerSocket.addChecksum(this.buffer);
+                addChecksum(this.buffer);
                 LLC.sendBytes(this.buffer, PACKET_SIZE);
                 this.writePointer = DATA_OFFSET;
             }
@@ -148,11 +149,11 @@ public class LLCSocket extends LinkLayerSocket {
         this.out.clear();
     }
     
-    public LLCInputStream getInputStream() {
+    public InputStream getInputStream() {
         return this.in;
     }
     
-    public LLCOutputStream getOuputStream() {
+    public OutputStream getOutputStream() {
         return this.out;
     }    
 }
