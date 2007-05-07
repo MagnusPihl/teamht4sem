@@ -49,15 +49,12 @@ public class Controller implements ButtonListener{
     public void run(){
         this.address();
         tower = new GameProxy(address);
-        TextLCD.print("start");
         while(true){
             TextLCD.print("get");
             command = tower.getcommand();
-            TextLCD.print("run");
             if(command == GameCommands.MOVE_DOWN || command == GameCommands.MOVE_LEFT || command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_UP){
                 this.move();
                 tower.sendMoveDone(GameCommands.MOVE_DONE);
-                TextLCD.print("Done");
         }else if(command == (GameCommands.DISCOVER | GameCommands.MOVE_UP) || command == (GameCommands.DISCOVER | GameCommands.MOVE_RIGHT) || command == (GameCommands.DISCOVER | GameCommands.MOVE_DOWN) || command == (GameCommands.DISCOVER | GameCommands.MOVE_LEFT)){
                 this.discover();
             }else if(command == 0x10){// not implemented yet

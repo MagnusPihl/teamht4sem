@@ -143,11 +143,11 @@ public class GameProxy {
     }
     
     public void stopThread(){
-//        socket.setActive(false);
+        socket.setActive(false);
     }
     
     public void startThread(){
-  //      socket.setActive(true);
+        socket.setActive(true);
     }
     
     public void sendMoveDone(int move){
