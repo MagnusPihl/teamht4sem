@@ -234,7 +234,7 @@ public class TransportSocket {
                 
                 //Try to read acknowledge header. Timeout if needed.
                 while(lastAcknowledge != sequence) {
-                    if(this.timeout >= (int)System.currentTimeMillis()) {
+                    if(this.timeout < (int)System.currentTimeMillis()) {
                         this.out.write(sequence);
                         this.out.write(b);
                         this.timeout = (int)System.currentTimeMillis() + TransportSocket.ACKNOWLEDGE_TIMEOUT;
