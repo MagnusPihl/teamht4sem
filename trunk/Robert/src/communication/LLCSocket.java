@@ -152,7 +152,7 @@ public class LLCSocket extends LinkLayerSocket {
         return this.in;
     }
     
-    public LLCOutputStream getOutputStream() {
+    public LLCOutputStream getOuputStream() {
         return this.out;
     }    
 }
