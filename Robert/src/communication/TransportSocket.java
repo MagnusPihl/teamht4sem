@@ -150,7 +150,7 @@ public class TransportSocket {
                         }
                         Thread.sleep(50);
                     } catch (Exception e) {
-                        e.printStackTrace();
+//                        e.printStackTrace();
                     }
                 } else {
                     try {
@@ -239,7 +239,7 @@ public class TransportSocket {
                     Thread.sleep(50);
                 }                
             } catch (Exception e) {
-                e.printStackTrace();
+//                e.printStackTrace();
             }
         }
     }
