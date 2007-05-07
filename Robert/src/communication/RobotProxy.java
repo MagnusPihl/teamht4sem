@@ -20,7 +20,7 @@
 
 package communication;
 
-import field.Node;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -165,9 +165,9 @@ public class RobotProxy extends Thread{
     }
     
     /**
-     *
+     *@Deprecated
      */
-    @Deprecated
+    
     public void blink() throws IOException{
         //this.out.write(GameCommands.);
     }
