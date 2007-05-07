@@ -102,7 +102,7 @@ public class LLCSocket extends LinkLayerSocket {
                 this.readPointer = 0;
             }
                         
-            return this.data;            
+            return this.data & 0xFF;            
         }      
         
         public void clear() {

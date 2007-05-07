@@ -83,6 +83,9 @@ public abstract class LinkLayerSocket {
         buffer[CHECKSUM_OFFSET + 1] = (byte)(~buffer[CHECKSUM_OFFSET]);
     }
     
+    /**
+     * Get amount of timeouts since creation.
+     */
     public int getTimeoutCount() {
         return this.timeoutCount;
     }
