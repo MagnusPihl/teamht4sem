@@ -249,20 +249,33 @@ public class TransportSocket {
     }
     
     /**
-     * SetActive
+     * Set read thread as active or inactive. When inactive the
+     * input thread will not try to read. When setting active a delay may
+     * occur before reading resumes.
+     *
+     * @param boolean, if true the thread will read indefinetly to buffer.
      */
     public void setActive(boolean isActive) {
         this.inputThread.isActive = isActive;
     }
     
+    /**
+     * Clear buffers.
+     */
     public void clear() {
         this.in.clear();
     }
     
+    /**
+     * Get reliable output stream.
+     */
     public OutputStream getOutputStream() {
         return this.out;
     }
-    
+        
+    /**
+     * Get input stream.
+     */
     public InputStream getInputStream() {
         return this.in;
     }
