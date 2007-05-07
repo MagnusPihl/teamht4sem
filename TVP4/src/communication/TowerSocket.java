@@ -217,14 +217,14 @@ public class TowerSocket extends LinkLayerSocket {
     /**
      * Get InputStream
      */
-    public TowerInputStream getInputStream() {
+    public InputStream getInputStream() {
         return new TowerSocket.TowerInputStream();
     }
     
     /**
      * Get OutputStream
      */
-    public TowerOutputStream getOutputStream() {
+    public OutputStream getOutputStream() {
         return new TowerSocket.TowerOutputStream();
     }
 }
