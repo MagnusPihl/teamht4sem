@@ -35,6 +35,13 @@ public class GameProxy {
     OutputStream out;
     private int command = -1;
     private int directions = -1;
+    private int sensor1 = -1;
+    private int sensor2 = -1;
+    private int sensor3 = -1;
+    private int maxGreen = -1;
+    private int minGreen = -1;
+    private int maxBlack = -1;
+    private int minBlack = -1;
     
     /**
      * Creates a new instance of GameProxy
@@ -69,13 +76,13 @@ public class GameProxy {
         }
         // lav evt. noget timeout here.
         if(command == GameCommands.CALIBRATE){
-            int sensor1 = -1;
-            int sensor2 = -1;
-            int sensor3 = -1;
-            int maxGreen = -1;
-            int minGreen = -1;
-            int maxBlack = -1;
-            int minBlack = -1;
+            sensor1 = -1;
+            sensor2 = -1;
+            sensor3 = -1;
+            maxGreen = -1;
+            minGreen = -1;
+            maxBlack = -1;
+            minBlack = -1;
             while(sensor1 == -1){
                 try {
                     sensor1 = in.read();
