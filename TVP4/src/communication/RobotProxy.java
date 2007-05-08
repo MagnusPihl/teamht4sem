@@ -40,7 +40,7 @@ public class RobotProxy extends Thread{
     
     protected byte[] writeBuffer;
     public static final int BUFFER_SIZE = 20;
-    private int writeBufferIndex; 
+    private int writeBufferIndex;
     
     private NonBlockingWriter writer;
     
@@ -98,12 +98,12 @@ public class RobotProxy extends Thread{
     
     
     private void write(int b) throws IOException {
-            writeBuffer[writeBufferIndex++] = (byte)b;
-            
-            if (writeBufferIndex == BUFFER_SIZE) {
-                writeBufferIndex = 0;
-            }
+        writeBuffer[writeBufferIndex++] = (byte)b;
+        
+        if (writeBufferIndex == BUFFER_SIZE) {
+            writeBufferIndex = 0;
         }
+    }
     
     public void move(byte direction, byte possDir) throws IOException{
         byte searchDir;
@@ -217,7 +217,7 @@ public class RobotProxy extends Thread{
     public static void open(String port) {
         link.open(port);
     }
-        
+    
     public static void close() {
         link.close();
     }
@@ -225,4 +225,20 @@ public class RobotProxy extends Thread{
     public void setActive(boolean isActive) {
         this.socket.setActive(isActive);
     }
+    
+    private byte rotatePosibleDirections(byte nodeDir, byte dirs) {
+        switch(nodeDir) {
+            //turn right
+            case Node.RIGHT : 
+                return (byte)(((dirs << 1) & 0x0F) | ((dirs & GameCommands.UP) >> 3));
+            case Node.LEFT: 
+                return (byte)((dirs >> 1) | ((dirs & GameCommands.LEFT) << 3));
+            case Node.DOWN : 
+                return (byte)((dirs & GameCommands.UP >> 3) | 
+                        (dirs & GameCommands.RIGHT >> 1) | 
+                        (dirs & GameCommands.DOWN << 1) | 
+                        (dirs & GameCommands.LEFT << 3));
+            default: return dirs;
+        }
+   }    
 }
