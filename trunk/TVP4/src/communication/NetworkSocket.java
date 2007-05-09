@@ -35,7 +35,6 @@ public class NetworkSocket {
     
     public static final int INPUT_BUFFER_SIZE = 2;
     public static final int OUTPUT_BUFFER_SIZE = 2;
-    public static final int TIMEOUT = 60;
     
     /** 
      * Creates a new instance of IRDatagramSocket 
@@ -59,8 +58,6 @@ public class NetworkSocket {
         private int readIndex;
         private int bufferIndex;
         
-        private int timeoutCount;
-        private int timeout;
         private boolean packetAccepted;
         private int data;
         
@@ -76,11 +73,9 @@ public class NetworkSocket {
             this.buffer = new byte[INPUT_BUFFER_SIZE];
             this.bufferIndex = 0;
             this.readIndex = 0;
-            this.timeoutCount = 0;
         }
         
         private boolean readPacket() throws IOException {
-            this.timeout = (int)System.currentTimeMillis() + TIMEOUT; 
             this.bufferIndex = -1;
             this.packetAccepted = false;
                         
@@ -105,8 +100,7 @@ public class NetworkSocket {
                         }                                                
                         this.bufferIndex = -1;
                     }
-                } else if ((this.bufferIndex == -1)&&(this.timeout < (int)System.currentTimeMillis())) {
-                    this.timeoutCount++;
+                } else if (this.bufferIndex == -1) {                    
                     this.bufferIndex = 0;
                     return false;
                 }                                    

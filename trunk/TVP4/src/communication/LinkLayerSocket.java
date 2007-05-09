@@ -26,7 +26,6 @@ import java.io.*;
  * @author LMK
  */
 public abstract class LinkLayerSocket {
-    protected int timeoutCount;
     private int checksum;
     private int i;
     
@@ -34,12 +33,7 @@ public abstract class LinkLayerSocket {
     public static final byte DATA_OFFSET = 2;
     public static final byte CHECKSUM_OFFSET = 8;
     public static final byte PACKET_SIZE = 10;
-    public static final int TIMEOUT = 50; //millis approximately one frame
-    
-    /** Creates a new instance of LinkLayerSocket */
-    public LinkLayerSocket() {        
-        this.timeoutCount = 0;
-    }
+    public static final int TIMEOUT = 10; //millis approximately one frame   
      
     /**
      * Generate checksum of available data in buffer and compare it to 
@@ -81,14 +75,7 @@ public abstract class LinkLayerSocket {
 
         buffer[CHECKSUM_OFFSET] = (byte)checksum;
         buffer[CHECKSUM_OFFSET + 1] = (byte)(~buffer[CHECKSUM_OFFSET]);
-    }
-    
-    /**
-     * Get amount of timeouts since creation.
-     */
-    public int getTimeoutCount() {
-        return this.timeoutCount;
-    }
+    }    
     
     public abstract InputStream getInputStream();
     public abstract OutputStream getOutputStream();
