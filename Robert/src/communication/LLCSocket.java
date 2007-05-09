@@ -45,7 +45,7 @@ public class LLCSocket extends LinkLayerSocket {
         private int readPointer;
         private int inPointer;
         private byte[] buffer;        
-        //private int timeout;
+        private int timeout;
         private int data;
         
         protected LLCInputStream() {       
@@ -57,7 +57,7 @@ public class LLCSocket extends LinkLayerSocket {
         
         private synchronized boolean readPacket() {
             this.inPointer = 0;            
-            //timeout = (int)System.currentTimeMillis() + TIMEOUT; 
+            timeout = (int)System.currentTimeMillis() + TIMEOUT; 
             
             do {
                 this.data = LLC.read();
@@ -65,18 +65,16 @@ public class LLCSocket extends LinkLayerSocket {
                     if ((this.inPointer < DATA_OFFSET)) {
                         if (this.data == PACKET_HEADER) {
                             this.inPointer++;
-                            //timeout = (int)System.currentTimeMillis() + TIMEOUT; 
+                            timeout = (int)System.currentTimeMillis() + TIMEOUT; 
                         } else {
                             this.inPointer = 0;
                         }
                     } else {
                         this.buffer[this.inPointer++] = (byte)this.data;
-                        //timeout = (int)System.currentTimeMillis() + TIMEOUT; 
+                        timeout = (int)System.currentTimeMillis() + TIMEOUT; 
                     }
-                } else// if (timeout < (int)System.currentTimeMillis())
-                {
+                } else if ((this.inPointer == 0) || ((int)System.currentTimeMillis() > timeout)) {
                     this.inPointer = 0;
-                    //timeoutCount++;
                     return false;
                 }
             } while (this.inPointer < PACKET_SIZE);            
@@ -102,7 +100,7 @@ public class LLCSocket extends LinkLayerSocket {
                 this.readPointer = 0;
             }
                         
-            return this.data;            
+            return this.data & 0xFF;            
         }      
         
         public void clear() {
