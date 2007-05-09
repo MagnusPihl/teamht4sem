@@ -6,6 +6,7 @@ import communication.TransportSocket;
 import game.PacmanApp;
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -86,34 +87,34 @@ public class Sniffer extends JFrame{
         doRead = false;
         
         link.open("usb");
-        net0 = new NetworkSocket(0,4,link.getInputStream(),link.getOutputStream());
+        net0 = new NetworkSocket(1,0,link.getInputStream(),link.getOutputStream());
         socket0 = new TransportSocket(net0.getInputStream(), net0.getOutputStream());
         socket0.setActive(true);
-        in0 = socket0.getInputStream();
+        in0 = net0.getInputStream();
         //out1 = socket.getOutputStream();
         
-        net1 = new NetworkSocket(1,4,link.getInputStream(),link.getOutputStream());
+        net1 = new NetworkSocket(0,1,link.getInputStream(),link.getOutputStream());
         socket1 = new TransportSocket(net1.getInputStream(), net1.getOutputStream());
         socket1.setActive(true);
-        in1 = socket1.getInputStream();
+        in1 = net1.getInputStream();
         //out1 = socket.getOutputStream();
-        
-        net2 = new NetworkSocket(2,4,link.getInputStream(),link.getOutputStream());
-        socket2 = new TransportSocket(net2.getInputStream(), net2.getOutputStream());
-        socket2.setActive(true);
-        in2 = socket2.getInputStream();
-        //out1 = socket.getOutputStream();
-        
-        net3 = new NetworkSocket(3,4,link.getInputStream(),link.getOutputStream());
-        socket3 = new TransportSocket(net3.getInputStream(), net3.getOutputStream());
-        socket3.setActive(true);
-        in3 = socket3.getInputStream();
-        //out1 = socket.getOutputStream();
+//        
+//        net2 = new NetworkSocket(2,0,link.getInputStream(),link.getOutputStream());
+//        socket2 = new TransportSocket(net2.getInputStream(), net2.getOutputStream());
+//        socket2.setActive(true);
+//        in2 = socket2.getInputStream();
+//        //out1 = socket.getOutputStream();
+//        
+//        net3 = new NetworkSocket(3,0,link.getInputStream(),link.getOutputStream());
+//        socket3 = new TransportSocket(net3.getInputStream(), net3.getOutputStream());
+//        socket3.setActive(true);
+//        in3 = socket3.getInputStream();
+//        //out1 = socket.getOutputStream();
         
         //Create JPanels
         JPanel flowDesign = new JPanel(new FlowLayout());
         JPanel borderDesign = new JPanel(new BorderLayout());
-        JPanel gridDesign = new JPanel(new GridLayout(1,4));
+        JPanel gridDesign = new JPanel(new GridLayout(2,2));
         
         //Arrange JPanels
         cont.add(flowDesign);
@@ -122,7 +123,8 @@ public class Sniffer extends JFrame{
         
         //Create and arrange ze textfields
         pacman = new JTextField();
-        pacman.setSize(150,150);
+        Dimension d = new Dimension(300,50);
+        pacman.setPreferredSize(d);
         robot1 = new JTextField();
         robot2 = new JTextField();
         robot3 = new JTextField();
@@ -148,11 +150,11 @@ public class Sniffer extends JFrame{
         startBt.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 setButtonText();
-                if(doRead == false)
-                    doRead = true;
-                else{
-                    doRead = false;
-                }
+//                if(doRead == false)
+//                    doRead = true;
+//                else{
+//                    doRead = false;
+//                }
             }
         });
         borderDesign.add(startBt, BorderLayout.SOUTH);
@@ -207,6 +209,7 @@ public class Sniffer extends JFrame{
         int i = -1;
         int j = -1;
         int k = -1;
+                        int o = 0;
         String bits = "";
         public Reader(){
             this.sentIndex = 0;
@@ -218,19 +221,27 @@ public class Sniffer extends JFrame{
                     try {
                         h = in0.read();
                         i = in1.read();
-                        j = in2.read();
-                        k = in3.read();
-                        
+                        String hh = "";
+                        String ii = "";
+//                        j = in2.read();
+//                        k = in3.read();
+//                        int result = h + i + j+ k;
+//                        if(o%1000 == 0){
+//                            System.out.println("Still nothing " + result + "");
+//                        }
+//                            o++;
                         int timestamp = (int)System.currentTimeMillis();
-                        if(h != -1){
+                        if(h > 0){
                             bits = Integer.toBinaryString(h);
                             System.out.println("Data fra comp: " + h);
-                            pacman.setText("\nMessage received at: " + timestamp + "     -     " + bits.substring(bits.length()-8,bits.length()));
+                            hh += "\nMessage received at: " + timestamp + "     -     " + bits + "  -  : " + h;
+                            pacman.setText(hh);//+ bits.substring(bits.length()-8,bits.length()));
                         }
-                        if(i != -1){
+                        if(i > 0){
                             bits = Integer.toBinaryString(i);
-                            System.out.println("Data fra comp: " + i);
-                            robot1.setText("\nMessage received at: " + timestamp + "     -     " + bits.substring(bits.length()-8,bits.length()));
+                            System.out.println("Data fra pac: " + i);
+                            ii += "\nMessage received at: " + timestamp + "     -     " + bits + "  -  : " + i;
+                            robot1.setText("\nMessage received at: " + timestamp + "     -     " + bits + "  -  : " + i);// + bits.substring(bits.length()-8,bits.length()));
                         }
                         if(j != -1){
                             bits = Integer.toBinaryString(j);
