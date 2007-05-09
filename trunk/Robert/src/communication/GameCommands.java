@@ -22,13 +22,15 @@ package communication;
 public class GameCommands {
     private static GameCommands instance = new GameCommands();
     public static final byte UP = 0x08;
+    public final static byte RIGHT = 0x04;
     public final static byte DOWN = 0x02;
     public final static byte LEFT = 0x01;
-    public final static byte RIGHT = 0x04;
-    public final static byte MOVE_UP = 0x01;
-    public final static byte MOVE_RIGHT = 0x02;
-    public final static byte MOVE_DOWN = 0x03;
-    public final static byte MOVE_LEFT = 0x04;
+    //***
+    public final static byte TURN_RIGHT = 0x01;
+    public final static byte TURN_LEFT = 0x02;
+    public final static byte FORWARD = 0x04;
+    public final static byte TURN_NUMBER = 0x08;
+    //***
     public final static byte MOVE_UP_DISCOVER = 0x41;
     public final static byte MOVE_RIGHT_DISCOVER = 0x42;
     public final static byte MOVE_DOWN_DISCOVER = 0x43;
@@ -41,6 +43,7 @@ public class GameCommands {
     public final static byte CALIBRATE = 0x30;
     public final static byte NOP = 0x00;
     public final static byte SEARCH_NODE = 0x20;
+    
     
     /** Creates a new instance of GameCommands */
     private GameCommands() {
