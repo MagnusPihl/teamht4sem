@@ -56,10 +56,8 @@ public class TransportSocket {
     private static final byte NOP = 0x00;
     
     public static final int INPUT_BUFFER_SIZE = 20;
-    //Total time to attempt writing before failing, in milliseconds.
-    public static final int WRITE_TIMEOUT = 300;
     //Time to wait for acknowledge before retrying to write data. Should always be lower than WRITE_TIMEOUT.
-    public static final int ACKNOWLEDGE_TIMEOUT = 300;
+    public static final int ACKNOWLEDGE_TIMEOUT = 100;
     
     /** Creates a new instance of TransportSocket */
     public TransportSocket(InputStream in, OutputStream out) {
@@ -126,7 +124,7 @@ public class TransportSocket {
                                 this.data = this.in.read();
                             } while (this.data == -1);
                         } else {
-                            Thread.sleep(100);
+                            Thread.yield();
                             continue;
                         }
                         
@@ -150,7 +148,7 @@ public class TransportSocket {
                         } else if (TransportPackage.getType(header) == RECEIPT) {
                             lastAcknowledge = TransportPackage.getSequenceNumber(this.header);
                         }
-                        Thread.sleep(50);
+                        Thread.yield();
                     } catch (Exception e) {
                         //e.printStackTrace();
                     }
@@ -240,10 +238,10 @@ public class TransportSocket {
                         this.timeout = (int)System.currentTimeMillis() + TransportSocket.ACKNOWLEDGE_TIMEOUT;
                     }
                     
-                    Thread.sleep(50);
+                    Thread.yield();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
     }
