@@ -75,6 +75,11 @@ public class NetworkSocket {
             this.readIndex = 0;
         }
         
+        /**
+         * Read packet from IR Stream and save it to buffer.
+         *
+         * @return
+         */
         private boolean readPacket() throws IOException {
             this.bufferIndex = -1;
             this.packetAccepted = false;
@@ -132,6 +137,9 @@ public class NetworkSocket {
             return data & 0xFF;
         }             
         
+        /**
+         * Clear buffer
+         */
         public void clear() {            
             this.in.clear();
             this.bufferIndex = this.readIndex;
@@ -183,6 +191,9 @@ public class NetworkSocket {
             }
         }    
         
+        /**
+         * Clear buffer
+         */
         public void clear() {
             this.out.clear();
             this.bufferPosition = -1;

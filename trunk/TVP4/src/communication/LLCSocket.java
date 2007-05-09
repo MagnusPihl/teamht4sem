@@ -48,6 +48,9 @@ public class LLCSocket extends LinkLayerSocket {
         private int timeout;
         private int data;
         
+        /**
+         * Create an InputStream that reads data package from IR stream.         
+         */
         protected LLCInputStream() {       
             super();
             this.buffer = new byte[PACKET_SIZE];
@@ -55,6 +58,13 @@ public class LLCSocket extends LinkLayerSocket {
             this.inPointer = 0;       
         }
         
+        /**
+         * Try to read a packet from IR stream. 
+         *
+         * @return true if a packet could be read. If no data is available at first
+         * read false is returned. If no data could be read within the timeout 
+         * (10 ms) false is returned.
+         */
         private synchronized boolean readPacket() {
             this.inPointer = 0;            
             timeout = (int)System.currentTimeMillis() + TIMEOUT; 
@@ -84,6 +94,12 @@ public class LLCSocket extends LinkLayerSocket {
             return checksumIsValid(this.buffer);                
         }        
                 
+        /**
+         * Read a single byte from buffer. The byte is returned as the 8 least
+         * significant bits of an integer.
+         * 
+         * @return a single data byte if available, -1 otherwise.
+         */
         public int read() throws IOException {      
             if (this.readPointer == this.inPointer) {
                 if (!this.readPacket()) {
@@ -103,6 +119,9 @@ public class LLCSocket extends LinkLayerSocket {
             return this.data & 0xFF;            
         }      
         
+        /**
+         * Clear contents of read buffer
+         */
         public void clear() {
             this.readPointer = this.inPointer;
         }
@@ -112,6 +131,10 @@ public class LLCSocket extends LinkLayerSocket {
         private int writePointer;
         private byte[] buffer;               
         
+        /**
+         * Create new OutputStream with which it is possible to write
+         * package to the IR stream.
+         */
         public LLCOutputStream() {
             this.buffer = new byte[PACKET_SIZE];
             this.buffer[0] = PACKET_HEADER;
@@ -125,6 +148,14 @@ public class LLCSocket extends LinkLayerSocket {
             //checksum, inverse of checksum
         }
         
+        /**
+         * Write a byte to the output buffer. When the output buffer has been
+         * filled the contents will be packaged and sent. The package size
+         * is fixed so three bytes must always be sent.
+         *
+         * @param data byte to sent. Only the 8 least signifacant bits 
+         * are preserved, all other bits are discarded.
+         */
         public synchronized void write(int buffer) throws IOException {
             this.buffer[this.writePointer++] = (byte)buffer;
             this.buffer[this.writePointer++] = (byte)(~buffer);
@@ -136,21 +167,32 @@ public class LLCSocket extends LinkLayerSocket {
             }
         }   
         
+        /**
+         * Clear contents of outbound buffer.
+         */
         public void clear() {
             this.writePointer = DATA_OFFSET;
         }
     }    
     
-    
+    /**
+     * Clear both output and input buffer.
+     */
     public void clear() {
         this.in.clear();
         this.out.clear();
     }
     
+    /**
+     * Get InputStream to read from.
+     */
     public ClearableInputStream getInputStream() {
         return this.in;
     }
     
+    /**
+     * Get OutputStream to write to.
+     */
     public ClearableOutputStream getOutputStream() {
         return this.out;
     }    
