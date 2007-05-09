@@ -201,7 +201,7 @@ public class RobotProxy extends Thread{
         byte bitmask = (byte)(this.lastDir & 0x05);
         switch(bitmask){
             case(5): {
-                reByte = GameCommands.TURN_LEFT & GameCommands.TURN_NUMBER; break;
+                reByte = GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER; break;
             }
             case(4): {
                 reByte = GameCommands.TURN_LEFT; break;
