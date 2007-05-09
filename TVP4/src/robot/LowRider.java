@@ -1,4 +1,5 @@
 package robot;
+import communication.GameCommands;
 import josx.platform.rcx.Button;
 import josx.platform.rcx.LCD;
 import josx.platform.rcx.Motor;
@@ -28,6 +29,30 @@ public class LowRider {
     /** Creates a new instance of LowRider */
     public LowRider() {
         
+    }
+    
+    public void run(int directions, int command){
+        if(directions == (GameCommands.UP | GameCommands.DOWN) || directions == (GameCommands.RIGHT | GameCommands.LEFT)){
+            this.goToGreen();
+        }else if(directions == (GameCommands.RIGHT | GameCommands.LEFT | GameCommands.DOWN) || directions == (GameCommands.UP | GameCommands.DOWN | GameCommands.LEFT) || directions == (GameCommands.RIGHT | GameCommands.LEFT | GameCommands.UP) || directions == (GameCommands.UP | GameCommands.DOWN | GameCommands.RIGHT)){
+            this.goToGreen();
+        }else if(directions == (GameCommands.DOWN | GameCommands.LEFT) || directions == (GameCommands.UP | GameCommands.RIGHT)){
+            if(command == GameCommands.MOVE_UP || command == GameCommands.MOVE_DOWN){
+                this.goToLeftCorner();
+            }else if(command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_LEFT){
+                this.goToRightCorner();
+            }
+        }else if(directions == (GameCommands.DOWN | GameCommands.RIGHT) || directions == (GameCommands.UP | GameCommands.LEFT)){
+            if(command == GameCommands.MOVE_UP || command == GameCommands.MOVE_DOWN){
+                this.goToRightCorner();
+            }else if(command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_LEFT){
+                this.goToLeftCorner();
+            }
+        }else if(directions == (GameCommands.DOWN | GameCommands.RIGHT | GameCommands.UP | GameCommands.LEFT)){
+            this.goToCross();
+        }else{
+         Sound.buzz();   
+        }
     }
     
     public void callibrate(int sensor1, int sensor2, int sensor3, int minGreen, int maxGreen, int minBlack, int maxBlack){
@@ -113,7 +138,7 @@ public class LowRider {
         this.stop();
     }
     
-    public void left90(){
+    public void TurnLeft90(){
         this.left();
         try {
             Thread.sleep(1500);
@@ -123,7 +148,7 @@ public class LowRider {
         this.stop();
     }
     
-    public void right90(){
+    public void TurnRight90(){
         this.right();
         try {
             Thread.sleep(1500);
