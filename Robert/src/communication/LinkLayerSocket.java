@@ -77,6 +77,6 @@ public abstract class LinkLayerSocket {
         buffer[CHECKSUM_OFFSET + 1] = (byte)(~buffer[CHECKSUM_OFFSET]);
     }    
     
-    public abstract InputStream getInputStream();
-    public abstract OutputStream getOutputStream();
+    public abstract ClearableInputStream getInputStream();
+    public abstract ClearableOutputStream getOutputStream();
 }

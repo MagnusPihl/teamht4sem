@@ -41,7 +41,7 @@ public class LLCSocket extends LinkLayerSocket {
         LLC.init();
     }           
     
-    public class LLCInputStream extends InputStream {
+    public class LLCInputStream extends ClearableInputStream {
         private int readPointer;
         private int inPointer;
         private byte[] buffer;        
@@ -108,7 +108,7 @@ public class LLCSocket extends LinkLayerSocket {
         }
     }
     
-    public class LLCOutputStream extends OutputStream {
+    public class LLCOutputStream extends ClearableOutputStream {
         private int writePointer;
         private byte[] buffer;               
         
@@ -147,11 +147,11 @@ public class LLCSocket extends LinkLayerSocket {
         this.out.clear();
     }
     
-    public InputStream getInputStream() {
+    public ClearableInputStream getInputStream() {
         return this.in;
     }
     
-    public OutputStream getOutputStream() {
+    public ClearableOutputStream getOutputStream() {
         return this.out;
     }    
 }
