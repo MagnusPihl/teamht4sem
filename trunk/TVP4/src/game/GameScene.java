@@ -111,6 +111,7 @@ public class GameScene implements Scene {
     private File level;
     private BitmapFont font;
     private BufferedImage pointsImage;
+    private Image topImage;
     private BufferedImage tiledBackground;
     private int levelOffsetX, levelOffsetY;
     
@@ -269,6 +270,10 @@ public class GameScene implements Scene {
         {
             int pacX = field.getEntityRenderers()[0].getEntity().getPosition().x * TileSet.getInstance().getTileSize();
             int pacY = field.getEntityRenderers()[0].getEntity().getPosition().y * TileSet.getInstance().getTileSize();
+            
+            if(pacX - this.levelOffsetX > 600)
+                System.out.println(pacX + " - " + this.levelOffsetX);
+            
             this.levelOffsetX = (400)-pacX;
             this.levelOffsetY = (300)-pacY;
         }
@@ -288,7 +293,7 @@ public class GameScene implements Scene {
         for(int i=startTileX; i<800; i+=TileSet.getInstance().getTileSize())
             for(int j=startTileY; j<600; j+=TileSet.getInstance().getTileSize())
                 this.tiledBackground.getGraphics().drawImage(TileSet.getInstance().getBaseTile(), i, j, null);
-        this.tiledBackground.getGraphics().drawImage(new ImageIcon("images/top.png").getImage(), 0, 0, null);
+        this.topImage = new ImageIcon("images/top.png").getImage();
         //DONE Draw background
     }
     
@@ -297,13 +302,8 @@ public class GameScene implements Scene {
         //Any state
             _g.drawImage(this.tiledBackground, 0, 0, null);
             
-            Shape clip = _g.getClip();
-            _g.setClip(0, 40, 800, 560);
             this.updateLevelOffset();
             field.drawField(_g, this.levelOffsetX, this.levelOffsetY);
-            _g.setClip(clip);
-
-            _g.drawImage(pointsImage, 795 - pointsImage.getWidth(), 5, null);
             
             this.frameCounter++;
             if(System.currentTimeMillis() - this.frameTimer > 1000)
@@ -312,7 +312,10 @@ public class GameScene implements Scene {
                 this.frameCounter = 0;
                 this.frameTimer = System.currentTimeMillis();
             }
+            
+            _g.drawImage(topImage, 0, 0, null);
             _g.drawImage(this.fps, 5, 5, null);
+            _g.drawImage(pointsImage, 795 - pointsImage.getWidth(), 5, null);
         //Any state done
         
         if(this.state == this.STATE_PAUSE)
