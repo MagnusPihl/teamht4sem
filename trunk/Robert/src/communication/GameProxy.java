@@ -70,24 +70,40 @@ public class GameProxy implements ButtonListener {
     public void run(){
         this.address();
         while(true){
-            command = this.getcommand();
+            this.getcommand();
             if(command == GameCommands.FORWARD){
-                this.move();
+                this.stopThread();
+                //ride.Forward(directions);
+                ride.run(directions,command);
+                this.startThread();
                 this.sendMoveDone(GameCommands.MOVE_DONE);
+//              ******************************************
             }else if(command == GameCommands.TURN_LEFT || command == (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER)){
+                this.stopThread();
                 if(command == (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER)){
                     ride.TurnLeft90();
                     ride.TurnLeft90();
                 }else{
                     ride.TurnLeft90();
                 }
+                //ride.Forward(directions);
+                ride.run(directions,command);
+                this.startThread();
+                this.sendMoveDone(GameCommands.MOVE_DONE);
+//              ******************************************
             }else if(command == GameCommands.TURN_RIGHT || command == (GameCommands.TURN_RIGHT | GameCommands.TURN_NUMBER)){
+                this.stopThread();
                 if(command == (GameCommands.TURN_RIGHT | GameCommands.TURN_NUMBER)){
                     ride.TurnRight90();
                     ride.TurnRight90();
                 }else{
                     ride.TurnRight90();
                 }
+                //ride.Forward(directions);
+                ride.run(directions,command);
+                this.startThread();
+                this.sendMoveDone(GameCommands.MOVE_DONE);
+//              ******************************************
             }else if(command == (GameCommands.MOVE_UP_DISCOVER) || command == (GameCommands.MOVE_RIGHT_DISCOVER) || command == (GameCommands.MOVE_DOWN_DISCOVER) || command == (GameCommands.MOVE_LEFT_DISCOVER)){
                 //directions = ride.goToNext();
                 this.sendMoveDone(GameCommands.MOVE_DONE | directions);
@@ -108,17 +124,10 @@ public class GameProxy implements ButtonListener {
         }
     }
     
-    private void move(){
-        this.stopThread();
-        //ride.Forward(directions);
-        ride.run(directions,command);
-        this.startThread();
-    }
-    
-    public int getcommand(){
+    private void getcommand(){
+        LCD.showNumber(command);
         command = -1;
         directions = -1;
-        TextLCD.print("Step1");
         while(command == -1){
             try {
                 command = in.read();
@@ -126,8 +135,8 @@ public class GameProxy implements ButtonListener {
                 
             }
         }
-        TextLCD.print("Step2");
-        if(command == GameCommands.FORWARD){
+        LCD.showNumber(command);
+        if(command <= (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER) && command != GameCommands.NOP){
             while(directions == -1){
                 try {
                     directions = in.read();
@@ -196,10 +205,8 @@ public class GameProxy implements ButtonListener {
                 }
             }
         }
-        
-        return command;
     }
-//    
+//
 //    public int getDirections(){
 //        return directions;
 //    }
