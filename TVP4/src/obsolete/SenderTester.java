@@ -24,6 +24,7 @@ public class SenderTester {
         
         int inc_data = -1, inc_data2 = -1;
         data = 1;
+        
         while(true)
         {
             System.out.println("Det her skulle gerne blive gentaget...");
@@ -51,7 +52,7 @@ public class SenderTester {
                 System.out.println("Færdig med at skrive!");
 //                System.out.println("SENDING DATA: "+data+", "+Integer.toBinaryString(data));
 //                inc_data = transport.getInputStream().read();
-                inc_data2 = trans2.getInputStream().read();
+//                inc_data2 = trans2.getInputStream().read();
 //                if(inc_data != -1)
 //                    System.out.println("RECEIVING DATA: "+inc_data+", "+Integer.toBinaryString(inc_data));
                 
@@ -59,7 +60,7 @@ public class SenderTester {
                 
                 try {
                     
-                    Thread.sleep(25);
+                    Thread.sleep(250);
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
