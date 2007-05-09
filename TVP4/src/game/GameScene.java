@@ -299,7 +299,8 @@ public class GameScene implements Scene {
         for(int i=startTileX; i<800; i+=TileSet.getInstance().getTileSize())
             for(int j=startTileY; j<600; j+=TileSet.getInstance().getTileSize())
                 this.tiledBackground.getGraphics().drawImage(TileSet.getInstance().getBaseTile(), i, j, null);
-        this.topImage = new ImageIcon("images/top.png").getImage();
+        this.tiledBackground.getGraphics().drawImage(new ImageIcon("images/top.png").getImage(), 0, 0, null);
+        //this.topImage = new ImageIcon("images/top.png").getImage();
         //DONE Draw background
     }
     
@@ -309,7 +310,10 @@ public class GameScene implements Scene {
             _g.drawImage(this.tiledBackground, 0, 0, null);
             
             this.updateLevelOffset();
+            Shape c = _g.getClip();
+            _g.setClip(0, 50, 800, 550);
             field.drawField(_g, this.levelOffsetX, this.levelOffsetY);
+            _g.setClip(c);
             
             this.frameCounter++;
             if(System.currentTimeMillis() - this.frameTimer > 1000)
@@ -319,7 +323,7 @@ public class GameScene implements Scene {
                 this.frameTimer = System.currentTimeMillis();
             }
             
-            _g.drawImage(topImage, 0, 0, null);
+            //_g.drawImage(topImage, 0, 0, null);
             _g.drawImage(this.fps, 5, 5, null);
             _g.drawImage(pointsImage, 795 - pointsImage.getWidth(), 5, null);
         //Any state done
