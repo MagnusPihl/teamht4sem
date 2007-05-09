@@ -39,7 +39,7 @@ public class NetworkSocket {
     /** 
      * Creates a new instance of IRDatagramSocket 
      */
-    public NetworkSocket(int sender, int receiver, InputStream in, OutputStream out) {
+    public NetworkSocket(int sender, int receiver, ClearableInputStream in, ClearableOutputStream out) {
         this.sender = sender;
         this.receiver = receiver;
         this.in = new NetworkSocket.NetworkInputStream(in);
@@ -50,8 +50,8 @@ public class NetworkSocket {
      * Input stream that reads address header in each package and only
      * accepts relevant pacakges.
      */
-    public class NetworkInputStream extends InputStream {
-        private InputStream in;
+    public class NetworkInputStream extends ClearableInputStream {
+        private ClearableInputStream in;
         private int expectedHeader;
         private int receivedHeader;
         private byte[] buffer;
@@ -67,7 +67,7 @@ public class NetworkSocket {
          *
          * @param stream to read from.
          */
-        protected NetworkInputStream(InputStream in) {
+        protected NetworkInputStream(ClearableInputStream in) {
             this.in = in;
             this.expectedHeader = NetworkDatagram.getAdressHeader(receiver, sender);
             this.buffer = new byte[INPUT_BUFFER_SIZE];
@@ -132,7 +132,8 @@ public class NetworkSocket {
             return data & 0xFF;
         }             
         
-        public void clear() {
+        public void clear() {            
+            this.in.clear();
             this.bufferIndex = this.readIndex;
         }
     }
@@ -140,8 +141,8 @@ public class NetworkSocket {
     /**
      * Output stream that adds address header to outbound packages.
      */
-    public class NetworkOutputStream extends OutputStream {        
-        private OutputStream out;
+    public class NetworkOutputStream extends ClearableOutputStream {        
+        private ClearableOutputStream out;
         private int sendHeader;
         private byte[] buffer;
         private int bufferPosition;
@@ -151,7 +152,7 @@ public class NetworkSocket {
          *
          * @param output stream to write datagrams to
          */
-        protected NetworkOutputStream(OutputStream out) {
+        protected NetworkOutputStream(ClearableOutputStream out) {
             this.out = out;
             this.sendHeader = NetworkDatagram.getAdressHeader(sender, receiver);
             this.buffer = new byte[OUTPUT_BUFFER_SIZE];
@@ -183,6 +184,7 @@ public class NetworkSocket {
         }    
         
         public void clear() {
+            this.out.clear();
             this.bufferPosition = -1;
         }
     }
@@ -192,7 +194,7 @@ public class NetworkSocket {
      *
      * @return OutputStream
      */
-    public OutputStream getOutputStream() {
+    public ClearableOutputStream getOutputStream() {
         return this.out;
     }
     
@@ -201,7 +203,7 @@ public class NetworkSocket {
      *
      * @return NetworkInputStream
      */
-    public InputStream getInputStream() {
+    public ClearableInputStream getInputStream() {
         return this.in;
     }
     

@@ -60,7 +60,7 @@ public class TransportSocket {
     public static final int ACKNOWLEDGE_TIMEOUT = 100;
     
     /** Creates a new instance of TransportSocket */
-    public TransportSocket(InputStream in, OutputStream out) {
+    public TransportSocket(ClearableInputStream in, ClearableOutputStream out) {
         this.readBuffer = new byte[INPUT_BUFFER_SIZE];
         this.in = new TransportSocket.TransportInputStream();
         this.out = new TransportSocket.TransportOutputStream(out);
@@ -75,8 +75,8 @@ public class TransportSocket {
         private int header;
         protected boolean isActive;
         
-        private InputStream in;
-        private OutputStream out;
+        private ClearableInputStream in;
+        private ClearableOutputStream out;
         
         /**
          * Create TransportInputThread class used to read indefinetly from
@@ -85,7 +85,7 @@ public class TransportSocket {
          * @param InputStream to read data from.
          * @param OuputStream to write acknowledges to.
          */
-        protected TransportInputThread(InputStream in, OutputStream out) {
+        protected TransportInputThread(ClearableInputStream in, ClearableOutputStream out) {
             this.in = in;
             this.out = out;
             bufferIndex = 0;
@@ -159,9 +159,14 @@ public class TransportSocket {
                 }
             }
         }
+        
+        public void clear() {
+            this.in.clear();
+            this.out.clear();
+        }
     }
     
-    public class TransportInputStream extends InputStream {
+    public class TransportInputStream extends ClearableInputStream {
         
         private int readIndex;
         private int data;
@@ -201,8 +206,8 @@ public class TransportSocket {
         }
     }
     
-    public class TransportOutputStream extends OutputStream {
-        private OutputStream out;
+    public class TransportOutputStream extends ClearableOutputStream {
+        private ClearableOutputStream out;
         private int sequence;
         private int timeout;
         
@@ -211,9 +216,10 @@ public class TransportSocket {
          *
          * @param OutputStream to write to.
          */
-        protected TransportOutputStream(OutputStream out) {
+        protected TransportOutputStream(ClearableOutputStream out) {
             this.out = out;
-            this.sequence = 0;
+            this.sequence = (byte)((int)System.currentTimeMillis()) & 0x7F;
+            
         }
         
         /**
@@ -222,7 +228,10 @@ public class TransportSocket {
          * @param byte to write to underlying layers.
          */
         public void write(int b) throws IOException {
-            this.sequence = (sequence+1)%127;            
+            this.sequence++;    
+            if (this.sequence == 127) {
+                this.sequence = 0;
+            }
             //Write header and data bytes.
             
             try {
@@ -244,6 +253,10 @@ public class TransportSocket {
                 //e.printStackTrace();
             }
         }
+        
+        public void clear() {
+            this.out.clear();
+        }
     }
     
     /**
@@ -261,20 +274,21 @@ public class TransportSocket {
      * Clear buffers.
      */
     public void clear() {
+        this.inputThread.clear();
         this.in.clear();
     }
     
     /**
      * Get reliable output stream.
      */
-    public OutputStream getOutputStream() {
+    public ClearableOutputStream getOutputStream() {
         return this.out;
     }
         
     /**
      * Get input stream.
      */
-    public InputStream getInputStream() {
+    public ClearableInputStream getInputStream() {
         return this.in;
     }
 }
