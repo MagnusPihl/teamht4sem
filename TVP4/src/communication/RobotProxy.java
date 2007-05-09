@@ -6,10 +6,12 @@
  * Company: HT++
  *
  * @author Mikkel Brøndsholm Nielsen
- * @version 1.0
+ * @version 1.2
  *
  *
  * ******VERSION HISTORY******
+ * LMK @ 9. april 2007 (v 1.2)
+ * Added rotatePosibleDirections
  * Administrator @ 9. april 2007 (v 1.1)
  *  Towersocket made static
  * Administrator @ 9. april 2007 (v 1.0)
@@ -297,18 +299,18 @@ public class RobotProxy extends Thread{
         this.socket.setActive(isActive);
     }
     
-    private byte rotatePossibleDirections(byte nodeDir, byte dirs) {
+    public static byte rotatePosibleDirections(byte nodeDir, byte dirs) {
         switch(nodeDir) {
             //turn right
             case Node.RIGHT :
                 return (byte)(((dirs << 1) & 0x0F) | ((dirs & GameCommands.UP) >> 3));
             case Node.LEFT:
                 return (byte)((dirs >> 1) | ((dirs & GameCommands.LEFT) << 3));
-            case Node.DOWN :
-                return (byte)((dirs & GameCommands.UP >> 3) |
-                        (dirs & GameCommands.RIGHT >> 1) |
-                        (dirs & GameCommands.DOWN << 1) |
-                        (dirs & GameCommands.LEFT << 3));
+            case Node.DOWN : 
+                return (byte)(((dirs & GameCommands.UP) >> 2) | 
+                        ((dirs & GameCommands.RIGHT) >> 2) | 
+                        ((dirs & GameCommands.DOWN) << 2) | 
+                        ((dirs & GameCommands.LEFT) << 2));
             default: return dirs;
         }
     }
