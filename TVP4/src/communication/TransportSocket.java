@@ -254,6 +254,9 @@ public class TransportSocket {
             }
         }
         
+        /**
+         * Clear buffer
+         */
         public void clear() {
             this.out.clear();
         }
