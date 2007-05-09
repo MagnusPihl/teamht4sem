@@ -123,6 +123,7 @@ public class RobotProxy extends Thread{
         this.write(searchDir);
         this.write(possDirs);
         this.lastDir = direction;
+        this.lastPossDir = possDir;
     }
     
     private byte getRotation(byte direction){
