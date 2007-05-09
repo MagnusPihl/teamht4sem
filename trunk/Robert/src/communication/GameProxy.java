@@ -6,14 +6,14 @@
  * Company: HT++
  *
  * @author thh
- * @version 1.0
+ * @version 2.0
  *
  *
  * ******VERSION HISTORY******
  *
  * thh @ 27. marts 2007 (v 1.0)
  * __________ Changes ____________
- *
+ * merged with Controller.
  */
 
 package communication;
@@ -21,13 +21,19 @@ package communication;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import josx.platform.rcx.Button;
+import josx.platform.rcx.ButtonListener;
+import josx.platform.rcx.LCD;
+import josx.platform.rcx.Motor;
 import josx.platform.rcx.Sound;
-import robot.Controller;
+import josx.platform.rcx.TextLCD;
+import robot.Drive;
+import robot.LowRider;
 
 
-public class GameProxy {
-    Controller OS = Controller.getInstance();
-    int address;
+public class GameProxy implements ButtonListener {
+//    Drive ride = new Drive();
+    LowRider ride = new LowRider();
     LLCSocket link = new LLCSocket();
     NetworkSocket net;
     TransportSocket socket;
@@ -42,22 +48,77 @@ public class GameProxy {
     private int minGreen = -1;
     private int maxBlack = -1;
     private int minBlack = -1;
+    private int address = 0;
+    private boolean addressing = true;
     
     /**
      * Creates a new instance of GameProxy
      */
-    public GameProxy(int add) {
-        this.address = add;
+    public GameProxy() {
+        this.address();
+    }
+    
+    private void init(){
         net = new NetworkSocket(address,0,link.getInputStream(),link.getOutputStream());
         socket = new TransportSocket(net.getInputStream(), net.getOutputStream());
         in = socket.getInputStream();
         out = socket.getOutputStream();
         socket.setActive(true);
+        this.run();
+    }
+    
+    public void run(){
+        this.address();
+        while(true){
+            command = this.getcommand();
+            if(command == GameCommands.FORWARD){
+                this.move();
+                this.sendMoveDone(GameCommands.MOVE_DONE);
+            }else if(command == GameCommands.TURN_LEFT || command == (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER)){
+                if(command == (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER)){
+                    ride.TurnLeft90();
+                    ride.TurnLeft90();
+                }else{
+                    ride.TurnLeft90();
+                }
+            }else if(command == GameCommands.TURN_RIGHT || command == (GameCommands.TURN_RIGHT | GameCommands.TURN_NUMBER)){
+                if(command == (GameCommands.TURN_RIGHT | GameCommands.TURN_NUMBER)){
+                    ride.TurnRight90();
+                    ride.TurnRight90();
+                }else{
+                    ride.TurnRight90();
+                }
+            }else if(command == (GameCommands.MOVE_UP_DISCOVER) || command == (GameCommands.MOVE_RIGHT_DISCOVER) || command == (GameCommands.MOVE_DOWN_DISCOVER) || command == (GameCommands.MOVE_LEFT_DISCOVER)){
+                //directions = ride.goToNext();
+                this.sendMoveDone(GameCommands.MOVE_DONE | directions);
+            }else if(command == GameCommands.LIGHT_ON){
+                this.lightOn();
+            }else if(command == GameCommands.LIGHT_OFF){
+                this.lightOff();
+            }else if(command == GameCommands.BEEP){
+                Sound.twoBeeps();//only two beeps
+            }else if(command == GameCommands.CALIBRATE){
+                //ride.callibrate(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
+            }else if(command == GameCommands.SEARCH_NODE){
+                //directions = ride.searchNode();
+                this.sendMoveDone(GameCommands.MOVE_DONE | directions);
+            }else{
+                
+            }
+        }
+    }
+    
+    private void move(){
+        this.stopThread();
+        //ride.Forward(directions);
+        ride.run(directions,command);
+        this.startThread();
     }
     
     public int getcommand(){
         command = -1;
         directions = -1;
+        TextLCD.print("Step1");
         while(command == -1){
             try {
                 command = in.read();
@@ -65,7 +126,8 @@ public class GameProxy {
                 
             }
         }
-        if(command == GameCommands.MOVE_UP || command == GameCommands.MOVE_RIGHT || command == GameCommands.MOVE_DOWN || command == GameCommands.MOVE_LEFT){
+        TextLCD.print("Step2");
+        if(command == GameCommands.FORWARD){
             while(directions == -1){
                 try {
                     directions = in.read();
@@ -74,6 +136,7 @@ public class GameProxy {
                 }
             }
         }
+        TextLCD.print("Step3");
         // lav evt. noget timeout here.
         if(command == GameCommands.CALIBRATE){
             sensor1 = -1;
@@ -132,15 +195,14 @@ public class GameProxy {
                     
                 }
             }
-            OS.setCalibrationValues(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
         }
         
         return command;
     }
-    
-    public int getDirections(){
-        return directions;
-    }
+//    
+//    public int getDirections(){
+//        return directions;
+//    }
     
     public void stopThread(){
         socket.setActive(false);
@@ -151,11 +213,52 @@ public class GameProxy {
     }
     
     public void sendMoveDone(int move){
+        TextLCD.print("Step4");
         try {
             out.write(move);
         } catch (IOException ex) {
             
         }
+        TextLCD.print("Step5");
         Sound.beep();
+    }
+    
+    private void address(){
+        Button.RUN.addButtonListener(this);
+        Button.PRGM.addButtonListener(this);
+        Button.VIEW.addButtonListener(this);
+        while(addressing == true){
+            LCD.showNumber(address+1);
+        }
+    }
+    
+    public void buttonPressed(Button button) {
+        if (Button.VIEW.isPressed() && addressing == true) {
+            
+        }else if (Button.PRGM.isPressed() && addressing == true) {
+            Sound.beep();
+            address++;
+            address = address%3;
+        }else if (Button.RUN.isPressed() && addressing == true) {
+            Sound.twoBeeps();
+            address++;
+            addressing = false;
+            init();
+        }
+    }
+    public void buttonReleased(Button button) {
+    }
+    
+    private void lightOn() {
+        Motor.B.setPower(7);
+        Motor.B.forward();
+    }
+    
+    private void lightOff() {
+        Motor.B.stop();
+    }
+    
+    public static void main(String[] args) throws InterruptedException, IOException{
+        GameProxy noget = new GameProxy();
     }
 }
