@@ -116,7 +116,6 @@ public class FieldExplorer implements Runnable {
                     }
                 }
             }
-            
             this.dialog.addToLog("Scan done");
         } catch (IOException ioe) {
             
@@ -128,14 +127,12 @@ public class FieldExplorer implements Runnable {
     }
     
     private void addDirections() {
-        if (this.availableDirections != Node.INVALID_DIRECTION) {
+            if (this.availableDirections != Node.INVALID_DIRECTION) {
             field.Field field = LevelEditor.getInstance().getEditorPanel().getField();
             Node addedNode = null;
             Point position = this.currentNode.getPosition();                        
             int offsetX = 0;
-            int offsetY = 0;                      
-            
-            
+            int offsetY = 0;
             if ((this.availableDirections & Node.LEFT_BIN) != 0) {
                 if (position.x == 0) {
                     offsetX = 1;
