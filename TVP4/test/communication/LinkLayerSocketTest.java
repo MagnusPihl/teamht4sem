@@ -18,10 +18,12 @@ import junit.framework.*;
 public class LinkLayerSocketTest extends TestCase {    
     private Random rand;
     public static final int NUMBER_OF_TESTS = 1000;
+    private TowerSocket tower;
     
     public LinkLayerSocketTest(String testName) {
         super(testName);
         rand = new Random();
+        this.tower = new TowerSocket();
     }
 
     protected void setUp() throws Exception {        
@@ -39,8 +41,8 @@ public class LinkLayerSocketTest extends TestCase {
         
         for (int i = 0; i < NUMBER_OF_TESTS; i++) {
             rand.nextBytes(buffer);
-            LinkLayerSocket.addChecksum(buffer);            
-            assertTrue(LinkLayerSocket.checksumIsValid(buffer));            
+            this.tower.addChecksum(buffer);            
+            assertTrue(this.tower.checksumIsValid(buffer));            
         }        
     }    
 }

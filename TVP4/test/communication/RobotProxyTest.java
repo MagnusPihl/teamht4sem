@@ -40,8 +40,8 @@ public class RobotProxyTest extends TestCase{
     }
 
     protected void tearDown() throws Exception {
-    }
-     
+    }     
+    
     /**
      * Check that the correct receiver id is retreive from an adressHeader
      * when method getReceiver is run
@@ -49,69 +49,70 @@ public class RobotProxyTest extends TestCase{
      * @param addressHeader
      * @result int with 4 least significant bits containing receiver ID.
      */
-    public void testGetReceiver() {
-        byte posibleDirections;
+    public void testRotatePossibleDirections() {
+        byte possibleDirections;
         byte turn;
         byte output;        
         
         for (int i = 0; i < NUMBER_OF_TESTS; i++) {
             turn = (byte)this.rand.nextInt(Node.DIRECTION_COUNT);
-            posibleDirections = (byte)(this.rand.nextInt() & 0x0F);
-            output = RobotProxy.rotatePosibleDirections(turn, posibleDirections);
+            possibleDirections = (byte)(this.rand.nextInt() & 0x07);
+            output = RobotProxy.rotatePossibleDirections(turn, possibleDirections);
+            
+            assertEquals(output & ~0x07, 0);
             switch (turn) {
                 case Node.UP :                
                     //System.out.println("UP");
-                    assertEquals(posibleDirections, output);                    
+                    if ((possibleDirections & GameCommands.UP) == GameCommands.UP) {
+                        assertEquals(output & GameCommands.FORWARD, GameCommands.FORWARD);
+                    }                    
+                    if ((possibleDirections & GameCommands.RIGHT) == GameCommands.RIGHT) {
+                        assertEquals(output & GameCommands.TURN_RIGHT, GameCommands.TURN_RIGHT);
+                    }
+                    if ((possibleDirections & GameCommands.LEFT) == GameCommands.LEFT) {
+                        assertEquals(output & GameCommands.TURN_LEFT, GameCommands.TURN_LEFT);
+                    }
                     break;
                     
                 case Node.LEFT:
                     //System.out.println("LEFT");
-                    if ((posibleDirections & GameCommands.UP) == GameCommands.UP) {
-                        assertEquals(output & GameCommands.RIGHT, GameCommands.RIGHT);
+                    if ((possibleDirections & GameCommands.UP) == GameCommands.UP) {
+                        assertEquals(output & GameCommands.TURN_RIGHT, GameCommands.TURN_RIGHT);
                     }                    
-                    if ((posibleDirections & GameCommands.RIGHT) == GameCommands.RIGHT) {
-                        assertEquals(output & GameCommands.DOWN, GameCommands.DOWN);
+                    if ((possibleDirections & GameCommands.DOWN) == GameCommands.DOWN) {
+                        assertEquals(output & GameCommands.TURN_LEFT, GameCommands.TURN_LEFT);
                     }
-                    if ((posibleDirections & GameCommands.DOWN) == GameCommands.DOWN) {
-                        assertEquals(output & GameCommands.LEFT, GameCommands.LEFT);
-                    }
-                    if ((posibleDirections & GameCommands.LEFT) == GameCommands.LEFT) {
-                        assertEquals(output & GameCommands.UP, GameCommands.UP);
+                    if ((possibleDirections & GameCommands.LEFT) == GameCommands.LEFT) {
+                        assertEquals(output & GameCommands.FORWARD, GameCommands.FORWARD);
                     }
                     break;
                     
                 case Node.RIGHT:
                     //System.out.println("RIGHT");
-                    if ((posibleDirections & GameCommands.UP) == GameCommands.UP) {
-                        assertEquals(output & GameCommands.LEFT, GameCommands.LEFT);
+                    if ((possibleDirections & GameCommands.UP) == GameCommands.UP) {
+                        assertEquals(output & GameCommands.TURN_LEFT, GameCommands.TURN_LEFT);
                     }                    
-                    if ((posibleDirections & GameCommands.LEFT) == GameCommands.LEFT) {
-                        assertEquals(output & GameCommands.DOWN, GameCommands.DOWN);
+                    if ((possibleDirections & GameCommands.DOWN) == GameCommands.DOWN) {
+                        assertEquals(output & GameCommands.TURN_RIGHT, GameCommands.TURN_RIGHT);
                     }
-                    if ((posibleDirections & GameCommands.DOWN) == GameCommands.DOWN) {
-                        assertEquals(output & GameCommands.RIGHT, GameCommands.RIGHT);
-                    }
-                    if ((posibleDirections & GameCommands.RIGHT) == GameCommands.RIGHT) {
-                        assertEquals(output & GameCommands.UP, GameCommands.UP);
+                    if ((possibleDirections & GameCommands.RIGHT) == GameCommands.RIGHT) {
+                        assertEquals(output & GameCommands.FORWARD, GameCommands.FORWARD);
                     }
                     break;
                     
                 case Node.DOWN:
                     //System.out.println("DOWN");
-                    if ((posibleDirections & GameCommands.UP) == GameCommands.UP) {
-                        assertEquals(output & GameCommands.DOWN, GameCommands.DOWN);
+                    if ((possibleDirections & GameCommands.DOWN) == GameCommands.DOWN) {
+                        assertEquals(output & GameCommands.FORWARD, GameCommands.FORWARD);
                     }                    
-                    if ((posibleDirections & GameCommands.LEFT) == GameCommands.LEFT) {
-                        assertEquals(output & GameCommands.RIGHT, GameCommands.RIGHT);
+                    if ((possibleDirections & GameCommands.LEFT) == GameCommands.LEFT) {
+                        assertEquals(output & GameCommands.TURN_RIGHT, GameCommands.TURN_RIGHT);
                     }
-                    if ((posibleDirections & GameCommands.DOWN) == GameCommands.DOWN) {
-                        assertEquals(output & GameCommands.UP, GameCommands.UP);
-                    }
-                    if ((posibleDirections & GameCommands.RIGHT) == GameCommands.RIGHT) {
-                        assertEquals(output & GameCommands.LEFT, GameCommands.LEFT);
+                    if ((possibleDirections & GameCommands.RIGHT) == GameCommands.RIGHT) {
+                        assertEquals(output & GameCommands.TURN_LEFT, GameCommands.TURN_LEFT);
                     }
                     break;            
             }
-        }
-    }
+        }                
+    }    
 }
