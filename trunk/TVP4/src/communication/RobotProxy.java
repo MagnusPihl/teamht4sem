@@ -301,16 +301,28 @@ public class RobotProxy extends Thread{
     
     public static byte rotatePossibleDirections(byte nodeDir, byte dirs) {
         switch(nodeDir) {
-            //turn right
-            case Node.RIGHT :
-                return (byte)(((dirs << 1) & 0x0F) | ((dirs & GameCommands.UP) >> 3));
-            case Node.LEFT:
-                return (byte)((dirs >> 1) | ((dirs & GameCommands.LEFT) << 3));
-            case Node.DOWN : 
-                return (byte)(((dirs & GameCommands.UP) >> 2) | 
+            //node - up right   down left
+            //turns -   forward left right
+            case Node.UP :
+                //up - forward, right - right, left - left
+                return (byte)(((dirs & GameCommands.UP) >> 1) |
                         ((dirs & GameCommands.RIGHT) >> 2) | 
-                        ((dirs & GameCommands.DOWN) << 2) | 
-                        ((dirs & GameCommands.LEFT) << 2));
+                        ((dirs & GameCommands.LEFT) << 1));
+            case Node.RIGHT :
+                //right - forward, up - left, down - right
+                return (byte)((dirs & GameCommands.RIGHT) |
+                        ((dirs & GameCommands.UP) >> 2) | 
+                        ((dirs & GameCommands.DOWN) >> 1));
+            case Node.LEFT:
+                //left - forward, up - right, down - left
+                return (byte)(((dirs & GameCommands.LEFT) << 2) |
+                        ((dirs & GameCommands.UP) >> 3) | 
+                        (dirs & GameCommands.DOWN));
+            case Node.DOWN : 
+                //down - forward, left - right, right - left
+                return (byte)(((dirs & GameCommands.DOWN) << 1) | 
+                        ((dirs & GameCommands.LEFT)) | 
+                        ((dirs & GameCommands.RIGHT) >> 1));
             default: return dirs;
         }
     }
