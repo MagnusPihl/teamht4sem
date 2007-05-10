@@ -39,6 +39,7 @@ public class LLCSocket extends LinkLayerSocket {
         this.in = new LLCSocket.LLCInputStream();
         this.out = new LLCSocket.LLCOutputStream();
         LLC.init();
+        LLC.setRangeLong();
     }           
     
     public class LLCInputStream extends ClearableInputStream {
