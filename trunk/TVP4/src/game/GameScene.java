@@ -270,18 +270,18 @@ public class GameScene implements Scene {
             int pacX = field.getEntityRenderers()[0].getEntity().getPosition().x * TileSet.getInstance().getTileSize();
             
             if(pacX + this.levelOffsetX < 350 && this.levelOffsetX < 25)
-                this.levelOffsetX+=5;
+                this.levelOffsetX+=3;
             if(pacX + this.levelOffsetX > 450 && field.getSize().width * TileSet.getInstance().getTileSize() + this.levelOffsetX > 775)
-                this.levelOffsetX-=5;
+                this.levelOffsetX-=3;
         }
         if(field.getSize().height * TileSet.getInstance().getTileSize() > 520)
         {
             int pacY = field.getEntityRenderers()[0].getEntity().getPosition().y * TileSet.getInstance().getTileSize();
             
             if(pacY + this.levelOffsetY < 250 && this.levelOffsetY < 85)
-                this.levelOffsetY+=5;
+                this.levelOffsetY+=3;
             if(pacY + this.levelOffsetY > 350 && field.getSize().height * TileSet.getInstance().getTileSize() + this.levelOffsetY > 575)
-                this.levelOffsetY-=5;
+                this.levelOffsetY-=3;
         }
     }
     
