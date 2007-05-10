@@ -30,7 +30,7 @@ public class ReadTester implements ButtonListener {
     int j = 1;
     
     public ReadTester() {
-        LinkLayerSocket link = new LLCSocket();
+        LLCSocket link = new LLCSocket();
         NetworkSocket net = new NetworkSocket(1,0, link.getInputStream(), link.getOutputStream());
         TransportSocket trans = new TransportSocket(net.getInputStream(), net.getOutputStream());
         InputStream in = trans.getInputStream();
