@@ -125,7 +125,7 @@ public class RobotProxy extends Thread{
         this.write(searchDir);
         this.write(possDirs);
         this.lastDir = direction;
-        this.lastPossDir = possDir;
+        this.lastPossDir = possDirs;
     }
     
     private byte getRotation(byte direction){
@@ -143,10 +143,10 @@ public class RobotProxy extends Thread{
                         searchDir = GameCommands.TURN_LEFT; break;
                     }
                     case(Node.UP): {
-                        searchDir = calcRotation(); break;
+                        searchDir = calculateMove(); break;
                     }
                 }
-            }
+            } break;
             case(Node.LEFT): {
                 switch(direction){
                     case(Node.DOWN): {
@@ -156,20 +156,20 @@ public class RobotProxy extends Thread{
                         searchDir = GameCommands.FORWARD; break;
                     }
                     case(Node.RIGHT): {
-                        searchDir = calcRotation(); break;
+                        searchDir = calculateMove(); break;
                     }
                     case(Node.UP): {
                         searchDir = GameCommands.TURN_RIGHT; break;
                     }
                 }
-            }
+            } break;
             case(Node.RIGHT): {
                 switch(direction){
                     case(Node.DOWN): {
                         searchDir = GameCommands.TURN_RIGHT; break;
                     }
                     case(Node.LEFT): {
-                        searchDir = calcRotation(); break;
+                        searchDir = calculateMove(); break;
                     }
                     case(Node.RIGHT): {
                         searchDir = GameCommands.FORWARD; break;
@@ -178,11 +178,11 @@ public class RobotProxy extends Thread{
                         searchDir = GameCommands.TURN_LEFT; break;
                     }
                 }
-            }
+            } break;
             case(Node.UP): {
                 switch(direction){
                     case(Node.DOWN): {
-                        searchDir = calcRotation(); break;
+                        searchDir = calculateMove(); break;
                     }
                     case(Node.LEFT): {
                         searchDir = GameCommands.TURN_LEFT; break;
@@ -194,14 +194,14 @@ public class RobotProxy extends Thread{
                         searchDir = GameCommands.FORWARD; break;
                     }
                 }
-            }
+            } break;
         }
         return searchDir;
     }
     
-    private byte calcRotation(){
+    private byte calculateMove(){
         byte reByte = 0;
-        byte bitmask = (byte)(this.lastDir & 0x05);
+        byte bitmask = (byte)(this.lastPossDir & 0x05);
         switch(bitmask){
             case(5): {
                 reByte = GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER; break;
@@ -299,7 +299,7 @@ public class RobotProxy extends Thread{
         this.socket.setActive(isActive);
     }
     
-    public static byte rotatePosibleDirections(byte nodeDir, byte dirs) {
+    public static byte rotatePossibleDirections(byte nodeDir, byte dirs) {
         switch(nodeDir) {
             //turn right
             case Node.RIGHT :
