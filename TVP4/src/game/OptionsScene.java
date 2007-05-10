@@ -75,6 +75,8 @@ public class OptionsScene implements Scene
     private String menuHelpStr[];
     private Image menuHelp[];
     
+    private Image arrow[];
+    
     /** Creates a new instance of GameScene */
     public OptionsScene() {
         this.up = new TimedInputAction("Down", 500, 100);
@@ -83,6 +85,8 @@ public class OptionsScene implements Scene
         this.right = new TimedInputAction("Down", 500, 100);
         this.enter = new InputAction("Enter", InputAction.DETECT_FIRST_ACTION);
         this.quit = new InputAction("Escape", InputAction.DETECT_FIRST_ACTION);
+        
+        this.arrow = new Image[2];
         
         this.menuItemsStr = new String[] {"Entity0", "Entity1", "Entity2", "Skin", "Game Speed", "Sound", "Mode", "Interface"};
         
@@ -158,14 +162,20 @@ public class OptionsScene implements Scene
         int y = 0;
         for(int i=0; i<this.menuItems.length; i++)
         {
-            _g.drawImage(this.menuItems[i], 150, y, null);
-            _g.drawImage(this.menuOptions[i][this.option[i]], 350, y, null);
+            _g.drawImage(this.menuItems[i], 125, y, null);
+//            _g.drawImage(this.arrow[0], 340, y+5, null);
+            if(this.option[i] > 0)
+                _g.drawImage(this.arrow[0], 340, y+5, null);
+//            _g.drawImage(this.arrow[1], 775, y+5, null);
+            if(this.menuOptions[i][this.option[i]+1] != null)
+                _g.drawImage(this.arrow[1], 775, y+5, null);
+            _g.drawImage(this.menuOptions[i][this.option[i]], 365, y, null);
             if(i == this.cursor)
             {
 //                _g.drawImage(this.menuItems[i], 150, y, null);
-                _g.drawImage(this.menuOptions[i][this.option[i]], 350, y, null);
+                _g.drawImage(this.menuOptions[i][this.option[i]], 365, y, null);
             }
-                
+            
             y+=50;
         }
         
@@ -242,6 +252,8 @@ public class OptionsScene implements Scene
     private void prerender()
     {
         BitmapFont font = PacmanApp.getInstance().getFont();
+        this.arrow[0] = new ImageIcon("images/left.png").getImage();
+        this.arrow[1] = new ImageIcon("images/right.png").getImage();
         this.menuItems = new Image[this.menuItemsStr.length];
         int length = 0;
         for(int i=0; i<this.menuOptionsStr.length; i++)
@@ -259,7 +271,11 @@ public class OptionsScene implements Scene
                 this.menuItems[i] = font.renderString(this.menuItemsStr[i], 760);
             for(int j=0; j<this.menuOptionsStr[i].length; j++)
                 if(this.menuOptionsStr[i][j] != null)
+                {
                     this.menuOptions[i][j] = font.renderString(this.menuOptionsStr[i][j], 760);
+                    if(this.menuOptions[i][j].getWidth(null) > 405)
+                        this.menuOptions[i][j] = font.renderString(this.menuOptionsStr[i][j].substring(0,19)+"...", 760);
+                }
             this.menuHelp[i] = font.renderString(this.menuHelpStr[i], 760);
         }
     }
