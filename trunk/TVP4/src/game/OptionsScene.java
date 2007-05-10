@@ -146,12 +146,12 @@ public class OptionsScene implements Scene
         
         this.option[3] = 0; //Whatever the first skin is, or "pacman" if it exists.
         for(int i=0; i<this.menuOptionsStr[3].length; i++)
-            if(this.menuOptionsStr[3][i].equals("pacman"))
+            if(this.menuOptionsStr[3][i].equals("sketch"))
                 this.option[3] = i;
         
         this.option[4] = 1; //Normal game speed
-        this.option[5] = 1; //Sound on
-        this.option[6] = 1; //Offline mode
+        this.option[5] = 0; //Sound on
+        this.option[6] = 0; //Offline mode
         this.option[7] = 0; //USB interface
     }
     
