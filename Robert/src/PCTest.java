@@ -28,7 +28,7 @@ public class PCTest {
         InputStreamReader isr = new InputStreamReader( System.in );
         BufferedReader stdin = new BufferedReader( isr );
         
-        transport.setActive(true);
+//        transport.setActive(true);
         
         ReadThread rt = new ReadThread(transport);
         rt.start();
@@ -93,8 +93,12 @@ public class PCTest {
                
                if(inc != -1)
                    System.out.println("INC: "+inc);
-                
-               Thread.sleep(100);
+                try {
+                     
+                    Thread.sleep(100);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
             }
         }
     }
