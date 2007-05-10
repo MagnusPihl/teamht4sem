@@ -7,7 +7,6 @@
 
 
 import java.io.IOException;
-import robot.Controller;
 
 /**
  *
@@ -27,8 +26,8 @@ public class Robert {
          * ;
          * }*/
         
-        Controller noget = Controller.getInstance();
-        noget.run();
+//        Controller noget = Controller.getInstance();
+//        noget.run();
     }
     
 }

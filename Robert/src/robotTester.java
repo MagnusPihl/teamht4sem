@@ -88,16 +88,16 @@ public class robotTester extends JFrame{
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
-                    move(x.MOVE_UP);
+//                    move(x.MOVE_UP);
                 }
                 if (e.getKeyCode() == e.VK_DOWN){
-                    move(x.MOVE_DOWN);
+//                    move(x.MOVE_DOWN);
                 }
                 if (e.getKeyCode() == e.VK_LEFT){
-                    move(x.MOVE_LEFT);
+//                    move(x.MOVE_LEFT);
                 }
                 if (e.getKeyCode() == e.VK_RIGHT){
-                    move(x.MOVE_RIGHT);
+//                    move(x.MOVE_RIGHT);
                 }
             }
             public void keyTyped(KeyEvent e) {}
@@ -109,21 +109,21 @@ public class robotTester extends JFrame{
         r1Up = new JButton("Up");
         r1Up.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                move(x.MOVE_UP);
+//                move(x.MOVE_UP);
             }
         });
         
         r1Down = new JButton("Down");
         r1Down.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                move(x.MOVE_DOWN);
+//                move(x.MOVE_DOWN);
             }
         });
         
         r1Right = new JButton("Right");
         r1Right.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                move(x.MOVE_RIGHT);
+//                move(x.MOVE_RIGHT);
             }
         });
         
