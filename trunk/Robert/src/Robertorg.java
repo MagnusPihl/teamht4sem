@@ -11,13 +11,13 @@ import josx.platform.rcx.*;
  *
  * @author Christian Holm, 5601
  */
-public class Robert implements ButtonListener {
+public class Robertorg implements ButtonListener {
     
     static boolean stop = false;
     int resetValue = 100;
     int value = 0;
     
-    public Robert() {
+    public Robertorg() {
         Button.PRGM.addButtonListener(this);
         Button.VIEW.addButtonListener(this);
         Button.RUN.addButtonListener(this);
