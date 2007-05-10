@@ -136,7 +136,7 @@ public class GameProxy implements ButtonListener {
             }
         }
         LCD.showNumber(command);
-        if(command <= (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER) && command != GameCommands.NOP){
+        if(command <= (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER) && command > GameCommands.NOP){
             while(directions == -1){
                 try {
                     directions = in.read();
