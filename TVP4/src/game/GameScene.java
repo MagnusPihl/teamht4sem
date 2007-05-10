@@ -435,6 +435,7 @@ public class GameScene implements Scene {
                             {
                                 try {
 //                                    System.out.println("Moving entity "+j);
+                                    System.out.println("Sending move direction "+dir+" ("+((byte)dir)+") to robot "+i);
                                     this.proxy[i].move((byte)dir, (byte)entities[i].getEntity().getNode().getBinaryDirections());
 //                                    System.out.println("Done moving.");
                                 }
