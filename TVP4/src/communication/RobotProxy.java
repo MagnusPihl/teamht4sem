@@ -115,7 +115,6 @@ public class RobotProxy extends Thread{
     
     public void move(byte direction, byte possDir) throws IOException{
         byte possDirs = rotatePossibleDirections(direction, possDir);
-        System.out.println("" + direction);
         byte searchDir = getRotation(direction);
         
         try {
@@ -124,7 +123,6 @@ public class RobotProxy extends Thread{
             ex.printStackTrace();
         }
         this.writer.setActive(true);
-        System.out.println(""+ searchDir);
         this.write(searchDir);
         this.write(possDirs);
         this.lastDir = direction;
