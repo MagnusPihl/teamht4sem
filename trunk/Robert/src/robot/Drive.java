@@ -26,9 +26,30 @@ public class Drive {
     //private static final int sensor2Diff = -20;
     //private static final int sensor3Diff = 30;
     
-    private static int[] sensor1Values = new int [] {708 * BUFFERLENGTH, 718 * BUFFERLENGTH, 764 * BUFFERLENGTH, 809 * BUFFERLENGTH};
-    private static int[] sensor2Values = new int [] {723 * BUFFERLENGTH, 740 * BUFFERLENGTH, 777 * BUFFERLENGTH, 807 * BUFFERLENGTH};
-    private static int[] sensor3Values = new int [] {691 * BUFFERLENGTH, 704 * BUFFERLENGTH, 747 * BUFFERLENGTH, 790 * BUFFERLENGTH};
+    
+
+    //White, yellow, Green, black
+    
+    /***********
+     * ROBOT 1 *
+     ***********/
+//    private static int[] sensor1Values = new int [] {708 * BUFFERLENGTH, 718 * BUFFERLENGTH, 764 * BUFFERLENGTH, 809 * BUFFERLENGTH};
+//    private static int[] sensor2Values = new int [] {723 * BUFFERLENGTH, 740 * BUFFERLENGTH, 777 * BUFFERLENGTH, 807 * BUFFERLENGTH};
+//    private static int[] sensor3Values = new int [] {691 * BUFFERLENGTH, 704 * BUFFERLENGTH, 747 * BUFFERLENGTH, 790 * BUFFERLENGTH};
+    
+    /***********
+     * ROBOT 2 *
+     ***********/
+//    private static int[] sensor1Values = new int [] {684 * BUFFERLENGTH, 690 * BUFFERLENGTH, 732 * BUFFERLENGTH, 765 * BUFFERLENGTH};
+//    private static int[] sensor2Values = new int [] {741 * BUFFERLENGTH, 757 * BUFFERLENGTH, 800 * BUFFERLENGTH, 832 * BUFFERLENGTH};
+//    private static int[] sensor3Values = new int [] {712 * BUFFERLENGTH, 720 * BUFFERLENGTH, 766 * BUFFERLENGTH, 820 * BUFFERLENGTH};
+    
+    /***********
+     * ROBOT 3 *
+     ***********/
+    private static int[] sensor1Values = new int [] {740 * BUFFERLENGTH, 750 * BUFFERLENGTH, 797 * BUFFERLENGTH, 840 * BUFFERLENGTH};
+    private static int[] sensor2Values = new int [] {730 * BUFFERLENGTH, 740 * BUFFERLENGTH, 789 * BUFFERLENGTH, 810 * BUFFERLENGTH};
+    private static int[] sensor3Values = new int [] {719 * BUFFERLENGTH, 730 * BUFFERLENGTH, 775 * BUFFERLENGTH, 840 * BUFFERLENGTH};
     
     //private static int sensor1Threshold = 0;
     //private static int sensor2Threshold = 0;
@@ -81,11 +102,11 @@ public class Drive {
         Sensor.S2.activate();
         Sensor.S3.setTypeAndMode(3, 0x00);
         Sensor.S3.activate();
-        try {
-            //we must wait a little while before reading from the sensors
-            Thread.sleep(500);
-        } catch (InterruptedException ex) {
-        }
+        //try {
+        //   //we must wait a little while before reading from the sensors
+        //   Thread.sleep(500);
+        //} catch (InterruptedException ex) {
+        //}
         //sensor1Threshold = (Sensor.S1.readRawValue() + sensor1Diff) * BUFFERLENGTH;
         //sensor2Threshold = (Sensor.S2.readRawValue() + sensor2Diff) * BUFFERLENGTH;
         //sensor3Threshold = (Sensor.S3.readRawValue() + sensor3Diff) * BUFFERLENGTH;
@@ -340,15 +361,50 @@ public class Drive {
                 }
             } else if(step == 3) {
                 if (b== 0 || b == 2){ // 000 010
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException ex) {
-                    }
+                    //try {
+                    //    Thread.sleep(100);
+                    //} catch (InterruptedException ex) {
+                    //}
                     Movement.stop();
                     lastJunction = nextJunction;
                     driving = false;
                 }
             }
         }
+    }
+    
+    public void Calibrate() {
+        int s2Max = 0;
+        int s2Min = 2000;
+        
+        int value= 0;
+        int i= 0;
+        while (i < 10) {
+            value = Sensor.S2.readRawValue();
+            if (s2Max < value) {
+                s2Max = value;
+            }
+            if (s2Min > value) {
+                s2Min = value;
+            }
+            Movement.forward();
+            try {
+                Thread.sleep(50);
+                Movement.stop();
+                LCD.showNumber(value);
+                Thread.sleep(2000);
+            } catch (InterruptedException ex) {
+                ;
+            }
+            i++;
+        }
+        try {
+            LCD.showNumber(s2Min);
+            Thread.sleep(2000);
+            LCD.showNumber(s2Max);
+            Thread.sleep(2000);
+        } catch (InterruptedException ex) {
+        }
+        
     }
 }
