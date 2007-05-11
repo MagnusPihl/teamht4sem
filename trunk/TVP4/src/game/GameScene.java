@@ -485,7 +485,10 @@ public class GameScene implements Scene {
             this.semaphore.release(3-this.semaphore.availablePermits());
             this.proxy[0].open(this.towerPort);
             for(int i=0; i<3; i++)
+            {
                 this.proxy[i].setActive(true);
+                this.proxy[i].init((byte)this.field.getEntityRenderers()[i].getEntity().getNode().getBinaryDirections());
+            }
         }
         System.out.println(this.towerPort);
         this.resetPoints();
