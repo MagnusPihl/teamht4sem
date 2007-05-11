@@ -108,12 +108,8 @@ public class TileSet
      */
     public boolean loadTileSet(File file)
     {
-        System.out.println(file);
         try
         {
-            if (file.toString().contains("pacman")) {
-                throw new Exception("ARGGGG skod skin");
-            }
             if(file.isDirectory())
             {
                 String path = file.getAbsolutePath() + file.separator;
@@ -145,7 +141,6 @@ public class TileSet
         }
         catch(Exception e)
         {
-            e.printStackTrace();
             //Most likely a FileNotFoundException
             return false;
         }
