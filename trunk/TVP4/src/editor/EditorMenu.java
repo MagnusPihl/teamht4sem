@@ -51,10 +51,12 @@ public class EditorMenu extends JPanel {
         String[] skins;
         File dir = new File("skins/");
         File skinList[] = dir.listFiles(new SkinFileFilter());
-        skins = new String[skinList.length+1];
+        skins = new String[skinList.length+3];
         skins[0] = "Skin";
         for(int i=0; i<skinList.length; i++)
             skins[i+1] = skinList[i].getName();
+        skins[skinList.length+1] = "-";
+        skins[skinList.length+2] = "Open Skin...";
         
         String[][] menuStrings = {
             {"File","New Level","Scan New Level","Open...","-","Save","Save As...","-","Quit"},
@@ -66,8 +68,9 @@ public class EditorMenu extends JPanel {
         
         char[] skinMnemonics = new char[skins.length];
         skinMnemonics[0] = 's';
-        for(int i=1; i<skins.length; i++)
-            skinMnemonics[i] = '-';
+        for(int i=0; i<skinList.length; i++)
+            skinMnemonics[i+1] = skins[i+1].charAt(0);
+        skinMnemonics[skinList.length+2] = 'o';
         
         char[][] mnemonics = {
             {'f','n','c','o','-','-','s','-','q'},
@@ -78,8 +81,15 @@ public class EditorMenu extends JPanel {
         };
         
         KeyStroke[] skinKeys = new KeyStroke[skins.length];
-        for(int i=0; i<skins.length; i++)
-            skinKeys[i] = null;
+        for(int i=0; i<skinList.length; i++) {
+            if (i < 10) {
+                skinKeys[i+1] = KeyStroke.getKeyStroke(i + 0x30, InputEvent.ALT_MASK);  
+            } else {
+                skinKeys[i+1] = null;
+            }            
+        }
+        skinKeys[skinList.length+1] = null;
+        skinKeys[skinList.length+2] = KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.ALT_MASK);
         
         KeyStroke[][] keyStrokes = {
             {null, 
@@ -114,6 +124,8 @@ public class EditorMenu extends JPanel {
             skinActions[i] = new ActionListener()
                 {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().setSkin(name);}};
         }
+        skinActions[skinList.length+2] = new ActionListener()
+                {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().openSkin();}};
         
         ActionListener[][] actionListener = {
             {null,
