@@ -69,6 +69,7 @@ public class GameProxy implements ButtonListener {
     
     public void run(){
         while(true){
+            LCD.showNumber(command);
             this.getcommand();
             if(command == GameCommands.FORWARD){
                 this.stopThread();
@@ -147,7 +148,6 @@ public class GameProxy implements ButtonListener {
                 }
             }
         }
-        TextLCD.print("Step3");
         // lav evt. noget timeout here.
         if(command == GameCommands.CALIBRATE){
             sensor1 = -1;
@@ -224,7 +224,6 @@ public class GameProxy implements ButtonListener {
         } catch (IOException ex) {
             
         }
-        TextLCD.print("Step5");
         Sound.beep();
     }
     
