@@ -421,6 +421,7 @@ public class GameScene implements Scene {
                         if(i == 0)
                         {
                             this.addPoints(entities[0].getEntity().getNode().takePoints());
+                            this.field.repaintNode(entities[0].getEntity().getNode());
                             dir = entities[i].getEntity().getController().move();
                         }
                         else
