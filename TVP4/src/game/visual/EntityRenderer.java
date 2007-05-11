@@ -85,7 +85,7 @@ public class EntityRenderer
     public void drawEntity(Graphics g, int offsetX, int offsetY)
     {                                
         g.drawImage(
-                TileSet.getInstance().getEntityTile(entity.getID(), entity.getDirection(), 0),
+                TileSet.getInstance().getEntityTile(entity.getID(), Node.DOWN, 0),
                 entity.getPosition().x * TileSet.getInstance().getTileSize() + offsetX,
                 entity.getPosition().y * TileSet.getInstance().getTileSize() + offsetY,
                 null);        
