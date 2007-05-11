@@ -22,17 +22,17 @@ public class Drive {
     private static int[] sensor2Buffer = new int[BUFFERLENGTH];
     private static int[] sensor3Buffer = new int[BUFFERLENGTH];
     
-    private static final int sensor1Diff = 30;
-    private static final int sensor2Diff = -20;
-    private static final int sensor3Diff = 30;
+    //private static final int sensor1Diff = 30;
+    //private static final int sensor2Diff = -20;
+    //private static final int sensor3Diff = 30;
     
     private static int[] sensor1Values = new int [] {708 * BUFFERLENGTH, 718 * BUFFERLENGTH, 764 * BUFFERLENGTH, 809 * BUFFERLENGTH};
     private static int[] sensor2Values = new int [] {723 * BUFFERLENGTH, 740 * BUFFERLENGTH, 777 * BUFFERLENGTH, 807 * BUFFERLENGTH};
     private static int[] sensor3Values = new int [] {691 * BUFFERLENGTH, 704 * BUFFERLENGTH, 747 * BUFFERLENGTH, 790 * BUFFERLENGTH};
     
-    private static int sensor1Threshold = 0;
-    private static int sensor2Threshold = 0;
-    private static int sensor3Threshold = 0;
+    //private static int sensor1Threshold = 0;
+    //private static int sensor2Threshold = 0;
+    //private static int sensor3Threshold = 0;
     
     private static final int COLOR_WHITE  = 0x01;
     private static final int COLOR_YELLOW = 0x02;
@@ -58,15 +58,15 @@ public class Drive {
      *    |
      *
      */
-    public static final int DIRECTIONS_RIGHT        = 0x01;  //001
-    public static final int DIRECTIONS_LEFT         = 0x02;  //010
-    public static final int DIRECTIONS_TCROSS       = 0x03;  //011
-    public static final int DIRECTIONS_FORWARD      = 0x04;  //100
-    public static final int DIRECTIONS_RIGHTFORWARD = 0x05;  //101
-    public static final int DIRECTIONS_LEFTFORWARD  = 0x06;  //110
-    public static final int DIRECTIONS_XCROSS       = 0x07;  //111
+//    public static final int DIRECTIONS_RIGHT        = 0x01;  //001
+//    public static final int DIRECTIONS_LEFT         = 0x02;  //010
+//    public static final int DIRECTIONS_TCROSS       = 0x03;  //011
+//    public static final int DIRECTIONS_FORWARD      = 0x04;  //100
+//    public static final int DIRECTIONS_RIGHTFORWARD = 0x05;  //101
+//    public static final int DIRECTIONS_LEFTFORWARD  = 0x06;  //110
+//    public static final int DIRECTIONS_XCROSS       = 0x07;  //111
     
-    private static int lastJunction = DIRECTIONS_FORWARD;
+    private static int lastJunction = 0x04;
     
     /** Creates a new instance of Drive */
     public Drive() {
@@ -86,9 +86,9 @@ public class Drive {
             Thread.sleep(500);
         } catch (InterruptedException ex) {
         }
-        sensor1Threshold = (Sensor.S1.readRawValue() + sensor1Diff) * BUFFERLENGTH;
-        sensor2Threshold = (Sensor.S2.readRawValue() + sensor2Diff) * BUFFERLENGTH;
-        sensor3Threshold = (Sensor.S3.readRawValue() + sensor3Diff) * BUFFERLENGTH;
+        //sensor1Threshold = (Sensor.S1.readRawValue() + sensor1Diff) * BUFFERLENGTH;
+        //sensor2Threshold = (Sensor.S2.readRawValue() + sensor2Diff) * BUFFERLENGTH;
+        //sensor3Threshold = (Sensor.S3.readRawValue() + sensor3Diff) * BUFFERLENGTH;
     }
     
     private static void InitMotor() {
@@ -262,7 +262,7 @@ public class Drive {
             i++;
             int b = ReadBlack();
             if (step == 0) {
-                if ((lastJunction == DIRECTIONS_FORWARD && sensorsColors[1] == COLOR_GREEN) || (((lastJunction & 0x01) == 0x01) || ((lastJunction & 0x02) == 0x02) && b == 0)) {
+                if ((lastJunction == 0x04 && sensorsColors[1] == COLOR_GREEN) || (((lastJunction & 0x01) == 0x01) || ((lastJunction & 0x02) == 0x02) && b == 0)) {
                     Movement.forward();
                     step = 1;
                 } else {
@@ -284,24 +284,30 @@ public class Drive {
             }
             if (step == 2) {
                 roadCount++;
-                if (b == 2){ // 010
-                    //Should all be common
-                    Movement.forward();
-                }else if ((nextJunction & 0x04) == 0x04 &&
-                        roadCount > 50 &&
+               if ((nextJunction & 0x04) == 0x04 && // next up is a green dot, with only forward road
+                        roadCount > 50 &&           // we must roll som before we detect a green dot
                         sensorsColors[1] == COLOR_GREEN &&
                         (sensorsColors[0] == COLOR_WHITE || sensorsColors[0] == COLOR_YELLOW) &&
                         (sensorsColors[2] == COLOR_WHITE || sensorsColors[2] == COLOR_YELLOW)){
                     step = 3;
-                } else if (b == 0){ // 000
+                } else  if (b == 2){ // 010
+                    /*
+                     * We are driving on the black line
+                     * We should just continue straight forward
+                     **/
+                    Movement.forward();
+                }else if (b == 0){ // 000
+                    /*
+                     * We found no black line.
+                     * If there is side cross road at the next junction, the robot stops
+                     * else there is an error, which we must corret.
+                     **/
                     if ((nextJunction & 0x01) == 0x01 || (nextJunction & 0x02) == 0x02){
+                        /*
+                         * A minimun roadCount of 15 before the robot stops
+                         **/
                         if (roadCount < 15) {
                             Movement.stop();
-                            LCD.showNumber(roadCount);
-                            try {
-                                Thread.sleep(200);
-                            } catch (InterruptedException ex) {
-                            }
                             step = 3;
                         }
                     } else {
