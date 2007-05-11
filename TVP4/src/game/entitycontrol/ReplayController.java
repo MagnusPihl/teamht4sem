@@ -64,12 +64,4 @@ public class ReplayController extends EntityController
     public void calculateNextMove()
     {
     }
-
-    public void init(InputManager _input)
-    {
-    }
-
-    public void deinit(InputManager _input)
-    {
-    }
 }

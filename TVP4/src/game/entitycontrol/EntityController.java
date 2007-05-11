@@ -6,11 +6,15 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.1
+ * @version 1.3
  *
  *
  * ******VERSION HISTORY******
- * Magnus Hemmer Pihl @ 7. marts 2007 (v 1.1)
+ * LMK @ 11. april 2007 (v 1.3)
+ * init and deinit are no longer abstract.
+ * init now resets lastDirection and nextDirection.
+ *
+ * Magnus Hemmer Pihl @ 7. marts 2007 (v 1.2)
  * Added getRandomDirection
  * Added field lastDirection
  * Added field nextDirection
@@ -40,13 +44,27 @@ public abstract class EntityController
     public EntityController(Entity _entity)
     {
         this.entity = _entity;
-        this.lastDirection = Node.INVALID_DIRECTION;
-        this.nextDirection = Node.INVALID_DIRECTION;
     }
     
     public abstract void calculateNextMove();
-    public abstract void init(InputManager _input);
-    public abstract void deinit(InputManager _input);
+        
+    /**
+     * Register keys or other resources needed.
+     * Resets directions.
+     * @param input manager to register keys with
+     */
+    public void init(InputManager _input) {        
+        this.lastDirection = Node.INVALID_DIRECTION;
+        this.nextDirection = Node.INVALID_DIRECTION;
+    }
+        
+    /**
+     * Does any releasing of resource of needed.
+     * @param input manager to unregister keys with
+     */
+    public void deinit(InputManager _input) {
+    
+    }
             
     /**
      * Execute move
