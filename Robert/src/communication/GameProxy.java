@@ -75,6 +75,7 @@ public class GameProxy implements ButtonListener {
                 this.stopThread();
                 ride.Forward(directions);
                 //ride.run(directions,command);
+                TextLCD.print("thrd");
                 this.startThread();
                 this.sendMoveDone(GameCommands.MOVE_DONE);
 //              ******************************************
@@ -138,16 +139,17 @@ public class GameProxy implements ButtonListener {
                 
             }
         }
-        LCD.showNumber(command);
+        TextLCD.print("abe");
         if(command <= (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER) && command > GameCommands.NOP){
             while(directions == -1){
                 try {
                     directions = in.read();
                 } catch (IOException ex) {
-                    
+                    TextLCD.print("SEX");
                 }
             }
         }
+        TextLCD.print("step3");
         // lav evt. noget timeout here.
         if(command == GameCommands.CALIBRATE){
             sensor1 = -1;
@@ -264,5 +266,6 @@ public class GameProxy implements ButtonListener {
     
     public static void main(String[] args) throws InterruptedException, IOException{
         GameProxy noget = new GameProxy();
+        //new Drive().Calibrate();
     }
 }
