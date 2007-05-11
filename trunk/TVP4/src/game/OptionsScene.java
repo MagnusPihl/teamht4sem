@@ -191,22 +191,22 @@ public class OptionsScene implements Scene
         _g.setColor(Color.BLACK);
         _g.fillRect(0,0,800,600);
 
-        int y = 0;
+        int y = 20;
         for(int i=0; i<this.menuItems.length; i++)
         {
-            _g.drawImage(this.menuItems[i], 125, y, null);
+            _g.drawImage(this.menuItems[i], 25, y, null);
             if(this.option[i] > 0)
-                _g.drawImage(this.arrow[0], 340, y+5, null);
+                _g.drawImage(this.arrow[0], 240, y+5, null);
             if(this.menuOptions[i][this.option[i]+1] != null)
-                _g.drawImage(this.arrow[1], 775, y+5, null);
-            _g.drawImage(this.menuOptions[i][this.option[i]], 365, y, null);
+                _g.drawImage(this.arrow[1], 755, y+5, null);
+            _g.drawImage(this.menuOptions[i][this.option[i]], 265, y, null);
             if(i == this.cursor)
-                _g.drawImage(this.menuOptions[i][this.option[i]], 365, y, null);
+                _g.drawImage(this.menuOptions[i][this.option[i]], 265, y, null);
 
             y+=50;
         }
         //GameDialog.drawDialog(_g, 0, 599-226, this.menuHelpStr[this.cursor]);
-        _g.drawImage(this.menuHelp[this.cursor], 20, 400, null);
+        _g.drawImage(this.menuHelp[this.cursor], 25, 420, null);
         //Any State Done
         
         if(this.state == this.STATE_SKIN_PREVIEW)
@@ -345,15 +345,15 @@ public class OptionsScene implements Scene
         for(int i=0; i<this.menuItemsStr.length; i++)
         {
             if(i>2)
-                this.menuItems[i] = font.renderString(this.menuItemsStr[i], 760);
+                this.menuItems[i] = font.renderString(this.menuItemsStr[i], 750);
             for(int j=0; j<this.menuOptionsStr[i].length; j++)
                 if(this.menuOptionsStr[i][j] != null)
                 {
-                    this.menuOptions[i][j] = font.renderString(this.menuOptionsStr[i][j], 760);
-                    if(this.menuOptions[i][j].getWidth(null) > 405)
-                        this.menuOptions[i][j] = font.renderString(this.menuOptionsStr[i][j].substring(0,19)+"...", 760);
+                    this.menuOptions[i][j] = font.renderStringRect(this.menuOptionsStr[i][j], 480, 0);
+                    /*if(this.menuOptions[i][j].getWidth(null) > 405)
+                        this.menuOptions[i][j] = font.renderStringRect(this.menuOptionsStr[i][j].substring(0,19)+"...", 200, 0);*/
                 }
-            this.menuHelp[i] = font.renderString(this.menuHelpStr[i], 760);
+            this.menuHelp[i] = font.renderString(this.menuHelpStr[i], 750);
         }
     }
     
