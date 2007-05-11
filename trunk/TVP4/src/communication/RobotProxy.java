@@ -125,7 +125,7 @@ public class RobotProxy extends Thread{
         this.write(searchDir);
         this.write(possDirs);
         this.lastDir = direction;
-        this.lastPossDir = possDirs;
+        this.lastPossDir = possDir;
     }
     
     private byte getRotation(byte direction){
@@ -143,10 +143,10 @@ public class RobotProxy extends Thread{
                         searchDir = GameCommands.TURN_LEFT; break;
                     }
                     case(Node.UP): {
-                        searchDir = calculateMove(); break;
+                        searchDir = calcRotation(); break;
                     }
                 }
-            } break;
+            }
             case(Node.LEFT): {
                 switch(direction){
                     case(Node.DOWN): {
@@ -156,20 +156,20 @@ public class RobotProxy extends Thread{
                         searchDir = GameCommands.FORWARD; break;
                     }
                     case(Node.RIGHT): {
-                        searchDir = calculateMove(); break;
+                        searchDir = calcRotation(); break;
                     }
                     case(Node.UP): {
                         searchDir = GameCommands.TURN_RIGHT; break;
                     }
                 }
-            } break;
+            }
             case(Node.RIGHT): {
                 switch(direction){
                     case(Node.DOWN): {
                         searchDir = GameCommands.TURN_RIGHT; break;
                     }
                     case(Node.LEFT): {
-                        searchDir = calculateMove(); break;
+                        searchDir = calcRotation(); break;
                     }
                     case(Node.RIGHT): {
                         searchDir = GameCommands.FORWARD; break;
@@ -178,11 +178,11 @@ public class RobotProxy extends Thread{
                         searchDir = GameCommands.TURN_LEFT; break;
                     }
                 }
-            } break;
+            }
             case(Node.UP): {
                 switch(direction){
                     case(Node.DOWN): {
-                        searchDir = calculateMove(); break;
+                        searchDir = calcRotation(); break;
                     }
                     case(Node.LEFT): {
                         searchDir = GameCommands.TURN_LEFT; break;
@@ -194,14 +194,14 @@ public class RobotProxy extends Thread{
                         searchDir = GameCommands.FORWARD; break;
                     }
                 }
-            } break;
+            }
         }
         return searchDir;
     }
     
-    private byte calculateMove(){
+    private byte calcRotation(){
         byte reByte = 0;
-        byte bitmask = (byte)(this.lastPossDir & 0x05);
+        byte bitmask = (byte)(this.lastDir & 0x05);
         switch(bitmask){
             case(5): {
                 reByte = GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER; break;
@@ -323,6 +323,38 @@ public class RobotProxy extends Thread{
                 return (byte)(((dirs & GameCommands.DOWN) << 1) | 
                         ((dirs & GameCommands.LEFT)) | 
                         ((dirs & GameCommands.RIGHT) >> 1));
+            default: return dirs;
+        }
+    }
+        
+    public static byte derotatePossibleDirections(byte nodeDir, byte dirs) {
+        switch(nodeDir) {
+            //turns -turn_number forward left right
+            //node - up          right   down left
+            case Node.UP :
+                //forward > up, right > right, left > left, turn_number > down
+                return (byte)(((dirs & GameCommands.FORWARD) << 1) |
+                        ((dirs & GameCommands.TURN_RIGHT) << 2) | 
+                        ((dirs & GameCommands.TURN_LEFT) >> 1) |                        
+                        ((dirs & GameCommands.TURN_NUMBER) >> 2));
+            case Node.RIGHT :
+                //forward > right, left > up, right > down, turn_number > left
+                return (byte)((dirs & GameCommands.FORWARD) |
+                        ((dirs & GameCommands.TURN_LEFT) << 2) | 
+                        ((dirs & GameCommands.TURN_RIGHT) << 1) | 
+                        ((dirs & GameCommands.TURN_NUMBER) >> 3));
+            case Node.LEFT:
+                //forward > left, right > up, left > down, turn_number > right
+                return (byte)(((dirs & GameCommands.FORWARD) >> 2) |
+                        ((dirs & GameCommands.TURN_RIGHT) << 3) | 
+                        (dirs & GameCommands.TURN_LEFT) |
+                        ((dirs & GameCommands.TURN_NUMBER) >> 1));
+            case Node.DOWN : 
+                //forward > down, right > left, left - right, turn_number > up
+                return (byte)(((dirs & GameCommands.FORWARD) >> 1) | 
+                        ((dirs & GameCommands.TURN_RIGHT)) | 
+                        ((dirs & GameCommands.TURN_LEFT) << 1) |
+                        ((dirs & GameCommands.TURN_NUMBER)));
             default: return dirs;
         }
     }
