@@ -53,7 +53,8 @@ public class LevelEditor {
     private static LevelEditor instance = new LevelEditor();
     
     /** Creates a new instance of LevelEditor */
-    private LevelEditor() {
+    private LevelEditor() {        
+        TileSet.getInstance().loadTileSet(TileSet.SKIN_LIBRARY + "nodes/");
         this.frame = new JFrame();
         this.saveFile = null;
         this.updateTitle();
@@ -88,7 +89,6 @@ public class LevelEditor {
         
         this.skinDialog = new JFileChooser(new File("skins/"));
         this.skinDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        TileSet.getInstance().loadTileSet("skins/nodes");
     }
     
     /** 
@@ -103,7 +103,7 @@ public class LevelEditor {
     /**
      * Start application
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) {             
         LevelEditor.getInstance();
     }
     

@@ -49,7 +49,7 @@ public class TileSet
     public static final int PATH_TILE_COUNT = 16;
     public static final String SKIN_LIBRARY = (new File("skins/")).getAbsolutePath() + File.separator;
     
-    private static TileSet instance = new TileSet(SKIN_LIBRARY + "nodes/");
+    private static TileSet instance = new TileSet();
     
     /**
      * All images should be of the same size and should be in .png format.
@@ -75,12 +75,11 @@ public class TileSet
      * Initializes the TileSet object and loads the specified tileset.
      * @param path A path in the filesystem pointing to the initial tileset to be loaded.
      */
-    public TileSet(String path)
+    public TileSet()
     {
         this.entityTiles = new Image[ENTITY_COUNT][Node.DIRECTION_COUNT][FRAME_COUNT];
         this.pathTiles = new Image[PATH_TILE_COUNT];
         this.pointTiles = new Image[2];
-        this.loadTileSet(new File(path));
     }
     
     /**
@@ -109,8 +108,12 @@ public class TileSet
      */
     public boolean loadTileSet(File file)
     {
+        System.out.println(file);
         try
         {
+            if (file.toString().contains("pacman")) {
+                throw new Exception("ARGGGG skod skin");
+            }
             if(file.isDirectory())
             {
                 String path = file.getAbsolutePath() + file.separator;
@@ -142,6 +145,7 @@ public class TileSet
         }
         catch(Exception e)
         {
+            e.printStackTrace();
             //Most likely a FileNotFoundException
             return false;
         }

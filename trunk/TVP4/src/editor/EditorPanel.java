@@ -133,7 +133,7 @@ public class EditorPanel extends JPanel {
         EntityRenderer[] entities = this.field.getEntityRenderers();
         for (int i = 0; i < entities.length; i++) {
             if (entities[i] != null) {
-                entities[i].draw(g, 0, 0);
+                entities[i].drawEntity(g, 0, 0);
             }
         }
         

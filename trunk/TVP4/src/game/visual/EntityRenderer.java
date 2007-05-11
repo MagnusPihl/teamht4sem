@@ -76,7 +76,23 @@ public class EntityRenderer
     }
     
     /**
-     * Draw the contents of the field on the graphics canvas.
+     * Draw entity none animated.
+     *
+     * @param g Canvas to draw on.
+     * @param offset x
+     * @param offset y
+     */
+    public void drawEntity(Graphics g, int offsetX, int offsetY)
+    {                                
+        g.drawImage(
+                TileSet.getInstance().getEntityTile(entity.getID(), entity.getDirection(), 0),
+                entity.getPosition().x * TileSet.getInstance().getTileSize() + offsetX,
+                entity.getPosition().y * TileSet.getInstance().getTileSize() + offsetY,
+                null);        
+    }
+    
+    /**
+     * Draw entity.
      *
      * @param g Canvas to draw on.
      * @param offset x
