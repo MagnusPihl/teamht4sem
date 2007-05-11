@@ -65,6 +65,11 @@ public class OptionsScene implements Scene
 {
     private InputAction up, down, left, right, enter, quit;
     
+    private int state;
+    private final int STATE_MAIN = 0;
+    private final int STATE_SKIN_PREVIEW = 1;
+    private final int STATE_MODE = 2;
+    
     private int cursor;
     private int option[];
     
@@ -77,6 +82,8 @@ public class OptionsScene implements Scene
     
     private Image arrow[];
     
+    private Field preview;
+    
     /** Creates a new instance of GameScene */
     public OptionsScene() {
         this.up = new TimedInputAction("Down", 500, 100);
@@ -86,7 +93,30 @@ public class OptionsScene implements Scene
         this.enter = new InputAction("Enter", InputAction.DETECT_FIRST_ACTION);
         this.quit = new InputAction("Escape", InputAction.DETECT_FIRST_ACTION);
         
+        this.state = this.STATE_MAIN;
+        
         this.arrow = new Image[2];
+        
+        this.preview = new Field();
+        this.preview.addNodeAt(0, 0, 10);
+        this.preview.addNodeAt(1, 0, 10);
+        this.preview.addNodeAt(2, 0, 50);
+        this.preview.addNodeAt(3, 0, 10);
+        this.preview.addNodeAt(4, 0, 10);
+        this.preview.addNodeAt(0, 1, 10);
+        this.preview.addNodeAt(2, 1, 10);
+        this.preview.addNodeAt(4, 1, 10);
+        this.preview.addNodeAt(0, 2, 10);
+        this.preview.addNodeAt(1, 2, 10);
+        this.preview.addNodeAt(2, 2, 50);
+        this.preview.addNodeAt(3, 2, 10);
+        this.preview.addNodeAt(4, 2, 10);
+        this.preview.placePacman(new Point(2,1));
+        this.preview.placeGhost(new Point(0,1));
+        this.preview.placeGhost(new Point(4,1));
+        this.preview.getEntityAt(new Point(2,1)).setDirection(Node.RIGHT);
+        this.preview.getEntityAt(new Point(0,1)).setDirection(Node.DOWN);
+        this.preview.getEntityAt(new Point(4,1)).setDirection(Node.LEFT);
         
         this.menuItemsStr = new String[] {"Entity0", "Entity1", "Entity2", "Skin", "Game Speed", "Sound", "Mode", "Interface"};
         
@@ -155,50 +185,97 @@ public class OptionsScene implements Scene
         this.option[7] = 0; //USB interface
     }
     
-    public void draw(Graphics2D _g) {
+    public void draw(Graphics2D _g)
+    {
+        //Any State Start
         _g.setColor(Color.BLACK);
         _g.fillRect(0,0,800,600);
-        
+
         int y = 0;
         for(int i=0; i<this.menuItems.length; i++)
         {
             _g.drawImage(this.menuItems[i], 125, y, null);
-//            _g.drawImage(this.arrow[0], 340, y+5, null);
             if(this.option[i] > 0)
                 _g.drawImage(this.arrow[0], 340, y+5, null);
-//            _g.drawImage(this.arrow[1], 775, y+5, null);
             if(this.menuOptions[i][this.option[i]+1] != null)
                 _g.drawImage(this.arrow[1], 775, y+5, null);
             _g.drawImage(this.menuOptions[i][this.option[i]], 365, y, null);
             if(i == this.cursor)
-            {
-//                _g.drawImage(this.menuItems[i], 150, y, null);
                 _g.drawImage(this.menuOptions[i][this.option[i]], 365, y, null);
-            }
-            
+
             y+=50;
         }
-        
         //GameDialog.drawDialog(_g, 0, 599-226, this.menuHelpStr[this.cursor]);
         _g.drawImage(this.menuHelp[this.cursor], 20, 400, null);
+        //Any State Done
+        
+        if(this.state == this.STATE_SKIN_PREVIEW)
+        {
+            GameDialog.drawDialog(_g, 135, 187, " ");
+            this.preview.drawField(_g, 400-((this.preview.getSize().width*TileSet.getInstance().getTileSize())/2),
+                    300-((this.preview.getSize().height*TileSet.getInstance().getTileSize())/2));
+        }
     }
     
-    public void update(long _time) {
-        if(this.up.isPressed() && this.cursor>0)
-            this.cursor--;
-        if(this.down.isPressed() && this.cursor<this.menuItemsStr.length-1)
-            this.cursor++;
-        if(this.left.isPressed() && this.option[this.cursor]>0)
-            this.option[this.cursor]--;
-        if(this.right.isPressed() && this.menuOptions[this.cursor][this.option[this.cursor]+1] != null)
-            this.option[this.cursor]++;
-        if(this.enter.isPressed())
-            ;
-        if(this.quit.isPressed())
+    public void update(long _time)
+    {
+        if(this.state == this.STATE_MAIN)
         {
-            this.apply();
-            
-            PacmanApp.getInstance().showTitleScene();
+            if(this.up.isPressed() && this.cursor>0)
+                this.cursor--;
+            if(this.down.isPressed() && this.cursor<this.menuItemsStr.length-1)
+                this.cursor++;
+            if(this.left.isPressed() && this.option[this.cursor]>0)
+                this.option[this.cursor]--;
+            if(this.right.isPressed() && this.menuOptions[this.cursor][this.option[this.cursor]+1] != null)
+                this.option[this.cursor]++;
+            if(this.enter.isPressed())
+            {
+                switch(this.cursor)
+                {
+                    case 3: this.apply();
+                            this.state = this.STATE_SKIN_PREVIEW;
+                            break;
+                }
+            }
+            if(this.quit.isPressed())
+            {
+                this.apply();
+
+                PacmanApp.getInstance().showTitleScene();
+            }
+        }
+        
+        if(this.state == this.STATE_SKIN_PREVIEW)
+        {
+            if(this.up.isPressed())
+            {
+                this.preview.getEntityAt(new Point(2,1)).setDirection(Node.UP);
+                this.preview.getEntityAt(new Point(0,1)).setDirection(Node.UP);
+                this.preview.getEntityAt(new Point(4,1)).setDirection(Node.UP);
+            } 
+            if(this.right.isPressed())
+            {
+                this.preview.getEntityAt(new Point(2,1)).setDirection(Node.RIGHT);
+                this.preview.getEntityAt(new Point(0,1)).setDirection(Node.RIGHT);
+                this.preview.getEntityAt(new Point(4,1)).setDirection(Node.RIGHT);
+            }
+            if(this.down.isPressed())
+            {
+                this.preview.getEntityAt(new Point(2,1)).setDirection(Node.DOWN);
+                this.preview.getEntityAt(new Point(0,1)).setDirection(Node.DOWN);
+                this.preview.getEntityAt(new Point(4,1)).setDirection(Node.DOWN);
+            }
+            if(this.left.isPressed())
+            {
+                this.preview.getEntityAt(new Point(2,1)).setDirection(Node.LEFT);
+                this.preview.getEntityAt(new Point(0,1)).setDirection(Node.LEFT);
+                this.preview.getEntityAt(new Point(4,1)).setDirection(Node.LEFT);
+            }
+            if(this.quit.isPressed())
+            {
+                this.state = this.STATE_MAIN;
+            }
         }
     }
     
