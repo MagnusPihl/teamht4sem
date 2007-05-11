@@ -68,7 +68,6 @@ public class GameProxy implements ButtonListener {
     }
     
     public void run(){
-        this.address();
         while(true){
             this.getcommand();
             if(command == GameCommands.FORWARD){
