@@ -6,10 +6,12 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.3
+ * @version 1.4
  *
  *
  * ******VERSION HISTORY******
+ * LMK @ 11. maj 2007 (v 1.4)
+ * The program now asks whether you want to save before quitting.
  * LMK @ 23. april 2007 (v 1.3)
  * Added showHighScoreDialog method
  * LMK @ 16. februar 2007 (v 1.2)
@@ -86,6 +88,7 @@ public class LevelEditor {
         
         this.skinDialog = new JFileChooser(new File("skins/"));
         this.skinDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        TileSet.getInstance().loadTileSet("skins/nodes");
     }
     
     /** 
@@ -214,8 +217,9 @@ public class LevelEditor {
      * Should ask user whether he wants to save before quitting.
      */
     public void quit() {
-        //insert code that checks whether user have saved since last change
-        System.exit(0);
+        if (this.confirmClearField()) {
+            System.exit(0);
+        }
     }
     
     /**
