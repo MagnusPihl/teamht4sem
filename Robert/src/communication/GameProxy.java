@@ -104,7 +104,9 @@ public class GameProxy implements ButtonListener {
                 this.sendMoveDone(GameCommands.MOVE_DONE);
 //              ******************************************
             }else if(command == (GameCommands.MOVE_UP_DISCOVER) || command == (GameCommands.MOVE_RIGHT_DISCOVER) || command == (GameCommands.MOVE_DOWN_DISCOVER) || command == (GameCommands.MOVE_LEFT_DISCOVER)){
+                this.stopThread();
                 //directions = ride.goToNext();
+                this.startThread();
                 this.sendMoveDone(GameCommands.MOVE_DONE | directions);
             }else if(command == GameCommands.LIGHT_ON){
                 this.lightOn();
@@ -115,7 +117,9 @@ public class GameProxy implements ButtonListener {
             }else if(command == GameCommands.CALIBRATE){
                 //ride.callibrate(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
             }else if(command == GameCommands.SEARCH_NODE){
+                this.stopThread();
                 //directions = ride.searchNode();
+                this.startThread();
                 this.sendMoveDone(GameCommands.MOVE_DONE | directions);
             }else{
                 
@@ -124,7 +128,6 @@ public class GameProxy implements ButtonListener {
     }
     
     private void getcommand(){
-        LCD.showNumber(command);
         command = -1;
         directions = -1;
         while(command == -1){
@@ -205,10 +208,6 @@ public class GameProxy implements ButtonListener {
             }
         }
     }
-//
-//    public int getDirections(){
-//        return directions;
-//    }
     
     public void stopThread(){
         socket.setActive(false);
