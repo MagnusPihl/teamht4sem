@@ -64,7 +64,7 @@ public class RobotProxy extends Thread{
     }
     
     public void init(byte curDir){
-        this.lastDir = curDir;
+        this.lastPossDir = curDir;
         this.writeBufferIndex = 0;
     }
     
