@@ -333,8 +333,14 @@ public class GameScene implements Scene {
         
         if(this.state == this.STATE_PAUSE)
         {
-            GameDialog.drawDialog(_g, 135, 50, "Game Paused.\nPress enter to exit to \nthe title screen.");
-            _g.drawImage(this.map,400-(this.map.getWidth(null)/2),275,null);
+            if(field.getSize().width * TileSet.getInstance().getTileSize() > 800 ||
+                    field.getSize().height * TileSet.getInstance().getTileSize() > 520)
+            {
+                GameDialog.drawDialog(_g, 135, 50, "Game Paused.\nPress enter to exit to \nthe title screen.");
+                _g.drawImage(this.map,400-(this.map.getWidth(null)/2),275,null);
+            }
+            else
+                GameDialog.drawDialogCenter(_g, "Game Paused.\nPress enter to exit to \nthe title screen.");
         }
             
         if(this.state == this.STATE_WIN)
