@@ -26,6 +26,7 @@
 
 package editor;
 
+import game.SkinFileFilter;
 import java.awt.event.*;
 import javax.swing.*;
 import java.awt.*;
@@ -45,23 +46,40 @@ public class EditorMenu extends JPanel {
     public EditorMenu() {
         this.setLayout(new BorderLayout());
         JMenuBar menu = new JMenuBar();
-        JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT));                
+        JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        
+        String[] skins;
+        File dir = new File("skins/");
+        File skinList[] = dir.listFiles(new SkinFileFilter());
+        skins = new String[skinList.length+1];
+        skins[0] = "Skin";
+        for(int i=0; i<skinList.length; i++)
+            skins[i+1] = skinList[i].getName();
         
         String[][] menuStrings = {
             {"File","New Level","Scan New Level","Open...","-","Save","Save As...","-","Quit"},
             {"Brush","Use Path Brush","Use Pacman Brush","Use Ghost Brush"},
             {"View","Show Grid","Show Points","-","Show High Score List"},
-            {"Skin","Nodes","Pac-Man","-","Open Skin..."},
+            skins,
             {"Help",/*"About...",*/"Open Help"}
         };
+        
+        char[] skinMnemonics = new char[skins.length];
+        skinMnemonics[0] = 's';
+        for(int i=1; i<skins.length; i++)
+            skinMnemonics[i] = '-';
         
         char[][] mnemonics = {
             {'f','n','c','o','-','-','s','-','q'},
             {'b','p','m','g'},
             {'v','g','p','-','h'},
-            {'s','n','p','-','o'},
+            skinMnemonics,
             {'h',/*'a',*/'h'}
         };
+        
+        KeyStroke[] skinKeys = new KeyStroke[skins.length];
+        for(int i=0; i<skins.length; i++)
+            skinKeys[i] = null;
         
         KeyStroke[][] keyStrokes = {
             {null, 
@@ -82,15 +100,20 @@ public class EditorMenu extends JPanel {
              KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK),
              null,             
              KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_MASK)},
-            {null, 
-             KeyStroke.getKeyStroke(KeyEvent.VK_1, InputEvent.ALT_MASK),
-             KeyStroke.getKeyStroke(KeyEvent.VK_2, InputEvent.ALT_MASK),
-             null,
-             KeyStroke.getKeyStroke(KeyEvent.VK_3, InputEvent.ALT_MASK)},
+            skinKeys,
             {null, 
              //null,
              KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0)}
-        };                
+        };
+        
+        ActionListener[] skinActions = new ActionListener[skins.length];
+        skinActions[0] = null;
+        for(int i=1; i<skins.length; i++)
+        {
+            final String name = "skins/"+skins[i]+"/";
+            skinActions[i] = new ActionListener()
+                {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().setSkin(name);}};
+        }
         
         ActionListener[][] actionListener = {
             {null,
@@ -114,11 +137,7 @@ public class EditorMenu extends JPanel {
              new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().showHidePoints();}},
              null,
              new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().showHighScoreDialog();}}},
-            {null,
-             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().setSkin("skins/nodes/");}},
-             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().setSkin("skins/pacman/");}},
-             null,
-             new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().openSkin();}}},
+            skinActions,
             {null,
              //new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().about();}},
              new ActionListener() {public void actionPerformed(ActionEvent evt) {LevelEditor.getInstance().openHelp();}}}                      
