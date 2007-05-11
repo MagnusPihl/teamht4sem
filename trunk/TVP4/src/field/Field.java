@@ -6,9 +6,11 @@
  * Company: HT++
  *
  * @author Lau Maack-Krommes
- * @version 1.17
+ * @version 1.18
  *
  * ******VERSION HISTORY******
+ * LMK @ 11. maj 2007 (v 1.18)
+ * Added repaintNode
  * LMK @ 23. april 2007 (v 1.17)
  * Fixed so that hasChanged is set consistently.
  * Changed loading and saving HighScores to reflect changes in HighScore class.
@@ -512,7 +514,7 @@ public class Field {
             }
             {
                 if (this.hasChanged) {
-                    //this.highScores.reset();
+                    this.highScores.reset();
                 }   
                 
                 HighScore current = null;
@@ -564,13 +566,23 @@ public class Field {
         }
         
         g.drawImage(this.renderedField, offsetX, offsetY, null);
-        this.renderer.drawPoints(g, offsetX, offsetY);
+        //this.renderer.drawPoints(g, offsetX, offsetY);
         
         for (int i = 0; i < this.entities.length; i++) {
             if (this.entities[i] != null) {
                 this.entities[i].draw(g, offsetX, offsetY);
             }
         }
+    }
+        
+    /**
+     * Force repaint of a particular node. The repaint is done on
+     * the internal prerendered image.
+     *
+     * @param node to repaint
+     */
+    public void repaintNode(Node node) {
+        this.renderer.repaintNode(this.renderedField.getGraphics(), node);
     }
     
     /**

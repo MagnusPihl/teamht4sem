@@ -6,9 +6,11 @@
  * Company: HT++
  *
  * @author LMK
- * @version 1.5
+ * @version 1.6
  *
  * ******VERSION HISTORY******
+ * LMK @ 11. maj 2007 (v 1.6)
+ * Added repaintNode method.
  * Magnus Hemmer Pihl @ 8. marts 2007 (v 1.5)
  * Removed dimension argument from render()-method. The method will now calculate it, itself.
  * LMK @ 05. marts 2007 (v 1.4)
@@ -72,23 +74,7 @@ public class FieldRenderer {
         
         for (Iterator i = this.field.getNodeList().iterator(); i.hasNext();) {
             current = (Node)(i.next());
-            tileNumber = current.getBinaryDirections();
-            
-            /*if (current.getNodeAt(Node.UP) != null) {
-                tileNumber += 8;
-            }            
-            
-            if (current.getNodeAt(Node.RIGHT) != null) {
-                tileNumber += 4;
-            }            
-            
-            if (current.getNodeAt(Node.DOWN) != null) {
-                tileNumber += 2;
-            }            
-            
-            if (current.getNodeAt(Node.LEFT) != null) {
-                tileNumber += 1;
-            }  */          
+            tileNumber = current.getBinaryDirections();                  
                         
             g.drawImage(
                     TileSet.getInstance().getPathTile(tileNumber), 
@@ -163,7 +149,36 @@ public class FieldRenderer {
     }   
     
     /**
-     * Prerender basetile and nodes for later drawing.
+     * Repaint supplied node.
+     * 
+     * @param graphic to draw on.
+     * @param node to repaint
+     */
+    public void repaintNode(Graphics g, Node node) {
+        TileSet tileset = TileSet.getInstance();
+        int tileSize = tileset.getTileSize();
+        
+        g.drawImage(
+                tileset.getBaseTile(), 
+                node.getPosition().x * tileSize, 
+                node.getPosition().y * tileSize, 
+                null);
+        g.drawImage(
+                TileSet.getInstance().getPathTile(node.getBinaryDirections()), 
+                node.getPosition().x * tileSize, 
+                node.getPosition().y * tileSize, 
+                null);        
+        if (!node.pointsTaken()) {            
+            g.drawImage(
+                tileset.getPointsTile(node.getPoints()), 
+                node.getPosition().x * tileSize, 
+                node.getPosition().y * tileSize, 
+                null);            
+        }      
+    }
+    
+    /**
+     * Prerender basetile, nodes and points for later drawing.
      * 
      * @return prerendered basetile and nodes.
      */
@@ -172,6 +187,7 @@ public class FieldRenderer {
         BufferedImage image = PacmanApp.getInstance().getCore().getScreenManager().createCompatibleImage(size.width, size.height, Transparency.TRANSLUCENT);
         this.drawBaseTile(image.getGraphics(), 0, 0, size);
         this.drawNodes(image.getGraphics(), 0, 0);
+        this.drawPoints(image.getGraphics(), 0, 0);
         return image;
     }
 }
