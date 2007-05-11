@@ -115,6 +115,9 @@ public class GameScene implements Scene {
     private BufferedImage tiledBackground;
     private int levelOffsetX, levelOffsetY;
     
+    private BufferedImage mapBuffer;
+    private Image map;
+    
     private Replay replay;
     private int mode;
     private SoundManager soundManager;
@@ -330,7 +333,8 @@ public class GameScene implements Scene {
         
         if(this.state == this.STATE_PAUSE)
         {
-            GameDialog.drawDialogCenter(_g, "Game Paused.\nPress enter to exit to \nthe title screen.");
+            GameDialog.drawDialog(_g, 135, 50, "Game Paused.\nPress enter to exit to \nthe title screen.");
+            _g.drawImage(this.map,400-(this.map.getWidth(null)/2),275,null);
         }
             
         if(this.state == this.STATE_WIN)
@@ -383,6 +387,9 @@ public class GameScene implements Scene {
             if(cancel.isPressed())
             {
                 this.confirm.isPressed();
+                this.field.drawField(this.mapBuffer.getGraphics(), 0, 0);
+                double aspect = this.mapBuffer.getWidth() / this.mapBuffer.getHeight();
+                this.map = this.mapBuffer.getScaledInstance((int)(300*aspect), 300, Image.SCALE_SMOOTH);
                 this.state = this.STATE_PAUSE;
                 if(this.soundOn)
                     this.soundManager.pause();
@@ -492,6 +499,8 @@ public class GameScene implements Scene {
         this.resetPoints();
         this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.fps,400);
         this.field.loadFrom(this.level);
+        this.mapBuffer = new BufferedImage(this.field.getSize().width*TileSet.getInstance().getTileSize(),
+                this.field.getSize().height*TileSet.getInstance().getTileSize(), BufferedImage.TYPE_INT_RGB);
         for(int i=0; i<3; i++)
         {
             if(this.field.getEntityRenderers().length > i)
