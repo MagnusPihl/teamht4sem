@@ -47,20 +47,5 @@ public class RandomController extends EntityController {
         Node[] nodes = this.entity.getNode().getConnectedNodes(); 
         
         this.nextDirection = super.getNextDirection();
-    }
-    
-    /**
-     * No initialization neeeded.
-     *
-     * @param input manager to register keys with
-     */
-    public void init(InputManager _input) {}
-    
-    
-    /**
-     * No deinitialization neeeded.
-     *
-     * @param input manager to unregister keys with
-     */
-    public void deinit(InputManager _input) {}    
+    }    
 }

@@ -42,20 +42,5 @@ public class HunterAIController extends EntityController {
      */
     public void calculateNextMove() {           
         this.nextDirection = this.algorithm.search(super.entity.getNode(), this.prey.getNode());                
-    }
-    
-    /**
-     * No initialization neeeded.
-     *
-     * @param input manager to register keys with
-     */
-    public void init(InputManager _input) {}
-    
-    
-    /**
-     * No deinitialization neeeded.
-     *
-     * @param input manager to unregister keys with
-     */
-    public void deinit(InputManager _input) {}
+    }        
 }

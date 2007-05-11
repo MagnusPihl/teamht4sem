@@ -89,7 +89,8 @@ public class KeyboardController extends EntityController
     }
     
     public void init(InputManager _input)
-    {
+    {        
+        super.init(_input);
         _input.mapToKey(up, this.upkey);
         _input.mapToKey(down, this.downkey);
         _input.mapToKey(left, this.leftkey);

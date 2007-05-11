@@ -70,13 +70,8 @@ public class JoystickController extends EntityController
             this.nextDirection = Node.LEFT;
     }
     
-    public void init(InputManager _input)
-    {
+    public void init(InputManager _input) {
+        super.init(_input);
         this.joystick = JXInputManager.getJXInputDevice(this.joyID);
-    }
-    
-    public void deinit(InputManager _input)
-    {
-        this.joystick = null;
-    }
+    }    
 }
