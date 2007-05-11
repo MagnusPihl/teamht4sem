@@ -157,9 +157,9 @@ public class OptionsScene implements Scene
         
         this.menuHelpStr = new String[]
         {
-            "Choose which device to control Pac-Man  with by pressing left or right.\nPress enter to customize controls for\nyour device.",
-            "Choose which device to control Ghost A with by pressing left or right.\nPress enter to customize controls for\nyour device.",
-            "Choose which device to control Ghost B with by pressing left or right.\nPress enter to customize controls for\nyour device.",
+            "Choose which device to control Pac-Man  with by pressing left or right.",
+            "Choose which device to control Ghost A with by pressing left or right.",
+            "Choose which device to control Ghost B with by pressing left or right.",
             "Press left or right to choose a skin.\nPress enter to see a preview of the\ncurrently selected skin.",
             "Press left or right to decrease or\nincrease game speed.",
             "Press left or right to turn sound\non or off.",
@@ -272,7 +272,7 @@ public class OptionsScene implements Scene
                 this.preview.getEntityAt(new Point(0,1)).setDirection(Node.LEFT);
                 this.preview.getEntityAt(new Point(4,1)).setDirection(Node.LEFT);
             }
-            if(this.quit.isPressed())
+            if(this.quit.isPressed() || this.enter.isPressed())
             {
                 this.state = this.STATE_MAIN;
             }
