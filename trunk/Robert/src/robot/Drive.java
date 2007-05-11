@@ -284,7 +284,10 @@ public class Drive {
             }
             if (step == 2) {
                 roadCount++;
-                if ((nextJunction & 0x04) == 0x04 &&
+                if (b == 2){ // 010
+                    //Should all be common
+                    Movement.forward();
+                }else if ((nextJunction & 0x04) == 0x04 &&
                         roadCount > 50 &&
                         sensorsColors[1] == COLOR_GREEN &&
                         (sensorsColors[0] == COLOR_WHITE || sensorsColors[0] == COLOR_YELLOW) &&
@@ -309,10 +312,6 @@ public class Drive {
                 } else if (b == 1){ // 001
                     //Should all be common
                     Movement.sharpRight();
-                } else if (b == 2){ // 010
-                    //Should all be common
-                    //@TODO move to the top of if chain, so it gets checked first...
-                    Movement.forward();
                 } else if (b == 3){ // 011
                     Movement.right();
                     if ((nextJunction & 0x01) == 0x01)
@@ -339,13 +338,11 @@ public class Drive {
                         Thread.sleep(100);
                     } catch (InterruptedException ex) {
                     }
-                    lastJunction = nextJunction;
                     Movement.stop();
+                    lastJunction = nextJunction;
                     driving = false;
-                    Sound.beep();
                 }
             }
         }
-        LCD.showNumber(i);
     }
 }
