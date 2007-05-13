@@ -27,29 +27,37 @@ public class Drive {
     //private static final int sensor3Diff = 30;
     
     
-
+    
     //White, yellow, Green, black
     
     /***********
      * ROBOT 1 *
      ***********/
-//    private static int[] sensor1Values = new int [] {708 * BUFFERLENGTH, 718 * BUFFERLENGTH, 764 * BUFFERLENGTH, 809 * BUFFERLENGTH};
-//    private static int[] sensor2Values = new int [] {723 * BUFFERLENGTH, 740 * BUFFERLENGTH, 777 * BUFFERLENGTH, 807 * BUFFERLENGTH};
-//    private static int[] sensor3Values = new int [] {691 * BUFFERLENGTH, 704 * BUFFERLENGTH, 747 * BUFFERLENGTH, 790 * BUFFERLENGTH};
+    private static int[] robot1Sensor1Values = new int [] {708 * BUFFERLENGTH, 718 * BUFFERLENGTH, 764 * BUFFERLENGTH, 809 * BUFFERLENGTH};
+    private static int[] robot1Sensor2Values = new int [] {723 * BUFFERLENGTH, 740 * BUFFERLENGTH, 777 * BUFFERLENGTH, 807 * BUFFERLENGTH};
+    private static int[] robot1Sensor3Values = new int [] {691 * BUFFERLENGTH, 704 * BUFFERLENGTH, 747 * BUFFERLENGTH, 790 * BUFFERLENGTH};
     
     /***********
      * ROBOT 2 *
      ***********/
-//    private static int[] sensor1Values = new int [] {684 * BUFFERLENGTH, 690 * BUFFERLENGTH, 732 * BUFFERLENGTH, 765 * BUFFERLENGTH};
-//    private static int[] sensor2Values = new int [] {741 * BUFFERLENGTH, 757 * BUFFERLENGTH, 800 * BUFFERLENGTH, 832 * BUFFERLENGTH};
-//    private static int[] sensor3Values = new int [] {712 * BUFFERLENGTH, 720 * BUFFERLENGTH, 766 * BUFFERLENGTH, 820 * BUFFERLENGTH};
+    private static int[] robot2Sensor1Values = new int [] {684 * BUFFERLENGTH, 690 * BUFFERLENGTH, 732 * BUFFERLENGTH, 765 * BUFFERLENGTH};
+    private static int[] robot2Sensor2Values = new int [] {741 * BUFFERLENGTH, 757 * BUFFERLENGTH, 800 * BUFFERLENGTH, 832 * BUFFERLENGTH};
+    private static int[] robot2Sensor3Values = new int [] {712 * BUFFERLENGTH, 720 * BUFFERLENGTH, 766 * BUFFERLENGTH, 820 * BUFFERLENGTH};
     
     /***********
      * ROBOT 3 *
      ***********/
-    private static int[] sensor1Values = new int [] {740 * BUFFERLENGTH, 750 * BUFFERLENGTH, 797 * BUFFERLENGTH, 840 * BUFFERLENGTH};
-    private static int[] sensor2Values = new int [] {730 * BUFFERLENGTH, 740 * BUFFERLENGTH, 789 * BUFFERLENGTH, 810 * BUFFERLENGTH};
-    private static int[] sensor3Values = new int [] {719 * BUFFERLENGTH, 730 * BUFFERLENGTH, 775 * BUFFERLENGTH, 840 * BUFFERLENGTH};
+    private static int[] robot3Sensor1Values = new int [] {740 * BUFFERLENGTH, 750 * BUFFERLENGTH, 797 * BUFFERLENGTH, 840 * BUFFERLENGTH};
+    private static int[] robot3Sensor2Values = new int [] {719 * BUFFERLENGTH, 730 * BUFFERLENGTH, 775 * BUFFERLENGTH, 840 * BUFFERLENGTH};
+    private static int[] robot3Sensor3Values = new int [] {730 * BUFFERLENGTH, 740 * BUFFERLENGTH, 789 * BUFFERLENGTH, 810 * BUFFERLENGTH};
+    
+    private static int[] sensor1Values;
+    private static int[] sensor2Values;
+    private static int[] sensor3Values;
+    
+    private static int[] sensor1Diff = new int[3];
+    private static int[] sensor2Diff = new int[3];
+    private static int[] sensor3Diff = new int[3];
     
     //private static int sensor1Threshold = 0;
     //private static int sensor2Threshold = 0;
@@ -90,9 +98,10 @@ public class Drive {
     private static int lastJunction = 0x04;
     
     /** Creates a new instance of Drive */
-    public Drive() {
+    public Drive(int address) {
         InitSensors();
         InitMotor();
+        SetSensorValues(address);
     }
     
     private static void InitSensors() {
@@ -117,6 +126,49 @@ public class Drive {
         Motor.B.setPower(4);
     }
     
+    private static void SetSensorValues(int address) {
+        if (address == 1){
+            sensor1Values = robot1Sensor1Values;
+            sensor2Values = robot1Sensor2Values;
+            sensor3Values = robot1Sensor3Values;
+        } else if (address == 2){
+            sensor1Values = robot2Sensor1Values;
+            sensor2Values = robot2Sensor2Values;
+            sensor3Values = robot2Sensor3Values;
+        } else if (address == 3) {
+            sensor1Values = robot3Sensor1Values;
+            sensor2Values = robot3Sensor2Values;
+            sensor3Values = robot3Sensor3Values;
+        }else {
+            Sound.buzz();
+            System.exit(1);
+        }
+        CalculateSensorDifferens();
+    }
+    
+    private static void CalculateSensorDifferens() {
+        /************
+         * Sensor 1 *
+         ************/
+        sensor1Diff[0] = sensor1Values[0] + ((sensor1Values[1] - sensor1Values[0])/2);
+        sensor1Diff[1] = sensor1Values[1] + ((sensor1Values[2] - sensor1Values[1])/2);
+        sensor1Diff[2] = sensor1Values[2] + ((sensor1Values[3] - sensor1Values[2])/2);
+        
+        /************
+         * Sensor 2 *
+         ************/
+        sensor2Diff[0] = sensor2Values[0] + ((sensor2Values[1] - sensor2Values[0])/2);
+        sensor2Diff[1] = sensor2Values[1] + ((sensor2Values[2] - sensor2Values[1])/2);
+        sensor2Diff[2] = sensor2Values[2] + ((sensor2Values[3] - sensor2Values[2])/2);
+        
+        /************
+         * Sensor 3 *
+         ************/
+        sensor3Diff[0] = sensor3Values[0] + ((sensor3Values[1] - sensor3Values[0])/2);
+        sensor3Diff[1] = sensor3Values[1] + ((sensor3Values[2] - sensor3Values[1])/2);
+        sensor3Diff[2] = sensor3Values[2] + ((sensor3Values[3] - sensor3Values[2])/2);
+    }
+    
     private static void DoRead() {
         sensor1Buffer[sensorBufferIndex]   = Sensor.S1.readRawValue();
         sensor2Buffer[sensorBufferIndex]   = Sensor.S2.readRawValue();
@@ -134,6 +186,7 @@ public class Drive {
         /*
          * Check on sensor 1
          */
+        /*
         if (s1 > (sensor1Values[3] - 60)){
             //We got black
             sensorsColors[0] = COLOR_BLACK;
@@ -146,12 +199,25 @@ public class Drive {
         } else{
             //We got white
             sensorsColors[0] = COLOR_WHITE;
+        }*/
+        if (s1 > sensor1Diff[2]) {
+            //We got black
+            sensorsColors[0] = COLOR_BLACK;
+        } else if (s1 > sensor1Diff[1]) {
+            //We got green
+            sensorsColors[0] = COLOR_GREEN;
+        } else if (s1 > sensor1Diff[0]){
+            //We got yellow
+            sensorsColors[0] = COLOR_YELLOW;
+        } else{
+            //We got white
+            sensorsColors[0] = COLOR_WHITE;
         }
         
         /*
          * Check on sensor 2
          */
-        if (s2 > (sensor2Values[3] - 60)){
+        /*if (s2 > (sensor2Values[3] - 60)){
             //We got black
             sensorsColors[1] = COLOR_BLACK;
         } else if (s2 > (sensor2Values[2] - 40)) {
@@ -163,18 +229,45 @@ public class Drive {
         } else{
             //We got white
             sensorsColors[1] = COLOR_WHITE;
+        }*/
+        if (s2 > sensor2Diff[2]) {
+            //We got black
+            sensorsColors[1] = COLOR_BLACK;
+        } else if (s2 > sensor2Diff[1]) {
+            //We got green
+            sensorsColors[1] = COLOR_GREEN;
+        } else if (s2 > sensor2Diff[0]){
+            //We got yellow
+            sensorsColors[1] = COLOR_YELLOW;
+        } else{
+            //We got white
+            sensorsColors[1] = COLOR_WHITE;
         }
+        
         
         /*
          * Check on sensor 3
          */
-        if (s3 > (sensor3Values[3] - 60)){
+        /*if (s3 > (sensor3Values[3] - 60)){
             //We got black
             sensorsColors[2] = COLOR_BLACK;
         } else if (s3 > (sensor3Values[2] - 60)) {
             //We got green
             sensorsColors[2] = COLOR_GREEN;
         } else if (s3 > (sensor3Values[1] - 15)){
+            //We got yellow
+            sensorsColors[2] = COLOR_YELLOW;
+        } else{
+            //We got white
+            sensorsColors[2] = COLOR_WHITE;
+        }*/
+        if (s3 > sensor3Diff[2]) {
+            //We got black
+            sensorsColors[2] = COLOR_BLACK;
+        } else if (s3 > sensor3Diff[1]) {
+            //We got green
+            sensorsColors[2] = COLOR_GREEN;
+        } else if (s3 > sensor3Diff[0]){
             //We got yellow
             sensorsColors[2] = COLOR_YELLOW;
         } else{
@@ -305,7 +398,7 @@ public class Drive {
             }
             if (step == 2) {
                 roadCount++;
-               if ((nextJunction & 0x04) == 0x04 && // next up is a green dot, with only forward road
+                if ((nextJunction & 0x04) == 0x04 && // next up is a green dot, with only forward road
                         roadCount > 50 &&           // we must roll som before we detect a green dot
                         sensorsColors[1] == COLOR_GREEN &&
                         (sensorsColors[0] == COLOR_WHITE || sensorsColors[0] == COLOR_YELLOW) &&
