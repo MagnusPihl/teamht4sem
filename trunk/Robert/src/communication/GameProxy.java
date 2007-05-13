@@ -32,7 +32,7 @@ import robot.LowRider;
 
 
 public class GameProxy implements ButtonListener {
-    Drive ride = new Drive();
+    Drive ride;
 //    LowRider ride = new LowRider();
     LLCSocket link = new LLCSocket();
     NetworkSocket net;
@@ -64,6 +64,7 @@ public class GameProxy implements ButtonListener {
         in = socket.getInputStream();
         out = socket.getOutputStream();
         socket.setActive(true);
+        ride = new Drive(address);
         this.run();
     }
     
@@ -139,13 +140,12 @@ public class GameProxy implements ButtonListener {
                 
             }
         }
-        TextLCD.print("abe");
         if(command <= (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER) && command > GameCommands.NOP){
             while(directions == -1){
                 try {
                     directions = in.read();
+                    LCD.showNumber(directions);
                 } catch (IOException ex) {
-                    TextLCD.print("SEX");
                 }
             }
         }
