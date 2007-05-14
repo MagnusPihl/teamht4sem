@@ -83,6 +83,7 @@ import game.input.*;
 import field.*;
 import game.visual.BitmapFont;
 import game.visual.EntityRenderer;
+import game.visual.GameDialog;
 import game.visual.TileSet;
 import java.awt.*;
 import java.awt.event.*;
@@ -143,6 +144,8 @@ public class GameScene implements Scene {
     private String towerPort;
     private Semaphore semaphore;
     private RobotProxy[] proxy;
+    private GameDialog pauseDialog, winDialog, looseDialog;
+    private GameDialog[] robotDialog;
     
     /** Creates a new instance of GameScene */
     public GameScene() {
@@ -170,26 +173,23 @@ public class GameScene implements Scene {
         this.semaphore = new Semaphore(3);
 //        if(this.online)
 //        {
-            this.proxy = new RobotProxy[3];
-            this.proxy[0] = new RobotProxy(1, this.semaphore);
-            this.proxy[1] = new RobotProxy(2, this.semaphore);
-            this.proxy[2] = new RobotProxy(3, this.semaphore);
+        this.proxy = new RobotProxy[3];
+        this.proxy[0] = new RobotProxy(1, this.semaphore);
+        this.proxy[1] = new RobotProxy(2, this.semaphore);
+        this.proxy[2] = new RobotProxy(3, this.semaphore);
 //        }
     }
     
-    public void setOnline(boolean _online)
-    {
+    public void setOnline(boolean _online) {
         this.online = _online;
     }
     
     @Deprecated
-    public void setMode(int _mode)
-    {
+    public void setMode(int _mode) {
         this.mode = _mode;
     }
     
-    public void addPoints(int _points)
-    {
+    public void addPoints(int _points) {
 //        if (_points != 0)
 //            this.soundManager.runSound(2, false);
         this.points += _points;
@@ -197,79 +197,64 @@ public class GameScene implements Scene {
         pointsImage = font.renderString(""+this.points,400);
     }
     
-    public void resetPoints()
-    {
+    public void resetPoints() {
         this.points = 0;
         font = PacmanApp.getInstance().getFont();
         pointsImage = font.renderString(""+this.points,400);
     }
     
-    public void setLevel(File _level)
-    {
+    public void setLevel(File _level) {
         this.level = _level;
     }
     
-    public Entity getEntity(int id)
-    {
+    public Entity getEntity(int id) {
         if(id>=0 && id<=2)
             return this.entity[id];
         return null;
     }
     
-    public void setReplay(File _replay)
-    {
+    public void setReplay(File _replay) {
         this.replay.load(_replay);
     }
     
-    public Replay getReplay()
-    {
+    public Replay getReplay() {
         return this.replay;
     }
     
-    public Field getField()
-    {
+    public Field getField() {
         return this.field;
     }
     
-    public long getMoveTimer()
-    {
+    public long getMoveTimer() {
         return this.moveTimer;
     }
     
-    public long getRoundTime()
-    {
+    public long getRoundTime() {
         return this.roundTime;
     }
     
-    public void setRoundTime(long _time)
-    {
+    public void setRoundTime(long _time) {
         this.roundTime = _time;
     }
     
-    public void setSoundOn(boolean _soundOn)
-    {
+    public void setSoundOn(boolean _soundOn) {
         this.soundOn = _soundOn;
     }
     
-    public boolean getSoundOn()
-    {
+    public boolean getSoundOn() {
         return this.soundOn;
     }
     
-    public void setTowerPort(String port)
-    {
+    public void setTowerPort(String port) {
         this.towerPort = port;
     }
     
-    public String getTowerPort()
-    {
+    public String getTowerPort() {
         return this.towerPort;
     }
     
-    private void updateLevelOffset()
-    {
-        if(field.getSize().width * TileSet.getInstance().getTileSize() > 800)
-        {
+    private void updateLevelOffset() {
+        if(field.getSize().width * TileSet.getInstance().getTileSize() > 800) {
             int pacX = field.getEntityRenderers()[0].getEntity().getPosition().x * TileSet.getInstance().getTileSize();
             
             if(pacX + this.levelOffsetX < 350 && this.levelOffsetX < 25)
@@ -277,8 +262,7 @@ public class GameScene implements Scene {
             if(pacX + this.levelOffsetX > 450 && field.getSize().width * TileSet.getInstance().getTileSize() + this.levelOffsetX > 775)
                 this.levelOffsetX-=3;
         }
-        if(field.getSize().height * TileSet.getInstance().getTileSize() > 520)
-        {
+        if(field.getSize().height * TileSet.getInstance().getTileSize() > 520) {
             int pacY = field.getEntityRenderers()[0].getEntity().getPosition().y * TileSet.getInstance().getTileSize();
             
             if(pacY + this.levelOffsetY < 250 && this.levelOffsetY < 85)
@@ -288,15 +272,14 @@ public class GameScene implements Scene {
         }
     }
     
-    public void prerender()
-    {
+    public void prerender() {
         this.resetPoints();
         
         //START Draw background
         this.tiledBackground =
                 PacmanApp.getInstance().getCore().getScreenManager().createCompatibleImage(800, 600, Transparency.OPAQUE);
         this.updateLevelOffset();
-
+        
         int startTileX = (this.levelOffsetX % TileSet.getInstance().getTileSize()) - TileSet.getInstance().getTileSize();
         int startTileY = (this.levelOffsetY % TileSet.getInstance().getTileSize()) - TileSet.getInstance().getTileSize();
         for(int i=startTileX; i<800; i+=TileSet.getInstance().getTileSize())
@@ -305,93 +288,90 @@ public class GameScene implements Scene {
         this.tiledBackground.getGraphics().drawImage(new ImageIcon("images/top.png").getImage(), 0, 0, null);
         //this.topImage = new ImageIcon("images/top.png").getImage();
         //DONE Draw background
+        
+        if (this.pauseDialog == null) {
+            this.pauseDialog = new GameDialog("Game Paused.\nPress enter to exit to \nthe title screen.");
+            this.winDialog = new GameDialog("You Win!\nPress enter to exit to \nthe title screen.");
+            this.looseDialog = new GameDialog("You Loose!\nPress enter to exit to \nthe title screen.");
+            this.robotDialog = new GameDialog[3];
+            
+            for (int i = 0; i < 3; i++) {
+                this.robotDialog[i] = new GameDialog("Place robot #" + (i+1) + " where the\nblinking entity is.\nPress enter when done.");
+            }
+        }
     }
     
-    public void draw(Graphics2D _g)
-    {
+    public void draw(Graphics2D _g) {
         //Any state
-            _g.drawImage(this.tiledBackground, 0, 0, null);
-            
-            this.updateLevelOffset();
-            Shape c = _g.getClip();
-            _g.setClip(0, 50, 800, 550);
-            field.drawField(_g, this.levelOffsetX, this.levelOffsetY);
-            _g.setClip(c);
-            
-            this.frameCounter++;
-            if(System.currentTimeMillis() - this.frameTimer > 1000)
-            {
-                this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.frameCounter,400);
-                this.frameCounter = 0;
-                this.frameTimer = System.currentTimeMillis();
-            }
-            
-            //_g.drawImage(topImage, 0, 0, null);
-            _g.drawImage(this.fps, 5, 5, null);
-            _g.drawImage(pointsImage, 795 - pointsImage.getWidth(), 5, null);
+        _g.drawImage(this.tiledBackground, 0, 0, null);
+        
+        this.updateLevelOffset();
+        Shape c = _g.getClip();
+        _g.setClip(0, 50, 800, 550);
+        field.drawField(_g, this.levelOffsetX, this.levelOffsetY);
+        _g.setClip(c);
+        
+        this.frameCounter++;
+        if(System.currentTimeMillis() - this.frameTimer > 1000) {
+            this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.frameCounter,400);
+            this.frameCounter = 0;
+            this.frameTimer = System.currentTimeMillis();
+        }
+        
+        //_g.drawImage(topImage, 0, 0, null);
+        _g.drawImage(this.fps, 5, 5, null);
+        _g.drawImage(pointsImage, 795 - pointsImage.getWidth(), 5, null);
         //Any state done
         
-        if(this.state == this.STATE_PAUSE)
-        {
+        if(this.state == this.STATE_PAUSE) {
             if(field.getSize().width * TileSet.getInstance().getTileSize() > 800 ||
-                    field.getSize().height * TileSet.getInstance().getTileSize() > 520)
-            {
-                GameDialog.drawDialog(_g, 135, 50, "Game Paused.\nPress enter to exit to \nthe title screen.");
+                    field.getSize().height * TileSet.getInstance().getTileSize() > 520) {
+                this.pauseDialog.draw(_g, 135, 50);
                 _g.drawImage(this.map,400-(this.map.getWidth(null)/2),275,null);
-            }
-            else
-                GameDialog.drawDialogCenter(_g, "Game Paused.\nPress enter to exit to \nthe title screen.");
-        }
-            
-        if(this.state == this.STATE_WIN)
-        {
-            if(this.soundOn)
-                this.soundManager.runSound(6, false);
-            GameDialog.drawDialogCenter(_g, "You Win!\nPress enter to exit to \nthe title screen.");
-        }
-            
-        if(this.state == this.STATE_LOSE)
-        {
-            if(this.soundOn)
-                this.soundManager.runSound(3, false);
-            GameDialog.drawDialogCenter(_g, "You Lose!\nPress enter to exit to \nthe title screen.");
+            } else
+                this.pauseDialog.draw(_g);
         }
         
-        if(this.state == this.STATE_PLACEMENT)
-        {
+        if(this.state == this.STATE_WIN) {
+            if(this.soundOn)
+                this.soundManager.runSound(6, false);
+            this.winDialog.draw(_g);
+        }
+        
+        if(this.state == this.STATE_LOSE) {
+            if(this.soundOn)
+                this.soundManager.runSound(3, false);
+            this.looseDialog.draw(_g);
+        }
+        
+        if(this.state == this.STATE_PLACEMENT) {
             if(placementState%2 == 0){
-                GameDialog.drawDialogCenter(_g, "Place robot #" + ((placementState/2)+1) + " where the\nblinking entity is.\nPress enter when done.");
+                this.robotDialog[((placementState/2)+1)].draw(_g);
             }
         }
-    }            
-
-    public void update(long _time)
-    {
+    }
+    
+    public void update(long _time) {
         //Any state
         this.moveTimer -= _time;
         
-        if(this.state == this.STATE_PLACEMENT)
-        {
+        if(this.state == this.STATE_PLACEMENT) {
             if(this.confirm.isPressed()){
                 placementState++;
-                if(placementState == 6)
-                {
+                if(placementState == 6) {
                     this.state = this.STATE_RUNNING;
                     return;
                 }
                 if(placementState%2 == 1){
                     this.field.getEntityRenderers()[(placementState-1)/2].setHighlight(true);
-                }
-                else{
+                } else{
                     this.field.getEntityRenderers()[(placementState-1)/2].setHighlight(false);
                 }
             }
         }
-
-        if(this.state == this.STATE_RUNNING)
-        {
-            if(cancel.isPressed())
-            {
+        
+        if(this.state == this.STATE_RUNNING) {
+            if(cancel.isPressed()) {
                 this.confirm.isPressed();
                 this.field.drawField(this.mapBuffer.getGraphics(), 0, 0);
                 double aspect = this.mapBuffer.getWidth() / this.mapBuffer.getHeight();
@@ -400,61 +380,47 @@ public class GameScene implements Scene {
                 if(this.soundOn)
                     this.soundManager.pause();
             }
-
+            
             //START OF TURN!
             entities[0].getEntity().getController().calculateNextMove();
-            if(this.moveTimer<0 && this.semaphore.availablePermits()==3)
-            {
-                for(int i=0; i<entities.length; i++)
-                {
-                    if(entities[i].getEntity() != null)
-                    {
+            if(this.moveTimer<0 && this.semaphore.availablePermits()==3) {
+                for(int i=0; i<entities.length; i++) {
+                    if(entities[i].getEntity() != null) {
 //                    System.out.println("Sem: "+semaphore.availablePermits());
                         //Win/Lose condition
-                        if(this.field.getPointsLeft() == 0)
-                        {
+                        if(this.field.getPointsLeft() == 0) {
                             this.state = this.STATE_WIN;
-                        }
-                        else
-                        {
+                        } else {
                             Node n;
                             Entity e = null;
-                            for(int j=0; j<4; j++)
-                            {
+                            for(int j=0; j<4; j++) {
                                 n = this.field.getNodeAt(entities[0].getEntity().getPosition()).getNodeAt(j);
                                 if(n != null)
                                     e = n.getEntity();
-                                        if(e != null)
-                                            if(e.getID() > 0)
-                                                this.state = this.STATE_LOSE;
+                                if(e != null)
+                                    if(e.getID() > 0)
+                                        this.state = this.STATE_LOSE;
                             }
                         }
-
+                        
                         int dir = -1;
-                        if(i == 0)
-                        {
+                        if(i == 0) {
                             this.addPoints(entities[0].getEntity().getNode().takePoints());
                             this.field.repaintNode(entities[0].getEntity().getNode());
                             dir = entities[i].getEntity().getController().move();
-                        }
-                        else
-                        {
+                        } else {
                             entities[i].getEntity().getController().calculateNextMove();
                             dir = entities[i].getEntity().getController().move();
                         }
-
-                        if(this.online && dir!=-1)
-                        {
-                            if(i < NUM_ROBOTS)
-                            {
+                        
+                        if(this.online && dir!=-1) {
+                            if(i < NUM_ROBOTS) {
                                 try {
 //                                    System.out.println("Moving entity "+j);
                                     System.out.println("Sending move direction "+dir+" ("+((byte)dir)+") to robot "+i);
                                     this.proxy[i].move((byte)dir, (byte)entities[i].getEntity().getNode().getBinaryDirections());
 //                                    System.out.println("Done moving.");
-                                }
-                                catch(IOException e)
-                                {
+                                } catch(IOException e) {
                                     System.out.println(e.getMessage());
                                 }
                             }
@@ -462,17 +428,15 @@ public class GameScene implements Scene {
                         this.replay.list[i].add(dir);
                     }
                     //END OF TURN!
-                 }
+                }
             }
             if(this.online)
                 for(int i=0; i < NUM_ROBOTS; i++)
                     this.proxy[i].isDoneMoving();
         }
-
-        if(this.state == this.STATE_PAUSE)
-        {
-            if(cancel.isPressed())
-            {
+        
+        if(this.state == this.STATE_PAUSE) {
+            if(cancel.isPressed()) {
                 this.state = this.STATE_RUNNING;
                 if(this.soundOn)
                     this.soundManager.pause();
@@ -480,17 +444,16 @@ public class GameScene implements Scene {
             if(confirm.isPressed())
                 PacmanApp.getInstance().showTitleScene();
         }
-
-        if(this.state == this.STATE_WIN || this.state == this.STATE_LOSE)
-        {
+        
+        if(this.state == this.STATE_WIN || this.state == this.STATE_LOSE) {
             if(confirm.isPressed())
                 PacmanApp.getInstance().showTitleScene();
         }
         
         if(this.moveTimer<0)
-                this.moveTimer = this.roundTime;
+            this.moveTimer = this.roundTime;
     }
-
+    
     public void init(InputManager _input) {
         this.state = this.STATE_RUNNING;
         if(this.online){
@@ -507,10 +470,8 @@ public class GameScene implements Scene {
         this.field.loadFrom(this.level);
         this.mapBuffer = new BufferedImage(this.field.getSize().width*TileSet.getInstance().getTileSize(),
                 this.field.getSize().height*TileSet.getInstance().getTileSize(), BufferedImage.TYPE_INT_RGB);
-        for(int i=0; i<3; i++)
-        {
-            if(this.field.getEntityRenderers().length > i)
-            {
+        for(int i=0; i<3; i++) {
+            if(this.field.getEntityRenderers().length > i) {
                 if(this.online)
                     this.proxy[i].init((byte)this.field.getEntityRenderers()[i].getEntity().getNode().getBinaryDirections());
                 this.entity[i].setNode(this.field.getEntityRenderers()[i].getEntity().getNode());
@@ -530,10 +491,8 @@ public class GameScene implements Scene {
         _input.mapToKey(confirm, KeyEvent.VK_ENTER);
         
         entities = this.field.getEntityRenderers();
-        for(int i=0; i<entities.length; i++)
-        {
-            if(entities[i].getEntity() != null)
-            {
+        for(int i=0; i<entities.length; i++) {
+            if(entities[i].getEntity() != null) {
                 if(entities[i].getEntity().getController() != null)
                     entities[i].getEntity().getController().init(_input);
             }
@@ -546,8 +505,7 @@ public class GameScene implements Scene {
         _input.removeKeyAssociation(KeyEvent.VK_ENTER);
         _input.removeKeyAssociation(KeyEvent.VK_ESCAPE);
         
-        if(this.online)
-        {
+        if(this.online) {
             this.proxy[0].close();
             for(int i=0; i<3; i++)
                 this.proxy[i].setActive(false);
@@ -559,11 +517,9 @@ public class GameScene implements Scene {
             if(entities[i].getEntity() != null)
                 entities[i].getEntity().getController().deinit(_input);
         
-        if(entities[0].getEntity().getController().getClass().getName() != "game.entitycontrol.ReplayController")
-        {
+        if(entities[0].getEntity().getController().getClass().getName() != "game.entitycontrol.ReplayController") {
             int saveReplay = JOptionPane.showConfirmDialog(PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow(), "Do you wish to save a replay of this game?", "Save Replay...", JOptionPane.YES_NO_OPTION);
-            if(saveReplay == 0)
-            {
+            if(saveReplay == 0) {
                 JFileChooser saveReplayDialog = new JFileChooser();
                 saveReplayDialog.setFileFilter(new javax.swing.filechooser.FileFilter() {
                     public boolean accept(File f) {
@@ -583,12 +539,12 @@ public class GameScene implements Scene {
             }
             
             PacmanApp.getInstance().getCore().getScreenManager().update();
-                        
+            
             if (this.field.getHighScores().isHighScore(this.points)) {
                 String name = JOptionPane.showInputDialog(PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow(), "Congratulations, you have reached a new rank.\nPlease enter your name.");
                 if(name == null){
                     name = "New player";
-                }                
+                }
                 Field newField = new Field();
                 newField.loadFrom(this.level);
                 newField.getHighScores().add(new HighScore(name, this.points));

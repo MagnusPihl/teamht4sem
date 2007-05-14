@@ -56,6 +56,7 @@ import game.system.*;
 import game.input.*;
 import game.visual.*;
 import field.*;
+import game.visual.GameDialog;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -81,6 +82,7 @@ public class OptionsScene implements Scene
     private Image menuHelp[];
     
     private Image arrow[];
+    private GameDialog skinDialog;
     
     private Field preview;
     
@@ -211,7 +213,7 @@ public class OptionsScene implements Scene
         
         if(this.state == this.STATE_SKIN_PREVIEW)
         {
-            GameDialog.drawDialog(_g, 135, 187, " ");
+            this.skinDialog.draw(_g);
             this.preview.drawField(_g, 400-((this.preview.getSize().width*TileSet.getInstance().getTileSize())/2),
                     300-((this.preview.getSize().height*TileSet.getInstance().getTileSize())/2));
         }
@@ -354,6 +356,10 @@ public class OptionsScene implements Scene
                         this.menuOptions[i][j] = font.renderStringRect(this.menuOptionsStr[i][j].substring(0,19)+"...", 200, 0);*/
                 }
             this.menuHelp[i] = font.renderString(this.menuHelpStr[i], 750);
+        }
+        
+        if (this.skinDialog == null) {            
+            this.skinDialog = new GameDialog(300, 200);
         }
     }
     

@@ -207,6 +207,30 @@ public class BitmapFont {
      *
      * @param String to render.
      * @param Maximum width.
+     * @param Color to paint background with.
+     */
+    public BufferedImage renderString(String string, int maxLineWidth,Color backgroundColor) {        
+        int[] indexes = this.getIndexes(string);
+        Dimension size = this.getStringBounds(string, indexes, maxLineWidth);
+        
+        if ((size.width != 0)&&(size.height != 0)) {
+            BufferedImage image = PacmanApp.getInstance().getCore().getScreenManager().createCompatibleImage(size.width, size.height, Transparency.OPAQUE);                    
+            Graphics g = image.getGraphics();
+            g.setColor(backgroundColor);
+            g.fillRect(0,0, size.width, size.height);
+            this.drawString(g, string, indexes, 0, 0, maxLineWidth);
+            return image;
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Prerender string so that i may be reused. An image of the appropriate
+     * size created during prerender.
+     *
+     * @param String to render.
+     * @param Maximum width.
      */
     public BufferedImage renderString(String string, int maxLineWidth) {        
         int[] indexes = this.getIndexes(string);
@@ -265,11 +289,12 @@ public class BitmapFont {
      * @param x start position. To the left of text.
      * @param y start position. Above text.
      * @param width allowed to draw on. If 0 the string will be drawn vertically.
+     * @param h height allowed to draw on. If 0 a single line will be drawn.
      * @return height in pixels used to draw the text
      */
-    public int drawStringRect(Graphics g, String string, int startX, int startY, int maxLineWidth) {        
-        return drawStringRect(g, string, this.getIndexes(string), startX, startY, maxLineWidth, 0);
-    }
+    public int drawStringRect(Graphics g, String string, int startX, int startY, int maxLineWidth, int maxHeight) {        
+        return drawStringRect(g, string, this.getIndexes(string), startX, startY, maxLineWidth, maxHeight);
+    }    
     
     /**
      * Draw horizontal string on graphic
@@ -302,7 +327,7 @@ public class BitmapFont {
      * @param width allowed to draw on. If 0 the string will be drawn vertically.
      * @return Dimension.
      */
-    private Dimension getStringBounds(String string, int[] indexes, int maxLineWidth) {        
+    public Dimension getStringBounds(String string, int[] indexes, int maxLineWidth) {        
         int currentWidth = 0;
         int maxX = 0;
         int maxY = this.fontHeight;
@@ -347,7 +372,7 @@ public class BitmapFont {
      * @param height allowed to draw on. If 0 the string will be singleline.
      * @return Dimension.
      */
-    private Dimension getStringRectBounds(String string, int[] indexes, int maxLineWidth, int maxHeight) {        
+    public Dimension getStringRectBounds(String string, int[] indexes, int maxLineWidth, int maxHeight) {        
         int currentWidth = 0;        
         int maxX = 0;
         int maxY = this.fontHeight;        
