@@ -62,7 +62,7 @@ public class TitleScene implements Scene {
         this.actionEnter = new InputAction("Enter", InputAction.DETECT_FIRST_ACTION);
         this.actionQuit = new InputAction("Escape", InputAction.DETECT_FIRST_ACTION);
         this.pointer = new ImageIcon("images/pointer.png").getImage();        
-        this.currentItem = 1;
+        this.currentItem = 0;
         this.isOnline = false;
         
         this.openLevelDialog = new JFileChooser();
