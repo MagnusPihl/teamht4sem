@@ -60,10 +60,12 @@ public class GameDialog {
     private String text;
     private int height = 100;
     private int width = 100;    
+    private boolean isOpaque;
     
     /** Creates a new instance of GameDialog */
-    public GameDialog(String text, int width, int height) {
+    public GameDialog(String text, int width, int height, boolean isOpaque) {
         this.text = text;  
+        this.isOpaque = isOpaque;
         Image image = null;
         
         if (height > 100) {
@@ -83,9 +85,10 @@ public class GameDialog {
         this.renderDialog(image);
     }
     
-    public GameDialog(String text) {        
+    public GameDialog(String text, boolean isOpaque) {        
         this.text = text;        
         Image image = null;
+        this.isOpaque = isOpaque;
         
         if (this.text != null) {
             image = PacmanApp.getInstance().getFont().renderString(text, 529);
@@ -103,8 +106,8 @@ public class GameDialog {
         this.renderDialog(image);
     }
     
-    public GameDialog(int width, int height) {
-        this(null, width, height);
+    public GameDialog(int width, int height, boolean isOpaque) {
+        this(null, width, height, isOpaque);
     } 
     
     private void renderDialog(Image text) {
@@ -113,7 +116,7 @@ public class GameDialog {
                 
         System.out.println(this.width + " " + this.height);
         
-        drawDialog(g, false, 0,0, this.width, this.height);
+        drawDialog(g, this.isOpaque, 0,0, this.width, this.height);
                 
         if (text != null) {
             //g.setClip(HORIZONTAL_OFFSET, VERTICAL_OFFSET, this.width - 2*HORIZONTAL_OFFSET, this.height - 2*VERTICAL_OFFSET);
