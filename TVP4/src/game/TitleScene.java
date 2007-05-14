@@ -52,7 +52,7 @@ public class TitleScene implements Scene {
     private boolean isOnline;
     private JFileChooser openLevelDialog, openReplayDialog, selectSkinDialog;
     
-    public static final String[] MENU_ITEMS = new String[] {"New Game", "Continue", "View Replay", "View High Scores", "Options" ,"Quit"};
+    public static final String[] MENU_ITEMS = new String[] {"New Game", "Load Level", "View Replay", "View High Scores", "Options" ,"Quit"};
     
     /** Creates a new instance of GameScene */
     public TitleScene() {
@@ -121,8 +121,8 @@ public class TitleScene implements Scene {
             System.exit(0);
         } else if (this.actionEnter.isPressed()) {
             switch (this.currentItem) {
-                case 0: this.newGame(); break;
-                case 1: this.continueGame(); break;
+                case 0: this.continueGame(); break;
+                case 1: this.newGame(); break;
                 case 2: this.replayGame(); break;
                 case 3: PacmanApp.getInstance().showHighScoreScene(); break;
                 case 4: PacmanApp.getInstance().showOptionsScene(); break;

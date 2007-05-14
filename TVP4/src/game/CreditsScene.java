@@ -98,7 +98,7 @@ public class CreditsScene implements Scene {
         this.lineHeights = new int[this.credits.length];
         
         for (int i = 0; i < this.rendereredCredits.length; i++) {
-            this.rendereredCredits[i] = font.renderString(this.credits[i], 780);
+            this.rendereredCredits[i] = font.renderString(this.credits[i], 780, Color.BLACK);
             
             if (this.rendereredCredits[i] != null) {
                 this.lineWidths[i] = this.rendereredCredits[i].getWidth();
