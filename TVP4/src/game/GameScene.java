@@ -290,13 +290,13 @@ public class GameScene implements Scene {
         //DONE Draw background
         
         if (this.pauseDialog == null) {
-            this.pauseDialog = new GameDialog("Game Paused.\nPress enter to exit to \nthe title screen.");
-            this.winDialog = new GameDialog("You Win!\nPress enter to exit to \nthe title screen.");
-            this.looseDialog = new GameDialog("You Loose!\nPress enter to exit to \nthe title screen.");
+            this.pauseDialog = new GameDialog("Game Paused.\nPress enter to exit to \nthe title screen.", true);
+            this.winDialog = new GameDialog("You Win!\nPress enter to exit to \nthe title screen.", true);
+            this.looseDialog = new GameDialog("You Loose!\nPress enter to exit to \nthe title screen.", true);
             this.robotDialog = new GameDialog[3];
             
             for (int i = 0; i < 3; i++) {
-                this.robotDialog[i] = new GameDialog("Place robot #" + (i+1) + " where the\nblinking entity is.\nPress enter when done.");
+                this.robotDialog[i] = new GameDialog("Place robot #" + (i+1) + " where the\nblinking entity is.\nPress enter when done.", true);
             }
         }
     }

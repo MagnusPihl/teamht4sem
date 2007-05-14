@@ -359,7 +359,7 @@ public class OptionsScene implements Scene
         }
         
         if (this.skinDialog == null) {            
-            this.skinDialog = new GameDialog(300, 200);
+            this.skinDialog = new GameDialog(300, 200, true);
         }
     }
     
