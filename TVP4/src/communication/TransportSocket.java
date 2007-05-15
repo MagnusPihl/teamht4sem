@@ -257,7 +257,7 @@ public class TransportSocket {
                     //Thread.yield();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
         
