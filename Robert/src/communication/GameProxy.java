@@ -25,13 +25,14 @@ import josx.platform.rcx.Button;
 import josx.platform.rcx.ButtonListener;
 import josx.platform.rcx.LCD;
 import josx.platform.rcx.Motor;
+import josx.platform.rcx.Segment;
 import josx.platform.rcx.Sound;
 import josx.platform.rcx.TextLCD;
 import robot.Drive;
 import robot.LowRider;
 
 
-public class GameProxy implements ButtonListener {
+public class GameProxy {
     Drive ride;
 //    LowRider ride = new LowRider();
     LLCSocket link = new LLCSocket();
@@ -49,13 +50,68 @@ public class GameProxy implements ButtonListener {
     private int maxBlack = -1;
     private int minBlack = -1;
     private int address = 0;
-    private boolean addressing = true;
+    private boolean addressDone = false;
+    private boolean[] btnRUNbuffer  = new boolean[3];
+    private boolean[] btnPGRMbuffer = new boolean[3];
+    private byte btnBufferIndex = 0;
     
     /**
      * Creates a new instance of GameProxy
      */
     public GameProxy() {
-        this.address();
+        this.setAddress();
+        //this.address();
+        init();
+    }
+    
+    
+    private void setAddress() {
+        addressDone = false;
+        btnBufferIndex = 0;
+        TextLCD.print("Addr");
+        while (!addressDone){
+            btnRUNbuffer[2] = btnRUNbuffer[1];
+            btnRUNbuffer[1] = btnRUNbuffer[0];
+            btnRUNbuffer[0] = Button.RUN.isPressed();
+            btnPGRMbuffer[2] = btnPGRMbuffer[1];
+            btnPGRMbuffer[1] = btnPGRMbuffer[0];
+            btnPGRMbuffer[0] = Button.PRGM.isPressed();
+            
+            if(!btnPGRMbuffer[2] && btnPGRMbuffer[1] && btnPGRMbuffer[0]){
+                Sound.beep();
+                ++address;
+                if (address == 3)
+                    address = 0;
+            }
+            if (!btnRUNbuffer[2] && btnRUNbuffer[1] && btnRUNbuffer[0]){
+                Sound.twoBeeps();
+                ++address; // we add one, so the address will be between 1 and 3
+                addressDone = true;
+                TextLCD.print("    ");
+                break;
+            }
+            try {
+                UpdateAddressSegments();
+                Thread.sleep(50);
+            } catch (InterruptedException ex) {
+                Sound.buzz();
+            }
+        }
+    }
+    
+    private void UpdateAddressSegments()
+    {
+        //SENSOR_0_VIEW
+        LCD.clearSegment(Segment.SENSOR_1_ACTIVE);
+        LCD.clearSegment(Segment.SENSOR_2_ACTIVE);
+        LCD.clearSegment(Segment.SENSOR_3_ACTIVE);
+        LCD.clearSegment(Segment.SENSOR_1_VIEW);
+        LCD.clearSegment(Segment.SENSOR_2_VIEW);
+        LCD.clearSegment(Segment.SENSOR_3_VIEW);
+        
+        LCD.setSegment(address==0?Segment.SENSOR_1_ACTIVE: (address==1?Segment.SENSOR_2_ACTIVE:Segment.SENSOR_3_ACTIVE));
+        LCD.setSegment(address==0?Segment.SENSOR_1_VIEW: (address==1?Segment.SENSOR_2_VIEW:Segment.SENSOR_3_VIEW));
+        LCD.refresh();
     }
     
     private void init(){
@@ -76,7 +132,6 @@ public class GameProxy implements ButtonListener {
                 this.stopThread();
                 ride.Forward(directions);
                 //ride.run(directions,command);
-                TextLCD.print("thrd");
                 this.startThread();
                 this.sendMoveDone(GameCommands.MOVE_DONE);
 //              ******************************************
@@ -169,12 +224,12 @@ public class GameProxy implements ButtonListener {
             while(directions == -1){
                 try {
                     directions = in.read();
-                    LCD.showNumber(directions);
                 } catch (IOException ex) {
                 }
             }
+            LCD.showNumber(directions + 700);
         }
-        TextLCD.print("step3");
+        //TextLCD.print("step3");
         // lav evt. noget timeout here.
         if(command == GameCommands.CALIBRATE){
             sensor1 = -1;
@@ -254,32 +309,6 @@ public class GameProxy implements ButtonListener {
         Sound.beep();
     }
     
-    private void address(){
-        Button.RUN.addButtonListener(this);
-        Button.PRGM.addButtonListener(this);
-        Button.VIEW.addButtonListener(this);
-        while(addressing == true){
-            LCD.showNumber(address+1);
-        }
-    }
-    
-    public void buttonPressed(Button button) {
-        if (Button.VIEW.isPressed() && addressing == true) {
-            
-        }else if (Button.PRGM.isPressed() && addressing == true) {
-            Sound.beep();
-            address++;
-            address = address%3;
-        }else if (Button.RUN.isPressed() && addressing == true) {
-            Sound.twoBeeps();
-            address++;
-            addressing = false;
-            init();
-        }
-    }
-    public void buttonReleased(Button button) {
-    }
-    
     private void lightOn() {
         Motor.B.setPower(7);
         Motor.B.forward();
@@ -291,7 +320,6 @@ public class GameProxy implements ButtonListener {
     
     public static void main(String[] args) throws InterruptedException, IOException{
         GameProxy noget = new GameProxy();
-        //new Drive().Calibrate();
     }
 
     private void discover() {
