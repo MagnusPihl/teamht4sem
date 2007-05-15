@@ -253,7 +253,7 @@ public class TransportSocket {
                         this.timeout = (int)System.currentTimeMillis() + TransportSocket.ACKNOWLEDGE_TIMEOUT;
                     }
                     
-                    Thread.sleep(rand.nextInt()%100);
+                    Thread.sleep(rand.nextInt()&0x7F);
                     //Thread.yield();
                 }
             } catch (Exception e) {
