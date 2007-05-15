@@ -49,6 +49,8 @@ public class DiscoverTester implements ButtonListener {
     private int dir;
     
     private int index = 0;
+
+    private int directions;
     
     /** Creates a new instance of DiscoverTester */
     public DiscoverTester() {
@@ -73,12 +75,22 @@ public class DiscoverTester implements ButtonListener {
     
     private void getcommand(){
         command = -1;
+        directions = -1;
         while(command == -1){
             try {
                 command = in.read();
                 LCD.showNumber(command);
             } catch (IOException ex) {
                 
+            }
+            if(command <= (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER) && command > GameCommands.NOP){
+                while(directions == -1){
+                    try {
+                        directions = in.read();
+                        LCD.showNumber(directions);
+                    } catch (IOException ex) {
+                    }
+                }
             }
         }
     }
@@ -129,7 +141,7 @@ public class DiscoverTester implements ButtonListener {
 //        while(hest == true){
 //            TextLCD.print(dirNameArray[index]);
 //        }
-        this.sendMoveDone(GameCommands.MOVE_DONE | dirArray[index]);
+        this.sendMoveDone(GameCommands.MOVE_DONE | dirArray[0]);
     }
     
     public void sendMoveDone(int move){
