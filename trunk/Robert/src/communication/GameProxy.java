@@ -106,11 +106,36 @@ public class GameProxy implements ButtonListener {
                 this.startThread();
                 this.sendMoveDone(GameCommands.MOVE_DONE);
 //              ******************************************
-            }else if(command == (GameCommands.MOVE_UP_DISCOVER) || command == (GameCommands.MOVE_RIGHT_DISCOVER) || command == (GameCommands.MOVE_DOWN_DISCOVER) || command == (GameCommands.MOVE_LEFT_DISCOVER)){
+            }else if(command == (GameCommands.FORWARD | GameCommands.DISCOVER)){
                 this.stopThread();
-                //directions = ride.goToNext();
+                this.discover();
                 this.startThread();
                 this.sendMoveDone(GameCommands.MOVE_DONE | directions);
+//              *******************************************************
+            }else if(command == (GameCommands.TURN_LEFT | GameCommands.DISCOVER) || command == (GameCommands.TURN_LEFT | GameCommands.DISCOVER | GameCommands.TURN_NUMBER)){
+                this.stopThread();
+                if(command == (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER | GameCommands.DISCOVER)){
+                    ride.TurnLeft90();
+                    ride.TurnLeft90();
+                }else{
+                    ride.TurnLeft90();
+                }
+                this.discover();
+                this.startThread();
+                this.sendMoveDone(GameCommands.MOVE_DONE | directions);
+//              *******************************************************
+            }else if(command == (GameCommands.TURN_RIGHT | GameCommands.DISCOVER) || command == (GameCommands.TURN_RIGHT | GameCommands.DISCOVER | GameCommands.TURN_NUMBER)){
+                this.stopThread();
+                if(command == (GameCommands.TURN_RIGHT | GameCommands.TURN_NUMBER | GameCommands.DISCOVER)){
+                    ride.TurnRight90();
+                    ride.TurnRight90();
+                }else{
+                    ride.TurnRight90();
+                }
+                this.discover();
+                this.startThread();
+                this.sendMoveDone(GameCommands.MOVE_DONE | directions);
+//              *******************************************************
             }else if(command == GameCommands.LIGHT_ON){
                 this.lightOn();
             }else if(command == GameCommands.LIGHT_OFF){
@@ -267,5 +292,9 @@ public class GameProxy implements ButtonListener {
     public static void main(String[] args) throws InterruptedException, IOException{
         GameProxy noget = new GameProxy();
         //new Drive().Calibrate();
+    }
+
+    private void discover() {
+        directions = 28;
     }
 }
