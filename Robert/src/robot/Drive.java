@@ -150,23 +150,23 @@ public class Drive {
         /************
          * Sensor 1 *
          ************/
-        sensor1Diff[0] = sensor1Values[0] + ((sensor1Values[1] - sensor1Values[0])/2);
-        sensor1Diff[1] = sensor1Values[1] + ((sensor1Values[2] - sensor1Values[1])/2);
-        sensor1Diff[2] = sensor1Values[2] + ((sensor1Values[3] - sensor1Values[2])/2);
+        sensor1Diff[0] = sensor1Values[1] - ((sensor1Values[1] - sensor1Values[0])/3);
+        sensor1Diff[1] = sensor1Values[2] - ((sensor1Values[2] - sensor1Values[1])/3);
+        sensor1Diff[2] = sensor1Values[3] - ((sensor1Values[3] - sensor1Values[2])/3);
         
         /************
          * Sensor 2 *
          ************/
-        sensor2Diff[0] = sensor2Values[0] + ((sensor2Values[1] - sensor2Values[0])/2);
-        sensor2Diff[1] = sensor2Values[1] + ((sensor2Values[2] - sensor2Values[1])/2);
-        sensor2Diff[2] = sensor2Values[2] + ((sensor2Values[3] - sensor2Values[2])/2);
+        sensor2Diff[0] = sensor2Values[1] - ((sensor2Values[1] - sensor2Values[0])/3);
+        sensor2Diff[1] = sensor2Values[2] - ((sensor2Values[2] - sensor2Values[1])/3);
+        sensor2Diff[2] = sensor2Values[3] - ((sensor2Values[3] - sensor2Values[2])/3);
         
         /************
          * Sensor 3 *
          ************/
-        sensor3Diff[0] = sensor3Values[0] + ((sensor3Values[1] - sensor3Values[0])/2);
-        sensor3Diff[1] = sensor3Values[1] + ((sensor3Values[2] - sensor3Values[1])/2);
-        sensor3Diff[2] = sensor3Values[2] + ((sensor3Values[3] - sensor3Values[2])/2);
+        sensor3Diff[0] = sensor3Values[1] - ((sensor3Values[1] - sensor3Values[0])/3);
+        sensor3Diff[1] = sensor3Values[2] - ((sensor3Values[2] - sensor3Values[1])/3);
+        sensor3Diff[2] = sensor3Values[3] - ((sensor3Values[3] - sensor3Values[2])/3);
     }
     
     private static void DoRead() {
@@ -301,7 +301,7 @@ public class Drive {
             tempReturn += 0x02;
         if (Sum(sensor3Buffer) > sensor3Threshold)
             tempReturn += 0x01;
-        return tempReturn;*/
+        return tempReturnReturn;*/
     }
     
     private static int Sum(int[] numbers){
