@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import josx.platform.rcx.Button;
-import josx.platform.rcx.ButtonListener;
 import josx.platform.rcx.LCD;
 import josx.platform.rcx.Motor;
 import josx.platform.rcx.Segment;
@@ -49,6 +48,7 @@ public class GameProxy {
     private byte btnBufferIndex = 0;
 
     private int h =0;
+    private boolean first = true;
     
     /**
      * Creates a new instance of GameProxy
@@ -197,6 +197,7 @@ public class GameProxy {
             }else if(command == GameCommands.SEARCH_NODE){
                 this.stopThread();
                 //directions = ride.searchNode();
+                this.discover();
                 this.startThread();
                 this.sendMoveDone(GameCommands.MOVE_DONE | directions);
             }else{
@@ -263,8 +264,15 @@ public class GameProxy {
             directions = (GameCommands.FORWARD | GameCommands.TURN_NUMBER);
             h++;
         }else{
-            h = 0;
-            directions = (GameCommands.FORWARD | GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT);;
+            if(first == true){
+                first = false;
+                h = 0;
+                Sound.twoBeeps();
+                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT | GameCommands.TURN_LEFT);
+            }else{
+                h = 0;
+                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT);
+            }
         }
     }
 }
