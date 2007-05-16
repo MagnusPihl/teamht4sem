@@ -48,7 +48,6 @@ public class GameProxy {
     private byte btnBufferIndex = 0;
 
     private int h =0;
-    private boolean first = true;
     
     /**
      * Creates a new instance of GameProxy
@@ -264,15 +263,23 @@ public class GameProxy {
             directions = (GameCommands.FORWARD | GameCommands.TURN_NUMBER);
             h++;
         }else{
-            if(first == true){
-                first = false;
-                h = 0;
-                Sound.twoBeeps();
-                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT | GameCommands.TURN_LEFT);
-            }else{
-                h = 0;
+            h = (int)(Math.random()*120);
+            if(h < 20 ){
                 directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT);
+            }else if(h < 40 && h > 20){
+                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_LEFT);
+            }else if(h < 60 && h > 40){
+                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT | GameCommands.TURN_LEFT);
+            }else if(h < 80 && h > 60){
+                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT | GameCommands.TURN_LEFT | GameCommands.FORWARD);
+            }else if(h < 100 && h > 80){
+                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT | GameCommands.FORWARD);
+            }else if(h < 120 && h > 100){
+                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_LEFT | GameCommands.FORWARD);
+            }else{
+                directions = (GameCommands.FORWARD | GameCommands.TURN_NUMBER);
             }
+            h = 0;
         }
     }
 }
