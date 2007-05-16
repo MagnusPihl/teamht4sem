@@ -3,6 +3,7 @@ import josx.platform.rcx.LCD;
 import josx.platform.rcx.Motor;
 import josx.platform.rcx.Sensor;
 import josx.platform.rcx.Sound;
+import tinyvm.rcx.TextLCD;
 /*
  * Drive.java
  *
@@ -17,18 +18,20 @@ import josx.platform.rcx.Sound;
 public class Drive {
     
     private static final byte BUFFERLENGTH = 3;
-    private static int sensorBufferIndex = 0;
     private static int[] sensor1Buffer = new int[BUFFERLENGTH];
     private static int[] sensor2Buffer = new int[BUFFERLENGTH];
     private static int[] sensor3Buffer = new int[BUFFERLENGTH];
     
-    //private static final int sensor1Diff = 30;
-    //private static final int sensor2Diff = -20;
-    //private static final int sensor3Diff = 30;
+    private static int[] sensor1Colors = new int[BUFFERLENGTH];
+    private static int[] sensor2Colors = new int[BUFFERLENGTH];
+    private static int[] sensor3Colors = new int[BUFFERLENGTH];
+    
+    private static int[] sensorsColors = new int[3];
     
     
-    
-    //White, yellow, Green, black
+    /*
+     White, yellow, Green, black
+     **/
     
     /***********
      * ROBOT 1 *
@@ -51,24 +54,19 @@ public class Drive {
     private static int[] robot3Sensor2Values = new int [] {719 * BUFFERLENGTH, 730 * BUFFERLENGTH, 775 * BUFFERLENGTH, 840 * BUFFERLENGTH};
     private static int[] robot3Sensor3Values = new int [] {730 * BUFFERLENGTH, 740 * BUFFERLENGTH, 789 * BUFFERLENGTH, 810 * BUFFERLENGTH};
     
-    private static int[] sensor1Values;
-    private static int[] sensor2Values;
-    private static int[] sensor3Values;
-    
     private static int[] sensor1Diff = new int[3];
     private static int[] sensor2Diff = new int[3];
     private static int[] sensor3Diff = new int[3];
     
-    //private static int sensor1Threshold = 0;
-    //private static int sensor2Threshold = 0;
-    //private static int sensor3Threshold = 0;
+    private static int[] sensor1Values; //placeholder for the acctual thresshold values
+    private static int[] sensor2Values; //placeholder for the acctual thresshold values
+    private static int[] sensor3Values; //placeholder for the acctual thresshold values
     
     private static final int COLOR_WHITE  = 0x01;
     private static final int COLOR_YELLOW = 0x02;
     private static final int COLOR_GREEN  = 0x04;
     private static final int COLOR_BLACK  = 0x08;
     
-    private static int[] sensorsColors = new int[3];
     
     /* DIRECTIONS uses a 3-bit register
      *
@@ -169,20 +167,154 @@ public class Drive {
         sensor3Diff[2] = sensor3Values[3] - ((sensor3Values[3] - sensor3Values[2])/3);
     }
     
+//    static int i = 0;
+//    private final static byte BUFFERLENGTH_1 = BUFFERLENGTH - 1;
     private static void DoRead() {
-        sensor1Buffer[sensorBufferIndex]   = Sensor.S1.readRawValue();
-        sensor2Buffer[sensorBufferIndex]   = Sensor.S2.readRawValue();
-        sensor3Buffer[sensorBufferIndex++] = Sensor.S3.readRawValue();
-        if (sensorBufferIndex == BUFFERLENGTH) {
-            sensorBufferIndex = 0;
+        for (int i = 0; i < 2; i++){
+            sensor1Buffer[2 - i] = sensor1Buffer[1 - i];
+            sensor2Buffer[2 - i] = sensor2Buffer[1 - i];
+            sensor3Buffer[2 - i] = sensor3Buffer[1 - i];
+//            sensor1Buffer[BUFFERLENGTH_1 - i] = sensor1Buffer[BUFFERLENGTH_1 - 1 - i];
+//            sensor2Buffer[BUFFERLENGTH_1 - i] = sensor2Buffer[BUFFERLENGTH_1 - 1 - i];
+//            sensor3Buffer[BUFFERLENGTH_1 - i] = sensor3Buffer[BUFFERLENGTH_1 - 1 - i];
+        }
+        
+        sensor1Buffer[0] = Sensor.S1.readRawValue();
+        sensor2Buffer[0] = Sensor.S2.readRawValue();
+        sensor3Buffer[0] = Sensor.S3.readRawValue();
+    }
+    
+    private static int FindColor(int[] sensorDiff, int value){
+        if (value > sensorDiff[2]) {
+            //We got black
+            return COLOR_BLACK;
+        } else if (value > sensorDiff[1]) {
+            //We got green
+            return COLOR_GREEN;
+        } else if (value > sensorDiff[0]){
+            //We got yellow
+            return COLOR_YELLOW;
+        } else{
+            //We got white
+            return COLOR_WHITE;
+        }
+    }
+    
+    private static void Read1(){
+        
+        if (sensor1Colors[0] == sensor1Colors[1] && sensor1Colors[1] == sensor1Colors[2]) {
+            if (sensor1Colors[0] == COLOR_BLACK){
+                sensorsColors[0] = COLOR_BLACK;
+            } else if(sensor1Colors[0] == COLOR_GREEN){
+                sensorsColors[0] = COLOR_GREEN;
+            } else if(sensor1Colors[0] == COLOR_YELLOW){
+                sensorsColors[0] = COLOR_YELLOW;
+            } else if(sensor1Colors[0] == COLOR_WHITE){
+                sensorsColors[0] = COLOR_WHITE;
+            }
+        }
+    }
+    
+    private static void Read2(){
+        
+        if (sensor2Colors[0] == sensor2Colors[1] && sensor2Colors[1] == sensor2Colors[2]) {
+            if (sensor2Colors[0] == COLOR_BLACK){
+                sensorsColors[1] = COLOR_BLACK;
+            } else if(sensor2Colors[0] == COLOR_GREEN){
+                sensorsColors[1] = COLOR_GREEN;
+            } else if(sensor2Colors[0] == COLOR_YELLOW){
+                sensorsColors[1] = COLOR_YELLOW;
+            } else if(sensor2Colors[0] == COLOR_WHITE){
+                sensorsColors[1] = COLOR_WHITE;
+            }
+        }
+    }
+    
+    private static void Read3(){
+        
+        
+        if (sensor3Colors[0] == sensor3Colors[1] && sensor3Colors[1] == sensor3Colors[2]) {
+            if (sensor3Colors[0] == COLOR_BLACK){
+                sensorsColors[2] = COLOR_BLACK;
+            } else if(sensor3Colors[0] == COLOR_GREEN){
+                sensorsColors[2] = COLOR_GREEN;
+            } else if(sensor3Colors[0] == COLOR_YELLOW){
+                sensorsColors[2] = COLOR_YELLOW;
+            } else if(sensor3Colors[0] == COLOR_WHITE){
+                sensorsColors[2] = COLOR_WHITE;
+            }
+        }
+        
+    }
+    
+    private static void Read4(){
+        
+        if ((sensor1Colors[0] == sensor1Colors[1] && sensor1Colors[1] != sensor1Colors[2]) || (sensor1Colors[0] != sensor1Colors[1] && sensor1Colors[1] == sensor1Colors[2])) {
+            if (sensor1Colors[1] == COLOR_BLACK){
+                sensorsColors[0] = COLOR_BLACK;
+            } else if(sensor1Colors[1] == COLOR_GREEN){
+                sensorsColors[0] = COLOR_GREEN;
+            } else if(sensor1Colors[1] == COLOR_YELLOW){
+                sensorsColors[0] = COLOR_YELLOW;
+            } else if(sensor1Colors[1] == COLOR_WHITE){
+                sensorsColors[0] = COLOR_WHITE;
+            }
+        }
+    }
+    
+    private static void Read5(){
+        
+        if ((sensor2Colors[0] == sensor2Colors[1] && sensor2Colors[1] != sensor2Colors[2]) || (sensor2Colors[0] != sensor2Colors[1] && sensor2Colors[1] == sensor2Colors[2])) {
+            if (sensor2Colors[1] == COLOR_BLACK){
+                sensorsColors[1] = COLOR_BLACK;
+            } else if(sensor2Colors[1] == COLOR_GREEN){
+                sensorsColors[1] = COLOR_GREEN;
+            } else if(sensor2Colors[1] == COLOR_YELLOW){
+                sensorsColors[1] = COLOR_YELLOW;
+            } else if(sensor2Colors[1] == COLOR_WHITE){
+                sensorsColors[1] = COLOR_WHITE;
+            }
+        }
+    }
+    
+    private static void Read6(){
+        
+        if ((sensor3Colors[0] == sensor3Colors[1] && sensor3Colors[1] != sensor3Colors[2]) || (sensor3Colors[0] != sensor3Colors[1] && sensor3Colors[1] == sensor3Colors[2])) {
+            if (sensor3Colors[1] == COLOR_BLACK){
+                sensorsColors[2] = COLOR_BLACK;
+            } else if(sensor3Colors[1] == COLOR_GREEN){
+                sensorsColors[2] = COLOR_GREEN;
+            } else if(sensor3Colors[1] == COLOR_YELLOW){
+                sensorsColors[2] = COLOR_YELLOW;
+            } else if(sensor3Colors[1] == COLOR_WHITE){
+                sensorsColors[2] = COLOR_WHITE;
+            }
         }
     }
     
     private static void ReadColors(){
         DoRead();
-        int s1 = Sum(sensor1Buffer);
-        int s2 = Sum(sensor2Buffer);
-        int s3 = Sum(sensor3Buffer);
+        
+        for (int i = 0; i < BUFFERLENGTH ; i++){
+            sensor1Colors[i] = FindColor(sensor1Diff, sensor1Buffer[i]);
+            sensor2Colors[i] = FindColor(sensor2Diff, sensor2Buffer[i]);
+            sensor3Colors[i] = FindColor(sensor3Diff, sensor2Buffer[i]);
+        }
+        
+        Read1();
+        Read2();
+        Read3();
+//        Read4();
+//        Read5();
+//        Read6();
+        
+//        sensor1Colors[0] = ;
+//        sensor1Colors[1] = ;
+//        sensor1Colors[2] = ;
+        
+////        int s1 = Sum(sensor1Buffer);
+////        int s2 = Sum(sensor2Buffer);
+////        int s3 = Sum(sensor3Buffer);
         /*
          * Check on sensor 1
          */
@@ -200,19 +332,19 @@ public class Drive {
             //We got white
             sensorsColors[0] = COLOR_WHITE;
         }*/
-        if (s1 > sensor1Diff[2]) {
-            //We got black
-            sensorsColors[0] = COLOR_BLACK;
-        } else if (s1 > sensor1Diff[1]) {
-            //We got green
-            sensorsColors[0] = COLOR_GREEN;
-        } else if (s1 > sensor1Diff[0]){
-            //We got yellow
-            sensorsColors[0] = COLOR_YELLOW;
-        } else{
-            //We got white
-            sensorsColors[0] = COLOR_WHITE;
-        }
+////        if (s1 > sensor1Diff[2]) {
+////            //We got black
+////            sensorsColors[0] = COLOR_BLACK;
+////        } else if (s1 > sensor1Diff[1]) {
+////            //We got green
+////            sensorsColors[0] = COLOR_GREEN;
+////        } else if (s1 > sensor1Diff[0]){
+////            //We got yellow
+////            sensorsColors[0] = COLOR_YELLOW;
+////        } else{
+////            //We got white
+////            sensorsColors[0] = COLOR_WHITE;
+////        }
         
         /*
          * Check on sensor 2
@@ -230,20 +362,19 @@ public class Drive {
             //We got white
             sensorsColors[1] = COLOR_WHITE;
         }*/
-        if (s2 > sensor2Diff[2]) {
-            //We got black
-            sensorsColors[1] = COLOR_BLACK;
-        } else if (s2 > sensor2Diff[1]) {
-            //We got green
-            sensorsColors[1] = COLOR_GREEN;
-        } else if (s2 > sensor2Diff[0]){
-            //We got yellow
-            sensorsColors[1] = COLOR_YELLOW;
-        } else{
-            //We got white
-            sensorsColors[1] = COLOR_WHITE;
-        }
-        
+////        if (s2 > sensor2Diff[2]) {
+////            //We got black
+////            sensorsColors[1] = COLOR_BLACK;
+////        } else if (s2 > sensor2Diff[1]) {
+////            //We got green
+////            sensorsColors[1] = COLOR_GREEN;
+////        } else if (s2 > sensor2Diff[0]){
+////            //We got yellow
+////            sensorsColors[1] = COLOR_YELLOW;
+////        } else{
+////            //We got white
+////            sensorsColors[1] = COLOR_WHITE;
+////        }
         
         /*
          * Check on sensor 3
@@ -261,19 +392,19 @@ public class Drive {
             //We got white
             sensorsColors[2] = COLOR_WHITE;
         }*/
-        if (s3 > sensor3Diff[2]) {
-            //We got black
-            sensorsColors[2] = COLOR_BLACK;
-        } else if (s3 > sensor3Diff[1]) {
-            //We got green
-            sensorsColors[2] = COLOR_GREEN;
-        } else if (s3 > sensor3Diff[0]){
-            //We got yellow
-            sensorsColors[2] = COLOR_YELLOW;
-        } else{
-            //We got white
-            sensorsColors[2] = COLOR_WHITE;
-        }
+////        if (s3 > sensor3Diff[2]) {
+////            //We got black
+////            sensorsColors[2] = COLOR_BLACK;
+////        } else if (s3 > sensor3Diff[1]) {
+////            //We got green
+////            sensorsColors[2] = COLOR_GREEN;
+////        } else if (s3 > sensor3Diff[0]){
+////            //We got yellow
+////            sensorsColors[2] = COLOR_YELLOW;
+////        } else{
+////            //We got white
+////            sensorsColors[2] = COLOR_WHITE;
+////        }
         
         //LCD.showNumber(sensorsColors[0] * 100 + sensorsColors[1] * 10 + sensorsColors[2]);
     }
@@ -304,29 +435,33 @@ public class Drive {
         return tempReturnReturn;*/
     }
     
-    private static int Sum(int[] numbers){
-        int sum = 0;
-        for (int i = 0; i < numbers.length; i++) {
-            sum += numbers[i];
-        }
-        return sum;
-    }
+//    private static int Sum(int[] numbers){
+//        int sum = 0;
+//        for (int i = 0; i < numbers.length; i++) {
+//            sum += numbers[i];
+//        }
+//        return sum;
+//    }
     
     public void TurnLeft90() {
         boolean driving = true;
         int step = 0;
+        LCD.showNumber(9);
         while(driving){
             int value = ReadBlack();
             if(step == 0){
+                LCD.showNumber(0);
                 step = 1;
                 Movement.sharpLeft();
             } else if (step == 1) {
+                    LCD.showNumber(1);
                 if (value == 4 || value == 6) { // 100 110
                     Movement.stop();
                     step = 2;
                     Movement.sharpLeft();
                 }
             } else if(step == 2){
+                    LCD.showNumber(2);
                 if (value == 0 || value == 2) { // 000 010
                     try {
                         Thread.sleep(100);

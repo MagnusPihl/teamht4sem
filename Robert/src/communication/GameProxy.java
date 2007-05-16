@@ -93,9 +93,7 @@ public class GameProxy {
         }
     }
     
-    private void UpdateAddressSegments()
-    {
-        //SENSOR_0_VIEW
+    private void UpdateAddressSegments() {
         LCD.clearSegment(Segment.SENSOR_1_ACTIVE);
         LCD.clearSegment(Segment.SENSOR_2_ACTIVE);
         LCD.clearSegment(Segment.SENSOR_3_ACTIVE);
@@ -120,13 +118,13 @@ public class GameProxy {
     
     public void run(){
         while(true){
-            LCD.showNumber(command);
             this.getcommand();
             if(command == GameCommands.FORWARD){
                 this.stopThread();
 //                ride.Forward(directions);
                 ride.run(directions,command);
                 this.startThread();
+                TextLCD.print("Move");
                 this.sendMoveDone(GameCommands.MOVE_DONE);
 //              ******************************************
             }else if(command == GameCommands.TURN_LEFT || command == (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER)){
@@ -215,6 +213,14 @@ public class GameProxy {
                 
             }
         }
+        LCD.clearSegment(Segment.MOTOR_B_FWD);
+        LCD.clearSegment(Segment.MOTOR_B_REV);
+        LCD.clearSegment(Segment.MOTOR_B_VIEW);
+        LCD.setSegment(Segment.MOTOR_A_FWD);
+        LCD.setSegment(Segment.MOTOR_A_REV);
+        LCD.setSegment(Segment.MOTOR_A_VIEW);
+        LCD.refresh();
+        LCD.showNumber(command + 100);
         if(command <= (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER) && command > GameCommands.NOP){
             while(directions == -1){
                 try {
@@ -222,6 +228,13 @@ public class GameProxy {
                 } catch (IOException ex) {
                 }
             }
+            LCD.clearSegment(Segment.MOTOR_A_FWD);
+            LCD.clearSegment(Segment.MOTOR_A_REV);
+            LCD.clearSegment(Segment.MOTOR_A_VIEW);
+            LCD.setSegment(Segment.MOTOR_B_FWD);
+            LCD.setSegment(Segment.MOTOR_B_REV);
+            LCD.setSegment(Segment.MOTOR_B_VIEW);
+            LCD.refresh();
             LCD.showNumber(directions + 700);
         }
         //TextLCD.print("step3");
@@ -257,7 +270,7 @@ public class GameProxy {
     public static void main(String[] args) throws InterruptedException, IOException{
         GameProxy noget = new GameProxy();
     }
-
+    
     private void discover() {
         if(h < 4){
             directions = (GameCommands.FORWARD | GameCommands.TURN_NUMBER);
