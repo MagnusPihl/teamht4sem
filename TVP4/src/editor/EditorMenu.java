@@ -235,5 +235,5 @@ public class EditorMenu extends JPanel {
         } catch (Exception e) {
             return 0;
         }
-    }
+    }    
 }

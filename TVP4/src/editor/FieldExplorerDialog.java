@@ -14,6 +14,8 @@
  * LMK @ 11. april 2007 (v 1.0)
  * __________ Changes ____________
  *
+ * Opdater direction i entityrenderer.
+ * Tilføj er du nu sikker på du vil stoppe dialog før man stopper med at indlæse.
  */
 
 package editor;
@@ -33,6 +35,7 @@ public class FieldExplorerDialog extends JFrame implements ActionListener {
     private JScrollPane scrollPane;
     private FieldExplorer explorer;
     private Thread explorerThread;
+    private JComboBox portList;
     
     /** Creates a new instance of FieldExplorerDialog */
     public FieldExplorerDialog() {
@@ -45,6 +48,9 @@ public class FieldExplorerDialog extends JFrame implements ActionListener {
         this.scrollPane = new JScrollPane(this.log, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);        
         pane.add(this.scrollPane, BorderLayout.CENTER);
         
+        buttonPane.add(new JLabel("Port:"));
+        this.portList = new JComboBox(new Object[] {"USB", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7"});
+        buttonPane.add(this.portList);
         this.startBtn = new JButton("Scan");
         this.startBtn.setMnemonic('S');
         this.startBtn.addActionListener(this);
@@ -72,16 +78,20 @@ public class FieldExplorerDialog extends JFrame implements ActionListener {
         this.startBtn.setEnabled(true);
     }
     
-    public void explorationDone() {        
+    public void explorationDone() {    
+        this.portList.setEnabled(true);
         this.startBtn.setEnabled(true);
     }
     
     public void actionPerformed(ActionEvent evt) {             
         if (evt.getActionCommand().equals("Scan")) {
+            this.portList.setEnabled(false);
             this.startBtn.setEnabled(false);
+            this.explorer.setPort((String)this.portList.getSelectedItem());
             this.explorerThread = new Thread(this.explorer);
             this.explorerThread.start();
         } else if (evt.getActionCommand().equals("Cancel")) {
+            this.portList.setEnabled(true);
             this.setVisible(false);
             this.explorer.stop();
         }
@@ -89,6 +99,7 @@ public class FieldExplorerDialog extends JFrame implements ActionListener {
     
     public void addToLog(String text) {
         this.log.setText(this.log.getText() + '\n' + text);        
+        this.scrollPane.getVerticalScrollBar().setValue(this.scrollPane.getVerticalScrollBar().getMaximum());
     }
     
     public void clearLog() {
