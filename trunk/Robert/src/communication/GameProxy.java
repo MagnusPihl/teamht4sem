@@ -33,8 +33,8 @@ import robot.LowRider;
 
 
 public class GameProxy {
-    Drive ride;
-//    LowRider ride = new LowRider();
+//    Drive ride;
+    LowRider ride = new LowRider();
     LLCSocket link = new LLCSocket();
     NetworkSocket net;
     TransportSocket socket;
@@ -42,18 +42,13 @@ public class GameProxy {
     OutputStream out;
     private int command = -1;
     private int directions = -1;
-    private int sensor1 = -1;
-    private int sensor2 = -1;
-    private int sensor3 = -1;
-    private int maxGreen = -1;
-    private int minGreen = -1;
-    private int maxBlack = -1;
-    private int minBlack = -1;
     private int address = 0;
     private boolean addressDone = false;
     private boolean[] btnRUNbuffer  = new boolean[3];
     private boolean[] btnPGRMbuffer = new boolean[3];
     private byte btnBufferIndex = 0;
+
+    private int h =0;
     
     /**
      * Creates a new instance of GameProxy
@@ -120,7 +115,7 @@ public class GameProxy {
         in = socket.getInputStream();
         out = socket.getOutputStream();
         socket.setActive(true);
-        ride = new Drive(address);
+//        ride = new Drive(address);
         this.run();
     }
     
@@ -130,8 +125,8 @@ public class GameProxy {
             this.getcommand();
             if(command == GameCommands.FORWARD){
                 this.stopThread();
-                ride.Forward(directions);
-                //ride.run(directions,command);
+//                ride.Forward(directions);
+                ride.run(directions,command);
                 this.startThread();
                 this.sendMoveDone(GameCommands.MOVE_DONE);
 //              ******************************************
@@ -143,8 +138,8 @@ public class GameProxy {
                 }else{
                     ride.TurnLeft90();
                 }
-                ride.Forward(directions);
-                //ride.run(directions,command);
+//                ride.Forward(directions);
+                ride.run(directions,command);
                 this.startThread();
                 this.sendMoveDone(GameCommands.MOVE_DONE);
 //              ******************************************
@@ -156,8 +151,8 @@ public class GameProxy {
                 }else{
                     ride.TurnRight90();
                 }
-                ride.Forward(directions);
-                //ride.run(directions,command);
+//                ride.Forward(directions);
+                ride.run(directions,command);
                 this.startThread();
                 this.sendMoveDone(GameCommands.MOVE_DONE);
 //              ******************************************
@@ -230,65 +225,6 @@ public class GameProxy {
             LCD.showNumber(directions + 700);
         }
         //TextLCD.print("step3");
-        // lav evt. noget timeout here.
-        if(command == GameCommands.CALIBRATE){
-            sensor1 = -1;
-            sensor2 = -1;
-            sensor3 = -1;
-            maxGreen = -1;
-            minGreen = -1;
-            maxBlack = -1;
-            minBlack = -1;
-            while(sensor1 == -1){
-                try {
-                    sensor1 = in.read();
-                } catch (IOException ex) {
-                    
-                }
-            }
-            while(sensor2 == -1){
-                try {
-                    sensor2 = in.read();
-                } catch (IOException ex) {
-                    
-                }
-            }
-            while(sensor3 == -1){
-                try {
-                    sensor3 = in.read();
-                } catch (IOException ex) {
-                    
-                }
-            }
-            while(minGreen == -1){
-                try {
-                    minGreen = in.read();
-                } catch (IOException ex) {
-                    
-                }
-            }
-            while(maxGreen == -1){
-                try {
-                    maxGreen = in.read();
-                } catch (IOException ex) {
-                    
-                }
-            }
-            while(minBlack == -1){
-                try {
-                    minBlack = in.read();
-                } catch (IOException ex) {
-                    
-                }
-            }
-            while(maxBlack == -1){
-                try {
-                    maxBlack = in.read();
-                } catch (IOException ex) {
-                    
-                }
-            }
-        }
     }
     
     public void stopThread(){
@@ -323,6 +259,12 @@ public class GameProxy {
     }
 
     private void discover() {
-        directions = 28;
+        if(h < 4){
+            directions = (GameCommands.FORWARD | GameCommands.TURN_NUMBER);
+            h++;
+        }else{
+            h = 0;
+            directions = (GameCommands.FORWARD | GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT);;
+        }
     }
 }
