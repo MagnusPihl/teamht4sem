@@ -47,9 +47,11 @@ public class EditorPanel extends JPanel {
     protected Brush brush;
     private Font font;
     private int ID;
+    private boolean editable;
     
     /** Creates a new instance of EditorPanel */
     public EditorPanel(Field field) {        
+        this.editable = true;
         this.field = field;
         this.tileSet = TileSet.getInstance();
         this.gridColor = Color.LIGHT_GRAY;
@@ -69,10 +71,29 @@ public class EditorPanel extends JPanel {
             super.removeMouseListener(this.brush);
             super.removeMouseMotionListener(this.brush);
         }
-        super.addMouseListener(brush);
-        super.addMouseMotionListener(brush);    
-        this.brush = brush;
-        
+        if (this.editable) {
+            super.addMouseListener(brush);
+            super.addMouseMotionListener(brush);                
+        }
+        this.brush = brush;        
+    }
+    
+    /**
+     * If editable is set to true the EditorPanel will be editable by brushes
+     * if false brushes will be ignored. The last used brush will be remembered
+     * so you don't need to reestablished.
+     *
+     * @param boolean.
+     */
+    public void setEditable(boolean editable) {        
+        if (!this.editable && editable) {            
+            super.addMouseListener(this.brush);
+            super.addMouseMotionListener(this.brush);
+        } else if (this.editable && !editable) {
+            super.removeMouseListener(this.brush);
+            super.removeMouseMotionListener(this.brush);
+        }
+        this.editable = editable;
     }
     
     /**
