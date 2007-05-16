@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-  <!ELEMENT topics   (topic)>
-  <!ELEMENT id       (#PCDATA)>
-  <!ELEMENT name     (#PCDATA)>
-  <!ELEMENT topic    (question+)>  
-  	<!ATTLIST topic name CDATA #REQUIRED>	
-  	<!--<!ATTLIST topic name CDATA #REQUIRED>-->
-  <!ELEMENT question (name)>
-  <!ELEMENT answer (#PCDATA)>
