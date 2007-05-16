@@ -32,8 +32,8 @@ import robot.LowRider;
 
 
 public class GameProxy {
-//    Drive ride;
-    LowRider ride = new LowRider();
+    Drive ride;
+    //LowRider ride = new LowRider();
     LLCSocket link = new LLCSocket();
     NetworkSocket net;
     TransportSocket socket;
@@ -112,7 +112,7 @@ public class GameProxy {
         in = socket.getInputStream();
         out = socket.getOutputStream();
         socket.setActive(true);
-//        ride = new Drive(address);
+        ride = new Drive(address);
         this.run();
     }
     
@@ -121,8 +121,8 @@ public class GameProxy {
             this.getcommand();
             if(command == GameCommands.FORWARD){
                 this.stopThread();
-//                ride.Forward(directions);
-                ride.run(directions,command);
+                ride.Forward(directions);
+                //ride.run(directions,command);
                 this.startThread();
                 TextLCD.print("Move");
                 this.sendMoveDone(GameCommands.MOVE_DONE);
@@ -135,8 +135,8 @@ public class GameProxy {
                 }else{
                     ride.TurnLeft90();
                 }
-//                ride.Forward(directions);
-                ride.run(directions,command);
+                ride.Forward(directions);
+                //ride.run(directions,command);
                 this.startThread();
                 this.sendMoveDone(GameCommands.MOVE_DONE);
 //              ******************************************
@@ -148,8 +148,8 @@ public class GameProxy {
                 }else{
                     ride.TurnRight90();
                 }
-//                ride.Forward(directions);
-                ride.run(directions,command);
+                ride.Forward(directions);
+                //ride.run(directions,command);
                 this.startThread();
                 this.sendMoveDone(GameCommands.MOVE_DONE);
 //              ******************************************
