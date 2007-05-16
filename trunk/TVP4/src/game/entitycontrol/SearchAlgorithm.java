@@ -17,6 +17,7 @@
 package game.entitycontrol;
 
 import field.*;
+import java.util.Map;
 
 /**
  *
@@ -33,5 +34,5 @@ public interface SearchAlgorithm {
      * Get an array of directions to move, to get from A to B.
      * Moves are in ascending order.
      */
-    public int[] fullSearch(Node from, Node to);
+    public Map fullSearch(Node from, Node to);
 }
