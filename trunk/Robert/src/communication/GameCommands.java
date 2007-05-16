@@ -31,10 +31,10 @@ public class GameCommands {
     public final static byte FORWARD = 0x04;
     public final static byte TURN_NUMBER = 0x08;
     //***
-    public final static byte MOVE_UP_DISCOVER = 0x41;
-    public final static byte MOVE_RIGHT_DISCOVER = 0x42;
-    public final static byte MOVE_DOWN_DISCOVER = 0x43;
-    public final static byte MOVE_LEFT_DISCOVER = 0x44;
+//    public final static byte MOVE_UP_DISCOVER = 0x41;
+//    public final static byte MOVE_RIGHT_DISCOVER = 0x42;
+//    public final static byte MOVE_DOWN_DISCOVER = 0x43;
+//    public final static byte MOVE_LEFT_DISCOVER = 0x44;
     public final static byte DISCOVER = 0x40;
     public final static byte MOVE_DONE = 0x10;
     public final static byte LIGHT_ON = 0x11;
