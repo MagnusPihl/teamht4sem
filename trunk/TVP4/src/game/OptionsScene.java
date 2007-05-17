@@ -226,10 +226,20 @@ public class OptionsScene implements Scene
     {
         if(this.state == this.STATE_MAIN)
         {
-            if(this.up.isPressed() && this.cursor>0)
-                this.cursor--;
-            if(this.down.isPressed() && this.cursor<this.menuItemsStr.length-1)
-                this.cursor++;
+            if(this.up.isPressed())
+            {
+                if(this.cursor>0)
+                    this.cursor--;
+                else
+                    this.cursor = this.menuItemsStr.length-1;
+            }
+            if(this.down.isPressed())
+            {
+                if(this.cursor<this.menuItemsStr.length-1)
+                    this.cursor++;
+                else
+                    this.cursor = 0;
+            }
             if(this.left.isPressed() && this.option[this.cursor]>0)
                 this.option[this.cursor]--;
             if(this.right.isPressed() && this.menuOptions[this.cursor][this.option[this.cursor]+1] != null)
