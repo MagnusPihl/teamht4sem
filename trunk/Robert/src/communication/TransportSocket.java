@@ -6,11 +6,13 @@
  * Company: HT++
  *
  * @author Magnus Hemmer Pihl
- * @version 1.4
+ * @version 1.5
  *
  *
  * ******VERSION HISTORY******
- *
+ * LMK @ 15. maj 2007 (v 1.6)
+ * Added random write delay
+ * 
  * Magnus Hemmer Pihl @ 27. april 2007 (v 1.5)
  * Removed timeout from read-operation. Will now fail immediately if no data is available.
  *
@@ -41,6 +43,7 @@ package communication;
 import java.io.*;
 import josx.platform.rcx.LCD;
 import josx.util.*;
+import java.util.Random;
 
 public class TransportSocket {
     private TransportInputStream in;
@@ -49,6 +52,7 @@ public class TransportSocket {
     private TransportInputThread inputThread;
     private int bufferIndex;
     private byte[] readBuffer;
+    public static communication.Random random = new communication.Random();
     
     public static final int DATA = 0;
     public static final int RECEIPT = 1;
@@ -57,7 +61,7 @@ public class TransportSocket {
     
     public static final int INPUT_BUFFER_SIZE = 20;
     //Time to wait for acknowledge before retrying to write data. Should always be lower than WRITE_TIMEOUT.
-    public static final int ACKNOWLEDGE_TIMEOUT = 100;
+    public static final int ACKNOWLEDGE_TIMEOUT = 150;
     
     /** Creates a new instance of TransportSocket */
     public TransportSocket(ClearableInputStream in, ClearableOutputStream out) {
@@ -123,6 +127,7 @@ public class TransportSocket {
                             do {
                                 this.data = this.in.read();
                             } while (this.data == -1);
+                            //(System.out.println(this.data);
                         } else {
                             Thread.yield();
                             continue;
@@ -228,6 +233,7 @@ public class TransportSocket {
          * @param byte to write to underlying layers.
          */
         public void write(int b) throws IOException {
+            //System.out.println("Sending: " + Integer.toBinaryString(b));
             this.sequence++;    
             if (this.sequence == 127) {
                 this.sequence = 0;
@@ -247,13 +253,17 @@ public class TransportSocket {
                         this.timeout = (int)System.currentTimeMillis() + TransportSocket.ACKNOWLEDGE_TIMEOUT;
                     }
                     
-                    Thread.yield();
+                    Thread.sleep(random.nextInt()&0x7F);
+                    //Thread.yield();
                 }
             } catch (Exception e) {
                 //e.printStackTrace();
             }
         }
         
+        /**
+         * Clear buffer
+         */
         public void clear() {
             this.out.clear();
         }

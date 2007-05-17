@@ -82,7 +82,7 @@ public class GameProxy {
                 Sound.twoBeeps();
                 ++address; // we add one, so the address will be between 1 and 3
                 addressDone = true;
-                TextLCD.print("    ");
+                TextLCD.print("HT++ ");
                 break;
             }
             try {
@@ -125,7 +125,7 @@ public class GameProxy {
 //                ride.Forward(directions);
                 ride.run(directions,command);
                 this.startCommunication();
-                TextLCD.print("Move");
+//                TextLCD.print("Move");
                 this.sendMoveDone(GameCommands.MOVE_DONE);
 //              ******************************************
             }else if(command == GameCommands.TURN_LEFT || command == (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER)){
@@ -206,7 +206,7 @@ public class GameProxy {
     }
     
     private void getcommand(){
-        TextLCD.print("recvB");
+//        TextLCD.print("recvB");
         command = -1;
         directions = -1;
         while(command == -1){
@@ -216,32 +216,32 @@ public class GameProxy {
                 
             }
         }
-        LCD.clearSegment(Segment.MOTOR_B_FWD);
-        LCD.clearSegment(Segment.MOTOR_B_REV);
-        LCD.clearSegment(Segment.MOTOR_B_VIEW);
-        LCD.setSegment(Segment.MOTOR_A_FWD);
-        LCD.setSegment(Segment.MOTOR_A_REV);
-        LCD.setSegment(Segment.MOTOR_A_VIEW);
-        LCD.refresh();
-        LCD.showNumber(command + 100);
+//        LCD.clearSegment(Segment.MOTOR_B_FWD);
+//        LCD.clearSegment(Segment.MOTOR_B_REV);
+//        LCD.clearSegment(Segment.MOTOR_B_VIEW);
+//        LCD.setSegment(Segment.MOTOR_A_FWD);
+//        LCD.setSegment(Segment.MOTOR_A_REV);
+//        LCD.setSegment(Segment.MOTOR_A_VIEW);
+//        LCD.refresh();
+//        LCD.showNumber(command + 100);
         if(command <= (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER) && command > GameCommands.NOP){
-            TextLCD.print("Gdir");
+//            TextLCD.print("Gdir");
             while(directions == -1){
                 try {
                     directions = in.read();
                 } catch (IOException ex) {
                 }
             }
-            LCD.clearSegment(Segment.MOTOR_A_FWD);
-            LCD.clearSegment(Segment.MOTOR_A_REV);
-            LCD.clearSegment(Segment.MOTOR_A_VIEW);
-            LCD.setSegment(Segment.MOTOR_B_FWD);
-            LCD.setSegment(Segment.MOTOR_B_REV);
-            LCD.setSegment(Segment.MOTOR_B_VIEW);
-            LCD.refresh();
-            LCD.showNumber(directions + 700);
+//            LCD.clearSegment(Segment.MOTOR_A_FWD);
+//            LCD.clearSegment(Segment.MOTOR_A_REV);
+//            LCD.clearSegment(Segment.MOTOR_A_VIEW);
+//            LCD.setSegment(Segment.MOTOR_B_FWD);
+//            LCD.setSegment(Segment.MOTOR_B_REV);
+//            LCD.setSegment(Segment.MOTOR_B_VIEW);
+//            LCD.refresh();
+//            LCD.showNumber(directions + 700);
         }
-        TextLCD.print("recvD");
+//        TextLCD.print("recvD");
     }
     
     public void pauseCommunication(){
@@ -253,7 +253,7 @@ public class GameProxy {
     }
     
     public void sendMoveDone(int move){
-        TextLCD.print("Send");
+//        TextLCD.print("Send");
         try {
             out.write(move);
         } catch (IOException ex) {
@@ -262,45 +262,40 @@ public class GameProxy {
         Sound.beep();
     }
     
-    private void lightOn() {
-        Motor.B.setPower(7);
-        Motor.B.forward();
-    }
-    
-    private void lightOff() {
-        Motor.B.stop();
-    }
-    
     public static void main(String[] args) throws InterruptedException, IOException{
         GameProxy noget = new GameProxy();
     }
     
     private void discover() {
-//        try {
-//            Thread.sleep(1500);
-//        } catch (InterruptedException ex) {
-//            ex.printStackTrace();
-//        }
         if(h < 4){
             directions = (GameCommands.FORWARD | GameCommands.TURN_NUMBER);
             h++;
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException ex) {
+            }
         }else{
-//            h = (int)(Math.random()*120);
-//            if(h < 20 ){
-                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT);
-//            }else if(h < 40 && h > 20){
-//                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_LEFT);
-//            }else if(h < 60 && h > 40){
-//                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT | GameCommands.TURN_LEFT);
-//            }else if(h < 80 && h > 60){
-//                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT | GameCommands.TURN_LEFT | GameCommands.FORWARD);
-//            }else if(h < 100 && h > 80){
-//                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT | GameCommands.FORWARD);
-//            }else if(h < 120 && h > 100){
-//                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_LEFT | GameCommands.FORWARD);
-//            }else{
-//                directions = (GameCommands.FORWARD | GameCommands.TURN_NUMBER);
-//            }
+            h = socket.random.nextInt()&0x7F;
+            LCD.showNumber(h);
+            if(h < 20 ){
+            directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT);
+            }else if(h < 40 && h > 20){
+                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_LEFT);
+            }else if((h < 60 && h > 40) || (h < 120 && h > 100)){
+                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT | GameCommands.TURN_LEFT);
+            }else if(h < 70 && h > 60){
+                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT | GameCommands.TURN_LEFT | GameCommands.FORWARD);
+            }else if(h < 80 && h > 70){
+                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT | GameCommands.FORWARD);
+            }else if(h < 90 && h > 80){
+                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_LEFT | GameCommands.FORWARD);
+            }else{
+                directions = (GameCommands.FORWARD | GameCommands.TURN_NUMBER);
+            }
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException ex) {
+            }
             h = 0;
         }
     }
