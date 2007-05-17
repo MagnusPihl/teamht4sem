@@ -178,7 +178,7 @@ public class FieldExplorer implements Runnable {
     
     private void addDirections() {
         this.availableDirections = this.robot.getAvaibleDirections();
-        System.out.println("Directions: " + Integer.toBinaryString(this.availableDirections));
+        //System.out.println("Directions: " + Integer.toBinaryString(this.availableDirections));
         if (this.availableDirections != Node.INVALID_DIRECTION) {
             field.Field field = LevelEditor.getInstance().getEditorPanel().getField();
             Node addedNode = null;
@@ -189,21 +189,21 @@ public class FieldExplorer implements Runnable {
                 }
                 addedNode = field.addNodeAt(position.x-1, position.y);
                 if (addedNode != null) {
-                    System.out.println("Adding node - LEFT");
+                    this.dialog.addToLog("Found node - UP");
                     this.open.push(addedNode);
                 }
             }
             if ((this.availableDirections & GameCommands.DOWN) == GameCommands.DOWN) {
                 addedNode = field.addNodeAt(position.x, position.y+1);
                 if (addedNode != null) {
-                    System.out.println("Adding node - DOWN");
+                    this.dialog.addToLog("Found node - DOWN");
                     this.open.push(addedNode);
                 }
             }
             if ((this.availableDirections & GameCommands.RIGHT) == GameCommands.RIGHT) {
                 addedNode = field.addNodeAt(position.x+1, position.y);
                 if (addedNode != null) {
-                    System.out.println("Adding node - RIGHT");
+                    this.dialog.addToLog("Found node - RIGHT");
                     this.open.push(addedNode);
                 }
             }
@@ -213,7 +213,7 @@ public class FieldExplorer implements Runnable {
                 }
                 addedNode = field.addNodeAt(position.x, position.y-1);
                 if (addedNode != null) {
-                    System.out.println("Adding node - UP");
+                    this.dialog.addToLog("Found node - UP");
                     this.open.push(addedNode);
                 }
             }
