@@ -106,6 +106,20 @@ public class SoundManager{
         }
     }
     
+    public void startPlayers() { 
+        for(Iterator iter = this.players.iterator(); iter.hasNext();){
+            Sound sound = (Sound) iter.next();
+            sound.startSound();
+        }
+    }
+    
+    public void stopPlayers() { 
+        for(Iterator iter = this.players.iterator(); iter.hasNext();){
+            Sound sound = (Sound) iter.next();
+            sound.stopSound();
+        }
+    }
+    
     public void runSound(int i, boolean repeat){
         try{
             if (this.players.size() >= i) {
