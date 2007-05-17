@@ -39,7 +39,7 @@ import javax.swing.JOptionPane;
 public class Sound extends Thread implements ControllerListener{
     
     private Player player;
-    private boolean isPaused, isBackground;
+    private boolean isPaused, isBackground, isRunning;
     /** Creates a new instance of SongPlayer */
     public Sound(String fileName, boolean isBackground) {
         isPaused = false;
@@ -69,13 +69,14 @@ public class Sound extends Thread implements ControllerListener{
     }
     
     public void run(){
+        isRunning = true;
         startSound();
     }
     
     public void removePreviousPlayer() { 
         if (player == null) 
             return; 
-
+        isRunning = false;
         player.close();
     }
     
@@ -85,16 +86,20 @@ public class Sound extends Thread implements ControllerListener{
         player.start();
     }
     
+    public void stopSound(){
+        isRunning = false;
+        this.player.stop();
+    }
+    
     public void pause(){
-        Time time = this.player.getMediaTime();
-        if(this.isPaused == false){
-            this.player.stop();
-            time = this.player.getMediaTime();
-            this.isPaused = true;
-        } else{
-            this.player.start();
-            time = this.player.getMediaTime();
-            this.isPaused = false;
+        if(isRunning == true){
+            if(this.isPaused == false){
+                this.player.stop();
+                this.isPaused = true;
+            } else{
+                this.player.start();
+                this.isPaused = false;
+            }
         }
     }
     
@@ -122,7 +127,7 @@ public class Sound extends Thread implements ControllerListener{
 	} else if (event instanceof EndOfMediaEvent) {
 	    // We've reached the end of the media; rewind and
 	    // start over
-            if(isBackground == true){
+            if(this.isBackground == true && this.isPaused == false){
                 player.setMediaTime(new Time(0));
                 player.start();
             }
