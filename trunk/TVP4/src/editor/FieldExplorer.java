@@ -41,7 +41,7 @@ public class FieldExplorer implements Runnable {
     private SearchAlgorithm algorithm;
     private Semaphore synchronizer;
     private Set closed;
-    private LinkedList open;
+    private Stack open;
     private int[] moves;
     private String port;
     
@@ -51,7 +51,7 @@ public class FieldExplorer implements Runnable {
         this.algorithm = new BreadthFirstAlgorithm();
         this.synchronizer = new Semaphore(1);
         this.robot = new RobotProxy(1, this.synchronizer);
-        this.open = new LinkedList();
+        this.open = new Stack();
         this.closed = new TreeSet();
         this.port = "USB";
     }
@@ -108,10 +108,10 @@ public class FieldExplorer implements Runnable {
             Node tempNode, lastNode;
             int move;
             
-            while(!scanDone && this.open.size() != 0) {
+            while(!scanDone && !this.open.empty()) {
                 System.out.println("Hahahamama");
                 if (this.open.size() != 0) {
-                    this.nextNode = (Node)this.open.remove(0);
+                    this.nextNode = (Node)this.open.pop();
                     this.closed.add(this.currentNode);
                     parents = this.algorithm.fullSearch(this.currentNode, this.nextNode);
                             
@@ -191,21 +191,21 @@ public class FieldExplorer implements Runnable {
                 addedNode = field.addNodeAt(position.x-1, position.y);
                 if (addedNode != null) {
                     System.out.println("Adding node - LEFT");
-                    this.open.add(0,addedNode);
+                    this.open.push(addedNode);
                 }
             }
             if ((this.availableDirections & GameCommands.DOWN) == GameCommands.DOWN) {
                 addedNode = field.addNodeAt(position.x, position.y+1);
                 if (addedNode != null) {
                     System.out.println("Adding node - DOWN");
-                    this.open.add(0,addedNode);
+                    this.open.push(addedNode);
                 }
             }
             if ((this.availableDirections & GameCommands.RIGHT) == GameCommands.RIGHT) {
                 addedNode = field.addNodeAt(position.x+1, position.y);
                 if (addedNode != null) {
                     System.out.println("Adding node - RIGHT");
-                    this.open.add(0,addedNode);
+                    this.open.push(addedNode);
                 }
             }
             if ((this.availableDirections & GameCommands.UP) == GameCommands.UP) {
@@ -215,7 +215,7 @@ public class FieldExplorer implements Runnable {
                 addedNode = field.addNodeAt(position.x, position.y-1);
                 if (addedNode != null) {
                     System.out.println("Adding node - UP");
-                    this.open.add(0,addedNode);
+                    this.open.push(addedNode);
                 }
             }
         }
