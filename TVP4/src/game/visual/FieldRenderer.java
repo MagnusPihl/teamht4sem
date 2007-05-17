@@ -129,7 +129,7 @@ public class FieldRenderer {
         for (Iterator i = this.field.getNodeList().iterator(); i.hasNext();) {                        
             current = (Node)(i.next());
             
-            if (!current.pointsTaken()) {            
+            if ((!current.pointsTaken())&&(current.getPoints() != 0)) {            
                 g.drawImage(
                     TileSet.getInstance().getPointsTile(current.getPoints()), 
                     current.getPosition().x * tileSize + offsetX, 
@@ -168,7 +168,7 @@ public class FieldRenderer {
                 node.getPosition().x * tileSize, 
                 node.getPosition().y * tileSize, 
                 null);        
-        if (!node.pointsTaken()) {            
+        if ((!node.pointsTaken())&&(node.getPoints() != 0)) {            
             g.drawImage(
                 tileset.getPointsTile(node.getPoints()), 
                 node.getPosition().x * tileSize, 
