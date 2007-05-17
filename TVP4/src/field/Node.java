@@ -437,7 +437,8 @@ public class Node implements Serializable, Comparable {
             } else if ((this.position.x - node.position.x) > 0) {
                 result -= 4;
             }            
-        }
+            return result;
+        }        
         return -1;
     }
     
@@ -471,5 +472,17 @@ public class Node implements Serializable, Comparable {
             case RIGHT: return RIGHT_BIN;
         }
         return INVALID_DIRECTION;
+    }
+    
+    public boolean equals(Object o) {
+        if (o instanceof Node) {
+            Node n = (Node)o;
+            if (!this.position.equals(n.position)) {
+                return false;
+            }
+            return super.equals(o);
+        } else {
+            return false;
+        }
     }
 }

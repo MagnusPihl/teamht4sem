@@ -108,7 +108,6 @@ public class FieldExplorer implements Runnable {
             int move;
             
             while(!scanDone && !this.open.empty()) {
-                System.out.println("Hahahamama");
                 if (this.open.size() != 0) {
                     this.nextNode = (Node)this.open.pop();
                     this.closed.add(this.currentNode);
