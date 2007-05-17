@@ -36,7 +36,7 @@ public class SkinFileFilter implements FileFilter {
             String path = file.getAbsolutePath() + file.separator;
             
             for(int i = 0; i < TileSet.ENTITY_COUNT; i++) {
-                for(int j = 0; j < TileSet.FRAME_COUNT; j++) {
+                for(int j = 0; j < 4; j++) {
                     if (!new File(path + i +"_"+ j + "_0.png").isFile()) {
                         return false;
                     }
