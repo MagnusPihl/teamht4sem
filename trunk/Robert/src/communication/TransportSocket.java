@@ -61,7 +61,7 @@ public class TransportSocket {
     
     public static final int INPUT_BUFFER_SIZE = 20;
     //Time to wait for acknowledge before retrying to write data. Should always be lower than WRITE_TIMEOUT.
-    public static final int ACKNOWLEDGE_TIMEOUT = 150;
+    public static final int ACKNOWLEDGE_TIMEOUT = 300;
     
     /** Creates a new instance of TransportSocket */
     public TransportSocket(ClearableInputStream in, ClearableOutputStream out) {
@@ -253,7 +253,7 @@ public class TransportSocket {
                         this.timeout = (int)System.currentTimeMillis() + TransportSocket.ACKNOWLEDGE_TIMEOUT;
                     }
                     
-                    Thread.sleep(random.nextInt()&0x7F);
+                    Thread.sleep(random.nextInt()&0x7F + 20);
                     //Thread.yield();
                 }
             } catch (Exception e) {
