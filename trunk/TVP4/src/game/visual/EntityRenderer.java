@@ -105,7 +105,7 @@ public class EntityRenderer
         
         if((System.currentTimeMillis() - this.lastUpdate) > this.animationDelay)// && entity.isMoving())
         {
-            this.frameCounter = (this.frameCounter+1)%2;
+            this.frameCounter = (this.frameCounter+1)%(TileSet.getInstance().getFrameCount());
             this.lastUpdate = System.currentTimeMillis();
         }
         

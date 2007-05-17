@@ -43,8 +43,9 @@ public class TileSet
     private Image[] pointTiles;
     private Image baseTile;
     private int tileSize;
+    private int frameCount;
     
-    public static final int FRAME_COUNT = 2;
+    public static final int MAX_FRAME_COUNT = 8;
     public static final int ENTITY_COUNT = 3;
     public static final int PATH_TILE_COUNT = 16;
     public static final String SKIN_LIBRARY = (new File("skins/")).getAbsolutePath() + File.separator;
@@ -77,9 +78,10 @@ public class TileSet
      */
     public TileSet()
     {
-        this.entityTiles = new Image[ENTITY_COUNT][Node.DIRECTION_COUNT][FRAME_COUNT];
+        this.entityTiles = new Image[ENTITY_COUNT][Node.DIRECTION_COUNT][MAX_FRAME_COUNT];
         this.pathTiles = new Image[PATH_TILE_COUNT];
         this.pointTiles = new Image[2];
+        this.frameCount = 0;
     }
     
     /**
@@ -108,6 +110,7 @@ public class TileSet
      */
     public boolean loadTileSet(File file)
     {
+        this.frameCount = 0;
         try
         {
             if(file.isDirectory())
@@ -117,10 +120,14 @@ public class TileSet
                 {
                     for(int j=0; j<Node.DIRECTION_COUNT; j++)
                     {
-                        this.entityTiles[i][j][0] =
-                                (new ImageIcon(path +  i +"_"+ j + "_0.png")).getImage();
-                        this.entityTiles[i][j][1] =
-                                (new ImageIcon(path +  i +"_"+ j + "_1.png")).getImage();
+                        for(int k=0; new File(path+i+"_"+j+"_"+k+".png").isFile(); k++)
+                        {
+                            this.entityTiles[i][j][k] =
+                                    (new ImageIcon(path +  i +"_"+ j + "_"+k+".png")).getImage();
+                            if(k+1 > this.frameCount)
+                                this.frameCount = k+1;
+//                            System.out.println("K: "+this.frameCount);
+                        }
                     }
                 }
 
@@ -164,7 +171,7 @@ public class TileSet
      */
     public Image getEntityTile(int index, int direction, int frame)
     {
-        if(index < this.entityTiles.length && direction < this.entityTiles[0].length && frame < this.entityTiles[0][0].length)
+        if(index < this.entityTiles.length && direction < this.entityTiles[0].length && frame < this.frameCount)
             return this.entityTiles[index][direction][frame];
         else
             return null;
@@ -202,6 +209,11 @@ public class TileSet
     public int getTileSize()
     {
         return this.tileSize;
+    }
+    
+    public int getFrameCount()
+    {
+        return this.frameCount;
     }
     
     /**
