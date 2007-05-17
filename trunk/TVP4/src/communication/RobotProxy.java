@@ -34,8 +34,8 @@ public class RobotProxy extends Thread{
     private static TowerSocket link = new TowerSocket();
     private NetworkSocket net;// = new NetworkSocket(1,0,link.getInputStream(),link.getOutputStream());
     private TransportSocket socket;// = new TransportSocket(net.getInputStream(), net.getOutputStream());
-    protected InputStream in;// = socket.getInputStream();
-    protected OutputStream out;// = socket.getOutputStream();
+    protected ClearableInputStream in;// = socket.getInputStream();
+    protected ClearableOutputStream out;// = socket.getOutputStream();
     
     private Semaphore sema;
     private int avaibleDirections = -1;
@@ -67,6 +67,7 @@ public class RobotProxy extends Thread{
         this.lastDir = Node.UP;
         this.lastPossDir = curDirs;
         this.writeBufferIndex = 0;
+        this.socket.clear();
     }
     
     //**************Start of inner-class*********************//
@@ -225,13 +226,18 @@ public class RobotProxy extends Thread{
     }
     
     public void search(byte _direction) throws IOException{
-        byte searchDir = getRotation(_direction);
         try {
             sema.acquire();
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
-        this.write(searchDir | GameCommands.DISCOVER);
+        this.writer.setActive(true);
+        if (_direction != Node.INVALID_DIRECTION) {
+            this.write(getRotation(_direction) | GameCommands.DISCOVER);
+            this.lastDir = _direction;
+        } else {
+            this.write(GameCommands.SEARCH_NODE);
+        }
     }
     
     public int getAvaibleDirections(){
@@ -257,8 +263,12 @@ public class RobotProxy extends Thread{
     public boolean isDoneMoving(){
         try {      
             int input = this.in.read();
-            if((input&0xf0) == GameCommands.MOVE_DONE){
-                this.avaibleDirections = (input&0x0f);
+            /*if (input != -1) {
+                System.out.println(input);
+            }*/
+            if((input&0xf0) == GameCommands.MOVE_DONE) {
+                    //System.out.println(Integer.toBinaryString(input & 0x0f));
+                this.avaibleDirections = derotatePossibleDirections((byte)this.lastDir, (byte)input);
                 this.sema.release();
                 this.writer.setActive(false);
                 return true;
@@ -292,12 +302,12 @@ public class RobotProxy extends Thread{
         this.out.write(outPacket);
     }
     
-    public static void open(String port) {
+    public static void open(String port) {        
         link.open(port);
     }
     
     public static void close() {
-        link.close();
+        link.close();        
     }
     
     public void setActive(boolean isActive) {
@@ -332,6 +342,9 @@ public class RobotProxy extends Thread{
         }
     }
         
+    /**
+     * Rotate path data from 
+     */
     public static byte derotatePossibleDirections(byte nodeDir, byte dirs) {
         switch(nodeDir) {
             //turns -turn_number forward left right
