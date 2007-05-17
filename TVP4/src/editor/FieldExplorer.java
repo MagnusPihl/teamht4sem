@@ -62,7 +62,6 @@ public class FieldExplorer implements Runnable {
     
     public void run() {
         Entity pacman;
-        Random rand = new Random();
         Map parents;
         LevelEditor.getInstance().getEditorPanel().setEditable(false);
         
