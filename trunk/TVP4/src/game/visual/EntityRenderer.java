@@ -59,6 +59,8 @@ public class EntityRenderer
     
     protected Entity entity;
     
+    private int lastFrameCount; //The number of frames in the last seen entity
+    
     /**
      * Creates a new instance of EntityRenderer with a specified Entity to render.
      *
@@ -73,6 +75,8 @@ public class EntityRenderer
         this.lastPosition = entity.getPosition();
         
         this.entity = entity;
+        
+        this.lastFrameCount = -1;
     }
     
     /**
@@ -102,6 +106,12 @@ public class EntityRenderer
     {
         Point position = entity.getPosition();
         int tileSize = TileSet.getInstance().getTileSize();
+        
+        if(this.lastFrameCount != TileSet.getInstance().getFrameCount())
+        {
+            this.lastFrameCount = TileSet.getInstance().getFrameCount();
+            this.animationDelay = 500 / this.lastFrameCount;
+        }
         
         if((System.currentTimeMillis() - this.lastUpdate) > this.animationDelay)// && entity.isMoving())
         {
