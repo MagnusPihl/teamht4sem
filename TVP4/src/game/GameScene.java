@@ -257,18 +257,34 @@ public class GameScene implements Scene {
         if(field.getSize().width * TileSet.getInstance().getTileSize() > 800) {
             int pacX = field.getEntityRenderers()[0].getEntity().getPosition().x * TileSet.getInstance().getTileSize();
             
-            if(pacX + this.levelOffsetX < 350 && this.levelOffsetX < 25)
-                this.levelOffsetX+=3;
-            if(pacX + this.levelOffsetX > 450 && field.getSize().width * TileSet.getInstance().getTileSize() + this.levelOffsetX > 775)
-                this.levelOffsetX-=3;
+            if(pacX + this.levelOffsetX < 400 && this.levelOffsetX < 25)
+                this.levelOffsetX += 1;//Math.ceil((pacX+this.levelOffsetX)/100)+1;
+            if(pacX + this.levelOffsetX > 400 && field.getSize().width * TileSet.getInstance().getTileSize() + this.levelOffsetX > 775)
+                this.levelOffsetX -= 1;//(pacX+this.levelOffsetX)/100;
+            if(pacX + this.levelOffsetX < 250 && this.levelOffsetX < 25)
+                this.levelOffsetX += 1;
+            if(pacX + this.levelOffsetX > 550 && field.getSize().width * TileSet.getInstance().getTileSize() + this.levelOffsetX > 775)
+                this.levelOffsetX -= 1;
+            if(pacX + this.levelOffsetX < 100 && this.levelOffsetX < 25)
+                this.levelOffsetX += 1;
+            if(pacX + this.levelOffsetX > 700 && field.getSize().width * TileSet.getInstance().getTileSize() + this.levelOffsetX > 775)
+                this.levelOffsetX -= 1;
         }
         if(field.getSize().height * TileSet.getInstance().getTileSize() > 520) {
             int pacY = field.getEntityRenderers()[0].getEntity().getPosition().y * TileSet.getInstance().getTileSize();
             
-            if(pacY + this.levelOffsetY < 250 && this.levelOffsetY < 85)
-                this.levelOffsetY+=3;
-            if(pacY + this.levelOffsetY > 350 && field.getSize().height * TileSet.getInstance().getTileSize() + this.levelOffsetY > 575)
-                this.levelOffsetY-=3;
+            if(pacY + this.levelOffsetY < 300 && this.levelOffsetY < 85)
+                this.levelOffsetY += 1;//Math.ceil((pacY+this.levelOffsetY)/100)+1;
+            if(pacY + this.levelOffsetY > 300 && field.getSize().height * TileSet.getInstance().getTileSize() + this.levelOffsetY > 575)
+                this.levelOffsetY -= 1;//(pacY+this.levelOffsetY)/100;
+            if(pacY + this.levelOffsetY < 200 && this.levelOffsetY < 85)
+                this.levelOffsetY += 1;
+            if(pacY + this.levelOffsetY > 400 && field.getSize().height * TileSet.getInstance().getTileSize() + this.levelOffsetY > 575)
+                this.levelOffsetY -= 1;
+            if(pacY + this.levelOffsetY < 100 && this.levelOffsetY < 85)
+                this.levelOffsetY += 1;
+            if(pacY + this.levelOffsetY > 500 && field.getSize().height * TileSet.getInstance().getTileSize() + this.levelOffsetY > 575)
+                this.levelOffsetY -= 1;
         }
     }
     
@@ -327,7 +343,7 @@ public class GameScene implements Scene {
             if(field.getSize().width * TileSet.getInstance().getTileSize() > 800 ||
                     field.getSize().height * TileSet.getInstance().getTileSize() > 520) {
                 this.pauseDialog.draw(_g, 135, 50);
-                _g.drawImage(this.map,400-(this.map.getWidth(null)/2),275,null);
+                _g.drawImage(this.map,400-(this.map.getWidth(null)/2),225,null);
             } else
                 this.pauseDialog.draw(_g);
         }
@@ -376,6 +392,12 @@ public class GameScene implements Scene {
                 this.field.drawField(this.mapBuffer.getGraphics(), 0, 0);
                 double aspect = this.mapBuffer.getWidth() / this.mapBuffer.getHeight();
                 this.map = this.mapBuffer.getScaledInstance((int)(300*aspect), 300, Image.SCALE_SMOOTH);
+                if(field.getSize().width * TileSet.getInstance().getTileSize() > 800 ||
+                        field.getSize().height * TileSet.getInstance().getTileSize() > 520) {
+                    this.pauseDialog.setSize(525, 525);
+                }
+                else
+                    this.pauseDialog.setSize(525,175);
                 this.state = this.STATE_PAUSE;
                 if(this.soundOn)
                     this.soundManager.pause();
@@ -416,10 +438,7 @@ public class GameScene implements Scene {
                         if(this.online && dir!=-1) {
                             if(i < NUM_ROBOTS) {
                                 try {
-//                                    System.out.println("Moving entity "+j);
-                                    System.out.println("Sending move direction "+dir+" ("+((byte)dir)+") to robot "+i);
                                     this.proxy[i].move((byte)dir, (byte)entities[i].getEntity().getNode().getBinaryDirections());
-//                                    System.out.println("Done moving.");
                                 } catch(IOException e) {
                                     System.out.println(e.getMessage());
                                 }
@@ -464,7 +483,7 @@ public class GameScene implements Scene {
             for(int i=0; i<3; i++)
                 this.proxy[i].setActive(true);
         }
-        System.out.println(this.towerPort);
+//        System.out.println(this.towerPort);
         this.resetPoints();
         this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.fps,400);
         this.field.loadFrom(this.level);
