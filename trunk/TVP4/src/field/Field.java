@@ -221,7 +221,7 @@ public class Field {
      * specified position or could not be placed null is returned.
      */
     public Node addNodeAt(int x, int y) {
-        return this.addNodeAt(x, y, 0);
+        return this.addNodeAt(x, y, 10);
     }
     
     /**
@@ -238,7 +238,7 @@ public class Field {
         if ((0 <= position.x)&&(0 <= position.y)) {
             Node current = this.getNodeAt(position);
             
-            if (current == null) {
+            if (current == null) {        
                 current = new Node(
                         position,
                         this.getNodeAt(position.x-1, position.y),

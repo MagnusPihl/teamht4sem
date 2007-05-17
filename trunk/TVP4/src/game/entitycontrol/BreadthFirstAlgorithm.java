@@ -50,7 +50,7 @@ public class BreadthFirstAlgorithm implements SearchAlgorithm {
         this.currentNode = null;
         this.tempNode = null;
         this.connectedNodes = null;
-        System.out.println("f (" + from.getPosition().x + "," + from.getPosition().y + ")");
+        //System.out.println("f (" + from.getPosition().x + "," + from.getPosition().y + ")");
         
         this.open.add(to);
         while (!this.open.isEmpty()) {                        
@@ -62,12 +62,12 @@ public class BreadthFirstAlgorithm implements SearchAlgorithm {
             } else {
                 this.connectedNodes = this.currentNode.getConnectedNodes();
                 
-                System.out.println("c (" + currentNode.getPosition().x + "," + currentNode.getPosition().y + ")");
+                //System.out.println("c (" + currentNode.getPosition().x + "," + currentNode.getPosition().y + ")");
                 for (int i = 0; i < Node.DIRECTION_COUNT; i++) {
                     this.tempNode = this.connectedNodes[i];
                     if (this.tempNode != null) {                    
                         if ((!this.open.contains(this.tempNode))&&(!this.closed.contains(this.tempNode))) {
-                            System.out.println("s " + i + " - (" + this.tempNode.getPosition().x + "," + this.tempNode.getPosition().y + ")");                            
+                            //System.out.println("s " + i + " - (" + this.tempNode.getPosition().x + "," + this.tempNode.getPosition().y + ")");                            
                             if ((this.tempNode.holdsEntity())&&(!this.tempNode.equals(from))) {
                                 this.closed.add(this.tempNode);
                             } else {

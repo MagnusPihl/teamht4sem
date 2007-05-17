@@ -99,7 +99,7 @@ public class EditorPanel extends JPanel {
     /**
      * Resizes the frame and repainting
      */
-    public void checkSize() {
+    public synchronized void checkSize() {
         Dimension size = this.field.getSize();
         size.setSize(size.getWidth()*this.tileSet.getTileSize(), size.getHeight()*this.tileSet.getTileSize());
         this.setPreferredSize(size);
