@@ -32,7 +32,7 @@ public class Options
     
     private File file;
     
-    private int[] entity;
+    private String[] entity;
     private String skin;
     private int speed;
     private int sound;
@@ -42,7 +42,7 @@ public class Options
     private Options()
     {
         this.file = new File("options.cfg");
-        this.entity = new int[3];
+        this.entity = new String[3];
     }
     
     public static Options getInstance()
@@ -73,9 +73,9 @@ public class Options
     {
         try {
             BufferedReader in = new BufferedReader(new FileReader(this.file));
-            this.entity[0] = Integer.parseInt(in.readLine());
-            this.entity[1] = Integer.parseInt(in.readLine());
-            this.entity[2] = Integer.parseInt(in.readLine());
+            this.entity[0] = in.readLine();
+            this.entity[1] = in.readLine();
+            this.entity[2] = in.readLine();
             this.skin = in.readLine();
             this.speed = Integer.parseInt(in.readLine());
             this.sound = Integer.parseInt(in.readLine());
@@ -83,9 +83,9 @@ public class Options
             this.towerPort = Integer.parseInt(in.readLine());
             in.close();
         } catch (Exception ex) {    //Set defaults:
-            this.entity[0] = 0;     //Keyboard arrows controller
-            this.entity[1] = 1;     //Figure out what to do here
-            this.entity[2] = 2;     //^- Yeah.
+            this.entity[0] = "";     //Keyboard arrows controller
+            this.entity[1] = "";     //Figure out what to do here
+            this.entity[2] = "";     //^- Yeah.
             this.skin = "pacman";   //Skin "pacman"
             this.speed = 1;         //Normal speed
             this.sound = 0;         //Sound on
@@ -94,14 +94,14 @@ public class Options
         }
     }
     
-    public void setEntity(int entNum, int value) { this.entity[entNum] = value; }
+    public void setEntity(int entNum, String value) { this.entity[entNum] = value; }
     public void setSkin(String skin) { this.skin = skin; }
     public void setSpeed(int speed) { this.speed = speed; }
     public void setSound(int sound) { this.sound = sound; }
     public void setOnline(int online) { this.online = online; }
     public void setInterface(int port) { this.towerPort = port; }
     
-    public int getEntity(int entNum) { return this.entity[entNum]; }
+    public String getEntity(int entNum) { return this.entity[entNum]; }
     public String getSkin() { return this.skin; }
     public int getSpeed() { return this.speed; }
     public int getSound() { return this.sound; }

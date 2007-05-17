@@ -175,9 +175,18 @@ public class OptionsScene implements Scene
         
         Options.getInstance().load();
         
-        this.option[0] = Options.getInstance().getEntity(0);//0; //Keyboard control for Entity0
-        this.option[1] = Options.getInstance().getEntity(1);//this.menuOptionsStr[1].length-2; //Normal CPU for Entity1
-        this.option[2] = Options.getInstance().getEntity(2);//this.menuOptionsStr[1].length-2; //Normal CPU for Entity2
+        this.option[0] = 0; //Keyboard control for Entity0
+        for(int i=0; i<this.menuOptionsStr[0].length; i++)
+            if(this.menuOptionsStr[0][i].equals(Options.getInstance().getEntity(0)))
+                this.option[0] = i;
+        this.option[1] = this.menuOptionsStr[1].length-2; //Normal CPU for Entity1
+        for(int i=0; i<this.menuOptionsStr[1].length; i++)
+            if(this.menuOptionsStr[1][i].equals(Options.getInstance().getEntity(1)))
+                this.option[1] = i;
+        this.option[2] = this.menuOptionsStr[1].length-2; //Normal CPU for Entity2
+        for(int i=0; i<this.menuOptionsStr[2].length; i++)
+            if(this.menuOptionsStr[2][i].equals(Options.getInstance().getEntity(2)))
+                this.option[2] = i;
         
         this.option[3] = 0; //Whatever the first skin is, or "pacman" if it exists.
         for(int i=0; i<this.menuOptionsStr[3].length; i++)
@@ -315,7 +324,7 @@ public class OptionsScene implements Scene
                 e.setController(new InSightController(e, PacmanApp.getInstance().getGameScene().getEntity(0)));
             if(this.option[i] == 5+numJoy)
                 e.setController(new HunterAIController(e, PacmanApp.getInstance().getGameScene().getEntity(0)));
-            Options.getInstance().setEntity(i, this.option[i]);
+            Options.getInstance().setEntity(i, this.menuOptionsStr[i][this.option[i]]);
         }
 
         TileSet.getInstance().loadTileSet("skins/"+this.menuOptionsStr[3][this.option[3]]);
