@@ -102,11 +102,11 @@ public class TowerSocket extends LinkLayerSocket {
                 sem.release();
                 return false;
             }
-        } while (this.packetIndex < PACKET_SIZE);
-        sem.release();
+        } while (this.packetIndex < PACKET_SIZE);        
         
         //if checksum is valid add packet to stream.
         if (super.checksumIsValid(this.packetBuffer)) {
+            sem.release();            
             for (int i = DATA_OFFSET; i < CHECKSUM_OFFSET; i += 2) {
                 this.readBuffer[this.bufferIndex] = this.packetBuffer[i];
                 
@@ -117,6 +117,7 @@ public class TowerSocket extends LinkLayerSocket {
             }
             return true;
         } else {
+            sem.release();
             return false;
         }
     }
@@ -198,7 +199,7 @@ public class TowerSocket extends LinkLayerSocket {
                 try {
                     sem.acquire();
                 } catch (InterruptedException ex) {
-                    ex.printStackTrace();
+//                    ex.printStackTrace();
                 }
                 addChecksum(this.packetBuffer);
                 tower.write(this.packetBuffer, PACKET_SIZE);
@@ -207,6 +208,9 @@ public class TowerSocket extends LinkLayerSocket {
             }
         }
         
+        /**
+         * Clear buffer
+         */
         public synchronized void clear() {
             this.packetIndex = 0;
         }

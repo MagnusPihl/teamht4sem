@@ -33,7 +33,7 @@ public abstract class LinkLayerSocket {
     public static final byte DATA_OFFSET = 2;
     public static final byte CHECKSUM_OFFSET = 8;
     public static final byte PACKET_SIZE = 10;
-    public static final int TIMEOUT = 10; //millis approximately one frame   
+    public static final int TIMEOUT = 10; //ms, maximum time between bytes. 
      
     /**
      * Generate checksum of available data in buffer and compare it to 
@@ -59,7 +59,9 @@ public abstract class LinkLayerSocket {
     }
     
     /**
-     * Add checksum to buffer.
+     * Add checksum to data in buffer.
+     * Checksum is calculated based on every second value from DATA_OFFSET to
+     * CHECKSUM_OFFSET-1.
      *
      * @param byte[] buffer
      */
@@ -77,6 +79,13 @@ public abstract class LinkLayerSocket {
         buffer[CHECKSUM_OFFSET + 1] = (byte)(~buffer[CHECKSUM_OFFSET]);
     }    
     
+    /**
+     * Get InputStream
+     */
     public abstract ClearableInputStream getInputStream();
+    
+    /**
+     * Get OutputStream
+     */
     public abstract ClearableOutputStream getOutputStream();
 }
