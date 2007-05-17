@@ -79,7 +79,7 @@ public class OptionsScene implements Scene
     private String menuOptionsStr[][];
     private Image menuOptions[][];
     private String menuHelpStr[];
-    private Image menuHelp[];
+    private GameDialog menuHelp[];
     
     private Image arrow[];
     private GameDialog skinDialog;
@@ -159,7 +159,7 @@ public class OptionsScene implements Scene
         
         this.menuHelpStr = new String[]
         {
-            "Choose which device to control Pac-Man  with by pressing left or right.",
+            "Choose which device to control Pac-Man with by pressing left or right.",
             "Choose which device to control Ghost A with by pressing left or right.",
             "Choose which device to control Ghost B with by pressing left or right.",
             "Press left or right to choose a skin.\nPress enter to see a preview of the\ncurrently selected skin.",
@@ -172,19 +172,22 @@ public class OptionsScene implements Scene
         
         this.cursor = 0;
         this.option = new int[this.menuItemsStr.length];
-        this.option[0] = 0; //Keyboard control for Entity0
-        this.option[1] = this.menuOptionsStr[1].length-2; //Normal CPU for Entity1
-        this.option[2] = this.menuOptionsStr[1].length-2; //Normal CPU for Entity2
+        
+        Options.getInstance().load();
+        
+        this.option[0] = Options.getInstance().getEntity(0);//0; //Keyboard control for Entity0
+        this.option[1] = Options.getInstance().getEntity(1);//this.menuOptionsStr[1].length-2; //Normal CPU for Entity1
+        this.option[2] = Options.getInstance().getEntity(2);//this.menuOptionsStr[1].length-2; //Normal CPU for Entity2
         
         this.option[3] = 0; //Whatever the first skin is, or "pacman" if it exists.
         for(int i=0; i<this.menuOptionsStr[3].length; i++)
-            if(this.menuOptionsStr[3][i].equals("sketch"))
+            if(this.menuOptionsStr[3][i].equals(Options.getInstance().getSkin()))
                 this.option[3] = i;
         
-        this.option[4] = 1; //Normal game speed
-        this.option[5] = 0; //Sound on
-        this.option[6] = 0; //Offline mode
-        this.option[7] = 0; //USB interface
+        this.option[4] = Options.getInstance().getSpeed();//1; //Normal game speed
+        this.option[5] = Options.getInstance().getSound();//0; //Sound on
+        this.option[6] = Options.getInstance().getOnline();//0; //Offline mode
+        this.option[7] = Options.getInstance().getInterface();//0; //USB interface
     }
     
     public void draw(Graphics2D _g)
@@ -205,10 +208,10 @@ public class OptionsScene implements Scene
             if(i == this.cursor)
                 _g.drawImage(this.menuOptions[i][this.option[i]], 265, y, null);
 
-            y+=50;
+            y+=45;
         }
         //GameDialog.drawDialog(_g, 0, 599-226, this.menuHelpStr[this.cursor]);
-        _g.drawImage(this.menuHelp[this.cursor], 25, 420, null);
+        this.menuHelp[this.cursor].draw(_g, 0, 375);
         //Any State Done
         
         if(this.state == this.STATE_SKIN_PREVIEW)
@@ -302,9 +305,11 @@ public class OptionsScene implements Scene
                 e.setController(new InSightController(e, PacmanApp.getInstance().getGameScene().getEntity(0)));
             if(this.option[i] == 5+numJoy)
                 e.setController(new HunterAIController(e, PacmanApp.getInstance().getGameScene().getEntity(0)));
+            Options.getInstance().setEntity(i, this.option[i]);
         }
 
         TileSet.getInstance().loadTileSet("skins/"+this.menuOptionsStr[3][this.option[3]]);
+        Options.getInstance().setSkin(this.menuOptionsStr[3][this.option[3]]);
 
         switch(this.option[4])
         {
@@ -312,20 +317,26 @@ public class OptionsScene implements Scene
             case 1: PacmanApp.getInstance().getGameScene().setRoundTime(500);   break;
             case 2: PacmanApp.getInstance().getGameScene().setRoundTime(250);   break;
         }
+        Options.getInstance().setSpeed(this.option[4]);
         
         switch(this.option[5])
         {
             case 0: PacmanApp.getInstance().getGameScene().setSoundOn(true);    break;
             case 1: PacmanApp.getInstance().getGameScene().setSoundOn(false);   break;
         }
+        Options.getInstance().setSound(this.option[5]);
 
         switch(this.option[6])
         {
             case 0: PacmanApp.getInstance().getGameScene().setOnline(false);    break;
             case 1: PacmanApp.getInstance().getGameScene().setOnline(true);     break;
         }
+        Options.getInstance().setOnline(this.option[6]);
 
         PacmanApp.getInstance().getGameScene().setTowerPort(this.menuOptionsStr[7][this.option[7]].toLowerCase());
+        Options.getInstance().setInterface(this.option[7]);
+        
+        Options.getInstance().save();
     }
     
     private void prerender()
@@ -339,7 +350,7 @@ public class OptionsScene implements Scene
             if(this.menuOptionsStr[i].length > length)
                 length = this.menuOptionsStr[i].length;
         this.menuOptions = new Image[this.menuOptionsStr.length][length+1];
-        this.menuHelp = new Image[this.menuHelpStr.length];
+        this.menuHelp = new GameDialog[this.menuHelpStr.length];
         
         this.menuItems[0] = TileSet.getInstance().getEntityTile(0,Node.RIGHT,0);
         this.menuItems[1] = TileSet.getInstance().getEntityTile(1,Node.RIGHT,0);
@@ -355,7 +366,7 @@ public class OptionsScene implements Scene
                     /*if(this.menuOptions[i][j].getWidth(null) > 405)
                         this.menuOptions[i][j] = font.renderStringRect(this.menuOptionsStr[i][j].substring(0,19)+"...", 200, 0);*/
                 }
-            this.menuHelp[i] = font.renderString(this.menuHelpStr[i], 750);
+            this.menuHelp[i] = new GameDialog(this.menuHelpStr[i], 800, 220, true);
         }
         
         if (this.skinDialog == null) {            
