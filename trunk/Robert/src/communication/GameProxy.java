@@ -29,11 +29,12 @@ import josx.platform.rcx.Sound;
 import josx.platform.rcx.TextLCD;
 import robot.Drive;
 import robot.LowRider;
+import robot.Movement;
 
 
 public class GameProxy {
-    Drive ride;
-    //LowRider ride = new LowRider();
+//    Drive ride;
+    LowRider ride = new LowRider();
     LLCSocket link = new LLCSocket();
     NetworkSocket net;
     TransportSocket socket;
@@ -112,7 +113,7 @@ public class GameProxy {
         in = socket.getInputStream();
         out = socket.getOutputStream();
         socket.setActive(true);
-        ride = new Drive(address);
+//        ride = new Drive(address);
         this.run();
     }
     
@@ -120,47 +121,47 @@ public class GameProxy {
         while(true){
             this.getcommand();
             if(command == GameCommands.FORWARD){
-                this.stopThread();
-                ride.Forward(directions);
-                //ride.run(directions,command);
-                this.startThread();
+                this.pauseCommunication();
+//                ride.Forward(directions);
+                ride.run(directions,command);
+                this.startCommunication();
                 TextLCD.print("Move");
                 this.sendMoveDone(GameCommands.MOVE_DONE);
 //              ******************************************
             }else if(command == GameCommands.TURN_LEFT || command == (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER)){
-                this.stopThread();
+                this.pauseCommunication();
                 if(command == (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER)){
                     ride.TurnLeft90();
                     ride.TurnLeft90();
                 }else{
                     ride.TurnLeft90();
                 }
-                ride.Forward(directions);
-                //ride.run(directions,command);
-                this.startThread();
+//                ride.Forward(directions);
+                ride.run(directions,command);
+                this.startCommunication();
                 this.sendMoveDone(GameCommands.MOVE_DONE);
 //              ******************************************
             }else if(command == GameCommands.TURN_RIGHT || command == (GameCommands.TURN_RIGHT | GameCommands.TURN_NUMBER)){
-                this.stopThread();
+                this.pauseCommunication();
                 if(command == (GameCommands.TURN_RIGHT | GameCommands.TURN_NUMBER)){
                     ride.TurnRight90();
                     ride.TurnRight90();
                 }else{
                     ride.TurnRight90();
                 }
-                ride.Forward(directions);
-                //ride.run(directions,command);
-                this.startThread();
+//                ride.Forward(directions);
+                ride.run(directions,command);
+                this.startCommunication();
                 this.sendMoveDone(GameCommands.MOVE_DONE);
 //              ******************************************
             }else if(command == (GameCommands.FORWARD | GameCommands.DISCOVER)){
-                this.stopThread();
+                this.pauseCommunication();
                 this.discover();
-                this.startThread();
+                this.startCommunication();
                 this.sendMoveDone(GameCommands.MOVE_DONE | directions);
 //              *******************************************************
             }else if(command == (GameCommands.TURN_LEFT | GameCommands.DISCOVER) || command == (GameCommands.TURN_LEFT | GameCommands.DISCOVER | GameCommands.TURN_NUMBER)){
-                this.stopThread();
+                this.pauseCommunication();
                 if(command == (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER | GameCommands.DISCOVER)){
                     ride.TurnLeft90();
                     ride.TurnLeft90();
@@ -168,11 +169,11 @@ public class GameProxy {
                     ride.TurnLeft90();
                 }
                 this.discover();
-                this.startThread();
+                this.startCommunication();
                 this.sendMoveDone(GameCommands.MOVE_DONE | directions);
 //              *******************************************************
             }else if(command == (GameCommands.TURN_RIGHT | GameCommands.DISCOVER) || command == (GameCommands.TURN_RIGHT | GameCommands.DISCOVER | GameCommands.TURN_NUMBER)){
-                this.stopThread();
+                this.pauseCommunication();
                 if(command == (GameCommands.TURN_RIGHT | GameCommands.TURN_NUMBER | GameCommands.DISCOVER)){
                     ride.TurnRight90();
                     ride.TurnRight90();
@@ -180,22 +181,23 @@ public class GameProxy {
                     ride.TurnRight90();
                 }
                 this.discover();
-                this.startThread();
+                this.startCommunication();
                 this.sendMoveDone(GameCommands.MOVE_DONE | directions);
 //              *******************************************************
             }else if(command == GameCommands.LIGHT_ON){
-                this.lightOn();
+                Movement.LightOn();
+//                this.lightOn();
             }else if(command == GameCommands.LIGHT_OFF){
-                this.lightOff();
-            }else if(command == GameCommands.BEEP){
-                Sound.twoBeeps();//only two beeps
+                Movement.LightOff();
+//                this.lightOff();
+            }else if(command == GameCommands.BEEP){//only two beeps
+                Sound.twoBeeps();
             }else if(command == GameCommands.CALIBRATE){
                 //ride.callibrate(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
             }else if(command == GameCommands.SEARCH_NODE){
-                this.stopThread();
-                //directions = ride.searchNode();
+                this.pauseCommunication();
                 this.discover();
-                this.startThread();
+                this.startCommunication();
                 this.sendMoveDone(GameCommands.MOVE_DONE | directions);
             }else{
                 
@@ -204,6 +206,7 @@ public class GameProxy {
     }
     
     private void getcommand(){
+        TextLCD.print("recvB");
         command = -1;
         directions = -1;
         while(command == -1){
@@ -222,6 +225,7 @@ public class GameProxy {
         LCD.refresh();
         LCD.showNumber(command + 100);
         if(command <= (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER) && command > GameCommands.NOP){
+            TextLCD.print("Gdir");
             while(directions == -1){
                 try {
                     directions = in.read();
@@ -237,19 +241,19 @@ public class GameProxy {
             LCD.refresh();
             LCD.showNumber(directions + 700);
         }
-        //TextLCD.print("step3");
+        TextLCD.print("recvD");
     }
     
-    public void stopThread(){
+    public void pauseCommunication(){
         socket.setActive(false);
     }
     
-    public void startThread(){
+    public void startCommunication(){
         socket.setActive(true);
     }
     
     public void sendMoveDone(int move){
-        TextLCD.print("Step4");
+        TextLCD.print("Send");
         try {
             out.write(move);
         } catch (IOException ex) {
@@ -272,26 +276,31 @@ public class GameProxy {
     }
     
     private void discover() {
+//        try {
+//            Thread.sleep(1500);
+//        } catch (InterruptedException ex) {
+//            ex.printStackTrace();
+//        }
         if(h < 4){
             directions = (GameCommands.FORWARD | GameCommands.TURN_NUMBER);
             h++;
         }else{
-            h = (int)(Math.random()*120);
-            if(h < 20 ){
+//            h = (int)(Math.random()*120);
+//            if(h < 20 ){
                 directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT);
-            }else if(h < 40 && h > 20){
-                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_LEFT);
-            }else if(h < 60 && h > 40){
-                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT | GameCommands.TURN_LEFT);
-            }else if(h < 80 && h > 60){
-                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT | GameCommands.TURN_LEFT | GameCommands.FORWARD);
-            }else if(h < 100 && h > 80){
-                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT | GameCommands.FORWARD);
-            }else if(h < 120 && h > 100){
-                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_LEFT | GameCommands.FORWARD);
-            }else{
-                directions = (GameCommands.FORWARD | GameCommands.TURN_NUMBER);
-            }
+//            }else if(h < 40 && h > 20){
+//                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_LEFT);
+//            }else if(h < 60 && h > 40){
+//                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT | GameCommands.TURN_LEFT);
+//            }else if(h < 80 && h > 60){
+//                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT | GameCommands.TURN_LEFT | GameCommands.FORWARD);
+//            }else if(h < 100 && h > 80){
+//                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_RIGHT | GameCommands.FORWARD);
+//            }else if(h < 120 && h > 100){
+//                directions = (GameCommands.TURN_NUMBER | GameCommands.TURN_LEFT | GameCommands.FORWARD);
+//            }else{
+//                directions = (GameCommands.FORWARD | GameCommands.TURN_NUMBER);
+//            }
             h = 0;
         }
     }
