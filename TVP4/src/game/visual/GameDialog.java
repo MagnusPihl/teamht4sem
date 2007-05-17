@@ -66,55 +66,74 @@ public class GameDialog {
     public GameDialog(String text, int width, int height, boolean isOpaque) {
         this.text = text;  
         this.isOpaque = isOpaque;
-        Image image = null;
         
-        if (height > 100) {
-            this.height = height;
-        }
-        if (width > 100) {
-            this.width = width;        
-        }
-        
-        if (this.text != null) {
-            image = PacmanApp.getInstance().getFont().renderStringRect(
-                    this.text, 
-                    this.width - 2*TEXT_OFFSET,
-                    this.height - 2*TEXT_OFFSET);
-        }
-        
-        this.renderDialog(image);
+        this.renderDialog(this.render(text, width, height, isOpaque));
     }
     
     public GameDialog(String text, boolean isOpaque) {        
-        this.text = text;        
-        Image image = null;
+        this.text = text;
         this.isOpaque = isOpaque;
         
-        if (this.text != null) {
-            image = PacmanApp.getInstance().getFont().renderString(text, 529);
-            this.height = image.getHeight(null) + TEXT_OFFSET * 2;
-            this.width = image.getWidth(null) + TEXT_OFFSET * 2;
-        }
-        
-        if (this.height < 100) {
-            this.height = 100;
-        }
-        if (this.width < 100) {
-            this.width = 100;        
-        }
-        
-        this.renderDialog(image);
+        this.renderDialog(this.render(text, 0, 0, isOpaque));
     }
     
     public GameDialog(int width, int height, boolean isOpaque) {
         this(null, width, height, isOpaque);
-    } 
+    }
+    
+    private Image render(String text, int width, int height, boolean isOpaque)
+    {
+        Image image = null;
+        
+        if(width == 0 && height == 0)
+        {
+            if (this.text != null) {
+                image = PacmanApp.getInstance().getFont().renderString(text, 529);
+                this.height = image.getHeight(null) + TEXT_OFFSET * 2;
+                this.width = image.getWidth(null) + TEXT_OFFSET * 2;
+            }
+
+            if (this.height < 100) {
+                this.height = 100;
+            }
+            if (this.width < 100) {
+                this.width = 100;        
+            }
+        }
+        else
+        {
+            if (height > 100) {
+                this.height = height;
+            }
+            if (width > 100) {
+                this.width = width;        
+            }
+
+            if (this.text != null) {
+                image = PacmanApp.getInstance().getFont().renderStringRect(
+                        this.text, 
+                        this.width - 2*TEXT_OFFSET,
+                        this.height - 2*TEXT_OFFSET);
+            }
+        }
+        
+        return image;
+    }
+    
+    public void setSize(int width, int height)
+    {
+        this.renderDialog(this.render(this.text, width, height, this.isOpaque));
+    }
+    
+    public void setIsOpaque(boolean isOpaque)
+    {
+        this.isOpaque = isOpaque;
+        this.renderDialog(this.render(this.text, this.width, this.height, this.isOpaque));
+    }
     
     private void renderDialog(Image text) {
         this.dialog = PacmanApp.getInstance().getCore().getScreenManager().createCompatibleImage(this.width, this.height, Transparency.TRANSLUCENT);
         Graphics g = this.dialog.getGraphics();
-                
-        System.out.println(this.width + " " + this.height);
         
         drawDialog(g, this.isOpaque, 0,0, this.width, this.height);
                 
