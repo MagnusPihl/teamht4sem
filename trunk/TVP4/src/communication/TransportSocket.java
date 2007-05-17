@@ -52,7 +52,7 @@ public class TransportSocket {
     private TransportInputThread inputThread;
     private int bufferIndex;
     private byte[] readBuffer;
-    private static Random rand = new Random();
+    public static communication.Random random = new communication.Random();
     
     public static final int DATA = 0;
     public static final int RECEIPT = 1;
@@ -233,7 +233,7 @@ public class TransportSocket {
          * @param byte to write to underlying layers.
          */
         public void write(int b) throws IOException {
-            System.out.println("Sending: " + Integer.toBinaryString(b));
+            //System.out.println("Sending: " + Integer.toBinaryString(b));
             this.sequence++;    
             if (this.sequence == 127) {
                 this.sequence = 0;
@@ -253,7 +253,7 @@ public class TransportSocket {
                         this.timeout = (int)System.currentTimeMillis() + TransportSocket.ACKNOWLEDGE_TIMEOUT;
                     }
                     
-                    Thread.sleep(rand.nextInt()&0x7F);
+                    Thread.sleep(random.nextInt()&0x7F);
                     //Thread.yield();
                 }
             } catch (Exception e) {
