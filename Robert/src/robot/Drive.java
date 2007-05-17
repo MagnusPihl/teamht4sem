@@ -17,16 +17,16 @@ import tinyvm.rcx.TextLCD;
  */
 public class Drive {
     
-    private static final byte BUFFERLENGTH = 3;
-    private static int[] sensor1Buffer = new int[BUFFERLENGTH];
-    private static int[] sensor2Buffer = new int[BUFFERLENGTH];
-    private static int[] sensor3Buffer = new int[BUFFERLENGTH];
+    //private static final byte BUFFERLENGTH = 3;
+    private static byte[] sensor1Buffer = new byte[3]; // contains the values w, y, g, b
+    private static byte[] sensor2Buffer = new byte[3];
+    private static byte[] sensor3Buffer = new byte[3];
     
-    private static int[] sensor1Colors = new int[BUFFERLENGTH];
-    private static int[] sensor2Colors = new int[BUFFERLENGTH];
-    private static int[] sensor3Colors = new int[BUFFERLENGTH];
-    
-    private static int[] sensorsColors = new int[] {0x01, 0x08, 0x01};//new int[3] ;
+//    private static byte[] sensor1Colors = new byte[BUFFERLENGTH];
+//    private static byte[] sensor2Colors = new byte[BUFFERLENGTH];
+//    private static byte[] sensor3Colors = new byte[BUFFERLENGTH];
+//
+    private static byte[] sensorsColors = new byte[] {0x01, 0x08, 0x01};//new int[3] ;
     
     
     /*
@@ -55,19 +55,23 @@ public class Drive {
 //    private static int[] robot3Sensor2Values = new int [] {719 * BUFFERLENGTH, 730 * BUFFERLENGTH, 775 * BUFFERLENGTH, 840 * BUFFERLENGTH};
 //    private static int[] robot3Sensor3Values = new int [] {730 * BUFFERLENGTH, 740 * BUFFERLENGTH, 789 * BUFFERLENGTH, 810 * BUFFERLENGTH};
     
+    //only for robot no 1
+    private static int[] sensorDiff = new int[] {   714, 748, 794,  //Sensor 1
+    734, 764, 797,  //Sensor 2
+    699, 732, 775}; //Sensor 3
+//    private static int[] sensor1Diff = new int[] {714, 748, 794}; // new int[3];
+//    private static int[] sensor2Diff = new int[] {734, 764, 797}; // new int[3];
+//    private static int[] sensor3Diff = new int[] {699, 732, 775}; // new int[3];
+    
     //ko
-    private static int[] sensor1Diff = new int[] {714, 748, 794}; // new int[3];
-    private static int[] sensor2Diff = new int[] {734, 764, 797}; // new int[3];
-    private static int[] sensor3Diff = new int[] {699, 732, 775}; // new int[3];
+//    private static int[] sensor1Values; //placeholder for the acctual thresshold values
+//    private static int[] sensor2Values; //placeholder for the acctual thresshold values
+//    private static int[] sensor3Values; //placeholder for the acctual thresshold values
     
-    private static int[] sensor1Values; //placeholder for the acctual thresshold values
-    private static int[] sensor2Values; //placeholder for the acctual thresshold values
-    private static int[] sensor3Values; //placeholder for the acctual thresshold values
-    
-    private static final int COLOR_WHITE  = 0x01;
-    private static final int COLOR_YELLOW = 0x02;
-    private static final int COLOR_GREEN  = 0x04;
-    private static final int COLOR_BLACK  = 0x08;
+//    private static final int 0x01  = 0x01;
+//    private static final int 0x02 = 0x02;
+//    private static final int 0x04  = 0x04;
+//    private static final int COLOR_BLACK  = 0x08;
     
     
     /* DIRECTIONS uses a 3-bit register
@@ -99,9 +103,24 @@ public class Drive {
     
     /** Creates a new instance of Drive */
     public Drive(int address) {
+        InitBuffer();
         InitSensors();
         InitMotor();
 //        SetSensorValues(address); //ko
+    }
+    
+    private static void InitBuffer(){
+        sensor1Buffer[0] = 0;
+        sensor2Buffer[0] = 0;
+        sensor3Buffer[0] = 0;
+        
+        sensor1Buffer[1] = 0;
+        sensor2Buffer[1] = 0;
+        sensor3Buffer[1] = 0;
+        
+        sensor1Buffer[2] = 0;
+        sensor2Buffer[2] = 0;
+        sensor3Buffer[2] = 0;
     }
     
     private static void InitSensors() {
@@ -125,6 +144,7 @@ public class Drive {
         Motor.A.setPower(4);
         Motor.B.setPower(4);
     }
+    
     //ko
 //    private static void SetSensorValues(int address) {
 //        if (address == 1){
@@ -145,7 +165,7 @@ public class Drive {
 //        }
 //        CalculateSensorDifferens();
 //    }
-//    
+//
 //    private static void CalculateSensorDifferens() {
 //        /************
 //         * Sensor 1 *
@@ -153,14 +173,14 @@ public class Drive {
 //        sensor1Diff[0] = sensor1Values[1] - ((sensor1Values[1] - sensor1Values[0])/3);
 //        sensor1Diff[1] = sensor1Values[2] - ((sensor1Values[2] - sensor1Values[1])/3);
 //        sensor1Diff[2] = sensor1Values[3] - ((sensor1Values[3] - sensor1Values[2])/3);
-//        
+//
 //        /************
 //         * Sensor 2 *
 //         ************/
 //        sensor2Diff[0] = sensor2Values[1] - ((sensor2Values[1] - sensor2Values[0])/3);
 //        sensor2Diff[1] = sensor2Values[2] - ((sensor2Values[2] - sensor2Values[1])/3);
 //        sensor2Diff[2] = sensor2Values[3] - ((sensor2Values[3] - sensor2Values[2])/3);
-//        
+//
 //        /************
 //         * Sensor 3 *
 //         ************/
@@ -172,140 +192,177 @@ public class Drive {
 //    static int i = 0;
 //    private final static byte BUFFERLENGTH_1 = BUFFERLENGTH - 1;
     private static void DoRead() {
-        for (int i = 0; i < 2; i++){
-            sensor1Buffer[2 - i] = sensor1Buffer[1 - i];
-            sensor2Buffer[2 - i] = sensor2Buffer[1 - i];
-            sensor3Buffer[2 - i] = sensor3Buffer[1 - i];
+        sensor1Buffer[2] = sensor1Buffer[1];
+        sensor2Buffer[2] = sensor2Buffer[1];
+        sensor3Buffer[2] = sensor3Buffer[1];
+        
+        sensor1Buffer[1] = sensor1Buffer[0];
+        sensor2Buffer[1] = sensor2Buffer[0];
+        sensor3Buffer[1] = sensor3Buffer[0];
+        
+        
+//        for (int i = 0; i < 2; i++){
+//            sensor1Buffer[2 - i] = sensor1Buffer[1 - i];
+//            sensor2Buffer[2 - i] = sensor2Buffer[1 - i];
+//            sensor3Buffer[2 - i] = sensor3Buffer[1 - i];
 //            sensor1Buffer[BUFFERLENGTH_1 - i] = sensor1Buffer[BUFFERLENGTH_1 - 1 - i];
 //            sensor2Buffer[BUFFERLENGTH_1 - i] = sensor2Buffer[BUFFERLENGTH_1 - 1 - i];
 //            sensor3Buffer[BUFFERLENGTH_1 - i] = sensor3Buffer[BUFFERLENGTH_1 - 1 - i];
-        }
+//        }
         
-        sensor1Buffer[0] = Sensor.S1.readRawValue();
-        sensor2Buffer[0] = Sensor.S2.readRawValue();
-        sensor3Buffer[0] = Sensor.S3.readRawValue();
+        
+        sensor1Buffer[0] = FindColor(Sensor.S1.readRawValue(), (byte)0);
+        sensor2Buffer[0] = FindColor(Sensor.S2.readRawValue(), (byte)3);
+        sensor3Buffer[0] = FindColor(Sensor.S3.readRawValue(), (byte)6);
     }
     
-    private static int FindColor(int[] sensorDiff, int value){
-        if (value > sensorDiff[2]) {
-            //We got black
-            return COLOR_BLACK;
-        } else if (value > sensorDiff[1]) {
-            //We got green
-            return COLOR_GREEN;
-        } else if (value > sensorDiff[0]){
-            //We got yellow
-            return COLOR_YELLOW;
+    /*
+     * 0x01  = 0x01;
+     * 0x02 = 0x02;
+     * 0x04  = 0x04;
+     * COLOR_BLACK  = 0x08;
+     **/
+    private static byte FindColor(int value, byte offset){
+        if (value > sensorDiff[offset + 2]) {
+            return 0x08; //We got black
+        } else if (value > sensorDiff[offset + 1]) {
+            return 0x04; //We got green
+        } else if (value > sensorDiff[offset]){
+            return 0x02; //We got yellow
         } else{
-            //We got white
-            return COLOR_WHITE;
+            return 0x01; //We got white
         }
     }
     
+    private static void read1(){
+        
+        if ((sensor1Buffer[0] == sensor1Buffer[1]) || (sensor1Buffer[1] == sensor1Buffer[2])) {
+            sensorsColors[0] = sensor1Buffer[1];
+        } else if(sensor1Buffer[0] == sensor1Buffer[2]){
+            sensorsColors[0] = sensor1Buffer[0];
+        }
+    }
+    
+    private static void read2(){
+        if ((sensor2Buffer[0] == sensor2Buffer[1]) || (sensor2Buffer[1] == sensor2Buffer[2])) {
+            sensorsColors[1] = sensor2Buffer[1];
+        } else if(sensor2Buffer[0] == sensor2Buffer[2]){
+            sensorsColors[1] = sensor2Buffer[0];
+        }
+    }
+    
+    private static void read3(){
+        if ((sensor3Buffer[0] == sensor3Buffer[1]) || (sensor3Buffer[1] == sensor3Buffer[2])) {
+            sensorsColors[2] = sensor3Buffer[1];
+        } else if(sensor3Buffer[0] == sensor3Buffer[2]){
+            sensorsColors[2] = sensor3Buffer[0];
+        }
+    }
+//
 //    private static void Read1(){
-//        
+//
 //        if (sensor1Colors[0] == sensor1Colors[1] && sensor1Colors[1] == sensor1Colors[2]) {
 //            if (sensor1Colors[0] == COLOR_BLACK){
 //                sensorsColors[0] = COLOR_BLACK;
-//            } else if(sensor1Colors[0] == COLOR_GREEN){
-//                sensorsColors[0] = COLOR_GREEN;
-//            } else if(sensor1Colors[0] == COLOR_YELLOW){
-//                sensorsColors[0] = COLOR_YELLOW;
-//            } else if(sensor1Colors[0] == COLOR_WHITE){
-//                sensorsColors[0] = COLOR_WHITE;
+//            } else if(sensor1Colors[0] == 0x04){
+//                sensorsColors[0] = 0x04;
+//            } else if(sensor1Colors[0] == 0x02){
+//                sensorsColors[0] = 0x02;
+//            } else if(sensor1Colors[0] == 0x01){
+//                sensorsColors[0] = 0x01;
 //            }
 //        }
 //    }
-//    
+//
 //    private static void Read2(){
-//        
+//
 //        if (sensor2Colors[0] == sensor2Colors[1] && sensor2Colors[1] == sensor2Colors[2]) {
 //            if (sensor2Colors[0] == COLOR_BLACK){
 //                sensorsColors[1] = COLOR_BLACK;
-//            } else if(sensor2Colors[0] == COLOR_GREEN){
-//                sensorsColors[1] = COLOR_GREEN;
-//            } else if(sensor2Colors[0] == COLOR_YELLOW){
-//                sensorsColors[1] = COLOR_YELLOW;
-//            } else if(sensor2Colors[0] == COLOR_WHITE){
-//                sensorsColors[1] = COLOR_WHITE;
+//            } else if(sensor2Colors[0] == 0x04){
+//                sensorsColors[1] = 0x04;
+//            } else if(sensor2Colors[0] == 0x02){
+//                sensorsColors[1] = 0x02;
+//            } else if(sensor2Colors[0] == 0x01){
+//                sensorsColors[1] = 0x01;
 //            }
 //        }
 //    }
-//    
+//
 //    private static void Read3(){
-//        
-//        
+//
+//
 //        if (sensor3Colors[0] == sensor3Colors[1] && sensor3Colors[1] == sensor3Colors[2]) {
 //            if (sensor3Colors[0] == COLOR_BLACK){
 //                sensorsColors[2] = COLOR_BLACK;
-//            } else if(sensor3Colors[0] == COLOR_GREEN){
-//                sensorsColors[2] = COLOR_GREEN;
-//            } else if(sensor3Colors[0] == COLOR_YELLOW){
-//                sensorsColors[2] = COLOR_YELLOW;
-//            } else if(sensor3Colors[0] == COLOR_WHITE){
-//                sensorsColors[2] = COLOR_WHITE;
+//            } else if(sensor3Colors[0] == 0x04){
+//                sensorsColors[2] = 0x04;
+//            } else if(sensor3Colors[0] == 0x02){
+//                sensorsColors[2] = 0x02;
+//            } else if(sensor3Colors[0] == 0x01){
+//                sensorsColors[2] = 0x01;
 //            }
 //        }
-//        
+//
 //    }
-//    
+//
 //    private static void Read4(){
-//        
+//
 //        if ((sensor1Colors[0] == sensor1Colors[1] && sensor1Colors[1] != sensor1Colors[2]) || (sensor1Colors[0] != sensor1Colors[1] && sensor1Colors[1] == sensor1Colors[2])) {
 //            if (sensor1Colors[1] == COLOR_BLACK){
 //                sensorsColors[0] = COLOR_BLACK;
-//            } else if(sensor1Colors[1] == COLOR_GREEN){
-//                sensorsColors[0] = COLOR_GREEN;
-//            } else if(sensor1Colors[1] == COLOR_YELLOW){
-//                sensorsColors[0] = COLOR_YELLOW;
-//            } else if(sensor1Colors[1] == COLOR_WHITE){
-//                sensorsColors[0] = COLOR_WHITE;
+//            } else if(sensor1Colors[1] == 0x04){
+//                sensorsColors[0] = 0x04;
+//            } else if(sensor1Colors[1] == 0x02){
+//                sensorsColors[0] = 0x02;
+//            } else if(sensor1Colors[1] == 0x01){
+//                sensorsColors[0] = 0x01;
 //            }
 //        }
 //    }
-//    
+//
 //    private static void Read5(){
-//        
+//
 //        if ((sensor2Colors[0] == sensor2Colors[1] && sensor2Colors[1] != sensor2Colors[2]) || (sensor2Colors[0] != sensor2Colors[1] && sensor2Colors[1] == sensor2Colors[2])) {
 //            if (sensor2Colors[1] == COLOR_BLACK){
 //                sensorsColors[1] = COLOR_BLACK;
-//            } else if(sensor2Colors[1] == COLOR_GREEN){
-//                sensorsColors[1] = COLOR_GREEN;
-//            } else if(sensor2Colors[1] == COLOR_YELLOW){
-//                sensorsColors[1] = COLOR_YELLOW;
-//            } else if(sensor2Colors[1] == COLOR_WHITE){
-//                sensorsColors[1] = COLOR_WHITE;
+//            } else if(sensor2Colors[1] == 0x04){
+//                sensorsColors[1] = 0x04;
+//            } else if(sensor2Colors[1] == 0x02){
+//                sensorsColors[1] = 0x02;
+//            } else if(sensor2Colors[1] == 0x01){
+//                sensorsColors[1] = 0x01;
 //            }
 //        }
 //    }
-//    
+//
 //    private static void Read6(){
-//        
+//
 //        if ((sensor3Colors[0] == sensor3Colors[1] && sensor3Colors[1] != sensor3Colors[2]) || (sensor3Colors[0] != sensor3Colors[1] && sensor3Colors[1] == sensor3Colors[2])) {
 //            if (sensor3Colors[1] == COLOR_BLACK){
 //                sensorsColors[2] = COLOR_BLACK;
-//            } else if(sensor3Colors[1] == COLOR_GREEN){
-//                sensorsColors[2] = COLOR_GREEN;
-//            } else if(sensor3Colors[1] == COLOR_YELLOW){
-//                sensorsColors[2] = COLOR_YELLOW;
-//            } else if(sensor3Colors[1] == COLOR_WHITE){
-//                sensorsColors[2] = COLOR_WHITE;
+//            } else if(sensor3Colors[1] == 0x04){
+//                sensorsColors[2] = 0x04;
+//            } else if(sensor3Colors[1] == 0x02){
+//                sensorsColors[2] = 0x02;
+//            } else if(sensor3Colors[1] == 0x01){
+//                sensorsColors[2] = 0x01;
 //            }
 //        }
 //    }
     
     private static void ReadColors(){
-//        DoRead();
-//        
-//        for (int i = 0; i < BUFFERLENGTH ; i++){
+        DoRead();
+        
+//        for (i = 0; i < BUFFERLENGTH ; i++){
 //            sensor1Colors[i] = FindColor(sensor1Diff, sensor1Buffer[i]);
 //            sensor2Colors[i] = FindColor(sensor2Diff, sensor2Buffer[i]);
 //            sensor3Colors[i] = FindColor(sensor3Diff, sensor2Buffer[i]);
 //        }
-//
-//        Read1();
-//        Read2();
-//        Read3();
+        
+        read1();
+        read2();
+        read3();
 //        Read4();
 //        Read5();
 //        Read6();
@@ -326,26 +383,26 @@ public class Drive {
             sensorsColors[0] = COLOR_BLACK;
         } else if (s1 > (sensor1Values[2] - 50)) {
             //We got green
-            sensorsColors[0] = COLOR_GREEN;
+            sensorsColors[0] = 0x04;
         } else if (s1 > (sensor1Values[1] - 12)){
             //We got yellow
-            sensorsColors[0] = COLOR_YELLOW;
+            sensorsColors[0] = 0x02;
         } else{
             //We got white
-            sensorsColors[0] = COLOR_WHITE;
+            sensorsColors[0] = 0x01;
         }*/
 ////        if (s1 > sensor1Diff[2]) {
 ////            //We got black
 ////            sensorsColors[0] = COLOR_BLACK;
 ////        } else if (s1 > sensor1Diff[1]) {
 ////            //We got green
-////            sensorsColors[0] = COLOR_GREEN;
+////            sensorsColors[0] = 0x04;
 ////        } else if (s1 > sensor1Diff[0]){
 ////            //We got yellow
-////            sensorsColors[0] = COLOR_YELLOW;
+////            sensorsColors[0] = 0x02;
 ////        } else{
 ////            //We got white
-////            sensorsColors[0] = COLOR_WHITE;
+////            sensorsColors[0] = 0x01;
 ////        }
         
         /*
@@ -356,26 +413,26 @@ public class Drive {
             sensorsColors[1] = COLOR_BLACK;
         } else if (s2 > (sensor2Values[2] - 40)) {
             //We got green
-            sensorsColors[1] = COLOR_GREEN;
+            sensorsColors[1] = 0x04;
         } else if (s2 > (sensor2Values[1] - 25)){
             //We got yellow
-            sensorsColors[1] = COLOR_YELLOW;
+            sensorsColors[1] = 0x02;
         } else{
             //We got white
-            sensorsColors[1] = COLOR_WHITE;
+            sensorsColors[1] = 0x01;
         }*/
 ////        if (s2 > sensor2Diff[2]) {
 ////            //We got black
 ////            sensorsColors[1] = COLOR_BLACK;
 ////        } else if (s2 > sensor2Diff[1]) {
 ////            //We got green
-////            sensorsColors[1] = COLOR_GREEN;
+////            sensorsColors[1] = 0x04;
 ////        } else if (s2 > sensor2Diff[0]){
 ////            //We got yellow
-////            sensorsColors[1] = COLOR_YELLOW;
+////            sensorsColors[1] = 0x02;
 ////        } else{
 ////            //We got white
-////            sensorsColors[1] = COLOR_WHITE;
+////            sensorsColors[1] = 0x01;
 ////        }
         
         /*
@@ -386,50 +443,52 @@ public class Drive {
             sensorsColors[2] = COLOR_BLACK;
         } else if (s3 > (sensor3Values[2] - 60)) {
             //We got green
-            sensorsColors[2] = COLOR_GREEN;
+            sensorsColors[2] = 0x04;
         } else if (s3 > (sensor3Values[1] - 15)){
             //We got yellow
-            sensorsColors[2] = COLOR_YELLOW;
+            sensorsColors[2] = 0x02;
         } else{
             //We got white
-            sensorsColors[2] = COLOR_WHITE;
+            sensorsColors[2] = 0x01;
         }*/
 ////        if (s3 > sensor3Diff[2]) {
 ////            //We got black
 ////            sensorsColors[2] = COLOR_BLACK;
 ////        } else if (s3 > sensor3Diff[1]) {
 ////            //We got green
-////            sensorsColors[2] = COLOR_GREEN;
+////            sensorsColors[2] = 0x04;
 ////        } else if (s3 > sensor3Diff[0]){
 ////            //We got yellow
-////            sensorsColors[2] = COLOR_YELLOW;
+////            sensorsColors[2] = 0x02;
 ////        } else{
 ////            //We got white
-////            sensorsColors[2] = COLOR_WHITE;
+////            sensorsColors[2] = 0x01;
 ////        }
         
         //LCD.showNumber(sensorsColors[0] * 100 + sensorsColors[1] * 10 + sensorsColors[2]);
     }
     
-    private static int tempReturn = 0;
-    private static int ReadBlack() {
+    private static byte tempReturn = 0;
+    private static byte ReadBlack() {
         
         //ko
         ReadColors();
         tempReturn = 0;
-        if (sensorsColors[0] == COLOR_BLACK || sensorsColors[0] == COLOR_GREEN)
-            tempReturn += 0x04;
+        if (sensorsColors[0] == 0x08 || sensorsColors[0] == 0x04) {
+            tempReturn += 4;
+        }
+        
+        if (sensorsColors[1] == 0x08 || sensorsColors[1] == 0x04) {
+            tempReturn += 2;
+        }
         
         
-        return 0x07;
-//        if (sensorsColors[1] == COLOR_BLACK || sensorsColors[1] == COLOR_GREEN)
-//            tempReturn += 0x02;
-//        
-//        if (sensorsColors[2] == COLOR_BLACK || sensorsColors[2] == COLOR_GREEN)
-//            tempReturn += 0x01;
-//        
-//        
-//        return tempReturn;
+        if (sensorsColors[2] == 0x08 || sensorsColors[2] == 0x04) {
+            tempReturn += 1;
+        }
+        
+        
+        return tempReturn;
         
 /*        DoRead();
         tempReturn = 0;
@@ -461,14 +520,14 @@ public class Drive {
                 step = 1;
                 Movement.sharpLeft();
             } else if (step == 1) {
-                    LCD.showNumber(1);
+                LCD.showNumber(1);
                 if (value == 4 || value == 6) { // 100 110
                     Movement.stop();
                     step = 2;
                     Movement.sharpLeft();
                 }
             } else if(step == 2){
-                    LCD.showNumber(2);
+                LCD.showNumber(2);
                 if (value == 0 || value == 2) { // 000 010
                     try {
                         Thread.sleep(100);
@@ -508,7 +567,6 @@ public class Drive {
         }
     }
     
-    
     public void Forward(int nextJunction) {
         boolean driving = true;
         int i = 0;
@@ -517,8 +575,9 @@ public class Drive {
         while(driving) {
             i++;
             int b = ReadBlack();
+            LCD.showNumber(1000);
             if (step == 0) {
-                if ((lastJunction == 0x04 && sensorsColors[1] == COLOR_GREEN) || (((lastJunction & 0x01) == 0x01) || ((lastJunction & 0x02) == 0x02) && b == 0)) {
+                if ((lastJunction == 0x04 && sensorsColors[1] == 0x04) || (((lastJunction & 0x01) == 0x01) || ((lastJunction & 0x02) == 0x02) && b == 0)) {
                     Movement.forward();
                     step = 1;
                 } else {
@@ -534,17 +593,21 @@ public class Drive {
                     
                 }
             } else if (step == 1){
+                
+                LCD.showNumber(2000);
                 if ((b & 0x02) == 2) { // 010
                     step = 2;
                 }
             }
             if (step == 2) {
+                
+                LCD.showNumber(3000);
                 roadCount++;
                 if ((nextJunction & 0x04) == 0x04 && // next up is a green dot, with only forward road
                         roadCount > 50 &&           // we must roll som before we detect a green dot
-                        sensorsColors[1] == COLOR_GREEN &&
-                        (sensorsColors[0] == COLOR_WHITE || sensorsColors[0] == COLOR_YELLOW) &&
-                        (sensorsColors[2] == COLOR_WHITE || sensorsColors[2] == COLOR_YELLOW)){
+                        sensorsColors[1] == 0x04 &&
+                        (sensorsColors[0] == 0x01 || sensorsColors[0] == 0x02) &&
+                        (sensorsColors[2] == 0x01 || sensorsColors[2] == 0x02)){
                     step = 3;
                 } else  if (b == 2){ // 010
                     /*
@@ -595,6 +658,8 @@ public class Drive {
                         step = 3;
                 }
             } else if(step == 3) {
+                
+                LCD.showNumber(4000);
                 if (b== 0 || b == 2){ // 000 010
                     //try {
                     //    Thread.sleep(100);
