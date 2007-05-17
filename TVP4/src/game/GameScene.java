@@ -144,8 +144,10 @@ public class GameScene implements Scene {
     private String towerPort;
     private Semaphore semaphore;
     private RobotProxy[] proxy;
-    private GameDialog pauseDialog, winDialog, looseDialog;
+    private GameDialog pauseDialog, winDialog, loseDialog;
     private GameDialog[] robotDialog;
+    
+    private boolean skipSaveReplay;
     
     /** Creates a new instance of GameScene */
     public GameScene() {
@@ -307,8 +309,8 @@ public class GameScene implements Scene {
         
         if (this.pauseDialog == null) {
             this.pauseDialog = new GameDialog("Game Paused.\nPress enter to exit to \nthe title screen.", true);
-            this.winDialog = new GameDialog("You Win!\nPress enter to exit to \nthe title screen.", true);
-            this.looseDialog = new GameDialog("You Loose!\nPress enter to exit to \nthe title screen.", true);
+            this.winDialog = new GameDialog("You Win!\nPress Enter to save a replay\nof your game, or Escape to\nexit.", true);
+            this.loseDialog = new GameDialog("You Lose!\nPress Enter to save a replay\nof your game, or Escape to\nexit.", true);
             this.robotDialog = new GameDialog[3];
             
             for (int i = 0; i < 3; i++) {
@@ -357,7 +359,7 @@ public class GameScene implements Scene {
         if(this.state == this.STATE_LOSE) {
             if(this.soundOn)
                 this.soundManager.runSound(3, false);
-            this.looseDialog.draw(_g);
+            this.loseDialog.draw(_g);
         }
         
         if(this.state == this.STATE_PLACEMENT) {
@@ -465,8 +467,14 @@ public class GameScene implements Scene {
         }
         
         if(this.state == this.STATE_WIN || this.state == this.STATE_LOSE) {
-            if(confirm.isPressed())
+            if(confirm.isPressed()) {
+                this.skipSaveReplay = false;
                 PacmanApp.getInstance().showTitleScene();
+            }
+            if(cancel.isPressed()) {
+                this.skipSaveReplay = true;
+                PacmanApp.getInstance().showTitleScene();
+            }
         }
         
         if(this.moveTimer<0)
@@ -536,9 +544,12 @@ public class GameScene implements Scene {
             if(entities[i].getEntity() != null)
                 entities[i].getEntity().getController().deinit(_input);
         
-        if(entities[0].getEntity().getController().getClass().getName() != "game.entitycontrol.ReplayController") {
-            int saveReplay = JOptionPane.showConfirmDialog(PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow(), "Do you wish to save a replay of this game?", "Save Replay...", JOptionPane.YES_NO_OPTION);
-            if(saveReplay == 0) {
+        if(entities[0].getEntity().getController().getClass().getName() != "game.entitycontrol.ReplayController")
+        {
+            if(!this.skipSaveReplay)
+            {
+//                int saveReplay = JOptionPane.showConfirmDialog(PacmanApp.getInstance().getCore().getScreenManager().getFullScreenWindow(), "Do you wish to save a replay of this game?", "Save Replay...", JOptionPane.YES_NO_OPTION);
+//                if(saveReplay == 0) {
                 JFileChooser saveReplayDialog = new JFileChooser();
                 saveReplayDialog.setFileFilter(new javax.swing.filechooser.FileFilter() {
                     public boolean accept(File f) {
@@ -555,6 +566,7 @@ public class GameScene implements Scene {
                         file = new File(file.getAbsoluteFile() + ".rpl");
                     this.replay.save(file);
                 }
+//                }
             }
             
             PacmanApp.getInstance().getCore().getScreenManager().update();
