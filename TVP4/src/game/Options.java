@@ -82,8 +82,15 @@ public class Options
             this.online = Integer.parseInt(in.readLine());
             this.towerPort = Integer.parseInt(in.readLine());
             in.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception ex) {    //Set defaults:
+            this.entity[0] = 0;     //Keyboard arrows controller
+            this.entity[1] = 1;     //Figure out what to do here
+            this.entity[2] = 2;     //^- Yeah.
+            this.skin = "pacman";   //Skin "pacman"
+            this.speed = 1;         //Normal speed
+            this.sound = 0;         //Sound on
+            this.online = 0;        //Offline mode
+            this.towerPort = 0;     //USB interface
         }
     }
     
