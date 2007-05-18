@@ -166,9 +166,8 @@ public class GameScene implements Scene {
         this.entity[0] = new Entity(null, 0);
         this.entity[1] = new Entity(null, 1);
         this.entity[2] = new Entity(null, 2);
-        TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "pacman/"));
-        SoundSet.getInstance().loadSoundSet(new File(SoundSet.SKIN_LIBRARY + "pacman/"));
-        this.soundManager = new SoundManager();
+//        TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "pacman/"));
+//        this.soundManager = new SoundManager();
         this.cancel = new InputAction("Cancel", InputAction.DETECT_FIRST_ACTION);
         this.confirm = new InputAction("Confirm quit", InputAction.DETECT_FIRST_ACTION);
         
@@ -406,7 +405,7 @@ public class GameScene implements Scene {
         
         this.frameCounter++;
         if(System.currentTimeMillis() - this.frameTimer > 1000) {
-            this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.frameCounter,400);
+            this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+10000000,400);//this.frameCounter,400);
             this.frameCounter = 0;
             this.frameTimer = System.currentTimeMillis();
         }
@@ -426,14 +425,10 @@ public class GameScene implements Scene {
         }
         
         if(this.state == this.STATE_WIN) {
-            if(this.soundOn)
-                this.soundManager.runSound(6, false);
             this.winDialog.draw(_g);
         }
         
         if(this.state == this.STATE_LOSE) {
-            if(this.soundOn)
-                this.soundManager.runSound(3, false);
             this.loseDialog.draw(_g);
         }
         
@@ -468,7 +463,7 @@ public class GameScene implements Scene {
                 this.confirm.isPressed();
                 this.field.drawField(this.mapBuffer.getGraphics(), 0, 0);
                 double aspect = this.mapBuffer.getWidth() / this.mapBuffer.getHeight();
-                this.map = this.mapBuffer.getScaledInstance((int)(300*aspect), 300, Image.SCALE_SMOOTH);
+                this.map = this.mapBuffer.getScaledInstance(((int)(300*aspect))+1, 300, Image.SCALE_SMOOTH);
                 if(field.getSize().width * TileSet.getInstance().getTileSize() > 800 ||
                         field.getSize().height * TileSet.getInstance().getTileSize() > 520) {
                     this.pauseDialog.setSize(525, 525);
@@ -485,20 +480,36 @@ public class GameScene implements Scene {
             if(this.moveTimer<0 && this.semaphore.availablePermits()==3) {
                 for(int i=0; i<entities.length; i++) {
                     if(entities[i].getEntity() != null) {
-//                    System.out.println("Sem: "+semaphore.availablePermits());
                         //Win/Lose condition
                         if(this.field.getPointsLeft() == 0) {
                             this.state = this.STATE_WIN;
-                        } else {
+                            if(this.soundOn)
+                            {
+                                this.soundManager.pause();
+                                this.soundManager.runSound(6, false);
+                            }
+                        }
+                        else
+                        {
                             Node n;
                             Entity e = null;
                             for(int j=0; j<4; j++) {
                                 n = this.field.getNodeAt(entities[0].getEntity().getPosition()).getNodeAt(j);
-                                if(n != null)
+                                if(n != null){
                                     e = n.getEntity();
-                                if(e != null)
-                                    if(e.getID() > 0)
-                                        this.state = this.STATE_LOSE;
+                                    if(e != null)
+                                    {
+                                        if(e.getID() > 0)
+                                        {
+                                            if(this.soundOn == true && this.state != this.STATE_LOSE)
+                                            {  
+                                                this.soundManager.pause();
+                                                this.soundManager.runSound(3, false);
+                                            }
+                                            this.state = this.STATE_LOSE;
+                                        }
+                                    }
+                                }
                             }
                         }
                         
@@ -516,7 +527,9 @@ public class GameScene implements Scene {
                             if(i < NUM_ROBOTS) {
                                 try {
                                     this.proxy[i].move((byte)dir, (byte)entities[i].getEntity().getNode().getBinaryDirections());
-                                } catch(IOException e) {
+                                }
+                                catch(IOException e)
+                                {
                                     System.out.println(e.getMessage());
                                 }
                             }
@@ -557,6 +570,10 @@ public class GameScene implements Scene {
     }
     
     public void init(InputManager _input) {
+        SoundSet.getInstance().loadSoundSet(new File(SoundSet.SKIN_LIBRARY + "pacman/"));
+        this.soundManager = new SoundManager();
+        if(this.soundOn)
+            this.soundManager.runSound(1, true);
         this.state = this.STATE_RUNNING;
         if(this.online){
             //this.state = this.STATE_PLACEMENT;
@@ -566,7 +583,6 @@ public class GameScene implements Scene {
             for(int i=0; i<3; i++)
                 this.proxy[i].setActive(true);
         }
-//        System.out.println(this.towerPort);
         this.resetPoints();
         this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.fps,400);
         this.field.loadFrom(this.level);
@@ -587,8 +603,7 @@ public class GameScene implements Scene {
         }
         this.levelOffsetX = (800/2) - ((this.field.getSize().width * TileSet.getInstance().getTileSize())/2);
         this.levelOffsetY = (600/2) - ((this.field.getSize().height * TileSet.getInstance().getTileSize())/2);
-        if(this.soundOn)
-            this.soundManager.runSound(1, true);
+        
         _input.mapToKey(cancel, KeyEvent.VK_ESCAPE);
         _input.mapToKey(confirm, KeyEvent.VK_ENTER);
         
@@ -615,7 +630,7 @@ public class GameScene implements Scene {
                 this.proxy[i].setActive(false);
         }
         
-        this.soundManager.removePreviousPlayers();
+        this.soundManager.stopPlayers();
         EntityRenderer[] entities = this.field.getEntityRenderers();
         for(int i=0; i<entities.length; i++)
             if(entities[i].getEntity() != null)
