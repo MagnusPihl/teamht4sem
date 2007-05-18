@@ -12,7 +12,8 @@
  * ******VERSION HISTORY******
  *
  * LMK @ 17. maj 2007 (v 1.0)
- * __________ Changes ____________
+ * The random generator in lejos created a new int everytime it was called
+ * we've made this version of the lejos random class to prevent overflow.
  *
  */
 

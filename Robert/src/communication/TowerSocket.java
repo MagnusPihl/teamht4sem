@@ -199,7 +199,7 @@ public class TowerSocket extends LinkLayerSocket {
                 try {
                     sem.acquire();
                 } catch (InterruptedException ex) {
-//                    ex.printStackTrace();
+                    ex.printStackTrace();
                 }
                 addChecksum(this.packetBuffer);
                 tower.write(this.packetBuffer, PACKET_SIZE);

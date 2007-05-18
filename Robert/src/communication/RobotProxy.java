@@ -6,10 +6,12 @@
  * Company: HT++
  *
  * @author Mikkel Brøndsholm Nielsen
- * @version 1.0
+ * @version 1.2
  *
  *
  * ******VERSION HISTORY******
+ * LMK @ 9. april 2007 (v 1.2)
+ * Added rotatePosibleDirections
  * Administrator @ 9. april 2007 (v 1.1)
  *  Towersocket made static
  * Administrator @ 9. april 2007 (v 1.0)
@@ -20,7 +22,6 @@
 
 package communication;
 
-import communication.Node;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,8 +33,8 @@ public class RobotProxy extends Thread{
     private static TowerSocket link = new TowerSocket();
     private NetworkSocket net;// = new NetworkSocket(1,0,link.getInputStream(),link.getOutputStream());
     private TransportSocket socket;// = new TransportSocket(net.getInputStream(), net.getOutputStream());
-    protected InputStream in;// = socket.getInputStream();
-    protected OutputStream out;// = socket.getOutputStream();
+    protected ClearableInputStream in;// = socket.getInputStream();
+    protected ClearableOutputStream out;// = socket.getOutputStream();
     
     private Semaphore sema;
     private int avaibleDirections = -1;
@@ -61,9 +62,11 @@ public class RobotProxy extends Thread{
         sema = e;
     }
     
-    public void init(byte curDir){
-        this.lastDir = curDir;
+    public void init(byte curDirs){
+        this.lastDir = Node.UP;
+        this.lastPossDir = curDirs;
         this.writeBufferIndex = 0;
+        this.socket.clear();
     }
     
     //**************Start of inner-class*********************//
@@ -123,6 +126,7 @@ public class RobotProxy extends Thread{
         this.write(searchDir);
         this.write(possDirs);
         this.lastDir = direction;
+        this.lastPossDir = possDir;
     }
     
     private byte getRotation(byte direction){
@@ -143,6 +147,7 @@ public class RobotProxy extends Thread{
                         searchDir = calcRotation(); break;
                     }
                 }
+                break;
             }
             case(Node.LEFT): {
                 switch(direction){
@@ -159,6 +164,7 @@ public class RobotProxy extends Thread{
                         searchDir = GameCommands.TURN_RIGHT; break;
                     }
                 }
+                break;
             }
             case(Node.RIGHT): {
                 switch(direction){
@@ -175,6 +181,7 @@ public class RobotProxy extends Thread{
                         searchDir = GameCommands.TURN_LEFT; break;
                     }
                 }
+                break;
             }
             case(Node.UP): {
                 switch(direction){
@@ -191,6 +198,7 @@ public class RobotProxy extends Thread{
                         searchDir = GameCommands.FORWARD; break;
                     }
                 }
+                break;
             }
         }
         return searchDir;
@@ -217,13 +225,18 @@ public class RobotProxy extends Thread{
     }
     
     public void search(byte _direction) throws IOException{
-        byte searchDir = getRotation(_direction);
         try {
             sema.acquire();
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
-        this.write(searchDir | GameCommands.DISCOVER);
+        this.writer.setActive(true);
+        if (_direction != Node.INVALID_DIRECTION) {
+            this.write(getRotation(_direction) | GameCommands.DISCOVER);
+            this.lastDir = _direction;
+        } else {
+            this.write(GameCommands.SEARCH_NODE);
+        }
     }
     
     public int getAvaibleDirections(){
@@ -249,8 +262,12 @@ public class RobotProxy extends Thread{
     public boolean isDoneMoving(){
         try {      
             int input = this.in.read();
-            if((input&0xf0) == GameCommands.MOVE_DONE){
-                this.avaibleDirections = (input&0x0f);
+            /*if (input != -1) {
+                System.out.println(input);
+            }*/
+            if((input&0xf0) == GameCommands.MOVE_DONE) {
+                    //System.out.println(Integer.toBinaryString(input & 0x0f));
+                this.avaibleDirections = derotatePossibleDirections((byte)this.lastDir, (byte)input);
                 this.sema.release();
                 this.writer.setActive(false);
                 return true;
@@ -284,30 +301,77 @@ public class RobotProxy extends Thread{
         this.out.write(outPacket);
     }
     
-    public static void open(String port) {
+    public static void open(String port) {        
         link.open(port);
     }
     
     public static void close() {
-        link.close();
+        link.close();        
     }
     
     public void setActive(boolean isActive) {
         this.socket.setActive(isActive);
     }
     
-    private byte rotatePossibleDirections(byte nodeDir, byte dirs) {
+    public static byte rotatePossibleDirections(byte nodeDir, byte dirs) {
         switch(nodeDir) {
-            //turn right
+            //node - up right   down left
+            //turns -   forward left right
+            case Node.UP :
+                //up - forward, right - right, left - left
+                return (byte)(((dirs & GameCommands.UP) >> 1) |
+                        ((dirs & GameCommands.RIGHT) >> 2) | 
+                        ((dirs & GameCommands.LEFT) << 1));
             case Node.RIGHT :
-                return (byte)(((dirs << 1) & 0x0F) | ((dirs & GameCommands.UP) >> 3));
+                //right - forward, up - left, down - right
+                return (byte)((dirs & GameCommands.RIGHT) |
+                        ((dirs & GameCommands.UP) >> 2) | 
+                        ((dirs & GameCommands.DOWN) >> 1));
             case Node.LEFT:
-                return (byte)((dirs >> 1) | ((dirs & GameCommands.LEFT) << 3));
-            case Node.DOWN :
-                return (byte)((dirs & GameCommands.UP >> 3) |
-                        (dirs & GameCommands.RIGHT >> 1) |
-                        (dirs & GameCommands.DOWN << 1) |
-                        (dirs & GameCommands.LEFT << 3));
+                //left - forward, up - right, down - left
+                return (byte)(((dirs & GameCommands.LEFT) << 2) |
+                        ((dirs & GameCommands.UP) >> 3) | 
+                        (dirs & GameCommands.DOWN));
+            case Node.DOWN : 
+                //down - forward, left - right, right - left
+                return (byte)(((dirs & GameCommands.DOWN) << 1) | 
+                        ((dirs & GameCommands.LEFT)) | 
+                        ((dirs & GameCommands.RIGHT) >> 1));
+            default: return dirs;
+        }
+    }
+        
+    /**
+     * Rotate path data from 
+     */
+    public static byte derotatePossibleDirections(byte nodeDir, byte dirs) {
+        switch(nodeDir) {
+            //turns -turn_number forward left right
+            //node - up          right   down left
+            case Node.UP :
+                //forward > up, right > right, left > left, turn_number > down
+                return (byte)(((dirs & GameCommands.FORWARD) << 1) |
+                        ((dirs & GameCommands.TURN_RIGHT) << 2) | 
+                        ((dirs & GameCommands.TURN_LEFT) >> 1) |                        
+                        ((dirs & GameCommands.TURN_NUMBER) >> 2));
+            case Node.RIGHT :
+                //forward > right, left > up, right > down, turn_number > left
+                return (byte)((dirs & GameCommands.FORWARD) |
+                        ((dirs & GameCommands.TURN_LEFT) << 2) | 
+                        ((dirs & GameCommands.TURN_RIGHT) << 1) | 
+                        ((dirs & GameCommands.TURN_NUMBER) >> 3));
+            case Node.LEFT:
+                //forward > left, right > up, left > down, turn_number > right
+                return (byte)(((dirs & GameCommands.FORWARD) >> 2) |
+                        ((dirs & GameCommands.TURN_RIGHT) << 3) | 
+                        (dirs & GameCommands.TURN_LEFT) |
+                        ((dirs & GameCommands.TURN_NUMBER) >> 1));
+            case Node.DOWN : 
+                //forward > down, right > left, left - right, turn_number > up
+                return (byte)(((dirs & GameCommands.FORWARD) >> 1) | 
+                        ((dirs & GameCommands.TURN_RIGHT)) | 
+                        ((dirs & GameCommands.TURN_LEFT) << 1) |
+                        ((dirs & GameCommands.TURN_NUMBER)));
             default: return dirs;
         }
     }

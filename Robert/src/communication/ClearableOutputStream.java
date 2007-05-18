@@ -24,11 +24,10 @@ import java.io.*;
  *
  * @author LMK
  */
-public abstract class ClearableOutputStream extends OutputStream {
+public abstract class ClearableOutputStream extends OutputStream {    
     
-    /** Creates a new instance of ClearableOutputStream */
-    public ClearableOutputStream() {
-    }
-    
+    /**
+     * Clear contents of buffer
+     */
     public abstract void clear();
 }
