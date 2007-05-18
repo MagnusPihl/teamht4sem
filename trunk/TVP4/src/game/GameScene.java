@@ -149,6 +149,14 @@ public class GameScene implements Scene {
     
     private boolean skipSaveReplay;
     
+    private boolean ghost1Offscreen;
+    private int ghost1OffscreenX;
+    private int ghost1OffscreenY;
+    private boolean ghost2Offscreen;
+    private int ghost2OffscreenX;
+    private int ghost2OffscreenY;
+    private GameDialog offscreenFrame;
+    
     /** Creates a new instance of GameScene */
     public GameScene() {
         this.replay = new Replay();
@@ -256,6 +264,62 @@ public class GameScene implements Scene {
     }
     
     private void updateLevelOffset() {
+        this.ghost1Offscreen = false;
+        this.ghost2Offscreen = false;
+        if(field.getSize().width * TileSet.getInstance().getTileSize() > 800 ||
+                field.getSize().height * TileSet.getInstance().getTileSize() > 520)
+        {
+            int ghostX, ghostY;
+            
+            ghostX = this.levelOffsetX + field.getEntityRenderers()[1].getEntity().getPosition().x * TileSet.getInstance().getTileSize();
+            if(ghostX < 0) {
+                this.ghost1Offscreen = true;
+                this.ghost1OffscreenX = 0;
+            }
+            else if(ghostX > 800) {
+                this.ghost1Offscreen = true;
+                this.ghost1OffscreenX = 800-TileSet.getInstance().getTileSize();
+            }
+            else
+                this.ghost1OffscreenX = ghostX;
+            
+            ghostX = this.levelOffsetX + field.getEntityRenderers()[2].getEntity().getPosition().x * TileSet.getInstance().getTileSize();
+            if(ghostX < 0) {
+                this.ghost2Offscreen = true;
+                this.ghost2OffscreenX = 0;
+            }
+            else if(ghostX > 800) {
+                this.ghost2Offscreen = true;
+                this.ghost2OffscreenX = 800-TileSet.getInstance().getTileSize();
+            }
+            else
+                this.ghost2OffscreenX = ghostX;
+            
+            ghostY = this.levelOffsetY + field.getEntityRenderers()[1].getEntity().getPosition().y * TileSet.getInstance().getTileSize();
+            if(ghostY < 60) {
+                this.ghost1Offscreen = true;
+                this.ghost1OffscreenY = 60;
+            }
+            else if(ghostY > 600) {
+                this.ghost1Offscreen = true;
+                this.ghost1OffscreenY = 600-TileSet.getInstance().getTileSize();
+            }
+            else
+                this.ghost1OffscreenY = ghostY;
+            
+            ghostY = this.levelOffsetY + field.getEntityRenderers()[2].getEntity().getPosition().y * TileSet.getInstance().getTileSize();
+            if(ghostY < 60) {
+                this.ghost2Offscreen = true;
+                this.ghost2OffscreenY = 60;
+            }
+            else if(ghostY > 600) {
+                this.ghost2Offscreen = true;
+                this.ghost2OffscreenY = 600-TileSet.getInstance().getTileSize();
+            }
+            else
+                this.ghost2OffscreenY = ghostY;
+        }
+        
         if(field.getSize().width * TileSet.getInstance().getTileSize() > 800) {
             int pacX = field.getEntityRenderers()[0].getEntity().getPosition().x * TileSet.getInstance().getTileSize();
             
@@ -328,6 +392,17 @@ public class GameScene implements Scene {
         _g.setClip(0, 50, 800, 550);
         field.drawField(_g, this.levelOffsetX, this.levelOffsetY);
         _g.setClip(c);
+        
+        if(this.ghost1Offscreen) {
+            this.offscreenFrame.draw(_g, this.ghost1OffscreenX-28, this.ghost1OffscreenY-28);
+            _g.drawImage(TileSet.getInstance().getEntityTile(1,field.getEntityRenderers()[1].getEntity().getDirection(),0),
+                    this.ghost1OffscreenX, this.ghost1OffscreenY, null);
+        }
+        if(this.ghost2Offscreen) {
+            this.offscreenFrame.draw(_g, this.ghost2OffscreenX-28, this.ghost2OffscreenY-28);
+            _g.drawImage(TileSet.getInstance().getEntityTile(2,field.getEntityRenderers()[2].getEntity().getDirection(),0),
+                    this.ghost2OffscreenX, this.ghost2OffscreenY, null);
+        }
         
         this.frameCounter++;
         if(System.currentTimeMillis() - this.frameTimer > 1000) {
@@ -526,6 +601,8 @@ public class GameScene implements Scene {
         }
         
         this.prerender();
+        this.offscreenFrame = new GameDialog(TileSet.getInstance().getTileSize(),TileSet.getInstance().getTileSize(),true);
+        this.offscreenFrame = new GameDialog(TileSet.getInstance().getTileSize(),TileSet.getInstance().getTileSize(),true);
     }
     
     public void deinit(InputManager _input) {

@@ -40,9 +40,6 @@ public class SkinFileFilter implements FileFilter {
                     if (!new File(path + i +"_"+ j + "_0.png").isFile()) {
                         return false;
                     }
-                    if (!new File(path + i +"_"+ j + "_1.png").isFile()) {
-                        return false;
-                    }
                 }
             }
             
