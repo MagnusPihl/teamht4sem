@@ -120,13 +120,19 @@ public class TileSet
                 {
                     for(int j=0; j<Node.DIRECTION_COUNT; j++)
                     {
-                        for(int k=0; new File(path+i+"_"+j+"_"+k+".png").isFile(); k++)
+                        for(int k=0; k<this.MAX_FRAME_COUNT; k++)
                         {
-                            this.entityTiles[i][j][k] =
-                                    (new ImageIcon(path +  i +"_"+ j + "_"+k+".png")).getImage();
-                            if(k+1 > this.frameCount)
-                                this.frameCount = k+1;
-//                            System.out.println("K: "+this.frameCount);
+                            if(new File(path+i+"_"+j+"_"+k+".png").isFile())
+                            {
+                                this.entityTiles[i][j][k] = (new ImageIcon(path +  i +"_"+ j + "_"+k+".png")).getImage();
+                                if(k+1 > this.frameCount) {
+                                    this.frameCount = k+1;
+                                }
+                            }
+                            else
+                            {
+                                this.entityTiles[i][j][k] = null;
+                            }
                         }
                     }
                 }
@@ -171,8 +177,13 @@ public class TileSet
      */
     public Image getEntityTile(int index, int direction, int frame)
     {
-        if(index < this.entityTiles.length && direction < this.entityTiles[0].length && frame < this.frameCount)
-            return this.entityTiles[index][direction][frame];
+        if(index < this.entityTiles.length && direction < this.entityTiles[0].length && frame >= 0)
+        {
+            if(this.entityTiles[index][direction][frame] != null)
+                return this.entityTiles[index][direction][frame];
+            else
+                return this.getEntityTile(index, direction, frame - 1);
+        }
         else
             return null;
     }
