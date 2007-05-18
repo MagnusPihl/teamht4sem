@@ -67,7 +67,7 @@ public class RobotProxy extends Thread{
         this.lastDir = Node.UP;
         this.lastPossDir = curDirs;
         this.writeBufferIndex = 0;
-        this.socket.clear();
+        //this.socket.clear();
     }
     
     //**************Start of inner-class*********************//
