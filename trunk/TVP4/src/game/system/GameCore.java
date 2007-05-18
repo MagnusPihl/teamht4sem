@@ -100,11 +100,11 @@ public class GameCore {
             _g.dispose();
             this.screen.update();
 
-            try {
+            /*try {
                 Thread.sleep(20);
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
-            }            
+            }            */
             //frames++;
         }
         //System.out.println(frames);
