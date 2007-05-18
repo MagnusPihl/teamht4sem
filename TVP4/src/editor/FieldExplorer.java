@@ -188,7 +188,7 @@ public class FieldExplorer implements Runnable {
                 }
                 addedNode = field.addNodeAt(position.x-1, position.y);
                 if (addedNode != null) {
-                    this.dialog.addToLog("Found node - UP");
+                    this.dialog.addToLog("Found node - LEFT");
                     this.open.push(addedNode);
                 }
             }
