@@ -59,7 +59,7 @@ public class NewDrive {
         
     private int turnTimeout;
     private static final int TURN_TIME = 200; //find ud af om tallet er fornuftigt
-    private static final int TURN_INIT_TIME = 100; //find ud af om tallet er fornuftigt
+    private static final int TURN_INIT_TIME = 250; //find ud af om tallet er fornuftigt
     
     private int calibrationValue;
     
@@ -129,9 +129,11 @@ public class NewDrive {
     }
     
     public void calculateBlackSensors() {
+        blackSensors = 0;
+        
         for (i = 0; i < SENSOR_COUNT; i++) {
             if ((currentColor[i] == COLOR_BLACK) || (currentColor[i] == COLOR_GREEN)) {
-                blackSensors = (byte)(1 << i);
+                blackSensors += (byte)(1 << i);
             }
         }
     }
