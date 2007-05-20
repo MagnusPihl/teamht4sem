@@ -278,8 +278,52 @@ public class NewDrive {
     }
     
     public void waitForHelp() {
-        Movement.stop();           
+        Movement.stop();
         while (!Button.RUN.isPressed()) {
         }
+    }
+    
+    public int search()
+    {
+        int result = 0x02;
+        this.read();
+        
+        if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_YELLOW)
+        {
+            if(this.currentColor[this.RIGHT_SENSOR] == this.COLOR_BLACK)
+                result = result | 0x01;
+            if(this.currentColor[this.LEFT_SENSOR] == this.COLOR_BLACK)
+                result = result | 0x04;
+            
+            while(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_YELLOW)
+            {
+                Movement.forward();
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+                Movement.stop();
+                this.read();
+            }
+            if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_BLACK)
+                result = result | 0x08;
+            while(this.currentColor[this.MIDDLE_SENSOR] != this.COLOR_YELLOW)
+            {
+                Movement.backward();
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+                Movement.stop();
+                this.read();
+            }
+            return result;
+        }
+        else if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_GREEN)
+            return 0x10;    //Forward and back available
+        
+        return 0x00;    //Not on a node
     }
 }
