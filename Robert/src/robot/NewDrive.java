@@ -288,7 +288,7 @@ public class NewDrive {
         }
     }
     
-    public int search()
+    public byte search()
     {
         this.pathsDiscovered = GameCommands.TURN_NUMBER;
         this.read();
@@ -329,6 +329,6 @@ public class NewDrive {
         else if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_GREEN)
             return this.pathsDiscovered;    //Forward and back available
         
-        return 0x00;    //Not on a node
+        return 0;    //Not on a node
     }
 }
