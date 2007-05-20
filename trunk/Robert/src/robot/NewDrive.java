@@ -18,6 +18,7 @@
 
 package robot;
 
+import communication.GameCommands;
 import josx.platform.rcx.*;
 
 /**
@@ -62,6 +63,8 @@ public class NewDrive {
     private static final int TURN_INIT_TIME = 250; //find ud af om tallet er fornuftigt
     
     private int calibrationValue;
+    
+    private byte pathsDiscovered;
     
     /** Creates a new instance of NewDrive */
     public NewDrive() {                
@@ -287,15 +290,15 @@ public class NewDrive {
     
     public int search()
     {
-        int result = 0x02;
+        this.pathsDiscovered = GameCommands.TURN_NUMBER;
         this.read();
         
         if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_YELLOW)
         {
             if(this.currentColor[this.RIGHT_SENSOR] == this.COLOR_BLACK)
-                result = result | 0x01;
+                this.pathsDiscovered |= GameCommands.TURN_RIGHT;
             if(this.currentColor[this.LEFT_SENSOR] == this.COLOR_BLACK)
-                result = result | 0x04;
+                this.pathsDiscovered |= GameCommands.TURN_LEFT;
             
             while(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_YELLOW)
             {
@@ -309,7 +312,7 @@ public class NewDrive {
                 this.read();
             }
             if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_BLACK)
-                result = result | 0x08;
+                this.pathsDiscovered |= GameCommands.FORWARD;
             while(this.currentColor[this.MIDDLE_SENSOR] != this.COLOR_YELLOW)
             {
                 Movement.backward();
@@ -321,10 +324,10 @@ public class NewDrive {
                 Movement.stop();
                 this.read();
             }
-            return result;
+            return this.pathsDiscovered;
         }
         else if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_GREEN)
-            return 0x10;    //Forward and back available
+            return this.pathsDiscovered;    //Forward and back available
         
         return 0x00;    //Not on a node
     }
