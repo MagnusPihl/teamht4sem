@@ -27,7 +27,7 @@ import java.io.*;
  */
 public abstract class LinkLayerSocket {
     private int checksum;
-    private int i;
+    private byte i;
     
     public static final byte PACKET_HEADER = 0x55;
     public static final byte DATA_OFFSET = 2;
@@ -82,10 +82,10 @@ public abstract class LinkLayerSocket {
     /**
      * Get InputStream
      */
-    public abstract ClearableInputStream getInputStream();
+    public abstract InputStream getInputStream();
     
     /**
      * Get OutputStream
      */
-    public abstract ClearableOutputStream getOutputStream();
+    public abstract OutputStream getOutputStream();
 }

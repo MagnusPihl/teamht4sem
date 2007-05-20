@@ -42,9 +42,9 @@ public class LLCSocket extends LinkLayerSocket {
         LLC.setRangeLong();
     }           
     
-    public class LLCInputStream extends ClearableInputStream {
-        private int readPointer;
-        private int inPointer;
+    public class LLCInputStream extends InputStream {
+        private byte readPointer;
+        private byte inPointer;
         private byte[] buffer;        
         private int timeout;
         private int data;
@@ -74,7 +74,7 @@ public class LLCSocket extends LinkLayerSocket {
                 this.data = LLC.read();
                 if (this.data != -1) {
                     if ((this.inPointer < DATA_OFFSET)) {
-                        if (this.data == PACKET_HEADER) {
+                        if ((byte)this.data == PACKET_HEADER) {
                             this.inPointer++;
                             timeout = (int)System.currentTimeMillis() + TIMEOUT; 
                         } else {
@@ -117,19 +117,12 @@ public class LLCSocket extends LinkLayerSocket {
                 this.readPointer = 0;
             }
                         
-            return this.data & 0xFF;            
-        }      
-        
-        /**
-         * Clear contents of read buffer
-         */
-        public void clear() {
-            this.readPointer = this.inPointer;
-        }
+            return ((int)this.data) & 0xFF;            
+        }              
     }
     
-    public class LLCOutputStream extends ClearableOutputStream {
-        private int writePointer;
+    public class LLCOutputStream extends OutputStream {
+        private byte writePointer;
         private byte[] buffer;               
         
         /**
@@ -166,35 +159,20 @@ public class LLCSocket extends LinkLayerSocket {
                 LLC.sendBytes(this.buffer, PACKET_SIZE);
                 this.writePointer = DATA_OFFSET;
             }
-        }   
-        
-        /**
-         * Clear contents of outbound buffer.
-         */
-        public void clear() {
-            this.writePointer = DATA_OFFSET;
-        }
-    }    
-    
-    /**
-     * Clear both output and input buffer.
-     */
-    public void clear() {
-        this.in.clear();
-        this.out.clear();
-    }
+        }           
+    }        
     
     /**
      * Get InputStream to read from.
      */
-    public ClearableInputStream getInputStream() {
+    public InputStream getInputStream() {
         return this.in;
     }
     
     /**
      * Get OutputStream to write to.
      */
-    public ClearableOutputStream getOutputStream() {
+    public OutputStream getOutputStream() {
         return this.out;
     }    
 }

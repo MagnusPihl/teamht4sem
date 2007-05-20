@@ -28,35 +28,31 @@ import java.io.*;
 
 public class NetworkSocket {
     
-    private int sender;
-    private int receiver;
     private NetworkInputStream in;
     private NetworkOutputStream out;
     
-    public static final int INPUT_BUFFER_SIZE = 2;
-    public static final int OUTPUT_BUFFER_SIZE = 2;
+    public static final byte INPUT_BUFFER_SIZE = 2;
+    public static final byte OUTPUT_BUFFER_SIZE = 2;
     
     /** 
      * Creates a new instance of IRDatagramSocket 
      */
-    public NetworkSocket(int sender, int receiver, ClearableInputStream in, ClearableOutputStream out) {
-        this.sender = sender;
-        this.receiver = receiver;
-        this.in = new NetworkSocket.NetworkInputStream(in);
-        this.out = new NetworkSocket.NetworkOutputStream(out);
+    public NetworkSocket(byte sender, byte receiver, InputStream in, OutputStream out) {        
+        this.in = new NetworkSocket.NetworkInputStream(in, sender, receiver);
+        this.out = new NetworkSocket.NetworkOutputStream(out, sender, receiver);
     }    
     
     /**
      * Input stream that reads address header in each package and only
      * accepts relevant pacakges.
      */
-    public class NetworkInputStream extends ClearableInputStream {
-        private ClearableInputStream in;
-        private int expectedHeader;
-        private int receivedHeader;
+    public class NetworkInputStream extends InputStream {
+        private InputStream in;
+        private byte expectedHeader;
+        private byte receivedHeader;
         private byte[] buffer;
-        private int readIndex;
-        private int bufferIndex;
+        private byte readIndex;
+        private byte bufferIndex;
         
         private boolean packetAccepted;
         private int data;
@@ -67,7 +63,7 @@ public class NetworkSocket {
          *
          * @param stream to read from.
          */
-        protected NetworkInputStream(ClearableInputStream in) {
+        protected NetworkInputStream(InputStream in, byte sender, byte receiver) {
             this.in = in;
             this.expectedHeader = NetworkDatagram.getAdressHeader(receiver, sender);
             this.buffer = new byte[INPUT_BUFFER_SIZE];
@@ -90,7 +86,7 @@ public class NetworkSocket {
 //                    System.out.println("Network: Data = "+this.data);
                     if (this.bufferIndex == -1) {
 //                        System.out.println(this.data + " ?= "+this.expectedHeader);
-                        if (this.data == this.expectedHeader) {
+                        if ((byte)this.data == this.expectedHeader) {
                             this.packetAccepted = true;
                         }
                     } else {
@@ -134,33 +130,25 @@ public class NetworkSocket {
                 this.readIndex = 0;
             }
             
-            return data & 0xFF;
-        }             
-        
-        /**
-         * Clear buffer
-         */
-        public void clear() {            
-            this.in.clear();
-            this.bufferIndex = this.readIndex;
-        }
+            return this.data & 0xFF;
+        }                     
     }
     
     /**
      * Output stream that adds address header to outbound packages.
      */
-    public class NetworkOutputStream extends ClearableOutputStream {        
-        private ClearableOutputStream out;
-        private int sendHeader;
+    public class NetworkOutputStream extends OutputStream {        
+        private OutputStream out;
+        private byte sendHeader;
         private byte[] buffer;
-        private int bufferPosition;
+        private byte bufferPosition;
         
         /**
          * Create new output stream that adds address headers to data
          *
          * @param output stream to write datagrams to
          */
-        protected NetworkOutputStream(ClearableOutputStream out) {
+        protected NetworkOutputStream(OutputStream out, byte sender, byte receiver) {
             this.out = out;
             this.sendHeader = NetworkDatagram.getAdressHeader(sender, receiver);
             this.buffer = new byte[OUTPUT_BUFFER_SIZE];
@@ -189,15 +177,7 @@ public class NetworkSocket {
                 this.out.write(this.buffer);
 //                System.out.println("Network: Data Sent");
             }
-        }    
-        
-        /**
-         * Clear buffer
-         */
-        public void clear() {
-            this.out.clear();
-            this.bufferPosition = -1;
-        }
+        }            
     }
     
     /**
@@ -205,7 +185,7 @@ public class NetworkSocket {
      *
      * @return OutputStream
      */
-    public ClearableOutputStream getOutputStream() {
+    public OutputStream getOutputStream() {
         return this.out;
     }
     
@@ -214,15 +194,7 @@ public class NetworkSocket {
      *
      * @return NetworkInputStream
      */
-    public ClearableInputStream getInputStream() {
+    public InputStream getInputStream() {
         return this.in;
-    }
-    
-    /**
-     * Clear data in all buffers
-     */
-    public void clear() {
-        this.in.clear();
-        this.out.clear();
-    }
+    }    
 }

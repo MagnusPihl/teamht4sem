@@ -126,7 +126,7 @@ public class TowerSocket extends LinkLayerSocket {
      * InputStream that converts incoming packets into an inputstream.
      * Packets are always 3 bytes long.
      */
-    public class TowerInputStream extends ClearableInputStream {
+    public class TowerInputStream extends InputStream {
         private int readIndex;
         private byte data;
         
@@ -155,21 +155,14 @@ public class TowerSocket extends LinkLayerSocket {
             }
             
             return this.data & 0xFF;
-        }
-        
-        /**
-         * Clear buffer
-         */
-        public synchronized void clear() {
-            this.readIndex = bufferIndex;
-        }
+        }        
     }
     
     /**
      * Output stream that let's you write packets to IR.
      * Each packet can hold 3 bytes. A packet is sent every 3 bytes written.
      */
-    public class TowerOutputStream extends ClearableOutputStream {
+    public class TowerOutputStream extends OutputStream {
         
         private byte[] packetBuffer;
         private int packetIndex;
@@ -206,27 +199,20 @@ public class TowerSocket extends LinkLayerSocket {
                 this.packetIndex = DATA_OFFSET;
                 sem.release();
             }
-        }
-        
-        /**
-         * Clear buffer
-         */
-        public synchronized void clear() {
-            this.packetIndex = 0;
-        }
+        }        
     }
     
     /**
      * Get InputStream
      */
-    public ClearableInputStream getInputStream() {
+    public InputStream getInputStream() {
         return new TowerSocket.TowerInputStream();
     }
     
     /**
      * Get OutputStream
      */
-    public ClearableOutputStream getOutputStream() {
+    public OutputStream getOutputStream() {
         return new TowerSocket.TowerOutputStream();
     }
 }
