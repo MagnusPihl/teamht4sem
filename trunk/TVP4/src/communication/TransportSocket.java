@@ -48,23 +48,23 @@ import java.util.Random;
 public class TransportSocket {
     private TransportInputStream in;
     private TransportOutputStream out;
-    private int lastAcknowledge;
+    private byte lastAcknowledge;
     private TransportInputThread inputThread;
-    private int bufferIndex;
+    private byte bufferIndex;
     private byte[] readBuffer;
     public static communication.Random random = new communication.Random();
     
-    public static final int DATA = 0;
-    public static final int RECEIPT = 1;
+    public static final byte DATA = 0;
+    public static final byte RECEIPT = 1;
     
     private static final byte NOP = 0x00;
     
-    public static final int INPUT_BUFFER_SIZE = 20;
+    public static final byte INPUT_BUFFER_SIZE = 20;
     //Time to wait for acknowledge before retrying to write data. Should always be lower than WRITE_TIMEOUT.
-    public static final int ACKNOWLEDGE_TIMEOUT = 300;
+    private int ACKNOWLEDGE_TIMEOUT = 200 + random.nextInt()&0x7F;
     
     /** Creates a new instance of TransportSocket */
-    public TransportSocket(ClearableInputStream in, ClearableOutputStream out) {
+    public TransportSocket(InputStream in, OutputStream out) {
         this.readBuffer = new byte[INPUT_BUFFER_SIZE];
         this.in = new TransportSocket.TransportInputStream();
         this.out = new TransportSocket.TransportOutputStream(out);
@@ -75,12 +75,12 @@ public class TransportSocket {
     
     public class TransportInputThread extends Thread {
         private int data;
-        private int lastSequence;
+        private byte lastSequence;
         private int header;
         protected boolean isActive;
         
-        private ClearableInputStream in;
-        private ClearableOutputStream out;
+        private InputStream in;
+        private OutputStream out;
         
         /**
          * Create TransportInputThread class used to read indefinetly from
@@ -89,7 +89,7 @@ public class TransportSocket {
          * @param InputStream to read data from.
          * @param OuputStream to write acknowledges to.
          */
-        protected TransportInputThread(ClearableInputStream in, ClearableOutputStream out) {
+        protected TransportInputThread(InputStream in, OutputStream out) {
             this.in = in;
             this.out = out;
             bufferIndex = 0;
@@ -129,11 +129,11 @@ public class TransportSocket {
                             } while (this.data == -1);
                             //(System.out.println(this.data);
                         } else {
-                            Thread.yield();
+                            Thread.sleep(random.nextInt()&0x3F);
                             continue;
                         }
                         
-                        //                        System.out.println("Transport: READING:  "+TransportPackage.getType(header)+", "+TransportPackage.getSequenceNumber(header)+", "+data);
+                        //System.out.println("Transport: READING:  "+TransportPackage.getType(header)+", "+TransportPackage.getSequenceNumber(header)+", "+data);
                         
                         //Only continue if byte received is Data header.
                         if (TransportPackage.getType(header) == DATA) {
@@ -153,7 +153,7 @@ public class TransportSocket {
                         } else if (TransportPackage.getType(header) == RECEIPT) {
                             lastAcknowledge = TransportPackage.getSequenceNumber(this.header);
                         }
-                        Thread.yield();
+                        Thread.sleep(random.nextInt()&0x3F);
                     } catch (Exception e) {
                         //e.printStackTrace();
                     }
@@ -163,18 +163,13 @@ public class TransportSocket {
                     } catch (Exception e) {}
                 }
             }
-        }
-        
-        public void clear() {
-            this.in.clear();
-            this.out.clear();
-        }
+        }               
     }
     
-    public class TransportInputStream extends ClearableInputStream {
+    public class TransportInputStream extends InputStream {
         
-        private int readIndex;
-        private int data;
+        private byte readIndex;
+        private byte data;
         
         /**
          * Create a new TransportInputStream
@@ -199,21 +194,14 @@ public class TransportSocket {
                     this.readIndex = 0;
                 }
                 
-                return this.data & 0xFF;
+                return ((int)this.data) & 0xFF;
             }
-        }
-        
-        /**
-         * Clear buffer
-         */
-        public void clear() {
-            this.readIndex = bufferIndex;
-        }
+        }        
     }
     
-    public class TransportOutputStream extends ClearableOutputStream {
-        private ClearableOutputStream out;
-        private int sequence;
+    public class TransportOutputStream extends OutputStream {
+        private OutputStream out;
+        private byte sequence;
         private int timeout;
         
         /**
@@ -221,9 +209,9 @@ public class TransportSocket {
          *
          * @param OutputStream to write to.
          */
-        protected TransportOutputStream(ClearableOutputStream out) {
+        protected TransportOutputStream(OutputStream out) {
             this.out = out;
-            this.sequence = (byte)((int)System.currentTimeMillis()) & 0x7F;
+            this.sequence = (byte)((int)System.currentTimeMillis() & 0x7F);
             
         }
         
@@ -243,30 +231,25 @@ public class TransportSocket {
             try {
                 this.out.write(sequence);
                 this.out.write(b);                
-                this.timeout = (int)System.currentTimeMillis() + TransportSocket.ACKNOWLEDGE_TIMEOUT;
+                this.timeout = (int)System.currentTimeMillis() + ACKNOWLEDGE_TIMEOUT;
                 
                 //Try to read acknowledge header. Timeout if needed.
                 while(lastAcknowledge != sequence) {
                     if(this.timeout < (int)System.currentTimeMillis()) {
                         this.out.write(sequence);
                         this.out.write(b);
-                        this.timeout = (int)System.currentTimeMillis() + TransportSocket.ACKNOWLEDGE_TIMEOUT;
+                        this.timeout = (int)System.currentTimeMillis() + ACKNOWLEDGE_TIMEOUT;
+                        System.out.println("resending");
                     }
                     
-                    Thread.sleep(random.nextInt()&0x7F + 20);
+                    //Thread.sleep(ACKNOWLEDGE_TIMEOUT + random.nextInt()&0x7F);
+                    Thread.sleep(random.nextInt()&0x7F);
                     //Thread.yield();
                 }
             } catch (Exception e) {
                 //e.printStackTrace();
             }
-        }
-        
-        /**
-         * Clear buffer
-         */
-        public void clear() {
-            this.out.clear();
-        }
+        }        
     }
     
     /**
@@ -278,27 +261,19 @@ public class TransportSocket {
      */
     public void setActive(boolean isActive) {
         this.inputThread.isActive = isActive;
-    }
-    
-    /**
-     * Clear buffers.
-     */
-    public void clear() {
-        this.inputThread.clear();
-        this.in.clear();
-    }
+    }     
     
     /**
      * Get reliable output stream.
      */
-    public ClearableOutputStream getOutputStream() {
+    public OutputStream getOutputStream() {
         return this.out;
     }
         
     /**
      * Get input stream.
      */
-    public ClearableInputStream getInputStream() {
+    public InputStream getInputStream() {
         return this.in;
     }
 }

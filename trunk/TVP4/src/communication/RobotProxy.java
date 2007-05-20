@@ -34,8 +34,8 @@ public class RobotProxy extends Thread{
     private static TowerSocket link = new TowerSocket();
     private NetworkSocket net;// = new NetworkSocket(1,0,link.getInputStream(),link.getOutputStream());
     private TransportSocket socket;// = new TransportSocket(net.getInputStream(), net.getOutputStream());
-    protected ClearableInputStream in;// = socket.getInputStream();
-    protected ClearableOutputStream out;// = socket.getOutputStream();
+    protected InputStream in;// = socket.getInputStream();
+    protected OutputStream out;// = socket.getOutputStream();
     
     private Semaphore sema;
     private int avaibleDirections = -1;
@@ -51,7 +51,7 @@ public class RobotProxy extends Thread{
      * Creates a new instance of RobotProxy
      */
     public RobotProxy(int _robotID, Semaphore e) {
-        net = new NetworkSocket(0, _robotID,link.getInputStream(),link.getOutputStream());
+        net = new NetworkSocket((byte)0, (byte)_robotID,link.getInputStream(),link.getOutputStream());
         socket = new TransportSocket(net.getInputStream(), net.getOutputStream());
         in = socket.getInputStream();
         out = socket.getOutputStream();
@@ -375,5 +375,9 @@ public class RobotProxy extends Thread{
                         ((dirs & GameCommands.TURN_NUMBER)));
             default: return dirs;
         }
+    }
+    
+    public void clear() {
+        this.writer.setActive(false);
     }
 }

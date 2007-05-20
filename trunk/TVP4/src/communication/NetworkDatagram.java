@@ -92,34 +92,34 @@ public class NetworkDatagram {
 //    public byte[] getData() {
 //        return this.data;
 //    }
-    
-    /**
-     * Get sender portion of supplied address header.
-     *
-     * @param addressHeader
-     * @result int with 4 least significant bits containing sender ID.
-     */
-    public static int getSender(int addressHeader) {
-        return (addressHeader & 0xF0) >> 4;
-    }
-    
-    /**
-     * Get receiver portion of supplied address header.
-     *
-     * @param addressHeader
-     * @result int with 4 least significant bits containing receiver ID.
-     */
-    public static int getReceiver(int addressHeader) {
-        return (addressHeader & 0x0F);
-    }
-    
+//    
+//    /**
+//     * Get sender portion of supplied address header.
+//     *
+//     * @param addressHeader
+//     * @result int with 4 least significant bits containing sender ID.
+//     */
+//    public static int getSender(int addressHeader) {
+//        return (addressHeader & 0xF0) >> 4;
+//    }
+//    
+//    /**
+//     * Get receiver portion of supplied address header.
+//     *
+//     * @param addressHeader
+//     * @result int with 4 least significant bits containing receiver ID.
+//     */
+//    public static int getReceiver(int addressHeader) {
+//        return (addressHeader & 0x0F);
+//    }
+//    
     /**
      * Create address header using supplied sender and receiver.
      *
      * @param sender
      * @param receiver
      */
-    public static int getAdressHeader(int sender, int receiver) {
-        return ((sender & 0x0F) << 4) | (receiver & 0x0F);
+    public static byte getAdressHeader(byte sender, byte receiver) {
+        return (byte)(((sender & 0x0F) << 4) | (receiver & 0x0F));
     }
 }
