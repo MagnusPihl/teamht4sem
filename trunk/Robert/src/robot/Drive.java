@@ -130,64 +130,12 @@ public class Drive {
         Sensor.S2.activate();
         Sensor.S3.setTypeAndMode(3, 0x00);
         Sensor.S3.activate();
-        //try {
-        //   //we must wait a little while before reading from the sensors
-        //   Thread.sleep(500);
-        //} catch (InterruptedException ex) {
-        //}
-        //sensor1Threshold = (Sensor.S1.readRawValue() + sensor1Diff) * BUFFERLENGTH;
-        //sensor2Threshold = (Sensor.S2.readRawValue() + sensor2Diff) * BUFFERLENGTH;
-        //sensor3Threshold = (Sensor.S3.readRawValue() + sensor3Diff) * BUFFERLENGTH;
     }
     
     private static void InitMotor() {
         Motor.A.setPower(4);
         Motor.B.setPower(4);
     }
-    
-    //ko
-//    private static void SetSensorValues(int address) {
-//        if (address == 1){
-//            sensor1Values = robot1Sensor1Values;
-//            sensor2Values = robot1Sensor2Values;
-//            sensor3Values = robot1Sensor3Values;
-//        } else if (address == 2){
-//            sensor1Values = robot2Sensor1Values;
-//            sensor2Values = robot2Sensor2Values;
-//            sensor3Values = robot2Sensor3Values;
-//        } else if (address == 3) {
-//            sensor1Values = robot3Sensor1Values;
-//            sensor2Values = robot3Sensor2Values;
-//            sensor3Values = robot3Sensor3Values;
-//        }else {
-//            Sound.buzz();
-//            System.exit(1);
-//        }
-//        CalculateSensorDifferens();
-//    }
-//
-//    private static void CalculateSensorDifferens() {
-//        /************
-//         * Sensor 1 *
-//         ************/
-//        sensor1Diff[0] = sensor1Values[1] - ((sensor1Values[1] - sensor1Values[0])/3);
-//        sensor1Diff[1] = sensor1Values[2] - ((sensor1Values[2] - sensor1Values[1])/3);
-//        sensor1Diff[2] = sensor1Values[3] - ((sensor1Values[3] - sensor1Values[2])/3);
-//
-//        /************
-//         * Sensor 2 *
-//         ************/
-//        sensor2Diff[0] = sensor2Values[1] - ((sensor2Values[1] - sensor2Values[0])/3);
-//        sensor2Diff[1] = sensor2Values[2] - ((sensor2Values[2] - sensor2Values[1])/3);
-//        sensor2Diff[2] = sensor2Values[3] - ((sensor2Values[3] - sensor2Values[2])/3);
-//
-//        /************
-//         * Sensor 3 *
-//         ************/
-//        sensor3Diff[0] = sensor3Values[1] - ((sensor3Values[1] - sensor3Values[0])/3);
-//        sensor3Diff[1] = sensor3Values[2] - ((sensor3Values[2] - sensor3Values[1])/3);
-//        sensor3Diff[2] = sensor3Values[3] - ((sensor3Values[3] - sensor3Values[2])/3);
-//    }
     
 //    static int i = 0;
 //    private final static byte BUFFERLENGTH_1 = BUFFERLENGTH - 1;
@@ -199,17 +147,6 @@ public class Drive {
         sensor1Buffer[1] = sensor1Buffer[0];
         sensor2Buffer[1] = sensor2Buffer[0];
         sensor3Buffer[1] = sensor3Buffer[0];
-        
-        
-//        for (int i = 0; i < 2; i++){
-//            sensor1Buffer[2 - i] = sensor1Buffer[1 - i];
-//            sensor2Buffer[2 - i] = sensor2Buffer[1 - i];
-//            sensor3Buffer[2 - i] = sensor3Buffer[1 - i];
-//            sensor1Buffer[BUFFERLENGTH_1 - i] = sensor1Buffer[BUFFERLENGTH_1 - 1 - i];
-//            sensor2Buffer[BUFFERLENGTH_1 - i] = sensor2Buffer[BUFFERLENGTH_1 - 1 - i];
-//            sensor3Buffer[BUFFERLENGTH_1 - i] = sensor3Buffer[BUFFERLENGTH_1 - 1 - i];
-//        }
-        
         
         sensor1Buffer[0] = FindColor(Sensor.S1.readRawValue(), (byte)0);
         sensor2Buffer[0] = FindColor(Sensor.S2.readRawValue(), (byte)3);
@@ -258,98 +195,7 @@ public class Drive {
             sensorsColors[2] = sensor3Buffer[0];
         }
     }
-//
-//    private static void Read1(){
-//
-//        if (sensor1Colors[0] == sensor1Colors[1] && sensor1Colors[1] == sensor1Colors[2]) {
-//            if (sensor1Colors[0] == COLOR_BLACK){
-//                sensorsColors[0] = COLOR_BLACK;
-//            } else if(sensor1Colors[0] == 0x04){
-//                sensorsColors[0] = 0x04;
-//            } else if(sensor1Colors[0] == 0x02){
-//                sensorsColors[0] = 0x02;
-//            } else if(sensor1Colors[0] == 0x01){
-//                sensorsColors[0] = 0x01;
-//            }
-//        }
-//    }
-//
-//    private static void Read2(){
-//
-//        if (sensor2Colors[0] == sensor2Colors[1] && sensor2Colors[1] == sensor2Colors[2]) {
-//            if (sensor2Colors[0] == COLOR_BLACK){
-//                sensorsColors[1] = COLOR_BLACK;
-//            } else if(sensor2Colors[0] == 0x04){
-//                sensorsColors[1] = 0x04;
-//            } else if(sensor2Colors[0] == 0x02){
-//                sensorsColors[1] = 0x02;
-//            } else if(sensor2Colors[0] == 0x01){
-//                sensorsColors[1] = 0x01;
-//            }
-//        }
-//    }
-//
-//    private static void Read3(){
-//
-//
-//        if (sensor3Colors[0] == sensor3Colors[1] && sensor3Colors[1] == sensor3Colors[2]) {
-//            if (sensor3Colors[0] == COLOR_BLACK){
-//                sensorsColors[2] = COLOR_BLACK;
-//            } else if(sensor3Colors[0] == 0x04){
-//                sensorsColors[2] = 0x04;
-//            } else if(sensor3Colors[0] == 0x02){
-//                sensorsColors[2] = 0x02;
-//            } else if(sensor3Colors[0] == 0x01){
-//                sensorsColors[2] = 0x01;
-//            }
-//        }
-//
-//    }
-//
-//    private static void Read4(){
-//
-//        if ((sensor1Colors[0] == sensor1Colors[1] && sensor1Colors[1] != sensor1Colors[2]) || (sensor1Colors[0] != sensor1Colors[1] && sensor1Colors[1] == sensor1Colors[2])) {
-//            if (sensor1Colors[1] == COLOR_BLACK){
-//                sensorsColors[0] = COLOR_BLACK;
-//            } else if(sensor1Colors[1] == 0x04){
-//                sensorsColors[0] = 0x04;
-//            } else if(sensor1Colors[1] == 0x02){
-//                sensorsColors[0] = 0x02;
-//            } else if(sensor1Colors[1] == 0x01){
-//                sensorsColors[0] = 0x01;
-//            }
-//        }
-//    }
-//
-//    private static void Read5(){
-//
-//        if ((sensor2Colors[0] == sensor2Colors[1] && sensor2Colors[1] != sensor2Colors[2]) || (sensor2Colors[0] != sensor2Colors[1] && sensor2Colors[1] == sensor2Colors[2])) {
-//            if (sensor2Colors[1] == COLOR_BLACK){
-//                sensorsColors[1] = COLOR_BLACK;
-//            } else if(sensor2Colors[1] == 0x04){
-//                sensorsColors[1] = 0x04;
-//            } else if(sensor2Colors[1] == 0x02){
-//                sensorsColors[1] = 0x02;
-//            } else if(sensor2Colors[1] == 0x01){
-//                sensorsColors[1] = 0x01;
-//            }
-//        }
-//    }
-//
-//    private static void Read6(){
-//
-//        if ((sensor3Colors[0] == sensor3Colors[1] && sensor3Colors[1] != sensor3Colors[2]) || (sensor3Colors[0] != sensor3Colors[1] && sensor3Colors[1] == sensor3Colors[2])) {
-//            if (sensor3Colors[1] == COLOR_BLACK){
-//                sensorsColors[2] = COLOR_BLACK;
-//            } else if(sensor3Colors[1] == 0x04){
-//                sensorsColors[2] = 0x04;
-//            } else if(sensor3Colors[1] == 0x02){
-//                sensorsColors[2] = 0x02;
-//            } else if(sensor3Colors[1] == 0x01){
-//                sensorsColors[2] = 0x01;
-//            }
-//        }
-//    }
+
     
     private static void ReadColors(){
         DoRead();
@@ -363,151 +209,18 @@ public class Drive {
         read1();
         read2();
         read3();
-//        Read4();
-//        Read5();
-//        Read6();
-        
-//        sensor1Colors[0] = ;
-//        sensor1Colors[1] = ;
-//        sensor1Colors[2] = ;
-        
-////        int s1 = Sum(sensor1Buffer);
-////        int s2 = Sum(sensor2Buffer);
-////        int s3 = Sum(sensor3Buffer);
-        /*
-         * Check on sensor 1
-         */
-        /*
-        if (s1 > (sensor1Values[3] - 60)){
-            //We got black
-            sensorsColors[0] = COLOR_BLACK;
-        } else if (s1 > (sensor1Values[2] - 50)) {
-            //We got green
-            sensorsColors[0] = 0x04;
-        } else if (s1 > (sensor1Values[1] - 12)){
-            //We got yellow
-            sensorsColors[0] = 0x02;
-        } else{
-            //We got white
-            sensorsColors[0] = 0x01;
-        }*/
-////        if (s1 > sensor1Diff[2]) {
-////            //We got black
-////            sensorsColors[0] = COLOR_BLACK;
-////        } else if (s1 > sensor1Diff[1]) {
-////            //We got green
-////            sensorsColors[0] = 0x04;
-////        } else if (s1 > sensor1Diff[0]){
-////            //We got yellow
-////            sensorsColors[0] = 0x02;
-////        } else{
-////            //We got white
-////            sensorsColors[0] = 0x01;
-////        }
-        
-        /*
-         * Check on sensor 2
-         */
-        /*if (s2 > (sensor2Values[3] - 60)){
-            //We got black
-            sensorsColors[1] = COLOR_BLACK;
-        } else if (s2 > (sensor2Values[2] - 40)) {
-            //We got green
-            sensorsColors[1] = 0x04;
-        } else if (s2 > (sensor2Values[1] - 25)){
-            //We got yellow
-            sensorsColors[1] = 0x02;
-        } else{
-            //We got white
-            sensorsColors[1] = 0x01;
-        }*/
-////        if (s2 > sensor2Diff[2]) {
-////            //We got black
-////            sensorsColors[1] = COLOR_BLACK;
-////        } else if (s2 > sensor2Diff[1]) {
-////            //We got green
-////            sensorsColors[1] = 0x04;
-////        } else if (s2 > sensor2Diff[0]){
-////            //We got yellow
-////            sensorsColors[1] = 0x02;
-////        } else{
-////            //We got white
-////            sensorsColors[1] = 0x01;
-////        }
-        
-        /*
-         * Check on sensor 3
-         */
-        /*if (s3 > (sensor3Values[3] - 60)){
-            //We got black
-            sensorsColors[2] = COLOR_BLACK;
-        } else if (s3 > (sensor3Values[2] - 60)) {
-            //We got green
-            sensorsColors[2] = 0x04;
-        } else if (s3 > (sensor3Values[1] - 15)){
-            //We got yellow
-            sensorsColors[2] = 0x02;
-        } else{
-            //We got white
-            sensorsColors[2] = 0x01;
-        }*/
-////        if (s3 > sensor3Diff[2]) {
-////            //We got black
-////            sensorsColors[2] = COLOR_BLACK;
-////        } else if (s3 > sensor3Diff[1]) {
-////            //We got green
-////            sensorsColors[2] = 0x04;
-////        } else if (s3 > sensor3Diff[0]){
-////            //We got yellow
-////            sensorsColors[2] = 0x02;
-////        } else{
-////            //We got white
-////            sensorsColors[2] = 0x01;
-////        }
-        
-        //LCD.showNumber(sensorsColors[0] * 100 + sensorsColors[1] * 10 + sensorsColors[2]);
     }
     
     private static byte tempReturn = 0;
     private static byte ReadBlack() {
-        
-        //ko
         ReadColors();
         tempReturn = 0;
-        if (sensorsColors[0] == 0x08 || sensorsColors[0] == 0x04) {
-            tempReturn += 4;
-        }
         
-        if (sensorsColors[1] == 0x08 || sensorsColors[1] == 0x04) {
-            tempReturn += 2;
-        }
-        
-        
-        if (sensorsColors[2] == 0x08 || sensorsColors[2] == 0x04) {
-            tempReturn += 1;
-        }
-        
-        
+        if (sensorsColors[0] == 0x08 || sensorsColors[0] == 0x04) { tempReturn += 4; }
+        if (sensorsColors[1] == 0x08 || sensorsColors[1] == 0x04) { tempReturn += 2; }
+        if (sensorsColors[2] == 0x08 || sensorsColors[2] == 0x04) { tempReturn += 1; }
         return tempReturn;
-        
-/*        DoRead();
-        tempReturn = 0;
-        if (Sum(sensor1Buffer) > sensor1Threshold)
-            tempReturn += 0x04;
-        if (Sum(sensor2Buffer) > sensor2Threshold)
-            tempReturn += 0x02;
-        if (Sum(sensor3Buffer) > sensor3Threshold)
-            tempReturn += 0x01;
-        return tempReturnReturn;*/
     }
-    
-//    private static int Sum(int[] numbers){
-//        int sum = 0;
-//        for (int i = 0; i < numbers.length; i++) {
-//            sum += numbers[i];
-//        }
-//        return sum;
-//    }
     
     public void TurnLeft90() {
         boolean driving = true;
@@ -567,111 +280,151 @@ public class Drive {
         }
     }
     
-    public void Forward(int nextJunction) {
+    public void forwardTest(){
         boolean driving = true;
-        int i = 0;
-        byte step = 0;
-        int roadCount = 0;
-        while(driving) {
-            i++;
-            int b = ReadBlack();
-            LCD.showNumber(1000);
-            if (step == 0) {
-                if ((lastJunction == 0x04 && sensorsColors[1] == 0x04) || (((lastJunction & 0x01) == 0x01) || ((lastJunction & 0x02) == 0x02) && b == 0)) {
-                    Movement.forward();
-                    step = 1;
-                } else {
-                    // We are not aligned correct on the line,
-                    // sould call a function to correct the robot
-                    // And step = 1 should also be rewritten
-                    
-                    //Sound.buzz();
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException ex) {
+        int count = 0;
+        while(driving){
+            count++;
+            int readings = ReadBlack();
+            if(readings == 2){
+                Movement.forward();
+            }
+            else if(readings == 6){
+                Movement.left();
+            }
+            else if(readings == 3){
+                Movement.right();
+            }
+            else if(readings == 4){
+                if(count > 50){
+                    if(sensorsColors[1] == 0x02){
+                        driving = false;
+                        Movement.stop();
                     }
-                    
                 }
-            } else if (step == 1){
-                
-                LCD.showNumber(2000);
-                if ((b & 0x02) == 2) { // 010
-                    step = 2;
+                else{
+                    Movement.sharpLeft();
                 }
             }
-            if (step == 2) {
-                
-                LCD.showNumber(3000);
-                roadCount++;
-                if ((nextJunction & 0x04) == 0x04 && // next up is a green dot, with only forward road
-                        roadCount > 50 &&           // we must roll som before we detect a green dot
-                        sensorsColors[1] == 0x04 &&
-                        (sensorsColors[0] == 0x01 || sensorsColors[0] == 0x02) &&
-                        (sensorsColors[2] == 0x01 || sensorsColors[2] == 0x02)){
-                    step = 3;
-                } else  if (b == 2){ // 010
-                    /*
-                     * We are driving on the black line
-                     * We should just continue straight forward
-                     **/
-                    Movement.forward();
-                }else if (b == 0){ // 000
-                    /*
-                     * We found no black line.
-                     * If there is side cross road at the next junction, the robot stops
-                     * else there is an error, which we must corret.
-                     **/
-                    if ((nextJunction & 0x01) == 0x01 || (nextJunction & 0x02) == 0x02){
-                        /*
-                         * A minimun roadCount of 15 before the robot stops
-                         **/
-                        if (roadCount < 15) {
-                            Movement.stop();
-                            step = 3;
-                        }
-                    } else {
-                        //error state - should correct the robot, but for now we continue forward
-                        Movement.forward();
-                        //Sound.beep();
+            else if(readings == 1){
+                if(count > 50){
+                    if(sensorsColors[1] == 0x02){
+                        driving = false;
+                        Movement.stop();
                     }
-                } else if (b == 1){ // 001
-                    //Should all be common
+                }
+                else{
                     Movement.sharpRight();
-                } else if (b == 3){ // 011
-                    Movement.right();
-                    if ((nextJunction & 0x01) == 0x01)
-                        roadCount = 0;
-                } else if (b == 4){ // 100
-                    //Should all be common
-                    Movement.sharpLeft();
-                } else if (b == 5){ // 101
-                    //used for x-junctions
-                    if ((nextJunction & 0x03) == 0x03)
-                        step = 3;
-                } else if (b == 6){ // 110
-                    Movement.left();
-                    if ((nextJunction & 0x02) == 0x02)
-                        roadCount = 0;
-                } else if (b == 7){ // 111
-                    //used for x-junctions
-                    if ((nextJunction & 0x03) == 0x03)
-                        step = 3;
-                }
-            } else if(step == 3) {
-                
-                LCD.showNumber(4000);
-                if (b== 0 || b == 2){ // 000 010
-                    //try {
-                    //    Thread.sleep(100);
-                    //} catch (InterruptedException ex) {
-                    //}
-                    Movement.stop();
-                    lastJunction = nextJunction;
-                    driving = false;
-                }
+                }                
             }
         }
     }
+    
+//    public void Forward(int nextJunction) {
+//        boolean driving = true;
+//        int i = 0;
+//        byte step = 0;
+//        int roadCount = 0;
+//        while(driving) {
+//            i++;
+//            int b = ReadBlack();
+//            LCD.showNumber(1000);
+//            if (step == 0) {
+//                if ((lastJunction == 0x04 && sensorsColors[1] == 0x04) || (((lastJunction & 0x01) == 0x01) || ((lastJunction & 0x02) == 0x02) && b == 0)) {
+//                    Movement.forward();
+//                    step = 1;
+//                } else {
+//                    // We are not aligned correct on the line,
+//                    // sould call a function to correct the robot
+//                    // And step = 1 should also be rewritten
+//                    
+//                    //Sound.buzz();
+//                    try {
+//                        Thread.sleep(200);
+//                    } catch (InterruptedException ex) {
+//                    }
+//                    
+//                }
+//            } else if (step == 1){
+//                
+//                LCD.showNumber(2000);
+//                if ((b & 0x02) == 2) { // 010
+//                    step = 2;
+//                }
+//            }
+//            if (step == 2) {
+//                
+//                LCD.showNumber(3000);
+//                roadCount++;
+//                if ((nextJunction & 0x04) == 0x04 && // next up is a green dot, with only forward road
+//                        roadCount > 50 &&           // we must roll som before we detect a green dot
+//                        sensorsColors[1] == 0x04 &&
+//                        (sensorsColors[0] == 0x01 || sensorsColors[0] == 0x02) &&
+//                        (sensorsColors[2] == 0x01 || sensorsColors[2] == 0x02)){
+//                    step = 3;
+//                } else  if (b == 2){ // 010
+//                    /*
+//                     * We are driving on the black line
+//                     * We should just continue straight forward
+//                     **/
+//                    Movement.forward();
+//                }else if (b == 0){ // 000
+//                    /*
+//                     * We found no black line.
+//                     * If there is side cross road at the next junction, the robot stops
+//                     * else there is an error, which we must corret.
+//                     **/
+//                    if ((nextJunction & 0x01) == 0x01 || (nextJunction & 0x02) == 0x02){
+//                        /*
+//                         * A minimun roadCount of 15 before the robot stops
+//                         **/
+//                        if (roadCount < 15) {
+//                            Movement.stop();
+//                            step = 3;
+//                        }
+//                    } else {
+//                        //error state - should correct the robot, but for now we continue forward
+//                        Movement.forward();
+//                        //Sound.beep();
+//                    }
+//                } else if (b == 1){ // 001
+//                    //Should all be common
+//                    Movement.sharpRight();
+//                } else if (b == 3){ // 011
+//                    Movement.right();
+//                    if ((nextJunction & 0x01) == 0x01)
+//                        roadCount = 0;
+//                } else if (b == 4){ // 100
+//                    //Should all be common
+//                    Movement.sharpLeft();
+//                } else if (b == 5){ // 101
+//                    //used for x-junctions
+//                    if ((nextJunction & 0x03) == 0x03)
+//                        step = 3;
+//                } else if (b == 6){ // 110
+//                    Movement.left();
+//                    if ((nextJunction & 0x02) == 0x02)
+//                        roadCount = 0;
+//                } else if (b == 7){ // 111
+//                    //used for x-junctions
+//                    if ((nextJunction & 0x03) == 0x03)
+//                        step = 3;
+//                }
+//            } else if(step == 3) {
+//                
+//                LCD.showNumber(4000);
+//                if (b== 0 || b == 2){ // 000 010
+//                    //try {
+//                    //    Thread.sleep(100);
+//                    //} catch (InterruptedException ex) {
+//                    //}
+//                    Movement.stop();
+//                    lastJunction = nextJunction;
+//                    driving = false;
+//                }
+//            }
+//        }
+//    }
     
     public void Calibrate() {
         int s2Max = 0;
