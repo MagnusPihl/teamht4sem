@@ -40,9 +40,9 @@ public class NewDrive {
 //        {699, 732, 775} //Sensor 3
     };
     
-    private static final byte RIGHT_SENSOR = 0;
+    private static final byte RIGHT_SENSOR = 2;
     private static final byte MIDDLE_SENSOR = 1;
-    private static final byte LEFT_SENSOR = 2;
+    private static final byte LEFT_SENSOR = 0;
     private static final byte SENSOR_COUNT = 3;
     private byte[][] colorBuffer;
     private byte currentIndex;
@@ -205,7 +205,7 @@ public class NewDrive {
         
         for (i = 0; i < SENSOR_COUNT; i++) {
             if ((currentColor[i] == COLOR_BLACK) || (currentColor[i] == COLOR_GREEN)) {
-                blackSensors += (byte)(1 << i);
+                blackSensors += (byte)(1 << (2-i));
             }
         }
         if ((blackSensors & 1) != 0) {
@@ -314,9 +314,9 @@ public class NewDrive {
                     Movement.forward();
                 //}
             } else if (blackSensors == 3) {//011
-                Movement.sharpRight();
+                Movement.right();
             } else if (blackSensors == 6) {//110
-                Movement.sharpLeft();
+                Movement.left();
             } else if (blackSensors == 4) {//100
                 /*if (currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     isDriving = false;
