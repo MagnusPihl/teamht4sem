@@ -28,9 +28,9 @@ import josx.platform.rcx.*;
 public class NewDrive {
     
     private static int[][] THRESHOLD = new int[][] {        
-        {710}, //Sensor 1
+        {710,0,0}, //Sensor 1
         {720,760,800},  //Sensor 2, larger than, yellow, black
-        {700}
+        {700,0,0}
         
 //        {690,720,730}, //Sensor 1
 //        {700,760,770},  //Sensor 2, larger than, yellow, black
@@ -53,9 +53,6 @@ public class NewDrive {
     private static final byte COLOR_GREEN  = 1;
     private static final byte COLOR_YELLOW = 2;
     private static final byte COLOR_WHITE  = 3;
-//    private static final byte YELLOW_THRESHOLD = 2;
-//    private static final byte GREEN_THRESHOLD  = 1;
-//    private static final byte BLACK_THRESHOLD  = 0;
     
     private byte i; //iterator;
     
@@ -66,7 +63,7 @@ public class NewDrive {
     private static final int TURN_TIME = 200; //find ud af om tallet er fornuftigt
     private static final int TURN_INIT_TIME = 150; //find ud af om tallet er fornuftigt
     
-    private int calibrationValue;
+    private int[] calibrationValues;
     
     private byte pathsDiscovered;
     
@@ -84,10 +81,10 @@ public class NewDrive {
         colorBuffer = new byte[3][3];
         currentIndex = 0;
         currentColor = new byte[3];
-    }
+        calibrationValues = new int[3];
+    }    
     
-    
-    public void calibrate() {
+    /*public void calibrate() {
         Sound.beepSequence();
         LCD.showNumber(15);
         while (!Button.RUN.isPressed()) {
@@ -109,41 +106,62 @@ public class NewDrive {
             THRESHOLD[i][COLOR_YELLOW] += calibrationValue;
         }
         LCD.showNumber(16);
-    }
+    }*/
     
-    /*private void setCalibrate() {          
-        for (i = 0; i < SENSOR_COUNT; i++) {            
-            calibrationValue = 0;
-            TextLCD.print(calibrationMessages[COLOR_BLACK]);            
-            while (!Button.RUN.isPressed()) {
-                THRESHOLD[i][COLOR_BLACK] = Sensor.SENSORS[i].readRawValue();         
+    private int readRaw(byte sensor) {        
+        LCD.setSegment(Segment.SENSOR_1_ACTIVE + sensor*2);
+//        LCD.showNumber((int)Runtime.getRuntime().freeMemory());
+        while (!Button.RUN.isPressed()) {
+            calibrationValues[currentIndex++] = Sensor.SENSORS[sensor].readRawValue();
+
+            if (currentIndex == SENSOR_COUNT) {
+                currentIndex = 0;
             }
+        }
+        LCD.clearSegment(Segment.SENSOR_1_ACTIVE + sensor*2);
+        
+        try {
+            Thread.sleep(300);
+        } catch (Exception e){
+            Sound.buzz();
+        }        
+        while(Button.RUN.isPressed()) {}
+        
+        Sound.beep();
+        return (int)((calibrationValues[0] + calibrationValues[1] + calibrationValues[2]) / 3f);
+    }     
+    
+    public void calibrate() {// throws InterruptedException {          
+        for (i = 0; i < SENSOR_COUNT; i += 2) {
+            TextLCD.print(calibrationMessages[COLOR_BLACK]);                        
+            THRESHOLD[i][COLOR_BLACK] = readRaw(i);
             
             TextLCD.print(calibrationMessages[COLOR_WHITE]);            
-            while (!Button.RUN.isPressed()) {
-                calibrationValue = Sensor.SENSORS[i].readRawValue();         
-            }            
-            
-            if (i != MIDDLE_SENSOR) {
-                THRESHOLD[i][COLOR_BLACK] -= (THRESHOLD[i][COLOR_BLACK] - calibrationValue) / 2f;
-            } else {
-                THRESHOLD[i][COLOR_WHITE] = calibrationValue;
-                
-                TextLCD.print(calibrationMessages[COLOR_GREEN]);            
-                while (!Button.RUN.isPressed()) {
-                    THRESHOLD[i][COLOR_GREEN] = Sensor.SENSORS[i].readRawValue();         
-                }
-                THRESHOLD[i][COLOR_BLACK] -= (THRESHOLD[i][COLOR_BLACK] - THRESHOLD[i][COLOR_GREEN]) / 2f;
-                
-                TextLCD.print(calibrationMessages[COLOR_YELLOW]);            
-                while (!Button.RUN.isPressed()) {
-                    THRESHOLD[i][COLOR_YELLOW] = Sensor.SENSORS[i].readRawValue();         
-                }
-                THRESHOLD[i][COLOR_GREEN] -= (THRESHOLD[i][COLOR_GREEN] - THRESHOLD[i][COLOR_YELLOW]) / 2f;
-                THRESHOLD[i][COLOR_YELLOW] -= (THRESHOLD[i][COLOR_YELLOW] - THRESHOLD[i][COLOR_WHITE]) / 2f;
-            }          
+            THRESHOLD[i][COLOR_BLACK] -= (int)((THRESHOLD[i][COLOR_BLACK] - readRaw(i)) / 2f);
+//            LCD.showNumber(THRESHOLD[i][COLOR_BLACK]);
+//            Thread.sleep(1000);
         }
-    }*/
+                        
+        TextLCD.print(calibrationMessages[COLOR_BLACK]);                        
+        THRESHOLD[MIDDLE_SENSOR][COLOR_BLACK] = readRaw(MIDDLE_SENSOR);
+                
+        TextLCD.print(calibrationMessages[COLOR_GREEN]);                        
+        THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN] = readRaw(MIDDLE_SENSOR);
+        THRESHOLD[MIDDLE_SENSOR][COLOR_BLACK] -= (int)((THRESHOLD[MIDDLE_SENSOR][COLOR_BLACK] - THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN]) / 2f);
+//        LCD.showNumber(THRESHOLD[MIDDLE_SENSOR][COLOR_BLACK]);
+//        Thread.sleep(1000);
+        
+        TextLCD.print(calibrationMessages[COLOR_YELLOW]);                        
+        THRESHOLD[MIDDLE_SENSOR][COLOR_YELLOW] = readRaw(MIDDLE_SENSOR);
+        THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN] -= (int)((THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN] - THRESHOLD[MIDDLE_SENSOR][COLOR_YELLOW]) / 2f);
+//        LCD.showNumber(THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN]);
+//        Thread.sleep(1000);
+        
+        TextLCD.print(calibrationMessages[COLOR_WHITE]);
+        THRESHOLD[MIDDLE_SENSOR][COLOR_YELLOW] -= (int)((THRESHOLD[MIDDLE_SENSOR][COLOR_YELLOW] - readRaw(MIDDLE_SENSOR)) / 2f);
+//        LCD.showNumber(THRESHOLD[MIDDLE_SENSOR][COLOR_YELLOW]);
+//        Thread.sleep(1000);
+    }        
     
     public void read() {
         for (i = 0; i < SENSOR_COUNT; i++) {
@@ -244,9 +262,10 @@ public class NewDrive {
                     if (sharpTurn) {
                         turnState = 0;
                         sharpTurn = false;
+                    } else {
+                        Movement.stop();
+                        isDriving = false;
                     }
-                    Movement.stop();
-                    isDriving = false;
                 }
             }
         }
@@ -270,9 +289,10 @@ public class NewDrive {
                     if (sharpTurn) {
                         turnState = 0;
                         sharpTurn = false;
+                    } else {
+                        Movement.stop();
+                        isDriving = false;
                     }
-                    Movement.stop();
-                    isDriving = false;
                 }
             }
         }
