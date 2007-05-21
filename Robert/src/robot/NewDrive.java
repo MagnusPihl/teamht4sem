@@ -242,7 +242,7 @@ public class NewDrive {
         
         while(isDriving){
             read();
-            if (blackSensors == 2){                
+            if (blackSensors == 2){ //010
                 if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
                     isDriving = false;
                     Movement.stop();
@@ -259,7 +259,7 @@ public class NewDrive {
                     Movement.stop();
                 } else {*/
                     Movement.left();
-                //}            
+                //}
             } else if (blackSensors == 1) { //001
                 /*if (currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     isDriving = false;
@@ -267,23 +267,23 @@ public class NewDrive {
                 } else {*/
                     Movement.right();
                 //}
-            } else if (blackSensors == 5) {
+            } else if (blackSensors == 5) { //101
                 isDriving = false;
-                Movement.stop();        
-            } else if (blackSensors == 0) {     
-                if (currentColor[MIDDLE_SENSOR] == COLOR_WHITE) {                
+                Movement.stop();
+            } else if (blackSensors == 0) { //000
+                if (currentColor[MIDDLE_SENSOR] == COLOR_WHITE) {
                     waitForHelp();
                     Movement.forward();
-                } else if ((currentColor[MIDDLE_SENSOR] == COLOR_YELLOW)) {                    
+                } else if ((currentColor[MIDDLE_SENSOR] == COLOR_YELLOW)) {
                     isDriving = false;
                     Movement.stop();
                 }
-            } else if (blackSensors == 7) {   
-                waitForHelp();                
+            } else if (blackSensors == 7) { //111
+                waitForHelp();
                 Movement.forward();
 //                if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
 //                    isDriving = false;
-//                    Movement.stop();           
+//                    Movement.stop();
 //                }
                 //le hvad
             }
