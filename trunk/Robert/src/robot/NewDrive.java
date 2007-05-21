@@ -11,6 +11,10 @@
  *
  * ******VERSION HISTORY******
  *
+ *
+ *
+ *  Adjust  - - - -
+ *
  * LMK @ 20. maj 2007 (v 1.0)
  * __________ Changes ____________
  *
@@ -54,7 +58,7 @@ public class NewDrive {
     private static final byte COLOR_YELLOW = 2;
     private static final byte COLOR_WHITE  = 3;
     
-    private byte i; //iterator;
+    private byte i; //iterator; //Also used as roadCount to safe memory
     
     private boolean isDriving;
     private byte turnState;  
@@ -248,17 +252,18 @@ public class NewDrive {
     
     public void turnLeft(boolean sharpTurn) {        
         initMove();        
+        LCD.showProgramNumber(2);
         Movement.sharpLeft();
-        
+        i = 0;
         while(isDriving){
             read();
             
             if (turnState == 0) {
-                if ((blackSensors == 4) || (blackSensors == 6)) { // 100 110                    
+                if ((i > 20) && ((blackSensors == 4) || (blackSensors == 6))) { // 100 110                    
                     turnState = 1;
                 }
             } else if(turnState == 1){
-                if (blackSensors == 2) { // 010                    
+                if (blackSensors == 1) { // 001                    
                     if (sharpTurn) {
                         turnState = 0;
                         sharpTurn = false;
@@ -268,24 +273,25 @@ public class NewDrive {
                     }
                 }
             }
+            ++i;
         }
-        
+        adjust();
         forward();
     }
     
     public void turnRight(boolean sharpTurn) {
         initMove();
+        LCD.showProgramNumber(3);
         Movement.sharpRight();
-        
+        i = 0;
         while(isDriving){
             read();
-            
             if (turnState == 0) {
-                if ((blackSensors == 1) || (blackSensors == 3)) { // 001 011                    
+                if ((i > 20) && ((blackSensors == 1) || (blackSensors == 3))) { // 001 011                    
                     turnState = 1;
                 }
             } else if(turnState == 1){
-                if (blackSensors == 2) { // 010                                        
+                if (blackSensors == 1) { // 001                                        
                     if (sharpTurn) {
                         turnState = 0;
                         sharpTurn = false;
@@ -295,25 +301,18 @@ public class NewDrive {
                     }
                 }
             }
+            ++i;
         }
-                
+        adjust();        
         forward();
     }
     
-    public void forward() {
-        initMove();
-        Movement.forward();
-        
-        while(isDriving){
+    public void adjust(){
+        isDriving = true;
+        LCD.showProgramNumber(0);
+            while(isDriving){
             read();
-            if (blackSensors == 2){//010
-                /*if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
-                    isDriving = false;
-                    Movement.stop();
-                } else {*/
-                    Movement.forward();
-                //}
-            } else if (blackSensors == 3) {//011
+            if (blackSensors == 3) {//011
                 Movement.right();
             } else if (blackSensors == 6) {//110
                 Movement.left();
@@ -331,6 +330,48 @@ public class NewDrive {
                 } else {*/
                     Movement.sharpRight();
                 //}
+            }
+            else{
+                isDriving = false;
+                Movement.stop();
+            }
+        }
+    }
+    
+    public void forward() {
+        initMove();
+        Movement.forward();
+        LCD.showProgramNumber(1);
+        while(isDriving){
+            read();
+            if (blackSensors == 2){//010
+                if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
+                    isDriving = false;
+                    Sound.beep();
+                    Movement.stop();
+                } else {
+                    Movement.forward();
+                }
+            } else if (blackSensors == 3) {//011
+                Movement.right();
+            } else if (blackSensors == 6) {//110
+                Movement.left();
+            } else if (blackSensors == 4) {//100
+                if (currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
+                    isDriving = false;
+                    Sound.twoBeeps();
+                    Movement.stop();
+                } else {
+                    Movement.sharpLeft();
+                }
+            } else if (blackSensors == 1) {//001
+                if (currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
+                    isDriving = false;
+                    Sound.twoBeeps();
+                    Movement.stop();
+                } else {
+                    Movement.sharpRight();
+                }
             } else if (blackSensors == 5) {//101
                 isDriving = false;
                 Movement.stop();        
