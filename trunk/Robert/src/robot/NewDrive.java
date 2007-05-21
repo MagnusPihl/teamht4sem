@@ -28,9 +28,9 @@ import josx.platform.rcx.*;
 public class NewDrive {
     
     private static int[][] THRESHOLD = new int[][] {        
-        {710,720,750}, //Sensor 1
+        {710}, //Sensor 1
         {720,760,800},  //Sensor 2, larger than, yellow, black
-        {700,750,790}
+        {700}
         
 //        {690,720,730}, //Sensor 1
 //        {700,760,770},  //Sensor 2, larger than, yellow, black
@@ -48,10 +48,10 @@ public class NewDrive {
     private byte currentIndex;
     private byte[] currentColor;
     private byte blackSensors;
-    
-    private static final byte COLOR_YELLOW = 0;
+        
+    private static final byte COLOR_BLACK  = 0;
     private static final byte COLOR_GREEN  = 1;
-    private static final byte COLOR_BLACK  = 2;
+    private static final byte COLOR_YELLOW = 2;
     private static final byte COLOR_WHITE  = 3;
 //    private static final byte YELLOW_THRESHOLD = 2;
 //    private static final byte GREEN_THRESHOLD  = 1;
@@ -70,14 +70,16 @@ public class NewDrive {
     
     private byte pathsDiscovered;
     
+    private String[] calibrationMessages = new String[] {"black", "green", "yellow", "white"};
+    
     /** Creates a new instance of NewDrive */
     public NewDrive() {                
         for (i = 0; i < SENSOR_COUNT; i++) {
             Sensor.SENSORS[i].setTypeAndMode(3, 0x00);
             Sensor.SENSORS[i].activate();
         }
-        Motor.A.setPower(2); //4
-        Motor.B.setPower(2); //4
+        Motor.A.setPower(4); //4
+        Motor.B.setPower(4); //4
         
         colorBuffer = new byte[3][3];
         currentIndex = 0;
@@ -109,6 +111,40 @@ public class NewDrive {
         LCD.showNumber(16);
     }
     
+    /*private void setCalibrate() {          
+        for (i = 0; i < SENSOR_COUNT; i++) {            
+            calibrationValue = 0;
+            TextLCD.print(calibrationMessages[COLOR_BLACK]);            
+            while (!Button.RUN.isPressed()) {
+                THRESHOLD[i][COLOR_BLACK] = Sensor.SENSORS[i].readRawValue();         
+            }
+            
+            TextLCD.print(calibrationMessages[COLOR_WHITE]);            
+            while (!Button.RUN.isPressed()) {
+                calibrationValue = Sensor.SENSORS[i].readRawValue();         
+            }            
+            
+            if (i != MIDDLE_SENSOR) {
+                THRESHOLD[i][COLOR_BLACK] -= (THRESHOLD[i][COLOR_BLACK] - calibrationValue) / 2f;
+            } else {
+                THRESHOLD[i][COLOR_WHITE] = calibrationValue;
+                
+                TextLCD.print(calibrationMessages[COLOR_GREEN]);            
+                while (!Button.RUN.isPressed()) {
+                    THRESHOLD[i][COLOR_GREEN] = Sensor.SENSORS[i].readRawValue();         
+                }
+                THRESHOLD[i][COLOR_BLACK] -= (THRESHOLD[i][COLOR_BLACK] - THRESHOLD[i][COLOR_GREEN]) / 2f;
+                
+                TextLCD.print(calibrationMessages[COLOR_YELLOW]);            
+                while (!Button.RUN.isPressed()) {
+                    THRESHOLD[i][COLOR_YELLOW] = Sensor.SENSORS[i].readRawValue();         
+                }
+                THRESHOLD[i][COLOR_GREEN] -= (THRESHOLD[i][COLOR_GREEN] - THRESHOLD[i][COLOR_YELLOW]) / 2f;
+                THRESHOLD[i][COLOR_YELLOW] -= (THRESHOLD[i][COLOR_YELLOW] - THRESHOLD[i][COLOR_WHITE]) / 2f;
+            }          
+        }
+    }*/
+    
     public void read() {
         for (i = 0; i < SENSOR_COUNT; i++) {
             colorBuffer[i][currentIndex] = getColor(Sensor.SENSORS[i].readRawValue(), i);
@@ -124,14 +160,22 @@ public class NewDrive {
     }
     
     public byte getColor(int rawSensorValue, byte sensor) {
-        if (rawSensorValue > THRESHOLD[sensor][COLOR_BLACK]) {
-            return COLOR_BLACK; //We got black
-        } else if (rawSensorValue > THRESHOLD[sensor][COLOR_GREEN]) {
-            return COLOR_GREEN; //We got green
-        } else if (rawSensorValue > THRESHOLD[sensor][COLOR_YELLOW]){
-            return COLOR_YELLOW; //We got yellow
-        } else{
-            return COLOR_WHITE; //We got white
+        if (sensor == MIDDLE_SENSOR) {
+            if (rawSensorValue > THRESHOLD[sensor][COLOR_BLACK]) {
+                return COLOR_BLACK; //We got black
+            } else if (rawSensorValue > THRESHOLD[sensor][COLOR_GREEN]) {
+                return COLOR_GREEN; //We got green
+            } else if (rawSensorValue > THRESHOLD[sensor][COLOR_YELLOW]){
+                return COLOR_YELLOW; //We got yellow
+            } else{
+                return COLOR_WHITE; //We got white
+            }
+        } else {
+            if (rawSensorValue > THRESHOLD[sensor][COLOR_BLACK]) {
+                return COLOR_BLACK; //We got black
+            } else{
+                return COLOR_WHITE; //We got white
+            }
         }
     }
     
@@ -242,44 +286,49 @@ public class NewDrive {
         
         while(isDriving){
             read();
-            if (blackSensors == 2){ //010
-                if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
+            if (blackSensors == 2){//010
+                /*if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
                     isDriving = false;
                     Movement.stop();
-                } else {
+                } else {*/
                     Movement.forward();
-                }
+                //}
             } else if (blackSensors == 3) {//011
-                Movement.right();
+                Movement.sharpRight();
             } else if (blackSensors == 6) {//110
-                Movement.left();
+                Movement.sharpLeft();
             } else if (blackSensors == 4) {//100
                 /*if (currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     isDriving = false;
                     Movement.stop();
                 } else {*/
-                    Movement.left();
+                    Movement.sharpLeft();
                 //}
-            } else if (blackSensors == 1) { //001
+            } else if (blackSensors == 1) {//001
                 /*if (currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     isDriving = false;
                     Movement.stop();
                 } else {*/
-                    Movement.right();
+                    Movement.sharpRight();
                 //}
-            } else if (blackSensors == 5) { //101
+            } else if (blackSensors == 5) {//101
                 isDriving = false;
-                Movement.stop();
-            } else if (blackSensors == 0) { //000
-                if (currentColor[MIDDLE_SENSOR] == COLOR_WHITE) {
-                    waitForHelp();
+                Movement.stop();        
+            } else if (blackSensors == 0) {//000
+                Movement.forward();
+                /*if (currentColor[MIDDLE_SENSOR] == COLOR_WHITE) {                
+                    Movemenent
+                    while (!Button.RUN.isPressed()) {
+                        read();
+                        if ()
+                    }
                     Movement.forward();
                 } else if ((currentColor[MIDDLE_SENSOR] == COLOR_YELLOW)) {
                     isDriving = false;
                     Movement.stop();
-                }
-            } else if (blackSensors == 7) { //111
-                waitForHelp();
+                }*/
+            } else if (blackSensors == 7) {//111
+                waitForHelp();                
                 Movement.forward();
 //                if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
 //                    isDriving = false;
@@ -304,9 +353,9 @@ public class NewDrive {
         
         if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_YELLOW)
         {
-            if(this.currentColor[this.RIGHT_SENSOR] == this.COLOR_BLACK)
+            if ((this.currentColor[this.RIGHT_SENSOR] == this.COLOR_BLACK) || (this.currentColor[this.RIGHT_SENSOR] == this.COLOR_GREEN))
                 this.pathsDiscovered |= GameCommands.TURN_RIGHT;
-            if(this.currentColor[this.LEFT_SENSOR] == this.COLOR_BLACK)
+            if ((this.currentColor[this.LEFT_SENSOR] == this.COLOR_BLACK) || (this.currentColor[this.LEFT_SENSOR] == this.COLOR_GREEN))
                 this.pathsDiscovered |= GameCommands.TURN_LEFT;
             
             while(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_YELLOW)
