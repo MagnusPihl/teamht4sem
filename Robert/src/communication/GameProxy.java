@@ -58,7 +58,7 @@ public class GameProxy {
     
     
     private void setAddress() {
-        addressDone = false;
+        /*addressDone = false;
         btnBufferIndex = 0;
         TextLCD.print("Addr");
         while (!addressDone){
@@ -88,8 +88,8 @@ public class GameProxy {
             } catch (InterruptedException ex) {
                 Sound.buzz();
             }
-        }
-        //driver.calibrate();
+        }*/
+        driver.calibrate();
     }
     
     private void UpdateAddressSegments() {
