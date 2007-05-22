@@ -307,7 +307,6 @@ public class Driver {
                 }
         }
         adjust();
-        
         forward();
     }
     
@@ -316,29 +315,24 @@ public class Driver {
      * 
      * @param if sharpTurn is true a U-Turn will be performed.
      */
-    public void turnRight(boolean sharpTurn) {
-        initMove();
-        LCD.showProgramNumber(3);
+    public void turnRight(boolean sharpTurn) {      
+        initMove();        
+        adjust();
+        isDriving = true;
         Movement.sharpRight();
         while(isDriving){
             read();
-            if (turnState == 0) {
-                if (((blackSensors == 1) || (blackSensors == 3))) { // 001 011                    
-                    turnState = 1;
-                }
-            } else if(turnState == 1){
-                if (blackSensors == 1) { // 001                                        
+                if ((blackSensors & 0x01) == 0x01) { // 001 011                    
                     if (sharpTurn) {
-                        turnState = 0;
                         sharpTurn = false;
+                        adjust();
                     } else {
                         Movement.stop();
                         isDriving = false;
                     }
                 }
-            }
         }
-//        adjust();        
+        adjust();        
         forward();
     }
         
