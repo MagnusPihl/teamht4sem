@@ -342,6 +342,18 @@ public class Driver {
         forward();
     }
         
+    public void ascertain(){
+        Movement.backward();
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException ex) {
+        }
+        Movement.stop();
+        read();
+        read();
+        read();
+    }
+    
     /**
      * Move robot forward.
      */
