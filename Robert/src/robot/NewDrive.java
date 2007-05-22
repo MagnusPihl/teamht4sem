@@ -57,6 +57,8 @@ public class NewDrive {
     private static final byte COLOR_GREEN  = 1;
     private static final byte COLOR_YELLOW = 2;
     private static final byte COLOR_WHITE  = 3;
+    private static final byte COLOR_UNKNOWN  = 4;
+    
     
     private byte i; //iterator; //Also used as roadCount to safe memory
     
@@ -79,8 +81,8 @@ public class NewDrive {
             Sensor.SENSORS[i].setTypeAndMode(3, 0x00);
             Sensor.SENSORS[i].activate();
         }
-        Motor.A.setPower(4); //4
-        Motor.B.setPower(4); //4
+        Motor.A.setPower(1); //4
+        Motor.C.setPower(1); //4
         
         colorBuffer = new byte[3][3];
         currentIndex = 0;
@@ -137,6 +139,16 @@ public class NewDrive {
     
     public void calibrate() {// throws InterruptedException {          
         for (i = 0; i < SENSOR_COUNT; i += 2) {
+            if(i == 0) {
+                LCD.setSegment(Segment.SENSOR_3_VIEW);
+                LCD.clearSegment(Segment.SENSOR_1_VIEW);
+                LCD.refresh();
+            }
+            if(i == 2) {
+                LCD.setSegment(Segment.SENSOR_1_VIEW);
+                LCD.clearSegment(Segment.SENSOR_3_VIEW);
+                LCD.refresh();
+            }
             TextLCD.print(calibrationMessages[COLOR_BLACK]);                        
             THRESHOLD[i][COLOR_BLACK] = readRaw(i);
             
@@ -145,19 +157,23 @@ public class NewDrive {
 //            LCD.showNumber(THRESHOLD[i][COLOR_BLACK]);
 //            Thread.sleep(1000);
         }
-                        
+        LCD.clearSegment(Segment.SENSOR_1_VIEW);
+        LCD.clearSegment(Segment.SENSOR_3_VIEW);
+        LCD.setSegment(Segment.SENSOR_2_VIEW);
+        LCD.refresh();
+        
         TextLCD.print(calibrationMessages[COLOR_BLACK]);                        
         THRESHOLD[MIDDLE_SENSOR][COLOR_BLACK] = readRaw(MIDDLE_SENSOR);
                 
         TextLCD.print(calibrationMessages[COLOR_GREEN]);                        
         THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN] = readRaw(MIDDLE_SENSOR);
-        THRESHOLD[MIDDLE_SENSOR][COLOR_BLACK] -= (int)((THRESHOLD[MIDDLE_SENSOR][COLOR_BLACK] - THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN]) / 2f);
+        THRESHOLD[MIDDLE_SENSOR][COLOR_BLACK] -= (int)((THRESHOLD[MIDDLE_SENSOR][COLOR_BLACK] - THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN]) / 3f);
 //        LCD.showNumber(THRESHOLD[MIDDLE_SENSOR][COLOR_BLACK]);
 //        Thread.sleep(1000);
         
         TextLCD.print(calibrationMessages[COLOR_YELLOW]);                        
         THRESHOLD[MIDDLE_SENSOR][COLOR_YELLOW] = readRaw(MIDDLE_SENSOR);
-        THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN] -= (int)((THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN] - THRESHOLD[MIDDLE_SENSOR][COLOR_YELLOW]) / 2f);
+        THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN] -= (int)((THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN] - THRESHOLD[MIDDLE_SENSOR][COLOR_YELLOW]) / 3f);
 //        LCD.showNumber(THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN]);
 //        Thread.sleep(1000);
         
@@ -165,14 +181,16 @@ public class NewDrive {
         THRESHOLD[MIDDLE_SENSOR][COLOR_YELLOW] -= (int)((THRESHOLD[MIDDLE_SENSOR][COLOR_YELLOW] - readRaw(MIDDLE_SENSOR)) / 2f);
 //        LCD.showNumber(THRESHOLD[MIDDLE_SENSOR][COLOR_YELLOW]);
 //        Thread.sleep(1000);
+        LCD.clear();
+        LCD.clearSegment(Segment.SENSOR_2_VIEW);
+        LCD.refresh();
     }        
     
     public void read() {
         for (i = 0; i < SENSOR_COUNT; i++) {
             colorBuffer[i][currentIndex] = getColor(Sensor.SENSORS[i].readRawValue(), i);
         }
-        
-        currentIndex++;
+                currentIndex++;
         if (currentIndex == SENSOR_COUNT) {
             currentIndex = 0;
         }
@@ -226,10 +244,13 @@ public class NewDrive {
     
     public void calculateCurrentColors() {
         for (i = 0; i < SENSOR_COUNT; i++) {
-            if ((colorBuffer[i][0] == colorBuffer[i][1]) || (colorBuffer[i][1] == colorBuffer[i][2])) {
+            if ((colorBuffer[i][0] == colorBuffer[i][1]) && (colorBuffer[i][1] == colorBuffer[i][2])) {
                 currentColor[i] = colorBuffer[i][1];
-            } else if(colorBuffer[i][0] == colorBuffer[i][2]){
-                currentColor[i] = colorBuffer[i][0];
+//            } else if(colorBuffer[i][0] == colorBuffer[i][2]){
+//                currentColor[i] = colorBuffer[i][0];
+            }
+            else{
+                currentColor[i] = COLOR_UNKNOWN; //COLOR unknown
             }
         }
     }
@@ -248,6 +269,8 @@ public class NewDrive {
             }
         }
         Movement.stop();
+        read();//we must ensure that the buffer is all cleared after we move the robot
+        read();
     }
     
     public void turnLeft(boolean sharpTurn) {        
@@ -259,11 +282,11 @@ public class NewDrive {
             read();
             
             if (turnState == 0) {
-                if ((i > 20) && ((blackSensors == 4) || (blackSensors == 6))) { // 100 110                    
+                if (((blackSensors == 4) || (blackSensors == 6))) { // 100 110                    
                     turnState = 1;
                 }
             } else if(turnState == 1){
-                if (blackSensors == 1) { // 001                    
+                if (blackSensors == 1 || blackSensors == 3) { // 001 011
                     if (sharpTurn) {
                         turnState = 0;
                         sharpTurn = false;
@@ -275,7 +298,7 @@ public class NewDrive {
             }
             ++i;
         }
-        adjust();
+//        adjust();
         forward();
     }
     
@@ -287,7 +310,7 @@ public class NewDrive {
         while(isDriving){
             read();
             if (turnState == 0) {
-                if ((i > 20) && ((blackSensors == 1) || (blackSensors == 3))) { // 001 011                    
+                if (((blackSensors == 1) || (blackSensors == 3))) { // 001 011                    
                     turnState = 1;
                 }
             } else if(turnState == 1){
@@ -303,7 +326,7 @@ public class NewDrive {
             }
             ++i;
         }
-        adjust();        
+//        adjust();        
         forward();
     }
     
@@ -313,9 +336,9 @@ public class NewDrive {
             while(isDriving){
             read();
             if (blackSensors == 3) {//011
-                Movement.right();
+                Movement.sharpRight();
             } else if (blackSensors == 6) {//110
-                Movement.left();
+                Movement.sharpLeft();
             } else if (blackSensors == 4) {//100
                 /*if (currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     isDriving = false;
@@ -345,13 +368,13 @@ public class NewDrive {
         while(isDriving){
             read();
             if (blackSensors == 2){//010
-                if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
-                    isDriving = false;
-                    Sound.beep();
-                    Movement.stop();
-                } else {
+//                if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
+//                    isDriving = false;
+//                    Sound.beep();
+//                    Movement.stop();
+//                } else {
                     Movement.forward();
-                }
+//                }
             } else if (blackSensors == 3) {//011
                 Movement.right();
             } else if (blackSensors == 6) {//110
@@ -360,7 +383,7 @@ public class NewDrive {
                 if (currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     isDriving = false;
                     Sound.twoBeeps();
-                    Movement.stop();
+                    //Movement.stop();
                 } else {
                     Movement.sharpLeft();
                 }
@@ -368,13 +391,13 @@ public class NewDrive {
                 if (currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     isDriving = false;
                     Sound.twoBeeps();
-                    Movement.stop();
+                    //Movement.stop();
                 } else {
                     Movement.sharpRight();
                 }
             } else if (blackSensors == 5) {//101
                 isDriving = false;
-                Movement.stop();        
+                //Movement.stop();        
             } else if (blackSensors == 0) {//000
                 Movement.forward();
                 /*if (currentColor[MIDDLE_SENSOR] == COLOR_WHITE) {                
@@ -398,6 +421,7 @@ public class NewDrive {
                 //le hvad
             }
         }
+        Movement.stop();
     }
     
     public void waitForHelp() {
