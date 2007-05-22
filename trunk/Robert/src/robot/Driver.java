@@ -318,8 +318,7 @@ public class Driver {
     public void turnLeft(boolean sharpTurn) {        
         initMove();        
         LCD.showProgramNumber(2);
-        Movement.sharpLeft();
-        i = 0;
+        Movement.sharpLeft();        
         while(isDriving){
             read();
             
@@ -338,7 +337,6 @@ public class Driver {
                     }
                 }
             }
-            ++i;
         }
 //        adjust();
         forward();
@@ -353,7 +351,6 @@ public class Driver {
         initMove();
         LCD.showProgramNumber(3);
         Movement.sharpRight();
-        i = 0;
         while(isDriving){
             read();
             if (turnState == 0) {
@@ -371,7 +368,6 @@ public class Driver {
                     }
                 }
             }
-            ++i;
         }
 //        adjust();        
         forward();
@@ -529,7 +525,7 @@ public class Driver {
             return this.pathsDiscovered;
         }
         else if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_GREEN)
-            return this.pathsDiscovered;    //Forward and back available
+            return GameCommands.TURN_NUMBER | GameCommands.FORWARD;    //Forward and back available
         
         return 0;    //Not on a node
     }
