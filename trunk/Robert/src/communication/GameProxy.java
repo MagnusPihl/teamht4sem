@@ -31,7 +31,7 @@ import robot.*;
 
 
 public class GameProxy {
-    private NewDrive driver;
+    private Driver driver;
     private LLCSocket link;
     private NetworkSocket net;
     private TransportSocket socket;
@@ -48,7 +48,7 @@ public class GameProxy {
      * Creates a new instance of GameProxy
      */
     public GameProxy() {        
-        this.driver = new NewDrive();
+        this.driver = new Driver();
         this.link = new LLCSocket();
         this.getAddress();
         this.net = new NetworkSocket(address,(byte)0,link.getInputStream(),link.getOutputStream());
@@ -99,9 +99,8 @@ public class GameProxy {
     private byte paths;
     
     public void run(){
-        //((driver.calibrate();
         while(true){
-            LCD.showNumber(Runtime.getRuntime().freeMemory());
+            LCD.showNumber((int)Runtime.getRuntime().freeMemory());
             if (Button.RUN.isPressed()) {
                 LCD.showNumber(12);
                 //command = GameCommands.FORWARD;
