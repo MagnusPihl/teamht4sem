@@ -114,6 +114,13 @@ public class NewDrive {
         LCD.showNumber(16);
     }*/
     
+    /**
+     * Get averaged value from the last 3 reads of a specified sensor once user
+     * presses the run button. Used for calibration.
+     *
+     * @param sensor number.
+     * @return sensor averaged raw value.
+     */
     private int readRaw(byte sensor) {        
         LCD.setSegment(Segment.SENSOR_1_ACTIVE + sensor*2);
 //        LCD.showNumber((int)Runtime.getRuntime().freeMemory());
@@ -137,6 +144,12 @@ public class NewDrive {
         return (int)((calibrationValues[0] + calibrationValues[1] + calibrationValues[2]) / 3f);
     }     
     
+    /**
+     * Calibration routine, should be run before trying to drive.
+     * Asks the user to scan the black, white values for the left and right sensors
+     * and the black, white, green and yellow values for the middle sensor.
+     * When done the values are averaged and threshold values are created.     
+     */
     public void calibrate() {// throws InterruptedException {          
         for (i = 0; i < SENSOR_COUNT; i += 2) {
             if(i == 0) {
@@ -186,6 +199,10 @@ public class NewDrive {
         LCD.refresh();
     }        
     
+    /**
+     * Read data from light sensors, convert to color constants, and save to 
+     * buffers.
+     */
     public void read() {
         for (i = 0; i < SENSOR_COUNT; i++) {
             colorBuffer[i][currentIndex] = getColor(Sensor.SENSORS[i].readRawValue(), i);
@@ -199,6 +216,12 @@ public class NewDrive {
         calculateBlackSensors();
     }
     
+    /**
+     * Calculate color based on raw value and sensor number.
+     * 
+     * @param rawSensorValue, value from 0 - 1000 indicating light intensity
+     * @param sensor sensor number.
+     */
     public byte getColor(int rawSensorValue, byte sensor) {
         if (sensor == MIDDLE_SENSOR) {
             if (rawSensorValue > THRESHOLD[sensor][COLOR_BLACK]) {
@@ -221,6 +244,10 @@ public class NewDrive {
     
     private byte leblacks;
     
+    /**
+     * Analyze color values and flag sensors reading black in the blackSensors
+     * variable. The flags are arranged as follows: 0000 0lmr
+     */
     public void calculateBlackSensors() {
         blackSensors = 0;
         leblacks = 0;
@@ -242,6 +269,9 @@ public class NewDrive {
         LCD.showNumber(leblacks);
     }
     
+    /**
+     * Calculate the current colors for all sensors.
+     */
     public void calculateCurrentColors() {
         for (i = 0; i < SENSOR_COUNT; i++) {
             if ((colorBuffer[i][0] == colorBuffer[i][1]) && (colorBuffer[i][1] == colorBuffer[i][2])) {
@@ -255,7 +285,11 @@ public class NewDrive {
         }
     }
         
-    public void initMove() {
+    /**
+     * Start a move. Ensures that the robot has moved off of the dot it's
+     * standing on.
+     */
+    private void initMove() {
         isDriving = true;
         turnState = 0;
         
@@ -273,6 +307,11 @@ public class NewDrive {
         read();
     }
     
+    /**
+     * Turn robot left and continue forward.
+     * 
+     * @param if sharpTurn is true a U-Turn will be performed.
+     */
     public void turnLeft(boolean sharpTurn) {        
         initMove();        
         LCD.showProgramNumber(2);
@@ -302,6 +341,11 @@ public class NewDrive {
         forward();
     }
     
+    /**
+     * Turn robot right and continue forward.
+     * 
+     * @param if sharpTurn is true a U-Turn will be performed.
+     */
     public void turnRight(boolean sharpTurn) {
         initMove();
         LCD.showProgramNumber(3);
@@ -329,7 +373,10 @@ public class NewDrive {
 //        adjust();        
         forward();
     }
-    
+        
+    /**
+     * Move robot forward.
+     */
     public void adjust(){
         isDriving = true;
         LCD.showProgramNumber(0);
@@ -424,13 +471,22 @@ public class NewDrive {
         Movement.stop();
     }
     
+    /**
+     * Wait for user to press run before continuing.
+     */
     public void waitForHelp() {
+        //should print something
         Sound.playTone(123,32);
         Movement.stop();
         while (!Button.RUN.isPressed()) {
         }
     }
     
+    /**
+     * Search current node for available paths.
+     * 
+     * @return byte paths available.
+     */
     public byte search()
     {
         this.pathsDiscovered = GameCommands.TURN_NUMBER;
