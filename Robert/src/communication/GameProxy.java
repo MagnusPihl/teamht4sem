@@ -72,7 +72,7 @@ public class GameProxy {
                 }
                 
                 try {
-                    UpdateAddressSegments();
+                    this.driver.setSegment(address);
                     Thread.sleep(200);
                 } catch (InterruptedException ex) {
                     Sound.buzz();
@@ -81,20 +81,7 @@ public class GameProxy {
         }
         Sound.twoBeeps();
         ++address; // we add one, so the address will be between 1 and 3        
-    }
-    
-    private void UpdateAddressSegments() {
-        LCD.clearSegment(Segment.SENSOR_1_ACTIVE);
-        LCD.clearSegment(Segment.SENSOR_2_ACTIVE);
-        LCD.clearSegment(Segment.SENSOR_3_ACTIVE);
-        LCD.clearSegment(Segment.SENSOR_1_VIEW);
-        LCD.clearSegment(Segment.SENSOR_2_VIEW);
-        LCD.clearSegment(Segment.SENSOR_3_VIEW);
-        
-        LCD.setSegment((address == 0) ? Segment.SENSOR_1_ACTIVE : ((address == 1) ? Segment.SENSOR_2_ACTIVE : Segment.SENSOR_3_ACTIVE));
-        LCD.setSegment((address == 0) ? Segment.SENSOR_1_VIEW : ((address == 1) ? Segment.SENSOR_2_VIEW : Segment.SENSOR_3_VIEW));
-        LCD.refresh();
-    }
+    }    
     
     private byte paths;
     
