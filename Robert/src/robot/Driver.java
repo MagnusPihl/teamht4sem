@@ -245,7 +245,7 @@ public class Driver {
         }
     }
     
-    private byte leblacks;
+    private int leblacks;
     
     /**
      * Analyze color values and flag sensors reading black in the blackSensors
@@ -433,7 +433,7 @@ public class Driver {
                 }
             } else if (blackSensors == 5) {//101
                 isDriving = false;
-                //Movement.stop();        
+                //Movement.stop(); 
             } else if (blackSensors == 0) {//000
                 Movement.forward();
                 if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
