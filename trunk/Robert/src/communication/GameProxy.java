@@ -84,7 +84,8 @@ public class GameProxy {
     
     public void run(){
         while(true){
-            LCD.showNumber((int)Runtime.getRuntime().freeMemory());
+//            LCD.showNumber((int)Runtime.getRuntime().freeMemory());
+            this.driver.read();
             if (Button.RUN.isPressed()) {
                 LCD.showNumber(12);
                 //command = GameCommands.FORWARD;
