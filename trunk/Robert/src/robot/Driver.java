@@ -253,22 +253,18 @@ public class Driver {
      */
     public void calculateBlackSensors() {
         blackSensors = 0;
-        leblacks = 0;
         
         for (i = 0; i < SENSOR_COUNT; i++) {
             if (currentColor[i] == COLOR_BLACK) {
                 blackSensors += (byte)(1 << (2-i));
-            }
-        }
-        if ((blackSensors & 1) != 0) {
-            leblacks = 1;
-        }
-        if ((blackSensors & 2) != 0) {
-            leblacks += 10;
-        }
-        if ((blackSensors & 4) != 0) {
-            leblacks += 100;
-        }
+                
+            }            
+        }        
+    
+        leblacks = currentColor[RIGHT_SENSOR];
+        leblacks += currentColor[MIDDLE_SENSOR] * 10;
+        leblacks += currentColor[LEFT_SENSOR] * 100;
+            
         LCD.showNumber(leblacks);
     }
     
