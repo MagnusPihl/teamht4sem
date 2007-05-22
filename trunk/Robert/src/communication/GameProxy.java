@@ -85,7 +85,7 @@ public class GameProxy {
     public void run(){
         while(true){
 //            LCD.showNumber((int)Runtime.getRuntime().freeMemory());
-            this.driver.read();
+//            this.driver.read();
             if (Button.RUN.isPressed()) {
                 LCD.showNumber(12);
                 //command = GameCommands.FORWARD;
@@ -95,17 +95,18 @@ public class GameProxy {
                 //command = GameCommands.TURN_LEFT;
                 this.driver.turnLeft(false);
             } else if (Button.VIEW.isPressed()) {
-                this.driver.setSegment((byte)-1);
-                LCD.showNumber(9999);
-             
-                paths = driver.search();
-                if((paths & GameCommands.TURN_LEFT) > 0)
-                    LCD.setSegment(Segment.SENSOR_1_VIEW);
-                if((paths & GameCommands.FORWARD) > 0)
-                    LCD.setSegment(Segment.SENSOR_2_VIEW);
-                if((paths & GameCommands.TURN_RIGHT) > 0)
-                    LCD.setSegment(Segment.SENSOR_3_VIEW);
-                LCD.showNumber(paths);
+//                this.driver.setSegment((byte)-1);
+//                LCD.showNumber(9999);
+//             
+//                paths = driver.search();
+//                if((paths & GameCommands.TURN_LEFT) > 0)
+//                    LCD.setSegment(Segment.SENSOR_1_VIEW);
+//                if((paths & GameCommands.FORWARD) > 0)
+//                    LCD.setSegment(Segment.SENSOR_2_VIEW);
+//                if((paths & GameCommands.TURN_RIGHT) > 0)
+//                    LCD.setSegment(Segment.SENSOR_3_VIEW);
+//                LCD.showNumber(paths);
+                this.driver.read();
             } else {
 //                this.getcommand();
 //                LCD.showNumber(command);
