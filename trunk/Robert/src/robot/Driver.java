@@ -67,7 +67,7 @@ public class Driver {
         
     private int turnTimeout;
     private static final int TURN_TIME = 200; //find ud af om tallet er fornuftigt
-    private static final int TURN_INIT_TIME = 150; //find ud af om tallet er fornuftigt
+    private static final int TURN_INIT_TIME = 220; //find ud af om tallet er fornuftigt
     
     private int[] calibrationValues;
     private byte pathsDiscovered;
@@ -88,30 +88,6 @@ public class Driver {
         currentColor = new byte[3];
         calibrationValues = new int[3];
     }    
-    
-    /*public void calibrate() {
-        Sound.beepSequence();
-        LCD.showNumber(15);
-        while (!Button.RUN.isPressed()) {
-            for (i = 0; i < SENSOR_COUNT; i++) {
-                calibrationValue = Sensor.SENSORS[i].readRawValue();
-                if (calibrationValue > THRESHOLD[i][COLOR_BLACK]) {
-                    THRESHOLD[i][COLOR_BLACK] = calibrationValue;
-                } 
-                if (calibrationValue < THRESHOLD[i][COLOR_YELLOW]) {
-                    THRESHOLD[i][COLOR_BLACK] = calibrationValue;
-                }
-            }
-        }
-        
-        for (i = 0; i < SENSOR_COUNT; i++) {
-            calibrationValue = (int)((THRESHOLD[i][COLOR_BLACK] - THRESHOLD[i][COLOR_YELLOW]) / 4f);
-            THRESHOLD[i][COLOR_BLACK] -= calibrationValue;
-            THRESHOLD[i][COLOR_GREEN] = THRESHOLD[i][COLOR_BLACK] - calibrationValue;
-            THRESHOLD[i][COLOR_YELLOW] += calibrationValue;
-        }
-        LCD.showNumber(16);
-    }*/
     
     /**
      * Get averaged value from the last 3 reads of a specified sensor once user
@@ -308,33 +284,38 @@ public class Driver {
     
     /**
      * Turn robot left and continue forward.
+    /**
+     * Turn robot left and continue forward.
      * 
      * @param if sharpTurn is true a U-Turn will be performed.
      */
     public void turnLeft(boolean sharpTurn) {        
         initMove();        
-        LCD.showProgramNumber(2);
-        Movement.sharpLeft();        
+        adjust();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ex) {
+        }
+        isDriving = true;
+        Movement.sharpLeft();
         while(isDriving){
             read();
-            
-            if (turnState == 0) {
-                if (((blackSensors == 4) || (blackSensors == 6))) { // 100 110                    
-                    turnState = 1;
-                }
-            } else if(turnState == 1){
-                if (blackSensors == 1 || blackSensors == 3) { // 001 011
+                if ((blackSensors & 0x04) == 0x04) { // 100 110                    
                     if (sharpTurn) {
-                        turnState = 0;
                         sharpTurn = false;
+                        adjust();
                     } else {
                         Movement.stop();
                         isDriving = false;
                     }
                 }
-            }
         }
-//        adjust();
+        adjust();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ex) {
+        }
+        
         forward();
     }
     
@@ -378,23 +359,13 @@ public class Driver {
             while(isDriving){
             read();
             if (blackSensors == 3) {//011
-                Movement.sharpRight();
+                Movement.right();
             } else if (blackSensors == 6) {//110
-                Movement.sharpLeft();
+                Movement.left();
             } else if (blackSensors == 4) {//100
-                /*if (currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
-                    isDriving = false;
-                    Movement.stop();
-                } else {*/
                     Movement.sharpLeft();
-                //}
             } else if (blackSensors == 1) {//001
-                /*if (currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
-                    isDriving = false;
-                    Movement.stop();
-                } else {*/
                     Movement.sharpRight();
-                //}
             }
             else{
                 isDriving = false;
@@ -406,7 +377,6 @@ public class Driver {
     public void forward() {
         initMove();
         Movement.forward();
-        LCD.showProgramNumber(1);
         while(isDriving){
             read();
             if (blackSensors == 2){//010
@@ -418,8 +388,7 @@ public class Driver {
             } else if (blackSensors == 4) {//100
                 if (currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     isDriving = false;
-                    Sound.twoBeeps();
-                    //Movement.stop();
+                    Sound.twoBeeps();;
                 } else {
                     Movement.sharpLeft();
                 }
@@ -427,19 +396,16 @@ public class Driver {
                 if (currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     isDriving = false;
                     Sound.twoBeeps();
-                    //Movement.stop();
                 } else {
                     Movement.sharpRight();
                 }
             } else if (blackSensors == 5) {//101
                 isDriving = false;
-                //Movement.stop(); 
             } else if (blackSensors == 0) {//000
                 Movement.forward();
                 if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
                     isDriving = false;
                     Sound.beep();
-                    Movement.stop();
                 }
                 /*else if (currentColor[MIDDLE_SENSOR] == COLOR_WHITE) {                
                     Movemenent
@@ -455,11 +421,6 @@ public class Driver {
             } else if (blackSensors == 7) {//111
                 waitForHelp();                
                 Movement.forward();
-//                if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
-//                    isDriving = false;
-//                    Movement.stop();
-//                }
-                //le hvad
             }
         }
         Movement.stop();
