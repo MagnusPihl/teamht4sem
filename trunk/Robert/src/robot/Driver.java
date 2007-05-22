@@ -451,16 +451,16 @@ public class Driver {
         
         if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_YELLOW)
         {
-            if ((this.currentColor[this.RIGHT_SENSOR] == this.COLOR_BLACK) || (this.currentColor[this.RIGHT_SENSOR] == this.COLOR_GREEN))
+            if ((this.currentColor[this.RIGHT_SENSOR] == this.COLOR_BLACK))
                 this.pathsDiscovered |= GameCommands.TURN_RIGHT;
-            if ((this.currentColor[this.LEFT_SENSOR] == this.COLOR_BLACK) || (this.currentColor[this.LEFT_SENSOR] == this.COLOR_GREEN))
+            if ((this.currentColor[this.LEFT_SENSOR] == this.COLOR_BLACK))
                 this.pathsDiscovered |= GameCommands.TURN_LEFT;
             
             while(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_YELLOW)
             {
                 Movement.forward();
                 try {
-                    Thread.sleep(50);
+                    Thread.sleep(100);
                 } catch (InterruptedException ex) {
                     //ex.printStackTrace();
                 }
@@ -473,7 +473,7 @@ public class Driver {
             {
                 Movement.backward();
                 try {
-                    Thread.sleep(50);
+                    Thread.sleep(100);
                 } catch (InterruptedException ex) {
                     //ex.printStackTrace();
                 }
