@@ -414,13 +414,7 @@ public class Driver {
         while(isDriving){
             read();
             if (blackSensors == 2){//010
-//                if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
-//                    isDriving = false;
-//                    Sound.beep();
-//                    Movement.stop();
-//                } else {
                     Movement.forward();
-//                }
             } else if (blackSensors == 3) {//011
                 Movement.right();
             } else if (blackSensors == 6) {//110
@@ -446,7 +440,12 @@ public class Driver {
                 //Movement.stop();        
             } else if (blackSensors == 0) {//000
                 Movement.forward();
-                /*if (currentColor[MIDDLE_SENSOR] == COLOR_WHITE) {                
+                if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
+                    isDriving = false;
+                    Sound.beep();
+                    Movement.stop();
+                }
+                /*else if (currentColor[MIDDLE_SENSOR] == COLOR_WHITE) {                
                     Movemenent
                     while (!Button.RUN.isPressed()) {
                         read();
