@@ -37,17 +37,14 @@ public class GameProxy {
     private TransportSocket socket;
     private InputStream in;
     private OutputStream out;
-    private int command;
-    private int directions = -1;
+    private int command, directions;
     private byte address;
-    private byte btnBufferIndex = 0;
-    
-    private int h = 0;
+    private String addressMessage = "Addr";
     
     /**
      * Creates a new instance of GameProxy
      */
-    public GameProxy() {        
+    public GameProxy() {
         this.driver = new Driver();
         this.link = new LLCSocket();
         this.getAddress();
@@ -55,13 +52,13 @@ public class GameProxy {
         this.socket = new TransportSocket(net.getInputStream(), net.getOutputStream());
         this.in = socket.getInputStream();
         this.out = socket.getOutputStream();
-        this.driver.calibrate();        
+        this.driver.calibrate();
         this.socket.setActive(true);
         this.run();
-    }    
+    }
     
     private void getAddress() {
-        TextLCD.print("Addr");
+        TextLCD.print(addressMessage);
         address = 0;
         while (!Button.RUN.isPressed()){
             if (Button.PRGM.isPressed()) {
@@ -77,17 +74,17 @@ public class GameProxy {
                 } catch (InterruptedException ex) {
                     Sound.buzz();
                 }
-            }            
+            }
         }
         Sound.twoBeeps();
-        ++address; // we add one, so the address will be between 1 and 3        
-    }    
+        ++address; // we add one, so the address will be between 1 and 3
+    }
     
     private byte paths;
     
     public void run(){
         while(true){
-            LCD.showNumber((int)Runtime.getRuntime().freeMemory());
+            /*LCD.showNumber((int)Runtime.getRuntime().freeMemory());
             if (Button.RUN.isPressed()) {
                 LCD.showNumber(12);
                 //command = GameCommands.FORWARD;
@@ -97,11 +94,9 @@ public class GameProxy {
                 //command = GameCommands.TURN_LEFT;
                 this.driver.turnLeft(false);
             } else if (Button.VIEW.isPressed()) {
-                LCD.clearSegment(Segment.SENSOR_1_VIEW);
-                LCD.clearSegment(Segment.SENSOR_2_VIEW);
-                LCD.clearSegment(Segment.SENSOR_3_VIEW);
+                this.driver.setSegment((byte)-1);
                 LCD.showNumber(9999);
-                
+             
                 paths = driver.search();
                 if((paths & GameCommands.TURN_LEFT) > 0)
                     LCD.setSegment(Segment.SENSOR_1_VIEW);
@@ -110,54 +105,48 @@ public class GameProxy {
                 if((paths & GameCommands.TURN_RIGHT) > 0)
                     LCD.setSegment(Segment.SENSOR_3_VIEW);
                 LCD.showNumber(paths);
-            } else {
-                /*this.getcommand();
-                LCD.showNumber(command);
-                
+            } else {*/
+            this.getcommand();
+            LCD.showNumber(command);
+            
                 if (command == GameCommands.FORWARD) {
                     this.driver.forward();
                     this.respond(GameCommands.MOVE_DONE);
-                    
+
                 } else if (command == GameCommands.TURN_LEFT || command == (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER)) {
                     this.driver.turnLeft(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
                     this.respond(GameCommands.MOVE_DONE);
-                    
+
                 } else if (command == GameCommands.TURN_RIGHT || command == (GameCommands.TURN_RIGHT | GameCommands.TURN_NUMBER)) {
                     this.driver.turnRight(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
                     this.respond(GameCommands.MOVE_DONE);
-                    
+
                 } else if (command == (GameCommands.FORWARD | GameCommands.DISCOVER)) {
                     this.driver.forward();
-                    this.driver.search();
-                    this.respond(GameCommands.MOVE_DONE | directions);
-                    
+                    this.respond(GameCommands.MOVE_DONE | this.driver.search());
+
                 } else if (command == (GameCommands.TURN_LEFT | GameCommands.DISCOVER) || command == (GameCommands.TURN_LEFT | GameCommands.DISCOVER | GameCommands.TURN_NUMBER)) {
                     this.driver.turnLeft(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
-                    this.driver.search();
-                    this.respond(GameCommands.MOVE_DONE | directions);
-                    
+                    this.respond(GameCommands.MOVE_DONE | this.driver.search());
+
                 } else if (command == (GameCommands.TURN_RIGHT | GameCommands.DISCOVER) || command == (GameCommands.TURN_RIGHT | GameCommands.DISCOVER | GameCommands.TURN_NUMBER)) {
                     this.driver.turnRight(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
-                    this.driver.search();
-                    this.respond(GameCommands.MOVE_DONE | directions);
+                    this.respond(GameCommands.MOVE_DONE | this.driver.search());
+
+                } else if (command == GameCommands.SEARCH_NODE) {
+                    this.respond(GameCommands.MOVE_DONE | this.driver.search());
                     
                 } else if (command == GameCommands.LIGHT_ON) {
                     Movement.LightOn();
-                    
+
                 } else if (command == GameCommands.LIGHT_OFF) {
                     Movement.LightOff();
-                    
+
                 } else if (command == GameCommands.BEEP) {//only two beeps
                     Sound.twoBeeps();
-                    
-                } else if (command == GameCommands.CALIBRATE) {
-                    //ride.callibrate(sensor1, sensor2, sensor3, minGreen, maxGreen, minBlack, maxBlack);
-                    
-                } else if (command == GameCommands.SEARCH_NODE) {
-                    this.driver.search();
-                    this.respond(GameCommands.MOVE_DONE | directions);
-                }*/
-            }
+                }
+                
+            //}
         }
     }
     
@@ -202,5 +191,5 @@ public class GameProxy {
     
     public static void main(String[] args) throws InterruptedException, IOException{
         GameProxy noget = new GameProxy();
-    }        
+    }
 }
