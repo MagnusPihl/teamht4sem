@@ -292,10 +292,6 @@ public class Driver {
     public void turnLeft(boolean sharpTurn) {        
         initMove();        
         adjust();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException ex) {
-        }
         isDriving = true;
         Movement.sharpLeft();
         while(isDriving){
@@ -311,10 +307,6 @@ public class Driver {
                 }
         }
         adjust();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException ex) {
-        }
         
         forward();
     }
@@ -380,46 +372,41 @@ public class Driver {
         while(isDriving){
             read();
             if (blackSensors == 2){//010
-                    Movement.forward();
+                Movement.forward();
             } else if (blackSensors == 3) {//011
                 Movement.right();
             } else if (blackSensors == 6) {//110
                 Movement.left();
             } else if (blackSensors == 4) {//100
-                if (currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
+                if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     isDriving = false;
-                    Sound.twoBeeps();;
+                    Sound.beep();
                 } else {
                     Movement.sharpLeft();
                 }
             } else if (blackSensors == 1) {//001
-                if (currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
+                if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     isDriving = false;
-                    Sound.twoBeeps();
+                    Sound.beep();
                 } else {
                     Movement.sharpRight();
                 }
             } else if (blackSensors == 5) {//101
-                isDriving = false;
-            } else if (blackSensors == 0) {//000
-                Movement.forward();
-                if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
+                if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     isDriving = false;
                     Sound.beep();
-                }
-                /*else if (currentColor[MIDDLE_SENSOR] == COLOR_WHITE) {                
-                    Movemenent
-                    while (!Button.RUN.isPressed()) {
-                        read();
-                        if ()
-                    }
+                } else {
                     Movement.forward();
-                } else if ((currentColor[MIDDLE_SENSOR] == COLOR_YELLOW)) {
+                }
+            } else if (blackSensors == 0) {//000
+                if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     isDriving = false;
-                    Movement.stop();
-                }*/
+                    Sound.beep();
+                } else {
+                    Movement.forward();
+                }
             } else if (blackSensors == 7) {//111
-                waitForHelp();                
+                waitForHelp();
                 Movement.forward();
             }
         }
