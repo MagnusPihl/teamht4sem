@@ -67,7 +67,7 @@ public class Driver {
         
     private int turnTimeout;
     private static final int TURN_TIME = 200; //find ud af om tallet er fornuftigt
-    private static final int TURN_INIT_TIME = 220; //find ud af om tallet er fornuftigt
+    private static final int TURN_INIT_TIME = 320; //find ud af om tallet er fornuftigt
     
     private int[] calibrationValues;
     private byte pathsDiscovered;
@@ -343,9 +343,10 @@ public class Driver {
     }
         
     public void ascertain(){
+        Movement.stop();
         Movement.backward();
         try {
-            Thread.sleep(50);
+            Thread.sleep(100);
         } catch (InterruptedException ex) {
         }
         Movement.stop();
@@ -391,28 +392,36 @@ public class Driver {
                 Movement.left();
             } else if (blackSensors == 4) {//100
                 if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
-                    isDriving = false;
+                    ascertain();
+                    if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW)
+                        isDriving = false;
                     Sound.beep();
                 } else {
                     Movement.sharpLeft();
                 }
             } else if (blackSensors == 1) {//001
                 if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
-                    isDriving = false;
+                    ascertain();
+                    if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW)
+                        isDriving = false;
                     Sound.beep();
                 } else {
                     Movement.sharpRight();
                 }
             } else if (blackSensors == 5) {//101
                 if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
-                    isDriving = false;
+                    ascertain();
+                    if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW)
+                        isDriving = false;
                     Sound.beep();
                 } else {
                     Movement.forward();
                 }
             } else if (blackSensors == 0) {//000
                 if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
-                    isDriving = false;
+                    ascertain();
+                    if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW)
+                        isDriving = false;
                     Sound.beep();
                 } else {
                     Movement.forward();
