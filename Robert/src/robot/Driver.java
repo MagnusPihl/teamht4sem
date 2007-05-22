@@ -141,15 +141,26 @@ public class Driver {
         return (int)((calibrationValues[0] + calibrationValues[1] + calibrationValues[2]) / 3f);
     }     
     
-    public void setSegment(byte sensor) {        
+    /**
+     * Set active sensor on lcd display
+     *
+     * @param sensor number.
+     */
+    public static void setSegment(byte sensor) {        
         LCD.clearSegment(Segment.SENSOR_1_VIEW);
         LCD.clearSegment(Segment.SENSOR_2_VIEW);
         LCD.clearSegment(Segment.SENSOR_3_VIEW);
+        LCD.clearSegment(Segment.SENSOR_1_ACTIVE);
+        LCD.clearSegment(Segment.SENSOR_2_ACTIVE);
+        LCD.clearSegment(Segment.SENSOR_3_ACTIVE);
         if (sensor == LEFT_SENSOR) {
+            LCD.setSegment(Segment.SENSOR_1_ACTIVE); 
             LCD.setSegment(Segment.SENSOR_1_VIEW);
-        } else if (sensor == LEFT_SENSOR) {
+        } else if (sensor == MIDDLE_SENSOR) {
+            LCD.setSegment(Segment.SENSOR_2_ACTIVE); 
             LCD.setSegment(Segment.SENSOR_2_VIEW);
-        } else if (sensor == LEFT_SENSOR) {
+        } else if (sensor == RIGHT_SENSOR) {
+            LCD.setSegment(Segment.SENSOR_3_ACTIVE); 
             LCD.setSegment(Segment.SENSOR_3_VIEW);
         }
         LCD.refresh();    
