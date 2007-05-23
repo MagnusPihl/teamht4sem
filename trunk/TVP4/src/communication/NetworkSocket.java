@@ -80,16 +80,17 @@ public class NetworkSocket {
             this.bufferIndex = -1;
             this.packetAccepted = false;
                         
+            //System.out.print("Reading network packet:");
             do {
                 this.data = this.in.read();
-                if (this.data != -1) {
-//                    System.out.println("Network: Data = "+this.data);
+                if (this.data != -1) {                    
                     if (this.bufferIndex == -1) {
-//                        System.out.println(this.data + " ?= "+this.expectedHeader);
+                        //System.out.println(Integer.toBinaryString(this.data) + " ?= " + Integer.toBinaryString(this.expectedHeader));
                         if ((byte)this.data == this.expectedHeader) {
                             this.packetAccepted = true;
                         }
                     } else {
+                            //System.out.println("Network: Data = "+this.data);
                         this.buffer[this.bufferIndex] = (byte)this.data;
                     }
                     
@@ -97,16 +98,19 @@ public class NetworkSocket {
                     if (this.bufferIndex == INPUT_BUFFER_SIZE) {                        
                         if (this.packetAccepted) {
                             this.bufferIndex = 0;
+                            //System.out.println("le ja");
                             return true;
                         }                                                
                         this.bufferIndex = -1;
                     }
                 } else if (this.bufferIndex == -1) {                    
                     this.bufferIndex = 0;
+                    //System.out.println("le nej");
                     return false;
                 }                                    
             } while (this.bufferIndex < INPUT_BUFFER_SIZE);                             
             
+            //System.out.println("le nej");
             this.bufferIndex = 0;
             return false;
         }

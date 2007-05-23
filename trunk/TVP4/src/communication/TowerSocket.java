@@ -99,6 +99,7 @@ public class TowerSocket extends LinkLayerSocket {
                     timeout = System.currentTimeMillis() + TIMEOUT;
                 }
             } else if ((this.packetIndex == 0) || (System.currentTimeMillis() > timeout)) {                
+                //System.out.println("transport " + this.packetIndex);
                 sem.release();
                 return false;
             }
@@ -115,8 +116,10 @@ public class TowerSocket extends LinkLayerSocket {
                     this.bufferIndex = 0;
                 }
             }
+//            System.out.println("success");
             return true;
         } else {
+//            System.out.println("fejl");
             sem.release();
             return false;
         }
@@ -154,7 +157,7 @@ public class TowerSocket extends LinkLayerSocket {
                 this.readIndex = 0;
             }
             
-            return this.data & 0xFF;
+            return ((int)this.data) & 0xFF;
         }        
     }
     
@@ -189,15 +192,16 @@ public class TowerSocket extends LinkLayerSocket {
             this.packetBuffer[this.packetIndex++] = (byte)~buffer;
             
             if (this.packetIndex >= CHECKSUM_OFFSET) {
+                addChecksum(this.packetBuffer);
                 try {
-                    sem.acquire();
+                    sem.acquire();                    
+                    tower.write(this.packetBuffer, PACKET_SIZE);
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
+                } finally {                    
+                    sem.release();
                 }
-                addChecksum(this.packetBuffer);
-                tower.write(this.packetBuffer, PACKET_SIZE);
                 this.packetIndex = DATA_OFFSET;
-                sem.release();
             }
         }        
     }
