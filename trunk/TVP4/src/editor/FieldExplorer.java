@@ -69,6 +69,7 @@ public class FieldExplorer implements Runnable {
         this.dialog.addToLog("Contacting robot...");
         //this.robot.init((byte)0);
         this.robot.open(this.port);
+        this.robot.init((byte)12);
         this.robot.setActive(true);
         try {
             this.robot.lights(true);
