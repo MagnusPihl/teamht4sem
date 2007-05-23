@@ -100,7 +100,7 @@ public class GameScene implements Scene {
     // SKAL være robot 1&2, hvis der er 2, osv.
     //Husk at sætte mode til online i options. Bemærk at alle entiteter bevæger sig i spillet, lige meget hvor mange
     // robotter der er sat til. Det kan der ikke gøres noget ved. Der sendes kun til det antal du vælger.
-    private final int NUM_ROBOTS = 3;
+    private final int NUM_ROBOTS = 1;
     
     private int points;
     
@@ -576,10 +576,10 @@ public class GameScene implements Scene {
             this.placementState = 0;
             this.semaphore.release(3-this.semaphore.availablePermits());
                                     
-            for(int i=0; i<3; i++) 
+            for(int i=0; i<NUM_ROBOTS; i++) 
                 this.proxy[i] = new RobotProxy(i+1, this.semaphore);
             
-            this.proxy[0].open(this.towerPort);            
+        RobotProxy.open(this.towerPort);            
         }
         this.resetPoints();
         this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.fps,400);
@@ -588,7 +588,7 @@ public class GameScene implements Scene {
                 this.field.getSize().height*TileSet.getInstance().getTileSize(), BufferedImage.TYPE_INT_RGB);
         for(int i=0; i<3; i++) {
             if(this.field.getEntityRenderers().length > i) {
-                if(this.online) {
+                if(this.online && i < NUM_ROBOTS) {
                     this.proxy[i].init((byte)this.field.getEntityRenderers()[i].getEntity().getNode().getBinaryDirections());
                     this.proxy[i].setActive(true);
                 }
