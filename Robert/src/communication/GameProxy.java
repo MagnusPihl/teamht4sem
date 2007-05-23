@@ -100,7 +100,12 @@ public class GameProxy {
 //             
                 paths = driver.search();
             } else {
-                this.getcommand();
+                command = -1;
+                try {
+                    command = in.read();
+                } catch (Exception e) {
+                    Sound.buzz();
+                }
             
                 if (command != -1) {
                     if (command == GameCommands.FORWARD) {
@@ -146,30 +151,7 @@ public class GameProxy {
                 }
             }
         }
-    }
-    
-    private void getcommand() {
-        //TextLCD.print("recvB");
-        try {
-            command = in.read();
-        } catch (Exception e) {
-        
-        }
-                
-        if (command == -1) {
-            return;
-        }
-        directions = -1;        
-        LCD.showNumber(command);
-        if(command <= (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER) && command > GameCommands.NOP){
-            while(directions == -1){
-                try {
-                    directions = in.read();
-                } catch (IOException ex) {
-                }
-            }
-        }
-    }
+    }    
     
 //    public void pauseCommunication(){
 //        socket.setActive(false);
