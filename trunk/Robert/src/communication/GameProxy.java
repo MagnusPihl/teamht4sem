@@ -98,20 +98,7 @@ public class GameProxy {
 //                this.driver.setSegment((byte)-1);
 //                LCD.showNumber(9999);
 //             
-                LCD.clearSegment(Segment.SENSOR_1_ACTIVE);
-                LCD.clearSegment(Segment.SENSOR_2_ACTIVE);
-                LCD.clearSegment(Segment.SENSOR_3_ACTIVE);
-                LCD.clearSegment(Segment.SENSOR_2_VIEW);
                 paths = driver.search();
-                if((paths & GameCommands.TURN_LEFT) > 0)
-                    LCD.setSegment(Segment.SENSOR_1_ACTIVE);
-                if((paths & GameCommands.FORWARD) > 0)
-                    LCD.setSegment(Segment.SENSOR_2_ACTIVE);
-                if((paths & GameCommands.TURN_RIGHT) > 0)
-                    LCD.setSegment(Segment.SENSOR_3_ACTIVE);
-                if((paths & GameCommands.TURN_NUMBER) > 0)
-                    LCD.setSegment(Segment.SENSOR_2_VIEW);
-                LCD.showNumber(paths);
             } else {
                 this.getcommand();
             
@@ -131,12 +118,12 @@ public class GameProxy {
                     } else if (command == (GameCommands.FORWARD | GameCommands.DISCOVER)) {
                         this.driver.forward();
                         this.respond(GameCommands.MOVE_DONE | this.driver.search());
-                        this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
+//                        this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
 
                     } else if (command == (GameCommands.TURN_LEFT | GameCommands.DISCOVER) || command == (GameCommands.TURN_LEFT | GameCommands.DISCOVER | GameCommands.TURN_NUMBER)) {
                         this.driver.turnLeft(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
                         this.respond(GameCommands.MOVE_DONE | this.driver.search());
-                        this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
+//                        this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
 
                     } else if (command == (GameCommands.TURN_RIGHT | GameCommands.DISCOVER) || command == (GameCommands.TURN_RIGHT | GameCommands.DISCOVER | GameCommands.TURN_NUMBER)) {
                         this.driver.turnRight(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
