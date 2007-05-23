@@ -100,7 +100,7 @@ public class GameScene implements Scene {
     // SKAL være robot 1&2, hvis der er 2, osv.
     //Husk at sætte mode til online i options. Bemærk at alle entiteter bevæger sig i spillet, lige meget hvor mange
     // robotter der er sat til. Det kan der ikke gøres noget ved. Der sendes kun til det antal du vælger.
-    private final int NUM_ROBOTS = 1;
+    private final int NUM_ROBOTS = 3;
     
     private int points;
     
@@ -166,8 +166,6 @@ public class GameScene implements Scene {
         this.entity[0] = new Entity(null, 0);
         this.entity[1] = new Entity(null, 1);
         this.entity[2] = new Entity(null, 2);
-//        TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "pacman/"));
-//        this.soundManager = new SoundManager();
         this.cancel = new InputAction("Cancel", InputAction.DETECT_FIRST_ACTION);
         this.confirm = new InputAction("Confirm quit", InputAction.DETECT_FIRST_ACTION);
         
@@ -181,22 +179,10 @@ public class GameScene implements Scene {
         
         this.semaphore = new Semaphore(3);
         this.proxy = new RobotProxy[3];
-//        if(this.online)
-//        {
-//        this.proxy = new RobotProxy[3];
-//        this.proxy[0] = new RobotProxy(1, this.semaphore);
-//        this.proxy[1] = new RobotProxy(2, this.semaphore);
-//        this.proxy[2] = new RobotProxy(3, this.semaphore);
-//        }
     }
     
     public void setOnline(boolean _online) {
         this.online = _online;
-    }
-    
-    @Deprecated
-    public void setMode(int _mode) {
-        this.mode = _mode;
     }
     
     public void addPoints(int _points) {
@@ -381,6 +367,7 @@ public class GameScene implements Scene {
                 this.robotDialog[i] = new GameDialog("Place robot #" + (i+1) + " where the\nblinking entity is.\nPress enter when done.", true);
             }
         }
+        this.offscreenFrame = new GameDialog(TileSet.getInstance().getTileSize(),TileSet.getInstance().getTileSize(),true);
     }
     
     public void draw(Graphics2D _g) {
@@ -440,9 +427,15 @@ public class GameScene implements Scene {
         }
     }
     
+    private int lastsem = 0;
+    
     public void update(long _time) {
         //Any state
         this.moveTimer -= _time;
+        if (lastsem != this.semaphore.availablePermits()) {
+            lastsem = this.semaphore.availablePermits();
+            System.out.println(lastsem);
+        }
         
         if(this.state == this.STATE_PLACEMENT) {
             if(this.confirm.isPressed()){
@@ -540,9 +533,10 @@ public class GameScene implements Scene {
                     //END OF TURN!
                 }
             }
-            if(this.online)
+            if(this.online) {
                 for(int i=0; i < NUM_ROBOTS; i++)
                     this.proxy[i].isDoneMoving();
+            }
         }
         
         if(this.state == this.STATE_PAUSE) {
@@ -570,11 +564,12 @@ public class GameScene implements Scene {
             this.moveTimer = this.roundTime;
     }
     
-    public void init(InputManager _input) {
-        SoundSet.getInstance().loadSoundSet(new File(SoundSet.SKIN_LIBRARY + "pacman/"));
-        this.soundManager = new SoundManager();
-        if(this.soundOn)
+    public void init(InputManager _input) {        
+        if(this.soundOn) {
+            SoundSet.getInstance().loadSoundSet(new File(SoundSet.SKIN_LIBRARY + "pacman/"));
+            this.soundManager = new SoundManager();
             this.soundManager.runSound(1, true);
+        }
         this.state = this.STATE_RUNNING;
         if(this.online){
             //this.state = this.STATE_PLACEMENT;
@@ -584,10 +579,7 @@ public class GameScene implements Scene {
             for(int i=0; i<3; i++) 
                 this.proxy[i] = new RobotProxy(i+1, this.semaphore);
             
-            this.proxy[0].open(this.towerPort);
-            
-            for(int i=0; i<3; i++) 
-                this.proxy[i].setActive(true);
+            this.proxy[0].open(this.towerPort);            
         }
         this.resetPoints();
         this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.fps,400);
@@ -596,8 +588,10 @@ public class GameScene implements Scene {
                 this.field.getSize().height*TileSet.getInstance().getTileSize(), BufferedImage.TYPE_INT_RGB);
         for(int i=0; i<3; i++) {
             if(this.field.getEntityRenderers().length > i) {
-                if(this.online)
+                if(this.online) {
                     this.proxy[i].init((byte)this.field.getEntityRenderers()[i].getEntity().getNode().getBinaryDirections());
+                    this.proxy[i].setActive(true);
+                }
                 this.entity[i].setNode(this.field.getEntityRenderers()[i].getEntity().getNode());
                 this.entity[i].setDirection(this.field.getEntityRenderers()[i].getEntity().getDirection());
                 if(i==0 && this.entity[0].getController() == null)
@@ -622,8 +616,6 @@ public class GameScene implements Scene {
         }
         
         this.prerender();
-        this.offscreenFrame = new GameDialog(TileSet.getInstance().getTileSize(),TileSet.getInstance().getTileSize(),true);
-        this.offscreenFrame = new GameDialog(TileSet.getInstance().getTileSize(),TileSet.getInstance().getTileSize(),true);
     }
     
     public void deinit(InputManager _input) {
@@ -639,8 +631,9 @@ public class GameScene implements Scene {
                 this.proxy[i] = null;            
             }
         }
-        
-        this.soundManager.stopPlayers();
+        if (this.soundOn) {
+            this.soundManager.stopPlayers();
+        }
         EntityRenderer[] entities = this.field.getEntityRenderers();
         for(int i=0; i<entities.length; i++)
             if(entities[i].getEntity() != null)
