@@ -443,9 +443,9 @@ public class Driver {
     public void waitForHelp() {
         //should print something
         Sound.playTone(123,32);
-        Movement.stop();
-        while (!Button.RUN.isPressed()) {
-        }
+//        Movement.stop();
+//        while (!Button.RUN.isPressed()) {
+//        }
     }
     
     /**
