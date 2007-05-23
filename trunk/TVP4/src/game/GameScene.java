@@ -166,6 +166,9 @@ public class GameScene implements Scene {
         this.entity[0] = new Entity(null, 0);
         this.entity[1] = new Entity(null, 1);
         this.entity[2] = new Entity(null, 2);
+        TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "pacman/"));
+        SoundSet.getInstance().loadSoundSet(new File(SoundSet.SKIN_LIBRARY + "pacman/"));
+        this.soundManager = new SoundManager();
         this.cancel = new InputAction("Cancel", InputAction.DETECT_FIRST_ACTION);
         this.confirm = new InputAction("Confirm quit", InputAction.DETECT_FIRST_ACTION);
         
@@ -178,11 +181,22 @@ public class GameScene implements Scene {
         this.soundOn = true;
         
         this.semaphore = new Semaphore(3);
+//        if(this.online)
+//        {
         this.proxy = new RobotProxy[3];
+        this.proxy[0] = new RobotProxy(1, this.semaphore);
+        this.proxy[1] = new RobotProxy(2, this.semaphore);
+        this.proxy[2] = new RobotProxy(3, this.semaphore);
+//        }
     }
     
     public void setOnline(boolean _online) {
         this.online = _online;
+    }
+    
+    @Deprecated
+    public void setMode(int _mode) {
+        this.mode = _mode;
     }
     
     public void addPoints(int _points) {
@@ -393,7 +407,7 @@ public class GameScene implements Scene {
         
         this.frameCounter++;
         if(System.currentTimeMillis() - this.frameTimer > 1000) {
-            this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+10000000,400);//this.frameCounter,400);
+            this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.frameCounter,400);
             this.frameCounter = 0;
             this.frameTimer = System.currentTimeMillis();
         }
@@ -413,10 +427,14 @@ public class GameScene implements Scene {
         }
         
         if(this.state == this.STATE_WIN) {
+            if(this.soundOn)
+                this.soundManager.runSound(6, false);
             this.winDialog.draw(_g);
         }
         
         if(this.state == this.STATE_LOSE) {
+            if(this.soundOn)
+                this.soundManager.runSound(3, false);
             this.loseDialog.draw(_g);
         }
         
@@ -427,15 +445,9 @@ public class GameScene implements Scene {
         }
     }
     
-    private int lastsem = 0;
-    
     public void update(long _time) {
         //Any state
         this.moveTimer -= _time;
-        if (lastsem != this.semaphore.availablePermits()) {
-            lastsem = this.semaphore.availablePermits();
-            System.out.println(lastsem);
-        }
         
         if(this.state == this.STATE_PLACEMENT) {
             if(this.confirm.isPressed()){
@@ -457,7 +469,7 @@ public class GameScene implements Scene {
                 this.confirm.isPressed();
                 this.field.drawField(this.mapBuffer.getGraphics(), 0, 0);
                 double aspect = this.mapBuffer.getWidth() / this.mapBuffer.getHeight();
-                this.map = this.mapBuffer.getScaledInstance(((int)(300*aspect))+1, 300, Image.SCALE_SMOOTH);
+                this.map = this.mapBuffer.getScaledInstance((int)(300*aspect), 300, Image.SCALE_SMOOTH);
                 if(field.getSize().width * TileSet.getInstance().getTileSize() > 800 ||
                         field.getSize().height * TileSet.getInstance().getTileSize() > 520) {
                     this.pauseDialog.setSize(525, 525);
@@ -474,36 +486,20 @@ public class GameScene implements Scene {
             if(this.moveTimer<0 && this.semaphore.availablePermits()==3) {
                 for(int i=0; i<entities.length; i++) {
                     if(entities[i].getEntity() != null) {
+//                    System.out.println("Sem: "+semaphore.availablePermits());
                         //Win/Lose condition
                         if(this.field.getPointsLeft() == 0) {
                             this.state = this.STATE_WIN;
-                            if(this.soundOn)
-                            {
-                                this.soundManager.pause();
-                                this.soundManager.runSound(6, false);
-                            }
-                        }
-                        else
-                        {
+                        } else {
                             Node n;
                             Entity e = null;
                             for(int j=0; j<4; j++) {
                                 n = this.field.getNodeAt(entities[0].getEntity().getPosition()).getNodeAt(j);
-                                if(n != null){
+                                if(n != null)
                                     e = n.getEntity();
-                                    if(e != null)
-                                    {
-                                        if(e.getID() > 0)
-                                        {
-                                            if(this.soundOn == true && this.state != this.STATE_LOSE)
-                                            {  
-                                                this.soundManager.pause();
-                                                this.soundManager.runSound(3, false);
-                                            }
-                                            this.state = this.STATE_LOSE;
-                                        }
-                                    }
-                                }
+                                if(e != null)
+                                    if(e.getID() > 0)
+                                        this.state = this.STATE_LOSE;
                             }
                         }
                         
@@ -521,9 +517,7 @@ public class GameScene implements Scene {
                             if(i < NUM_ROBOTS) {
                                 try {
                                     this.proxy[i].move((byte)dir, (byte)entities[i].getEntity().getNode().getBinaryDirections());
-                                }
-                                catch(IOException e)
-                                {
+                                } catch(IOException e) {
                                     System.out.println(e.getMessage());
                                 }
                             }
@@ -533,10 +527,9 @@ public class GameScene implements Scene {
                     //END OF TURN!
                 }
             }
-            if(this.online) {
+            if(this.online)
                 for(int i=0; i < NUM_ROBOTS; i++)
                     this.proxy[i].isDoneMoving();
-            }
         }
         
         if(this.state == this.STATE_PAUSE) {
@@ -564,23 +557,17 @@ public class GameScene implements Scene {
             this.moveTimer = this.roundTime;
     }
     
-    public void init(InputManager _input) {        
-        if(this.soundOn) {
-            SoundSet.getInstance().loadSoundSet(new File(SoundSet.SKIN_LIBRARY + "pacman/"));
-            this.soundManager = new SoundManager();
-            this.soundManager.runSound(1, true);
-        }
+    public void init(InputManager _input) {
         this.state = this.STATE_RUNNING;
         if(this.online){
             //this.state = this.STATE_PLACEMENT;
             this.placementState = 0;
             this.semaphore.release(3-this.semaphore.availablePermits());
-                                    
-            for(int i=0; i<NUM_ROBOTS; i++) 
-                this.proxy[i] = new RobotProxy(i+1, this.semaphore);
-            
-        RobotProxy.open(this.towerPort);            
+            this.proxy[0].open(this.towerPort);
+            for(int i=0; i<3; i++)
+                this.proxy[i].setActive(true);
         }
+//        System.out.println(this.towerPort);
         this.resetPoints();
         this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.fps,400);
         this.field.loadFrom(this.level);
@@ -588,10 +575,8 @@ public class GameScene implements Scene {
                 this.field.getSize().height*TileSet.getInstance().getTileSize(), BufferedImage.TYPE_INT_RGB);
         for(int i=0; i<3; i++) {
             if(this.field.getEntityRenderers().length > i) {
-                if(this.online && i < NUM_ROBOTS) {
+                if(this.online)
                     this.proxy[i].init((byte)this.field.getEntityRenderers()[i].getEntity().getNode().getBinaryDirections());
-                    this.proxy[i].setActive(true);
-                }
                 this.entity[i].setNode(this.field.getEntityRenderers()[i].getEntity().getNode());
                 this.entity[i].setDirection(this.field.getEntityRenderers()[i].getEntity().getDirection());
                 if(i==0 && this.entity[0].getController() == null)
@@ -603,7 +588,8 @@ public class GameScene implements Scene {
         }
         this.levelOffsetX = (800/2) - ((this.field.getSize().width * TileSet.getInstance().getTileSize())/2);
         this.levelOffsetY = (600/2) - ((this.field.getSize().height * TileSet.getInstance().getTileSize())/2);
-        
+        if(this.soundOn)
+            this.soundManager.runSound(1, true);
         _input.mapToKey(cancel, KeyEvent.VK_ESCAPE);
         _input.mapToKey(confirm, KeyEvent.VK_ENTER);
         
@@ -625,15 +611,10 @@ public class GameScene implements Scene {
         if(this.online) {
             this.proxy[0].close();
             for(int i=0; i<3; i++)
-            {
-                this.proxy[i].setActive(false); 
-                this.proxy[i].clear(); 
-                this.proxy[i] = null;            
-            }
+                this.proxy[i].setActive(false);
         }
-        if (this.soundOn) {
-            this.soundManager.stopPlayers();
-        }
+        
+        this.soundManager.removePreviousPlayers();
         EntityRenderer[] entities = this.field.getEntityRenderers();
         for(int i=0; i<entities.length; i++)
             if(entities[i].getEntity() != null)
