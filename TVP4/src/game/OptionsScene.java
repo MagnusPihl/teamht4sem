@@ -155,7 +155,7 @@ public class OptionsScene implements Scene
         this.menuOptionsStr[4] = new String[] {"Slow", "Normal", "Fast"};
         this.menuOptionsStr[5] = new String[] {"On", "Off"};
         this.menuOptionsStr[6] = new String[] {"Offline", "Online"};
-        this.menuOptionsStr[7] = new String[] {"USB", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6"};
+        this.menuOptionsStr[7] = new String[] {"USB", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8"};
         
         this.menuHelpStr = new String[]
         {

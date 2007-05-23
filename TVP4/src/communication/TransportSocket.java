@@ -78,6 +78,7 @@ public class TransportSocket {
         private byte lastSequence;
         private int header;
         protected boolean isActive;
+        protected boolean isAlive;
         
         private InputStream in;
         private OutputStream out;
@@ -95,6 +96,7 @@ public class TransportSocket {
             bufferIndex = 0;
             this.lastSequence = -1;
             this.isActive = false;
+            this.isAlive = true;
         }
         
         /**
@@ -113,8 +115,8 @@ public class TransportSocket {
          * Reads data from lower layers as long as isActive is true.
          */
         public void run() {
-            while (true) {
-                //                System.out.println("Reading...");
+            while (this.isAlive) {
+                //System.out.println("Reading...");
                 if (this.isActive) {
                     try {
                         //int timestamp = (int)System.currentTimeMillis();
@@ -275,5 +277,17 @@ public class TransportSocket {
      */
     public InputStream getInputStream() {
         return this.in;
+    }
+    
+    /**
+     * Ensure that execution of inner read thread is halted
+     */
+    public void close() {
+        this.inputThread.isAlive = false;
+        try {
+            this.inputThread.join();
+        } catch (Exception e) {
+        
+        }
     }
 }

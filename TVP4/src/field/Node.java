@@ -477,9 +477,11 @@ public class Node implements Serializable, Comparable {
     public boolean equals(Object o) {
         if (o instanceof Node) {
             Node n = (Node)o;
-            if (!this.position.equals(n.position)) {
-                return false;
-            }
+            if ((this.position != null)&&(n.position != null)) {
+                if (!this.position.equals(n.position)) {
+                    return false;
+                }
+            } 
             return super.equals(o);
         } else {
             return false;
