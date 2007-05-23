@@ -141,8 +141,8 @@ public class GameProxy {
                         Movement.LightOff();
 
                     } else if (command == GameCommands.BEEP) {//only two beeps
-                        Sound.twoBeeps();
-                    }         
+                        Sound.beep();
+                    }
                 }
             }
         }

@@ -80,8 +80,8 @@ public class Driver {
             Sensor.SENSORS[i].setTypeAndMode(3, 0x00);
             Sensor.SENSORS[i].activate();
         }
-        Motor.A.setPower(7); //4
-        Motor.C.setPower(7); //4
+        Motor.A.setPower(1); //4
+        Motor.C.setPower(1); //4
         
         colorBuffer = new byte[3][3];
         currentIndex = 0;
@@ -175,7 +175,16 @@ public class Driver {
             } else {
                 THRESHOLD[MIDDLE_SENSOR][COLOR_YELLOW] -= (int)((THRESHOLD[MIDDLE_SENSOR][COLOR_YELLOW] - readRaw(i)) / 2f);
             }
-        }                                     
+        }
+        
+        LCD.clearSegment(Segment.SENSOR_1_ACTIVE);
+        LCD.clearSegment(Segment.SENSOR_2_ACTIVE);
+        LCD.clearSegment(Segment.SENSOR_3_ACTIVE);
+        LCD.clearSegment(Segment.SENSOR_1_VIEW);
+        LCD.clearSegment(Segment.SENSOR_2_VIEW);
+        LCD.clearSegment(Segment.SENSOR_3_VIEW);
+        LCD.clear();
+        LCD.refresh();
     }        
     
     /**
@@ -274,7 +283,7 @@ public class Driver {
             try {
                 Thread.sleep(10);
             } catch (Exception e) {
-                Sound.beep();
+                Sound.buzz();
             }
         }
         Movement.stop();
@@ -446,8 +455,16 @@ public class Driver {
      */
     public byte search()
     {
+        Sound.twoBeeps();
+        LCD.clearSegment(Segment.SENSOR_1_ACTIVE);
+        LCD.clearSegment(Segment.SENSOR_2_ACTIVE);
+        LCD.clearSegment(Segment.SENSOR_3_ACTIVE);
+        LCD.clearSegment(Segment.SENSOR_2_VIEW);
+        
         this.pathsDiscovered = GameCommands.TURN_NUMBER;
-        this.read();
+        read();
+        read();
+        read();
         
         if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_YELLOW)
         {
@@ -456,34 +473,61 @@ public class Driver {
             if ((this.currentColor[this.LEFT_SENSOR] == this.COLOR_BLACK))
                 this.pathsDiscovered |= GameCommands.TURN_LEFT;
             
-            while(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_YELLOW)
-            {
+//            while(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_YELLOW)
+//            {
                 Movement.forward();
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(320);
                 } catch (InterruptedException ex) {
                     //ex.printStackTrace();
                 }
                 Movement.stop();
+                adjust();
                 this.read();
-            }
+                this.read();
+                this.read();
+//            }
             if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_BLACK)
                 this.pathsDiscovered |= GameCommands.FORWARD;
-            while(this.currentColor[this.MIDDLE_SENSOR] != this.COLOR_YELLOW)
-            {
+//            while(this.currentColor[this.MIDDLE_SENSOR] != this.COLOR_YELLOW)
+//            {
                 Movement.backward();
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(320);
                 } catch (InterruptedException ex) {
                     //ex.printStackTrace();
                 }
                 Movement.stop();
                 this.read();
-            }
+                this.read();
+                this.read();
+//            }
+                
+            if((pathsDiscovered & GameCommands.TURN_LEFT) > 0)
+                LCD.setSegment(Segment.SENSOR_1_ACTIVE);
+            if((pathsDiscovered & GameCommands.FORWARD) > 0)
+                LCD.setSegment(Segment.SENSOR_2_ACTIVE);
+            if((pathsDiscovered & GameCommands.TURN_RIGHT) > 0)
+                LCD.setSegment(Segment.SENSOR_3_ACTIVE);
+            if((pathsDiscovered & GameCommands.TURN_NUMBER) > 0)
+                LCD.setSegment(Segment.SENSOR_2_VIEW);
+            LCD.showNumber(pathsDiscovered);
+            
             return this.pathsDiscovered;
         }
-        else if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_GREEN)
-            return GameCommands.TURN_NUMBER | GameCommands.FORWARD;    //Forward and back available
+        else if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_GREEN) {
+            pathsDiscovered |= GameCommands.FORWARD;
+            if((pathsDiscovered & GameCommands.TURN_LEFT) > 0)
+                LCD.setSegment(Segment.SENSOR_1_ACTIVE);
+            if((pathsDiscovered & GameCommands.FORWARD) > 0)
+                LCD.setSegment(Segment.SENSOR_2_ACTIVE);
+            if((pathsDiscovered & GameCommands.TURN_RIGHT) > 0)
+                LCD.setSegment(Segment.SENSOR_3_ACTIVE);
+            if((pathsDiscovered & GameCommands.TURN_NUMBER) > 0)
+                LCD.setSegment(Segment.SENSOR_2_VIEW);
+            LCD.showNumber(pathsDiscovered);
+            return pathsDiscovered;    //Forward and back available
+        }
         
         return 0;    //Not on a node
     }
