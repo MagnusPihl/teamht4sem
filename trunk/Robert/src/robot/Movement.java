@@ -17,7 +17,6 @@ public class Movement {
     public static void LightOn(){
         Motor.B.forward();
     }
-    
     public static void LightOff(){
         Motor.B.stop();
     }

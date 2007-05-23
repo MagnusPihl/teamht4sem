@@ -80,8 +80,8 @@ public class Driver {
             Sensor.SENSORS[i].setTypeAndMode(3, 0x00);
             Sensor.SENSORS[i].activate();
         }
-        Motor.A.setPower(1); //4
-        Motor.C.setPower(1); //4
+        Motor.A.setPower(7); //4
+        Motor.C.setPower(7); //4
         
         colorBuffer = new byte[3][3];
         currentIndex = 0;
