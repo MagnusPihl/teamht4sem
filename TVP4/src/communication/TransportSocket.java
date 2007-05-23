@@ -41,7 +41,7 @@
 package communication;
 
 import java.io.*;
-import josx.platform.rcx.LCD;
+import java.util.concurrent.Semaphore;
 import josx.util.*;
 import java.util.Random;
 
@@ -57,18 +57,18 @@ public class TransportSocket {
     public static final byte DATA = 0;
     public static final byte RECEIPT = 1;
     
+    private static Semaphore sem = new Semaphore(1);
     private static final byte NOP = 0x00;
     
     public static final byte INPUT_BUFFER_SIZE = 20;
     //Time to wait for acknowledge before retrying to write data. Should always be lower than WRITE_TIMEOUT.
-    private int ACKNOWLEDGE_TIMEOUT = 200 + random.nextInt()&0x7F;
+    private int ACKNOWLEDGE_TIMEOUT = 1000 + random.nextInt()&0x7F;
     
     /** Creates a new instance of TransportSocket */
     public TransportSocket(InputStream in, OutputStream out) {
         this.readBuffer = new byte[INPUT_BUFFER_SIZE];
         this.in = new TransportSocket.TransportInputStream();
-        this.out = new TransportSocket.TransportOutputStream(out);
-        
+        this.out = new TransportSocket.TransportOutputStream(out);        
         this.inputThread = new TransportInputThread(in, out);
         this.inputThread.start();
     }
@@ -78,7 +78,6 @@ public class TransportSocket {
         private byte lastSequence;
         private int header;
         protected boolean isActive;
-        protected boolean isAlive;
         
         private InputStream in;
         private OutputStream out;
@@ -96,7 +95,6 @@ public class TransportSocket {
             bufferIndex = 0;
             this.lastSequence = -1;
             this.isActive = false;
-            this.isAlive = true;
         }
         
         /**
@@ -115,8 +113,8 @@ public class TransportSocket {
          * Reads data from lower layers as long as isActive is true.
          */
         public void run() {
-            while (this.isAlive) {
-                //System.out.println("Reading...");
+            while (true) {
+                //                System.out.println("Reading...");
                 if (this.isActive) {
                     try {
                         //int timestamp = (int)System.currentTimeMillis();
@@ -135,13 +133,15 @@ public class TransportSocket {
                             continue;
                         }
                         
-                        //System.out.println("Transport: READING:  "+TransportPackage.getType(header)+", "+TransportPackage.getSequenceNumber(header)+", "+data);
+                        System.out.println("Transport: READING:  "+TransportPackage.getType(header)+", "+TransportPackage.getSequenceNumber(header)+", "+data);
                         
                         //Only continue if byte received is Data header.
                         if (TransportPackage.getType(header) == DATA) {
                             //Send receipt.
+                            sem.acquire();
                             this.out.write(TransportPackage.createAcknowledgeHeader(this.header));
                             this.out.write(NOP);
+                            sem.release();
                             
                             //Return data only if not a repeat of the last sequence
                             if(TransportPackage.getSequenceNumber(this.header) != this.lastSequence) {
@@ -223,25 +223,31 @@ public class TransportSocket {
          * @param byte to write to underlying layers.
          */
         public void write(int b) throws IOException {
-            //System.out.println("Sending: " + Integer.toBinaryString(b));
+            System.out.println("Sending: " + Integer.toBinaryString(b));
+            
             this.sequence++;    
             if (this.sequence == 127) {
                 this.sequence = 0;
             }
+            System.out.println("Transport: Writing:  " + sequence + ", " + b);
             //Write header and data bytes.
             
             try {
+                sem.acquire();
                 this.out.write(sequence);
-                this.out.write(b);                
-                this.timeout = (int)System.currentTimeMillis() + ACKNOWLEDGE_TIMEOUT;
+                this.out.write(b);
+                sem.release();
+                this.timeout = ACKNOWLEDGE_TIMEOUT + (int)System.currentTimeMillis();
                 
                 //Try to read acknowledge header. Timeout if needed.
                 while(lastAcknowledge != sequence) {
                     if(this.timeout < (int)System.currentTimeMillis()) {
+                        sem.acquire();
                         this.out.write(sequence);
                         this.out.write(b);
-                        this.timeout = (int)System.currentTimeMillis() + ACKNOWLEDGE_TIMEOUT;
-                        System.out.println("resending");
+                        sem.release();
+                        this.timeout = ACKNOWLEDGE_TIMEOUT + (int)System.currentTimeMillis();
+                        //System.out.println("resending");
                     }
                     
                     //Thread.sleep(ACKNOWLEDGE_TIMEOUT + random.nextInt()&0x7F);
@@ -277,17 +283,5 @@ public class TransportSocket {
      */
     public InputStream getInputStream() {
         return this.in;
-    }
-    
-    /**
-     * Ensure that execution of inner read thread is halted
-     */
-    public void close() {
-        this.inputThread.isAlive = false;
-        try {
-            this.inputThread.join();
-        } catch (Exception e) {
-        
-        }
     }
 }
