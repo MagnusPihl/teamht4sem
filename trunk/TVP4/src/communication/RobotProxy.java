@@ -67,12 +67,12 @@ public class RobotProxy extends Thread{
         this.lastDir = Node.UP;
         this.lastPossDir = curDirs;
         this.writeBufferIndex = 0;
-        //this.socket.clear();
     }
     
     //**************Start of inner-class*********************//
     public class NonBlockingWriter extends Thread {
-        private boolean isActive = false;
+        private boolean isActive = false;        
+        private boolean isAlive = true;
         private int sentIndex;
         
         public NonBlockingWriter(){
@@ -80,7 +80,7 @@ public class RobotProxy extends Thread{
         }
         
         public void run(){
-            while(true){
+            while(isAlive){
                 if ((this.isActive)&&(this.sentIndex != writeBufferIndex)) {
                     try {
                         out.write(writeBuffer[this.sentIndex++]);
@@ -236,7 +236,7 @@ public class RobotProxy extends Thread{
             this.write(getRotation(_direction) | GameCommands.DISCOVER);
             this.lastDir = _direction;
         } else {
-            this.write(GameCommands.SEARCH_NODE);
+            this.write(GameCommands.SEARCH_NODE | GameCommands.DISCOVER);
         }
     }
     
@@ -284,23 +284,7 @@ public class RobotProxy extends Thread{
      */
     public void beep() throws IOException{
         this.out.write(GameCommands.BEEP);
-    }
-    
-    /**
-     *
-     */
-    @Deprecated
-    public void calibrate(byte lOffset, byte oOffset, byte rOffset, byte minGreen, byte maxGreen, byte minBlack) throws IOException{
-        byte[] outPacket = new byte[5];
-        outPacket[0] = GameCommands.CALIBRATE;
-        outPacket[1] = lOffset;
-        outPacket[2] = oOffset;
-        outPacket[3] = rOffset;
-        outPacket[4] = minGreen;
-        outPacket[5] = maxGreen;
-        outPacket[6] = minBlack;
-        this.out.write(outPacket);
-    }
+    }    
     
     public static void open(String port) {        
         link.open(port);
@@ -308,6 +292,12 @@ public class RobotProxy extends Thread{
     
     public static void close() {
         link.close();        
+    }
+    
+    public void close() {
+        this.writer.isAlive = false;
+        this.writer.join();
+        this.socket.close();
     }
     
     public void setActive(boolean isActive) {

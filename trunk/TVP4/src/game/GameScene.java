@@ -180,12 +180,13 @@ public class GameScene implements Scene {
         this.soundOn = true;
         
         this.semaphore = new Semaphore(3);
+        this.proxy = new RobotProxy[3];
 //        if(this.online)
 //        {
-        this.proxy = new RobotProxy[3];
-        this.proxy[0] = new RobotProxy(1, this.semaphore);
-        this.proxy[1] = new RobotProxy(2, this.semaphore);
-        this.proxy[2] = new RobotProxy(3, this.semaphore);
+//        this.proxy = new RobotProxy[3];
+//        this.proxy[0] = new RobotProxy(1, this.semaphore);
+//        this.proxy[1] = new RobotProxy(2, this.semaphore);
+//        this.proxy[2] = new RobotProxy(3, this.semaphore);
 //        }
     }
     
@@ -579,8 +580,13 @@ public class GameScene implements Scene {
             //this.state = this.STATE_PLACEMENT;
             this.placementState = 0;
             this.semaphore.release(3-this.semaphore.availablePermits());
+                                    
+            for(int i=0; i<3; i++) 
+                this.proxy[i] = new RobotProxy(i+1, this.semaphore);
+            
             this.proxy[0].open(this.towerPort);
-            for(int i=0; i<3; i++)
+            
+            for(int i=0; i<3; i++) 
                 this.proxy[i].setActive(true);
         }
         this.resetPoints();
@@ -627,7 +633,11 @@ public class GameScene implements Scene {
         if(this.online) {
             this.proxy[0].close();
             for(int i=0; i<3; i++)
-                this.proxy[i].setActive(false);
+            {
+                this.proxy[i].setActive(false); 
+                this.proxy[i].clear(); 
+                this.proxy[i] = null;            
+            }
         }
         
         this.soundManager.stopPlayers();
