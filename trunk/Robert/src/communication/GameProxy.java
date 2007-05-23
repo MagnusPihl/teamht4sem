@@ -86,15 +86,15 @@ public class GameProxy {
         while(true){
 //            LCD.showNumber((int)Runtime.getRuntime().freeMemory());
 //            this.driver.read();
-            if (Button.RUN.isPressed()) {
-                LCD.showNumber(12);
-                //command = GameCommands.FORWARD;
-                this.driver.forward();
-            } else if (Button.PRGM.isPressed()) {
-                LCD.showNumber(13);
-                //command = GameCommands.TURN_LEFT;
-                this.driver.turnLeft(false);
-            } else if (Button.VIEW.isPressed()) {
+//            if (Button.RUN.isPressed()) {
+//                LCD.showNumber(12);
+//                //command = GameCommands.FORWARD;
+//                this.driver.forward();
+//            } else if (Button.PRGM.isPressed()) {
+//                LCD.showNumber(13);
+//                //command = GameCommands.TURN_LEFT;
+//                this.driver.turnLeft(false);
+            if (Button.VIEW.isPressed()) {
 //                this.driver.setSegment((byte)-1);
 //                LCD.showNumber(9999);
 //             
@@ -108,60 +108,66 @@ public class GameProxy {
 //                LCD.showNumber(paths);
                 this.driver.read();
             } else {
-//                this.getcommand();
-//                LCD.showNumber(command);
-//            
-//                if (command == GameCommands.FORWARD) {
-//                    this.driver.forward();
-//                    this.respond(GameCommands.MOVE_DONE);
-//
-//                } else if (command == GameCommands.TURN_LEFT || command == (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER)) {
-//                    this.driver.turnLeft(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
-//                    this.respond(GameCommands.MOVE_DONE);
-//
-//                } else if (command == GameCommands.TURN_RIGHT || command == (GameCommands.TURN_RIGHT | GameCommands.TURN_NUMBER)) {
-//                    this.driver.turnRight(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
-//                    this.respond(GameCommands.MOVE_DONE);
-//
-//                } else if (command == (GameCommands.FORWARD | GameCommands.DISCOVER)) {
-//                    this.driver.forward();
-//                    this.respond(GameCommands.MOVE_DONE | this.driver.search());
-//
-//                } else if (command == (GameCommands.TURN_LEFT | GameCommands.DISCOVER) || command == (GameCommands.TURN_LEFT | GameCommands.DISCOVER | GameCommands.TURN_NUMBER)) {
-//                    this.driver.turnLeft(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
-//                    this.respond(GameCommands.MOVE_DONE | this.driver.search());
-//
-//                } else if (command == (GameCommands.TURN_RIGHT | GameCommands.DISCOVER) || command == (GameCommands.TURN_RIGHT | GameCommands.DISCOVER | GameCommands.TURN_NUMBER)) {
-//                    this.driver.turnRight(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
-//                    this.respond(GameCommands.MOVE_DONE | this.driver.search());
-//
-//                } else if (command == GameCommands.SEARCH_NODE) {
-//                    this.respond(GameCommands.MOVE_DONE | this.driver.search());
-//                    
-//                } else if (command == GameCommands.LIGHT_ON) {
-//                    Movement.LightOn();
-//
-//                } else if (command == GameCommands.LIGHT_OFF) {
-//                    Movement.LightOff();
-//
-//                } else if (command == GameCommands.BEEP) {//only two beeps
-//                    Sound.twoBeeps();
-//                }                
+                this.getcommand();
+            
+                if (command != -1) {
+                    if (command == GameCommands.FORWARD) {
+                        //this.driver.forward();
+                        this.respond(GameCommands.MOVE_DONE);
+
+                    } else if (command == GameCommands.TURN_LEFT || command == (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER)) {
+                        //this.driver.turnLeft(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
+                        this.respond(GameCommands.MOVE_DONE);
+
+                    } else if (command == GameCommands.TURN_RIGHT || command == (GameCommands.TURN_RIGHT | GameCommands.TURN_NUMBER)) {
+                        //this.driver.turnRight(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
+                        this.respond(GameCommands.MOVE_DONE);
+
+                    } else if (command == (GameCommands.FORWARD | GameCommands.DISCOVER)) {
+                        this.driver.forward();
+                        this.respond(GameCommands.MOVE_DONE | this.driver.search());
+                        //this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
+
+                    } else if (command == (GameCommands.TURN_LEFT | GameCommands.DISCOVER) || command == (GameCommands.TURN_LEFT | GameCommands.DISCOVER | GameCommands.TURN_NUMBER)) {
+                        this.driver.turnLeft(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
+                        this.respond(GameCommands.MOVE_DONE | this.driver.search());
+                        //this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
+
+                    } else if (command == (GameCommands.TURN_RIGHT | GameCommands.DISCOVER) || command == (GameCommands.TURN_RIGHT | GameCommands.DISCOVER | GameCommands.TURN_NUMBER)) {
+                        this.driver.turnRight(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
+                        this.respond(GameCommands.MOVE_DONE | this.driver.search());
+                       // this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
+
+                    } else if (command == (GameCommands.SEARCH_NODE | GameCommands.DISCOVER)) {
+                        this.respond(GameCommands.MOVE_DONE | this.driver.search());
+                        //this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
+
+                    } else if (command == GameCommands.LIGHT_ON) {
+                        Movement.LightOn();
+
+                    } else if (command == GameCommands.LIGHT_OFF) {
+                        Movement.LightOff();
+
+                    } else if (command == GameCommands.BEEP) {//only two beeps
+                        Sound.twoBeeps();
+                    }         
+                }
             }
         }
     }
     
-    private void getcommand(){
+    private void getcommand() {
         //TextLCD.print("recvB");
-        command = -1;
-        directions = -1;
-        while(command == -1){
-            try {
-                command = in.read();
-            } catch (IOException ex) {
-                
-            }
+        try {
+            command = in.read();
+        } catch (Exception e) {
+        
         }
+                
+        if (command == -1) {
+            return;
+        }
+        directions = -1;        
         LCD.showNumber(command);
         if(command <= (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER) && command > GameCommands.NOP){
             while(directions == -1){

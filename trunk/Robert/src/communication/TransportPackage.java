@@ -63,14 +63,14 @@ public class TransportPackage
 //        return this.data;
 //    }
     
-    public static int getType(int _header)
+    public static byte getType(int _header)
     {
-        return (_header & 0x80)>>7;
+        return (byte)((_header & 0x80)>>7);
     }
     
-    public static int getSequenceNumber(int _header)
+    public static byte getSequenceNumber(int _header)
     {
-        return (_header & 0x7F);
+        return (byte)(_header & 0x7F);
     }
     
     public static int createAcknowledgeHeader(int _header)
