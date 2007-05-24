@@ -100,7 +100,7 @@ public class GameScene implements Scene {
     // SKAL være robot 1&2, hvis der er 2, osv.
     //Husk at sætte mode til online i options. Bemærk at alle entiteter bevæger sig i spillet, lige meget hvor mange
     // robotter der er sat til. Det kan der ikke gøres noget ved. Der sendes kun til det antal du vælger.
-    private final int NUM_ROBOTS = 2;
+    private final int NUM_ROBOTS = 1;
     
     private int points;
     
@@ -483,7 +483,10 @@ public class GameScene implements Scene {
             
             //START OF TURN!
             entities[0].getEntity().getController().calculateNextMove();
-            if(this.moveTimer<0 && this.semaphore.availablePermits()==3) {
+            if(this.moveTimer<0 && this.semaphore.availablePermits()==3) {                
+                int dir;
+                int availablePaths;
+                
                 for(int i=0; i<entities.length; i++) {
                     if(entities[i].getEntity() != null) {
 //                    System.out.println("Sem: "+semaphore.availablePermits());
@@ -502,8 +505,8 @@ public class GameScene implements Scene {
                                         this.state = this.STATE_LOSE;
                             }
                         }
-                        
-                        int dir = -1;
+                                                
+                        availablePaths = entities[0].getEntity().getNode().getBinaryDirections();
                         if(i == 0) {
                             this.addPoints(entities[0].getEntity().getNode().takePoints());
                             this.field.repaintNode(entities[0].getEntity().getNode());
@@ -515,8 +518,8 @@ public class GameScene implements Scene {
                         
                         if(this.online && dir!=-1) {
                             if(i < NUM_ROBOTS) {
-                                try {
-                                    this.proxy[i].move((byte)dir, (byte)entities[i].getEntity().getNode().getBinaryDirections());
+                                try {                                    
+                                    this.proxy[i].move((byte)dir, (byte)availablePaths);
                                 } catch(IOException e) {
                                     System.out.println(e.getMessage());
                                 }
@@ -574,9 +577,7 @@ public class GameScene implements Scene {
         this.mapBuffer = new BufferedImage(this.field.getSize().width*TileSet.getInstance().getTileSize(),
                 this.field.getSize().height*TileSet.getInstance().getTileSize(), BufferedImage.TYPE_INT_RGB);
         for(int i=0; i<3; i++) {
-            if(this.field.getEntityRenderers().length > i) {
-                if(this.online)
-                    this.proxy[i].init((byte)this.field.getEntityRenderers()[i].getEntity().getNode().getBinaryDirections());
+            if(this.field.getEntityRenderers().length > i) {                
                 this.entity[i].setNode(this.field.getEntityRenderers()[i].getEntity().getNode());
                 this.entity[i].setDirection(this.field.getEntityRenderers()[i].getEntity().getDirection());
                 if(i==0 && this.entity[0].getController() == null)
