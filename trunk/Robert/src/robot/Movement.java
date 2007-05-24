@@ -66,6 +66,26 @@ public class Movement {
      *
      * @author Christian Holm
      */    
+    public static void backwardLeft() {
+        Motor.A.backward();
+        Motor.C.flt();
+    }
+    
+    /**
+     * Start turning right using one motor
+     *
+     * @author Christian Holm
+     */
+    public static void backwardRight() {
+        Motor.A.flt();
+        Motor.C.forward();
+    }    
+    
+    /**
+     * Start turning left using one motor
+     *
+     * @author Christian Holm
+     */    
 /*    public static void left2() {
         Motor.A.backward();
         Motor.C.flt();
