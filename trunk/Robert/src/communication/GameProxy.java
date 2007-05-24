@@ -98,7 +98,7 @@ public class GameProxy {
 //                this.driver.setSegment((byte)-1);
 //                LCD.showNumber(9999);
 //             
-                paths = driver.search();
+                paths = driver.search(true);
             } else {
                 command = -1;
                 try {
@@ -122,21 +122,21 @@ public class GameProxy {
 
                     } else if (command == (GameCommands.FORWARD | GameCommands.DISCOVER)) {
                         this.driver.forward();
-                        this.respond(GameCommands.MOVE_DONE | this.driver.search());
+                        this.respond(GameCommands.MOVE_DONE | this.driver.search(true));
 //                        this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
 
                     } else if (command == (GameCommands.TURN_LEFT | GameCommands.DISCOVER) || command == (GameCommands.TURN_LEFT | GameCommands.DISCOVER | GameCommands.TURN_NUMBER)) {
                         this.driver.turnLeft(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
-                        this.respond(GameCommands.MOVE_DONE | this.driver.search());
+                        this.respond(GameCommands.MOVE_DONE | this.driver.search(true));
 //                        this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
 
                     } else if (command == (GameCommands.TURN_RIGHT | GameCommands.DISCOVER) || command == (GameCommands.TURN_RIGHT | GameCommands.DISCOVER | GameCommands.TURN_NUMBER)) {
                         this.driver.turnRight(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
-                        this.respond(GameCommands.MOVE_DONE | this.driver.search());
+                        this.respond(GameCommands.MOVE_DONE | this.driver.search(true));
                        // this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
 
                     } else if (command == (GameCommands.SEARCH_NODE | GameCommands.DISCOVER)) {
-                        this.respond(GameCommands.MOVE_DONE | this.driver.search());
+                        this.respond(GameCommands.MOVE_DONE | this.driver.search(true));
                         //this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
 
                     } else if (command == GameCommands.LIGHT_ON) {
