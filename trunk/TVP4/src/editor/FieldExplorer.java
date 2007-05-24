@@ -69,7 +69,6 @@ public class FieldExplorer implements Runnable {
         this.dialog.addToLog("Contacting robot...");
         //this.robot.init((byte)0);
         this.robot.open(this.port);
-        this.robot.init((byte)12);
         this.robot.setActive(true);
         try {
             this.robot.lights(true);
@@ -100,7 +99,7 @@ public class FieldExplorer implements Runnable {
             LevelEditor.getInstance().getEditorPanel().checkSize();
             
             System.out.println("Før node");
-            this.robot.search((byte)Node.INVALID_DIRECTION);
+            this.robot.search((byte)Node.INVALID_DIRECTION, (byte)0);
             System.out.println("Efter node");
             this.waitForRobot();
             this.addDirections();
@@ -130,7 +129,7 @@ public class FieldExplorer implements Runnable {
                                     case Node.LEFT: this.dialog.addToLog("Moving to the left..."); break;
                                     case Node.RIGHT: this.dialog.addToLog("Moving to the right..."); break;
                                 }
-                                this.robot.move((byte)move, (byte)tempNode.getBinaryDirections());
+                                this.robot.move((byte)move, (byte)this.currentNode.getBinaryDirections());
                             } else {
                                 switch(move) {
                                     case Node.UP: this.dialog.addToLog("Searching upwards..."); break;
@@ -138,7 +137,7 @@ public class FieldExplorer implements Runnable {
                                     case Node.LEFT: this.dialog.addToLog("Searching to the left..."); break;
                                     case Node.RIGHT: this.dialog.addToLog("Searching to the right..."); break;
                                 }
-                                this.robot.search((byte)move);
+                                this.robot.search((byte)move, (byte)this.currentNode.getBinaryDirections());
                             }
                             
                             this.waitForRobot();
