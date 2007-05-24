@@ -385,7 +385,10 @@ public class Driver {
                 else
                     ; //Do something when on yellow. I don't know what.
             } else if (blackSensors == 5) { //101
-                Movement.backward();
+                if(currentColor[MIDDLE_SENSOR] != COLOR_YELLOW)
+                    Movement.backward();
+                else
+                    ; //Do something when on yellow. I don't know what.
             } else if (blackSensors == 2) { //010
                 Movement.stop();
                 isDriving = false;
@@ -479,6 +482,8 @@ public class Driver {
         Movement.forward();
         while(isDriving){
             read();
+            read();
+            read();
             if (blackSensors == 2){//010
                 Movement.forward();
             } else if (blackSensors == 3) {//011
@@ -492,9 +497,9 @@ public class Driver {
                         isDriving = false;
                 } else {
 //                    Movement.stop();
-//                    adjust();
-//                    Movement.forward();
-                    Movement.sharpLeft();
+                    adjust();
+                    Movement.forward();
+//                    Movement.sharpLeft();
                 }
             } else if (blackSensors == 1) {//001
                 if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
@@ -503,9 +508,9 @@ public class Driver {
                         isDriving = false;
                 } else {
 //                    Movement.stop();
-//                    adjust();
-//                    Movement.forward();
-                    Movement.sharpRight();
+                    adjust();
+                    Movement.forward();
+//                    Movement.sharpRight();
                 }
             } else if (blackSensors == 5) {//101
                 if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
