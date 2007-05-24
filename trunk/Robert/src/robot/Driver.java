@@ -301,20 +301,23 @@ public class Driver {
     public void turnLeft(boolean sharpTurn) {        
         initMove();        
         adjust();
-        isDriving = true;
         Movement.sharpLeft();
+        
         while(isDriving){
             read();
                 if ((blackSensors & 0x04) == 0x04) { // 100 110                    
                     if (sharpTurn) {
                         sharpTurn = false;
-                        adjust();
+                        adjust();                        
+                        isDriving = true;
+                        Movement.sharpLeft();
                     } else {
                         Movement.stop();
                         isDriving = false;
                     }
                 }
         }
+        
         adjust();
         forward();
     }
@@ -327,20 +330,23 @@ public class Driver {
     public void turnRight(boolean sharpTurn) {      
         initMove();        
         adjust();
-        isDriving = true;
         Movement.sharpRight();
+        
         while(isDriving){
             read();
                 if ((blackSensors & 0x01) == 0x01) { // 001 011                    
                     if (sharpTurn) {
                         sharpTurn = false;
                         adjust();
+                        isDriving = true;
+                        Movement.sharpRight();
                     } else {
                         Movement.stop();
                         isDriving = false;
                     }
                 }
         }
+        
         adjust();        
         forward();
     }
