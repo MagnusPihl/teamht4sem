@@ -141,4 +141,9 @@ public class Movement {
         Motor.A.backward();
         Motor.C.backward();
     }
+    
+    public static void setPower(int power){
+        Motor.A.setPower(power);
+        Motor.C.setPower(power);
+    }
 }
