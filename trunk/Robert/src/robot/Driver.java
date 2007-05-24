@@ -63,11 +63,9 @@ public class Driver {
     private byte i; //iterator; //Also used as roadCount to safe memory
     
     private boolean isDriving;
-    private byte turnState;  
         
-    private int turnTimeout;
-    private static final int TURN_TIME = 200; //find ud af om tallet er fornuftigt
-    private static final int TURN_INIT_TIME = 320; //find ud af om tallet er fornuftigt
+    private int turnTimeout;    
+    private static final int MOVE_INIT_TIME = 320; //find ud af om tallet er fornuftigt
     
     private int[] calibrationValues;
     private byte pathsDiscovered, tempPathsDiscovered;
@@ -230,7 +228,7 @@ public class Driver {
         }
     }
     
-    private int leblacks;
+    //private int colorsToLCD;
     
     /**
      * Analyze color values and flag sensors reading black in the blackSensors
@@ -246,11 +244,11 @@ public class Driver {
             }            
         }        
     
-        leblacks = currentColor[RIGHT_SENSOR];
-        leblacks += currentColor[MIDDLE_SENSOR] * 10;
-        leblacks += currentColor[LEFT_SENSOR] * 100;
+        /*colorsToLCD = currentColor[RIGHT_SENSOR];
+        colorsToLCD += currentColor[MIDDLE_SENSOR] * 10;
+        colorsToLCD += currentColor[LEFT_SENSOR] * 100;
             
-        LCD.showNumber(leblacks);
+        LCD.showNumber(colorsToLCD);*/
     }
     
     /**
@@ -260,10 +258,7 @@ public class Driver {
         for (i = 0; i < SENSOR_COUNT; i++) {
             if ((colorBuffer[i][0] == colorBuffer[i][1]) && (colorBuffer[i][1] == colorBuffer[i][2])) {
                 currentColor[i] = colorBuffer[i][1];
-//            } else if(colorBuffer[i][0] == colorBuffer[i][2]){
-//                currentColor[i] = colorBuffer[i][0];
-            }
-            else{
+            } else {
                 currentColor[i] = COLOR_UNKNOWN; //COLOR unknown
             }
         }
@@ -275,16 +270,12 @@ public class Driver {
      */
     private void initMove() {
         isDriving = true;
-        turnState = 0;
         
-        turnTimeout = (int)System.currentTimeMillis() + TURN_INIT_TIME;        
         Movement.forward();
-        while(turnTimeout > (int)System.currentTimeMillis()) {
-            try {
-                Thread.sleep(10);
-            } catch (Exception e) {
-                Sound.buzz();
-            }
+        try {
+            Thread.sleep(MOVE_INIT_TIME);
+        } catch (Exception e) {
+            Sound.buzz();
         }
         Movement.stop();
         read();//we must ensure that the buffer is all cleared after we move the robot
@@ -369,7 +360,7 @@ public class Driver {
      */
     public void adjust(){
         isDriving = true;
-        LCD.showProgramNumber(0);
+        //LCD.showProgramNumber(0);
             while(isDriving){
             read();
             if (blackSensors == 3) {//011
@@ -386,6 +377,46 @@ public class Driver {
                 Movement.stop();
             }
         }
+    }
+    
+    
+    public void backward() {
+        isDriving = true;        
+        Movement.backward();               
+        read();//we must ensure that the buffer is all cleared after we move the robot
+        read();
+        
+        while(isDriving) {
+            read();
+            if (currentColor[MIDDLE_SENSOR] == COLOR_BLACK || currentColor[MIDDLE_SENSOR] == COLOR_WHITE) {
+                isDriving = false;
+            }            
+        }
+        
+        isDriving = true;
+        Movement.backward();
+        
+        while(isDriving){
+            read();
+            if (blackSensors == 2){//010
+                isDriving = false;
+            } else if (blackSensors == 3) {//011
+                Movement.backwardRight();
+            } else if (blackSensors == 6) {//110
+                Movement.backwardLeft();
+            } else if (blackSensors == 4) {//100
+                Movement.sharpLeft();
+            } else if (blackSensors == 1) {//001
+                Movement.sharpRight();
+            } else if (blackSensors == 5) {//101
+                //?
+            } else if (blackSensors == 0) {//000
+                isDriving = false;
+            } else if (blackSensors == 7) {//111
+                //?;
+            }
+        }        
+        adjust();        
     }
     
     public void forward() {
