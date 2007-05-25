@@ -662,6 +662,7 @@ public class Driver {
     public byte search(boolean doubleCheck)
     {
         this.pathsDiscovered = 0;
+        read(); read(); read();
         Movement.forward();
         try { Thread.sleep(50); } catch (InterruptedException ex) {}
         Movement.stop();
@@ -673,7 +674,10 @@ public class Driver {
         read(); read(); read();
         
         if(currentColor[MIDDLE_SENSOR] == COLOR_GREEN)
+        {
+            this.searchSpecialCase = -1;
             return GameCommands.FORWARD | GameCommands.TURN_NUMBER;
+        }
         else if(currentColor[MIDDLE_SENSOR] == COLOR_YELLOW)
         {
             initMove();
@@ -699,7 +703,7 @@ public class Driver {
                     }
                 }
                 else if(searchLastFound == 2) {
-                    this.pathsDiscovered |= GameCommands.RIGHT;
+                    this.pathsDiscovered |= GameCommands.TURN_RIGHT;
                     searchLastFound = findOnLeft();
                     if(searchLastFound == 1) {
                         this.pathsDiscovered |= GameCommands.FORWARD;
@@ -738,6 +742,7 @@ public class Driver {
                 }
                 //else Facing RIGHT
             }
+            this.searchSpecialCase = 4;
         }
         
         LCD.clearSegment(Segment.SENSOR_1_ACTIVE);
@@ -757,14 +762,12 @@ public class Driver {
         LCD.showNumber(pathsDiscovered);
         LCD.refresh();
         
-        if(this.pathsDiscovered == (GameCommands.RIGHT | GameCommands.TURN_NUMBER))
+        if(this.pathsDiscovered == (GameCommands.TURN_RIGHT | GameCommands.TURN_NUMBER))
             this.searchSpecialCase = 1;
-        else if(this.pathsDiscovered == (GameCommands.LEFT | GameCommands.TURN_NUMBER))
+        else if(this.pathsDiscovered == (GameCommands.TURN_LEFT | GameCommands.TURN_NUMBER))
             this.searchSpecialCase = 2;
-        else if(this.pathsDiscovered == (GameCommands.LEFT | GameCommands.RIGHT | GameCommands.TURN_NUMBER))
+        else if(this.pathsDiscovered == (GameCommands.TURN_LEFT | GameCommands.TURN_RIGHT | GameCommands.TURN_NUMBER))
             this.searchSpecialCase = 3;
-        else
-            this.searchSpecialCase = -1;
         
         return this.pathsDiscovered;
     }
