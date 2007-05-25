@@ -83,6 +83,7 @@ public class GameProxy {
     private byte paths;
     
     public void run(){
+        int turn_timer;
         while(true){
 //            LCD.showNumber((int)Runtime.getRuntime().freeMemory());
 //            this.driver.read();
@@ -98,8 +99,14 @@ public class GameProxy {
 //                this.driver.setSegment((byte)-1);
 //                LCD.showNumber(9999);
 //             
-                paths = driver.search(true);
-            } else {
+//                paths = driver.search(true);
+                this.driver.search(false);
+            } else if (Button.PRGM.isPressed()) {
+                turn_timer = (int)System.currentTimeMillis();
+                this.driver.turnLeftSearch();
+                LCD.showNumber(((int)System.currentTimeMillis()) - turn_timer);
+            }
+            else {
                 command = -1;
                 try {
                     command = in.read();
