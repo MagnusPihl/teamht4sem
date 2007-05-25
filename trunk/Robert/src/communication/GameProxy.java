@@ -109,12 +109,14 @@ public class GameProxy {
             else {
                 command = -1;
                 try {
-                    command = in.read();
+                    command = in.read();                    
                 } catch (Exception e) {
                     Sound.buzz();
                 }
             
                 if (command != -1) {
+                    //LCD.showNumber(command);
+                    LCD.showNumber(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER) ? 1 : 2);
                     if (command == GameCommands.FORWARD) {
                         this.driver.forward();
                         this.respond(GameCommands.MOVE_DONE);
