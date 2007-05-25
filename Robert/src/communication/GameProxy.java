@@ -156,6 +156,8 @@ public class GameProxy {
 
                     } else if (command == GameCommands.BEEP) {//only two beeps
                         Sound.beep();
+                    } else if (command == GameCommands.RESET_DIRECTION) {
+                        this.driver.resetDirection();
                     }
                 }
             }

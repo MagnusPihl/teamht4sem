@@ -618,6 +618,10 @@ public class Driver {
 //        }
     }
     
+    public void resetDirection() {
+        this.searchSpecialCase = -1;
+    }
+    
 //    public void forwardUntil(byte sensor, byte color1, byte color2)
 //    {
 //        while(currentColor[sensor] != color1 && currentColor[sensor] != color2)
