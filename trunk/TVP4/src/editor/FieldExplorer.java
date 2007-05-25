@@ -71,6 +71,7 @@ public class FieldExplorer implements Runnable {
         
         this.robot.open(this.port);
         this.robot.setActive(true);
+        this.scanDone = false;
     }
     
     public void run() {
@@ -175,13 +176,7 @@ public class FieldExplorer implements Runnable {
                                     }
                                 }*/
                     }
-                } else {
-                    try {
-                        Thread.sleep(100);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                } 
             }
             
             this.dialog.addToLog("Scan done");
