@@ -91,6 +91,10 @@ public class RobotProxy extends Thread{
         }
     }
     
+    public void resetDirection() throws IOException {
+        this.out.write(GameCommands.RESET_DIRECTION);
+    }
+    
     /**
      * Move robot in a absolute direction.
      *
