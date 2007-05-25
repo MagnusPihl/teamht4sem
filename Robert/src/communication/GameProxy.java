@@ -23,11 +23,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import josx.platform.rcx.Button;
 import josx.platform.rcx.LCD;
-import josx.platform.rcx.Motor;
-import josx.platform.rcx.Segment;
 import josx.platform.rcx.Sound;
 import josx.platform.rcx.TextLCD;
-import robot.*;
+import robot.Driver;
+import robot.Movement;
 
 
 public class GameProxy {
@@ -113,7 +112,6 @@ public class GameProxy {
                 } catch (Exception e) {
                     Sound.buzz();
                 }
-            
                 if (command != -1) {
                     //LCD.showNumber(command);
                     LCD.showNumber(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER) ? 1 : 2);
@@ -130,22 +128,34 @@ public class GameProxy {
                         this.respond(GameCommands.MOVE_DONE);
 
                     } else if (command == (GameCommands.FORWARD | GameCommands.DISCOVER)) {
-                        this.driver.forward();
-                        this.respond(GameCommands.MOVE_DONE | this.driver.search(true));
+                        do{
+                            this.driver.forward();
+                            command = this.driver.search(true);
+                        }while(command != -1);
+                        this.respond(GameCommands.MOVE_DONE | command);
 //                        this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
 
                     } else if (command == (GameCommands.TURN_LEFT | GameCommands.DISCOVER) || command == (GameCommands.TURN_LEFT | GameCommands.DISCOVER | GameCommands.TURN_NUMBER)) {
-                        this.driver.turnLeft(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
-                        this.respond(GameCommands.MOVE_DONE | this.driver.search(true));
+                        do{
+                            this.driver.turnLeft(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
+                            command = this.driver.search(true);
+                        }while(command != -1);
+                        this.respond(GameCommands.MOVE_DONE | command);
 //                        this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
 
                     } else if (command == (GameCommands.TURN_RIGHT | GameCommands.DISCOVER) || command == (GameCommands.TURN_RIGHT | GameCommands.DISCOVER | GameCommands.TURN_NUMBER)) {
+                        do{
                         this.driver.turnRight(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
-                        this.respond(GameCommands.MOVE_DONE | this.driver.search(true));
+                        command = this.driver.search(true);
+                        }while(command != -1);
+                        this.respond(GameCommands.MOVE_DONE | command);
                        // this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
 
                     } else if (command == (GameCommands.SEARCH_NODE | GameCommands.DISCOVER)) {
-                        this.respond(GameCommands.MOVE_DONE | this.driver.search(true));
+                        do{
+                            command = this.driver.search(true);
+                        }while(command != -1);
+                        this.respond(GameCommands.MOVE_DONE | command);
                         //this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
 
                     } else if (command == GameCommands.LIGHT_ON) {
