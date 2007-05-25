@@ -31,11 +31,11 @@ import java.awt.*;
 public class FieldExplorerDialog extends JFrame implements ActionListener {
     
     private JTextPane log;
-    private JButton startBtn, cancelBtn;   
+    private JButton startBtn, pauseBtn, cancelBtn;   
     private JScrollPane scrollPane;
     private FieldExplorer explorer;
     private Thread explorerThread;
-    private JComboBox portList;
+    private JComboBox portList, robotList;
     
     /** Creates a new instance of FieldExplorerDialog */
     public FieldExplorerDialog() {
@@ -51,10 +51,22 @@ public class FieldExplorerDialog extends JFrame implements ActionListener {
         buttonPane.add(new JLabel("Port:"));
         this.portList = new JComboBox(new Object[] {"USB", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7"});
         buttonPane.add(this.portList);
+        
+        buttonPane.add(new JLabel("Robot#:"));        
+        this.robotList = new JComboBox(new Object[] {"1","2","3"});
+        buttonPane.add(this.robotList);
+        
         this.startBtn = new JButton("Scan");
         this.startBtn.setMnemonic('S');
         this.startBtn.addActionListener(this);
         buttonPane.add(this.startBtn);
+        
+        this.pauseBtn = new JButton("Pause");
+        this.pauseBtn.setMnemonic('p');
+        this.pauseBtn.addActionListener(this);
+        this.pauseBtn.setEnabled(false);
+        buttonPane.add(this.pauseBtn);
+        
         this.cancelBtn = new JButton("Cancel");       
         this.cancelBtn.setMnemonic('C');        
         this.cancelBtn.addActionListener(this);
@@ -86,12 +98,18 @@ public class FieldExplorerDialog extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent evt) {             
         if (evt.getActionCommand().equals("Scan")) {
             this.portList.setEnabled(false);
+            this.robotList.setEnabled(false);
             this.startBtn.setEnabled(false);
-            this.explorer.setPort((String)this.portList.getSelectedItem());
+            this.pauseBtn.setEnabled(true);
+            this.explorer.init((String)this.portList.getSelectedItem(), Integer.parseInt((String)this.robotList.getSelectedItem()));
             this.explorerThread = new Thread(this.explorer);
             this.explorerThread.start();
+        } else if (evt.getActionCommand().equals("Pause")) {                              
+            this.explorer.pause();
         } else if (evt.getActionCommand().equals("Cancel")) {
             this.portList.setEnabled(true);
+            this.robotList.setEnabled(true);
+            this.pauseBtn.setEnabled(false);
             this.setVisible(false);
             this.explorer.stop();
         }
