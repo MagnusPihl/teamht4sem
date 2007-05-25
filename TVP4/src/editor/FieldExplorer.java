@@ -44,25 +44,30 @@ public class FieldExplorer implements Runnable {
     private Stack open;
     private int[] moves;
     private String port;
+    private boolean paused;
+    private Entity pacman;
     
     /** Creates a new instance of FieldExplorer */
     public FieldExplorer(FieldExplorerDialog dialog) {
         this.dialog = dialog;
         this.algorithm = new BreadthFirstAlgorithm();
         this.synchronizer = new Semaphore(1);
-        this.robot = new RobotProxy(1, this.synchronizer);
         this.open = new Stack();
         this.closed = new TreeSet();
         this.port = "USB";
-    }
+    }    
     
-    public void setPort(String port) {
-        this.port = port;
+    public void init(String port, int robot) {
+        this.port = port;    
+        if (this.synchronizer.availablePermits() == 0) {
+            this.synchronizer.release();
+        }
+        this.robot = new RobotProxy(robot, this.synchronizer);
     }
     
     public void run() {
-        Entity pacman;
         Map parents;
+        this.paused = false;
         LevelEditor.getInstance().getEditorPanel().setEditable(false);
         
         this.dialog.clearLog();
@@ -98,9 +103,7 @@ public class FieldExplorer implements Runnable {
             pacman = this.currentNode.getEntity();
             LevelEditor.getInstance().getEditorPanel().checkSize();
             
-            System.out.println("Før node");
             this.robot.search((byte)Node.INVALID_DIRECTION, (byte)0);
-            System.out.println("Efter node");
             this.waitForRobot();
             this.addDirections();
             
@@ -108,60 +111,68 @@ public class FieldExplorer implements Runnable {
             int move;
             
             while(!scanDone && !this.open.empty()) {
-                if (this.open.size() != 0) {
-                    this.nextNode = (Node)this.open.pop();
-                    this.closed.add(this.currentNode);
-                    parents = this.algorithm.fullSearch(this.currentNode, this.nextNode);
-                            
-                    this.dialog.addToLog("Fra (" + this.currentNode.getPosition().x + "," +  this.currentNode.getPosition().y + ") - (" + this.nextNode.getPosition().x + "," + this.nextNode.getPosition().y + ")");
-                    
-                    if (parents != null) {
-                        tempNode = this.currentNode;
-                            
-                        do {
-                            lastNode = tempNode;
-                            tempNode = (Node)parents.get(tempNode);
-                            move = lastNode.connectedAt(tempNode);
-                            if (!tempNode.equals(this.nextNode)) {
-                                switch(move) {
-                                    case Node.UP: this.dialog.addToLog("Moving upwards..."); break;
-                                    case Node.DOWN: this.dialog.addToLog("Moving downwards..."); break;
-                                    case Node.LEFT: this.dialog.addToLog("Moving to the left..."); break;
-                                    case Node.RIGHT: this.dialog.addToLog("Moving to the right..."); break;
+                if (!this.paused) {
+                    if (this.open.empty()) {
+                        this.nextNode = (Node)this.open.pop();
+                        this.closed.add(this.currentNode);
+                        parents = this.algorithm.fullSearch(this.currentNode, this.nextNode);
+
+                        this.dialog.addToLog("Fra (" + this.currentNode.getPosition().x + "," +  this.currentNode.getPosition().y + ") - (" + this.nextNode.getPosition().x + "," + this.nextNode.getPosition().y + ")");
+
+                        if (parents != null) {
+                            tempNode = this.currentNode;
+
+                            do {
+                                lastNode = tempNode;
+                                tempNode = (Node)parents.get(tempNode);
+                                move = lastNode.connectedAt(tempNode);
+                                if (!tempNode.equals(this.nextNode)) {
+                                    switch(move) {
+                                        case Node.UP: this.dialog.addToLog("Moving upwards..."); break;
+                                        case Node.DOWN: this.dialog.addToLog("Moving downwards..."); break;
+                                        case Node.LEFT: this.dialog.addToLog("Moving to the left..."); break;
+                                        case Node.RIGHT: this.dialog.addToLog("Moving to the right..."); break;
+                                    }
+                                    this.robot.move((byte)move, (byte)this.currentNode.getBinaryDirections());
+                                } else {
+                                    switch(move) {
+                                        case Node.UP: this.dialog.addToLog("Searching upwards..."); break;
+                                        case Node.DOWN: this.dialog.addToLog("Searching downwards..."); break;
+                                        case Node.LEFT: this.dialog.addToLog("Searching to the left..."); break;
+                                        case Node.RIGHT: this.dialog.addToLog("Searching to the right..."); break;
+                                    }
+                                    this.robot.search((byte)move, (byte)this.currentNode.getBinaryDirections());
                                 }
-                                this.robot.move((byte)move, (byte)this.currentNode.getBinaryDirections());
-                            } else {
-                                switch(move) {
-                                    case Node.UP: this.dialog.addToLog("Searching upwards..."); break;
-                                    case Node.DOWN: this.dialog.addToLog("Searching downwards..."); break;
-                                    case Node.LEFT: this.dialog.addToLog("Searching to the left..."); break;
-                                    case Node.RIGHT: this.dialog.addToLog("Searching to the right..."); break;
-                                }
-                                this.robot.search((byte)move, (byte)this.currentNode.getBinaryDirections());
-                            }
-                            
-                            this.waitForRobot();
-                            //System.out.println("nodex:" + this.currentNode.getPosition().x);
-                            this.currentNode = tempNode;
-                            //System.out.println("nodex:" + this.currentNode.getPosition().x);
-                            pacman.setNode(this.currentNode);                            
-                            pacman.setDirection(move);
+
+                                this.waitForRobot();
+                                //System.out.println("nodex:" + this.currentNode.getPosition().x);
+                                this.currentNode = tempNode;
+                                //System.out.println("nodex:" + this.currentNode.getPosition().x);
+                                pacman.setNode(this.currentNode);                            
+                                pacman.setDirection(move);
+                                LevelEditor.getInstance().getEditorPanel().checkSize();
+
+                            } while (!tempNode.equals(this.nextNode) && (!this.paused));
+
+                            this.addDirections();
                             LevelEditor.getInstance().getEditorPanel().checkSize();
 
-                        } while (!tempNode.equals(this.nextNode));
-                        
-                        this.addDirections();
-                        LevelEditor.getInstance().getEditorPanel().checkSize();
-                            
-                            /*} else {
-                                this.dialog.addToLog("Robot tried to move to a node that doesn't exist!");
-                                switch(moves[i]) {
-                                    case Node.UP: this.dialog.addToLog("Failed to move upwards..."); break;
-                                    case Node.DOWN: this.dialog.addToLog("Failed to move downwards..."); break;
-                                    case Node.LEFT: this.dialog.addToLog("Failed to move to the left..."); break;
-                                    case Node.RIGHT: this.dialog.addToLog("Failed to move to the right..."); break;
-                                }
-                            }*/                        
+                                /*} else {
+                                    this.dialog.addToLog("Robot tried to move to a node that doesn't exist!");
+                                    switch(moves[i]) {
+                                        case Node.UP: this.dialog.addToLog("Failed to move upwards..."); break;
+                                        case Node.DOWN: this.dialog.addToLog("Failed to move downwards..."); break;
+                                        case Node.LEFT: this.dialog.addToLog("Failed to move to the left..."); break;
+                                        case Node.RIGHT: this.dialog.addToLog("Failed to move to the right..."); break;
+                                    }
+                                }*/                        
+                        }
+                    }
+                } else {
+                    try {
+                        Thread.sleep(100);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -175,10 +186,12 @@ public class FieldExplorer implements Runnable {
         }
     }
     
-    private void addDirections() {
+    private void addDirections() {        
         this.availableDirections = this.robot.getAvaibleDirections();
-        //System.out.println("Directions: " + Integer.toBinaryString(this.availableDirections));
-        if (this.availableDirections != Node.INVALID_DIRECTION) {
+        System.out.println("Directions: " + Integer.toBinaryString(this.availableDirections));
+        System.out.println(this.paused);
+        if ((this.availableDirections != Node.INVALID_DIRECTION) && (!this.paused)) {
+            System.out.println("Directions: " + Integer.toBinaryString(this.availableDirections));
             field.Field field = LevelEditor.getInstance().getEditorPanel().getField();
             Node addedNode = null;
             Point position = this.currentNode.getPosition();
@@ -215,8 +228,58 @@ public class FieldExplorer implements Runnable {
                     this.dialog.addToLog("Found node - UP");
                     this.open.push(addedNode);
                 }
-            }
+            }            
         }
+    } 
+    
+    public boolean pause() {
+        Field field = LevelEditor.getInstance().getEditorPanel().getField();
+        
+        if (this.paused) {            
+            if (field.getEntityRenderers()[0] != null) {
+                LevelEditor.getInstance().getEditorPanel().setEditable(false);                
+                Node current;
+
+                //remove all nodes from the closed list that no longer exists
+                for (Iterator i = this.closed.iterator(); i.hasNext();) {
+                    current = (Node)i.next();
+                    if (!field.getNodeList().contains(current)) {
+                        this.closed.remove(current);
+                        System.out.println("Removed from closed list: " + current.getPosition());
+                    }
+                }
+
+                //remove all nodes from the open list that no longer exists
+                for (Iterator i = this.open.iterator(); i.hasNext();) {
+                    current = (Node)i.next();
+                    if (!field.getNodeList().contains(current)) {
+                        this.open.remove(current);
+                        System.out.println("Removed from open list: " + current.getPosition());
+                    }
+                }
+
+                //add all new nodes to the open list
+                for (Iterator i = field.getNodeList().iterator(); i.hasNext();) {
+                    current = (Node)i.next();
+                    if ((!this.closed.contains(current)) && (!this.open.contains(current))) {
+                        this.open.add(current);
+                        System.out.println("Added to open list: " + current.getPosition());
+                    }
+                }   
+                this.pacman = field.getEntityRenderers()[0].getEntity();
+                this.currentNode = this.pacman.getNode();
+                this.dialog.addToLog("Scanning has been unpaused");
+                this.paused = false;            
+            } else {                
+                this.dialog.addToLog("Pacman must be positioned before scan can continue");             
+            }
+        } else {            
+            this.paused = true;
+            this.dialog.addToLog("Scanning has been paused.\n To rescan nodes remove and replace them.");
+            LevelEditor.getInstance().getEditorPanel().setEditable(true);
+        }
+        
+        return this.paused;
     }
     
     public void stop() {
