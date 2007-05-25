@@ -291,6 +291,11 @@ public class FieldExplorer implements Runnable {
                 this.pacman = field.getEntityRenderers()[0].getEntity();
                 this.currentNode = this.pacman.getNode();
                 this.dialog.addToLog("Scanning has been unpaused");
+                try {
+                    this.robot.resetDirection();
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
                 this.paused = false;
             } else {
                 this.dialog.addToLog("Pacman must be positioned before scan can continue");

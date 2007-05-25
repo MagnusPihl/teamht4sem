@@ -31,11 +31,11 @@ public class GameCommands {
     public static final byte TURN_NUMBER = 0x08;
     //***
     public static final byte DISCOVER = 0x40;
+    public static final byte RESET_DIRECTION = 0x70;
     public static final byte MOVE_DONE = 0x10;
     public static final byte LIGHT_ON = 0x11;
     public static final byte LIGHT_OFF = 0x12;
     public static final byte BEEP = 0x13;
-    public static final byte CALIBRATE = 0x30;
     public static final byte NOP = 0x00;
     public static final byte SEARCH_NODE = 0x20;        
 }
