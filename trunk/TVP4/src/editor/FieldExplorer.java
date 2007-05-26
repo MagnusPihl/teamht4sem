@@ -106,7 +106,7 @@ public class FieldExplorer implements Runnable {
             pacman = this.currentNode.getEntity();
             LevelEditor.getInstance().getEditorPanel().checkSize();
             
-            this.robot.search((byte)Node.INVALID_DIRECTION, (byte)0);
+            this.robot.search((byte)Node.UP, (byte)0);
             this.waitForRobot();
             this.addDirections();
             
