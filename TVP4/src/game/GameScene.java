@@ -161,7 +161,7 @@ public class GameScene implements Scene {
     public GameScene() {
         this.replay = new Replay();
         this.field = new Field();
-        this.level = new File("demo.lvl");
+        this.level = new File("levels/demo.lvl");
         this.entity = new Entity[3];
         this.entity[0] = new Entity(null, 0);
         this.entity[1] = new Entity(null, 1);
