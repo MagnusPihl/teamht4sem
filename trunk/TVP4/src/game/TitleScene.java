@@ -66,7 +66,7 @@ public class TitleScene implements Scene {
         this.isOnline = false;
         
         this.openLevelDialog = new JFileChooser();
-        this.openLevelDialog.setSelectedFile(new File("\\."));
+        this.openLevelDialog.setCurrentDirectory(new File("levels/"));        
         this.openLevelDialog.setFileFilter(new javax.swing.filechooser.FileFilter() {
             public boolean accept(File f) {                
                 return ((f.getName().toLowerCase().endsWith(".lvl") && f.isFile()) || (f.isDirectory()));
@@ -77,7 +77,7 @@ public class TitleScene implements Scene {
         });
         
         this.openReplayDialog = new JFileChooser();
-        this.openReplayDialog.setSelectedFile(new File(""));
+        this.openLevelDialog.setCurrentDirectory(new File("replays/"));        
         this.openReplayDialog.setFileFilter(new javax.swing.filechooser.FileFilter() {
             public boolean accept(File f) {                
                 return ((f.getName().toLowerCase().endsWith(".rpl") && f.isFile()) || (f.isDirectory()));

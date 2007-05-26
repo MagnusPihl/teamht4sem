@@ -27,10 +27,10 @@
         <question>		
             <name>Starting a game</name>
             <answer>
-                To start a new game either choose "New Game" or "Continue" on the title screen.
-                If you choose "New Game" you will be prompted to select a level file to play.
-                If you choose continue the last played, or default level will be used.<br/>                       
-                Whether you choose one or the other you'll be prompted to turn on all three robots
+                To start a new game either choose "New Game" or "Load Level" on the title screen.
+                If you choose "Load Level" you will be prompted to select a level file to play.
+                If you choose "New Game" the last played, or default level will be used.<br/>                       
+                If the game is Online mode you'll be prompted to turn on all three robots
                 and place them facing upwards as shown on the game screen.
                 Once this is done the game will begin.
             </answer>
@@ -40,31 +40,32 @@
             <answer>
                 The game controls are simple. You can move in four directions up, down, left or right.
                 The default key configuration is mapped to the directional keys. 
-                These keys can be also be assigned connected joypads or W,A,S and D.  
-                While playing you can pause at any time by pressing space.
+                These keys can be also be assigned to a connected joypad or W,A,S and D.  
+                While playing you can pause at any time by pressing the escape key.
                 <br/>
-                Once a game has been lost or won the you will be prompted to type
-                in your name, so that it might be added to the high score list of the current level.
-                After prompting for your name you will be asked to save the replay of your game.
-                As with the high score this is optional. <br/>
+                Once a game has been lost or won you will be asked to save the replay of your game.
                 If saved the replay may be viewed anytime by choosing the "View Replay" option
-                from the title screen.
+                from the title screen. <br/>
+                After opting saving the replay you will be prompted to type in your name, 
+                so that it might be added to the high score list of the current level.                
+                As with the replay this is optional. <br/>
+                High scores can be shown be choosing the "View High Scores" option from the title screen.                
             </answer>
         </question>
         <question>		
             <name>Online and offline play</name>
             <answer>
                 The game has two modes online and offline. When playing offline you
-                only play on one computer. When playing online you use three LEGO robots to
-                emulate the different entities' movement on the field.                            
+                only play on your computer. When playing online you use three LEGO robots to
+                emulate the ghosts and Pacman's movement on the field.                            
             </answer>
         </question>                
         <question>		
             <name>Loading a level</name>
             <answer>
-                To load a level choose the "New Game" option on the title screen, you'll
-                then be prompted to select the level which you wish to load. Once selected
-                the game will start
+                To load a level choose the "Load Level" option on the title screen, you'll
+                then be prompted to select the level you wish to load. Once selected
+                the game will start.
             </answer>
         </question>
         <question>		
@@ -72,14 +73,14 @@
             <answer>
                 The input device, or key configuration can be changed on the options screen
                 by scrolling down to the selected entity and then by pressing right or left.
-                If any USB devices are connected they can be selected here also.<br/>                            
-                Should you wish to play against a friend you can assign keys to ghosts as well.
+                If any USB devices are connected they can be selected here as well.<br/>                            
+                Should you wish to play against a friend you can also assign keys to ghosts.
             </answer>
         </question>
         <question>		
             <name>Changing skin</name>
             <answer>
-                The skin used on the game screen can be changed on the options screen
+                The skin used to render the game screen can be changed on the options screen
                 by scrolling down to the "Skin" option and cycling through the available options
                 using the left and right keys.<br/>
                 Skins shouls be placed in a seperate sub directory in the skin directory.
@@ -99,12 +100,12 @@
                 <ul>
                     <li>
                         <strong>New Game</strong><br />
-                        Start a new game by choosing and loading a new level.
+                        Start a new game using the currently loaded or default level.
                     </li>
                     <li>
-                        <strong>Continue Game</strong><br />
+                        <strong>Load Level</strong><br />
+                        Start a new game by loading a new level.
                     </li>
-                    Start a new game using the currently loaded or default level.
                     <li>
                         <strong>View Replay</strong><br />
                         A replay is the entire collection of movements recorded during a game session.
@@ -123,7 +124,7 @@
                     <li>
                         <strong>Quit</strong><br />
                         If you choose quit the credits will be shown, once done the program will
-                        terminate. Should you wish to quit imediately press ESC.
+                        terminate. Should you wish to quit imediately press the escape key.
                     </li>
                 </ul>
             </answer>
@@ -142,11 +143,12 @@
             <name>Option screen</name>
             <answer>
                 <img src=".\pictures\optionscreen.png" width="640" height="480" alt="Game screen" /><br />
-                The options on the option screen are traversed similarly to the title screen by up and down keys.
-                Options are changed by pressing left or right key. 
+                The options on the option screen are traversed similarly to the title screen by the up and down directional keys.
+                Options are changed by pressing the left and right directional keys. 
                 On the buttom of the screen a description of the selected option is printed.<br />
-                There is no way to reset to default options, 
-                other than restarting the program. Options are always reset on restart.
+                The configuration you chose is saved and carried over between sessions.
+                There is no way to reset to default options while running the program. To reset to default settings
+                delete the file "options.cfg".
                 <ul>
                     <li>
                         <img src=".\pictures\0_1_0.png" width="30" height="30" alt="Pacman"/><strong>Pacman - Key config</strong><br />

@@ -78,6 +78,7 @@ public class LevelEditor {
         frame.setVisible(true);
         
         this.openSaveDialog = new JFileChooser();
+        this.openSaveDialog.setCurrentDirectory(new File("levels/"));
         this.openSaveDialog.setFileFilter(new javax.swing.filechooser.FileFilter() {
             public boolean accept(File f) {                
                 return ((f.getName().toLowerCase().endsWith(".lvl") && f.isFile()) || (f.isDirectory()));
@@ -88,6 +89,7 @@ public class LevelEditor {
         });
         
         this.skinDialog = new JFileChooser(new File("skins/"));
+        this.skinDialog.setCurrentDirectory(new File("skins/"));
         this.skinDialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     }
     

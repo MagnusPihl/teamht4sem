@@ -120,8 +120,8 @@ public class EntityRenderer
         }
         
         int adjustment = (int)(tileSize * 
-                (new Float(PacmanApp.getInstance().getGameScene().getMoveTimer())
-                /new Float(PacmanApp.getInstance().getGameScene().getRoundTime())));
+                ((float)(PacmanApp.getInstance().getGameScene().getMoveTimer()))
+                /((float)(PacmanApp.getInstance().getGameScene().getRoundTime())));
         
         if(entity.getPosition() != this.lastPosition)
         {
