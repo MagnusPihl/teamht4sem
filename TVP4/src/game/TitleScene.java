@@ -77,7 +77,7 @@ public class TitleScene implements Scene {
         });
         
         this.openReplayDialog = new JFileChooser();
-        this.openLevelDialog.setCurrentDirectory(new File("replays/"));        
+        this.openReplayDialog.setCurrentDirectory(new File("replays/"));        
         this.openReplayDialog.setFileFilter(new javax.swing.filechooser.FileFilter() {
             public boolean accept(File f) {                
                 return ((f.getName().toLowerCase().endsWith(".rpl") && f.isFile()) || (f.isDirectory()));
