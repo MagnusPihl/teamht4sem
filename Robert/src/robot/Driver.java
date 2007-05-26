@@ -678,15 +678,15 @@ public class Driver {
     public byte search(boolean doubleCheck) {
         this.pathsDiscovered = 0;
         read(); read(); read();
-//        Movement.forward();
-//        try { Thread.sleep(50); } catch (InterruptedException ex) {}
-//        Movement.stop();
-//        try { Thread.sleep(50); } catch (InterruptedException ex) {}
-//        Movement.backward();
-//        try { Thread.sleep(50); } catch (InterruptedException ex) {}
-//        Movement.stop();
-//        try { Thread.sleep(100); } catch (InterruptedException ex) {}
-//        read(); read(); read();
+        Movement.forward();
+        try { Thread.sleep(50); } catch (InterruptedException ex) {}
+        Movement.stop();
+        try { Thread.sleep(50); } catch (InterruptedException ex) {}
+        Movement.backward();
+        try { Thread.sleep(50); } catch (InterruptedException ex) {}
+        Movement.stop();
+        try { Thread.sleep(100); } catch (InterruptedException ex) {}
+        read(); read(); read();
         
         if(currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
             this.searchSpecialCase = -1;
@@ -740,7 +740,7 @@ public class Driver {
                     //Facing FORWARD
                 }
                 else{
-                    Sound.beepSequence();
+//                    Sound.beepSequence();
                 }
             } else if(searchLastFound == 3) {
                 this.pathsDiscovered |= GameCommands.TURN_RIGHT;
@@ -753,27 +753,31 @@ public class Driver {
             }
             this.searchSpecialCase = 4;
         }
-        else{
-            this.forward();
-            Sound.buzz();
-            return this.search(false);
+        else {
+            Sound.beepSequence();
+            this.pathsDiscovered = -1;
         }
-//        LCD.clearSegment(Segment.SENSOR_1_ACTIVE);
-//        LCD.clearSegment(Segment.SENSOR_2_ACTIVE);
-//        LCD.clearSegment(Segment.SENSOR_2_VIEW);
-//        LCD.clearSegment(Segment.SENSOR_3_ACTIVE);
-//        LCD.clear();
-//        LCD.refresh();
-//        if((pathsDiscovered & GameCommands.TURN_LEFT) > 0)
-//            LCD.setSegment(Segment.SENSOR_1_ACTIVE);
-//        if((pathsDiscovered & GameCommands.FORWARD) > 0)
-//            LCD.setSegment(Segment.SENSOR_2_ACTIVE);
-//        if((pathsDiscovered & GameCommands.TURN_RIGHT) > 0)
-//            LCD.setSegment(Segment.SENSOR_3_ACTIVE);
-//        if((pathsDiscovered & GameCommands.TURN_NUMBER) > 0)
-//            LCD.setSegment(Segment.SENSOR_2_VIEW);
-//        LCD.showNumber(pathsDiscovered);
-//        LCD.refresh();
+//        else{
+//            this.forward();
+//            Sound.beepSequence();
+//            return this.search(false);
+//        }
+        LCD.clearSegment(Segment.SENSOR_1_ACTIVE);
+        LCD.clearSegment(Segment.SENSOR_2_ACTIVE);
+        LCD.clearSegment(Segment.SENSOR_2_VIEW);
+        LCD.clearSegment(Segment.SENSOR_3_ACTIVE);
+        LCD.clear();
+        LCD.refresh();
+        if((pathsDiscovered & GameCommands.TURN_LEFT) > 0)
+            LCD.setSegment(Segment.SENSOR_1_ACTIVE);
+        if((pathsDiscovered & GameCommands.FORWARD) > 0)
+            LCD.setSegment(Segment.SENSOR_2_ACTIVE);
+        if((pathsDiscovered & GameCommands.TURN_RIGHT) > 0)
+            LCD.setSegment(Segment.SENSOR_3_ACTIVE);
+        if((pathsDiscovered & GameCommands.TURN_NUMBER) > 0)
+            LCD.setSegment(Segment.SENSOR_2_VIEW);
+        LCD.showNumber(pathsDiscovered);
+        LCD.refresh();
         
         if(this.pathsDiscovered == (GameCommands.TURN_RIGHT | GameCommands.TURN_NUMBER))
             this.searchSpecialCase = 1;
