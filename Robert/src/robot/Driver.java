@@ -391,13 +391,7 @@ public class Driver {
         Movement.backward();
         try { Thread.sleep(140); } catch (InterruptedException ex) {}
         Movement.stop();
-        Movement.left();
-        try { Thread.sleep(50); } catch (InterruptedException ex) {}
-        Movement.stop();
-        try { Thread.sleep(50); } catch (InterruptedException ex) {}
-        Movement.right();
-        try { Thread.sleep(50); } catch (InterruptedException ex) {}
-        Movement.stop();
+        try { Thread.sleep(140); } catch (InterruptedException ex) {}
         read();
         read();
         read();
