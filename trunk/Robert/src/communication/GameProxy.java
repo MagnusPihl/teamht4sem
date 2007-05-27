@@ -101,9 +101,10 @@ public class GameProxy {
 //                paths = driver.search(true);
                 this.driver.search(false);
             } else if (Button.PRGM.isPressed()) {
-                turn_timer = (int)System.currentTimeMillis();
-                this.driver.turnLeftSearch();
-                LCD.showNumber(((int)System.currentTimeMillis()) - turn_timer);
+//                turn_timer = (int)System.currentTimeMillis();
+//                this.driver.turnLeftSearch();
+//                LCD.showNumber(((int)System.currentTimeMillis()) - turn_timer);
+                this.driver.adjust((byte)2);
             }
             else {
                 command = -1;
@@ -131,7 +132,7 @@ public class GameProxy {
                         do{
                             this.driver.forward();
                             command = this.driver.search(true);
-                        }while(command != -1);
+                        }while(command == -1);
                         this.respond(GameCommands.MOVE_DONE | command);
 //                        this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
 
@@ -139,7 +140,7 @@ public class GameProxy {
                         do{
                             this.driver.turnLeft(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
                             command = this.driver.search(true);
-                        }while(command != -1);
+                        }while(command == -1);
                         this.respond(GameCommands.MOVE_DONE | command);
 //                        this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
 
@@ -147,14 +148,14 @@ public class GameProxy {
                         do{
                         this.driver.turnRight(((command & GameCommands.TURN_NUMBER) == GameCommands.TURN_NUMBER));
                         command = this.driver.search(true);
-                        }while(command != -1);
+                        }while(command == -1);
                         this.respond(GameCommands.MOVE_DONE | command);
                        // this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
 
                     } else if (command == (GameCommands.SEARCH_NODE | GameCommands.DISCOVER)) {
                         do{
                             command = this.driver.search(true);
-                        }while(command != -1);
+                        }while(command == -1);
                         this.respond(GameCommands.MOVE_DONE | command);
                         //this.respond(GameCommands.MOVE_DONE | GameCommands.LEFT | GameCommands.RIGHT);
 

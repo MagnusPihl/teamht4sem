@@ -168,7 +168,7 @@ public class Driver {
         
         TextLCD.print(calibrationMessages[COLOR_YELLOW]);
         THRESHOLD[MIDDLE_SENSOR][COLOR_YELLOW] = readRaw(MIDDLE_SENSOR);
-        THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN] -= (int)((THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN] - THRESHOLD[MIDDLE_SENSOR][COLOR_YELLOW]) / 3f);
+        THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN] -= (int)((THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN] - THRESHOLD[MIDDLE_SENSOR][COLOR_YELLOW]) / 2f);
         
         TextLCD.print(calibrationMessages[COLOR_WHITE]);
         for (i = 0; i < SENSOR_COUNT; i++) {
@@ -299,7 +299,7 @@ public class Driver {
             if((this.searchSpecialCase == 2 || this.searchSpecialCase == 3) && sharpTurn == true)
                 sharpTurn = false;
             initMove();
-            adjust();
+            adjust(COLOR_BLACK);
             Movement.sharpLeft();
             isDriving = true;
             
@@ -308,7 +308,7 @@ public class Driver {
                 if (blackSensors == 4 || blackSensors == 6) { // 100 110
                     if (sharpTurn) {
                         sharpTurn = false;
-                        adjust();
+                        adjust(COLOR_BLACK);
                         isDriving = true;
                         Movement.sharpLeft();
                     } else {
@@ -318,7 +318,7 @@ public class Driver {
                 }
             }
             
-            adjust();
+            adjust(COLOR_BLACK);
         }
         this.searchSpecialCase = -1;
         forward();
@@ -341,11 +341,11 @@ public class Driver {
                     isDriving = false;
                 }
             }
-            adjust();
+            adjust(COLOR_BLACK);
             forward();
         } else {
             initMove();
-            adjust();
+            adjust(COLOR_BLACK);
             Movement.sharpRight();
             isDriving = true;
             
@@ -354,7 +354,7 @@ public class Driver {
                 if (blackSensors == 1 || blackSensors == 3) { // 001 011
                     if (sharpTurn) {
                         sharpTurn = false;
-                        adjust();
+                        adjust(COLOR_BLACK);
                         isDriving = true;
                         Movement.sharpRight();
                     } else {
@@ -364,14 +364,14 @@ public class Driver {
                 }
             }
             
-            adjust();
+            adjust(COLOR_BLACK);
             this.searchSpecialCase = -1;
             forward();
         }
     }
     
     public void turnLeftSearch() {
-        adjust();
+        adjust(COLOR_BLACK);
         Movement.sharpLeft();
         isDriving = true;
         
@@ -383,16 +383,20 @@ public class Driver {
                 isDriving = false;
             }
         }
-        adjust();
+        adjust(COLOR_BLACK);
     }
     
     public void ascertain(){
         Movement.stop();
         Movement.backward();
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException ex) {
-        }
+        try { Thread.sleep(140); } catch (InterruptedException ex) {}
+        Movement.stop();
+        Movement.left();
+        try { Thread.sleep(50); } catch (InterruptedException ex) {}
+        Movement.stop();
+        try { Thread.sleep(50); } catch (InterruptedException ex) {}
+        Movement.right();
+        try { Thread.sleep(50); } catch (InterruptedException ex) {}
         Movement.stop();
         read();
         read();
@@ -449,23 +453,43 @@ public class Driver {
     /**
      * Move robot forward.
      */
-    public void adjust(){
+    public void adjust(byte color){
+        Movement.stop();
         isDriving = true;
-        //LCD.showProgramNumber(0);
-        while(isDriving){
-            read();
-            if (blackSensors == 3) {//011
-                Movement.right();
-            } else if (blackSensors == 6) {//110
-                Movement.left();
-            } else if (blackSensors == 4) {//100
-                Movement.sharpLeft();
-            } else if (blackSensors == 1) {//001
-                Movement.sharpRight();
-            } else{
-                isDriving = false;
-                Movement.stop();
+        if(color == this.COLOR_BLACK){
+            while(isDriving){
+                read();
+                if (blackSensors == 3) {//011
+                    Movement.right();
+                } else if (blackSensors == 6) {//110
+                    Movement.left();
+                } else if (blackSensors == 4) {//100
+                    Movement.sharpLeft();
+                } else if (blackSensors == 1) {//001
+                    Movement.sharpRight();
+                } else{
+                    isDriving = false;
+                    Movement.stop();
+                }
             }
+        } else if(color == this.COLOR_YELLOW){
+            while(isDriving){
+                read();
+                if ((currentColor[LEFT_SENSOR] != this.COLOR_WHITE) && (currentColor[LEFT_SENSOR] != this.COLOR_BLACK)) {
+                    Movement.left();
+                } else if ((currentColor[RIGHT_SENSOR] != this.COLOR_WHITE) && (currentColor[RIGHT_SENSOR] != this.COLOR_BLACK)) {
+                    Movement.right();
+                } else{
+                    isDriving = false;
+                    Movement.stop();
+                }
+            }
+            Sound.beep();
+            Sound.beep();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                }
         }
     }
     
@@ -496,7 +520,7 @@ public class Driver {
 //            }
 //        }
 //        try { Thread.sleep(500); } catch (InterruptedException ex) {}
-//        adjust();
+//        adjust(COLOR_BLACK);
 //    }
     
 //    public void backward() {
@@ -536,7 +560,7 @@ public class Driver {
 //            }
 //        }
 //        try { Thread.sleep(500); } catch (InterruptedException ex) {}
-//        adjust();
+//        adjust(COLOR_BLACK);
 //    }
     
     public void forward() {
@@ -547,14 +571,18 @@ public class Driver {
             read();
             read();
             if (blackSensors == 2){//010
+                        j = 0;
                 Movement.forward();
             } else if (blackSensors == 3) {//011
+                        j = 0;
                 Movement.right();
             } else if (blackSensors == 6) {//110
+                        j = 0;
                 Movement.left();
             } else if (blackSensors == 4) {//100
                 if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     ascertain();
+                adjust(currentColor[MIDDLE_SENSOR]);
                     if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW){
                         isDriving = false;
                         LCD.showProgramNumber(currentColor[MIDDLE_SENSOR]);
@@ -564,13 +592,14 @@ public class Driver {
                         Movement.sharpLeft();
                         ++j;
                     } else{
-                        adjust();
+                        adjust(COLOR_BLACK);
                         j = 0;
                     }
                 }
             } else if (blackSensors == 1) {//001
                 if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     ascertain();
+                adjust(currentColor[MIDDLE_SENSOR]);
                     if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW){
                         isDriving = false;
                         LCD.showProgramNumber(currentColor[MIDDLE_SENSOR]);
@@ -580,13 +609,14 @@ public class Driver {
                         Movement.sharpRight();
                         ++j;
                     } else{
-                        adjust();
+                        adjust(COLOR_BLACK);
                         j = 0;
                     }
                 }
             } else if (blackSensors == 5) {//101
                 if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     ascertain();
+                adjust(currentColor[MIDDLE_SENSOR]);
                     if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW)
                         isDriving = false;
                 } else {
@@ -595,12 +625,11 @@ public class Driver {
             } else if (blackSensors == 0) {//000
                 if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     ascertain();
+                adjust(currentColor[MIDDLE_SENSOR]);
                     if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW){
                         LCD.showProgramNumber(currentColor[MIDDLE_SENSOR]);
-                        
                         isDriving = false;
                     }
-                        isDriving = false;
                 } else {
                     Movement.stop();
                     try {Thread.sleep(50);} catch (InterruptedException ex) {}
@@ -678,15 +707,15 @@ public class Driver {
     public byte search(boolean doubleCheck) {
         this.pathsDiscovered = 0;
         read(); read(); read();
-        Movement.forward();
-        try { Thread.sleep(50); } catch (InterruptedException ex) {}
-        Movement.stop();
-        try { Thread.sleep(50); } catch (InterruptedException ex) {}
-        Movement.backward();
-        try { Thread.sleep(50); } catch (InterruptedException ex) {}
-        Movement.stop();
-        try { Thread.sleep(100); } catch (InterruptedException ex) {}
-        read(); read(); read();
+//        Movement.forward();
+//        try { Thread.sleep(50); } catch (InterruptedException ex) {}
+//        Movement.stop();
+//        try { Thread.sleep(50); } catch (InterruptedException ex) {}
+//        Movement.backward();
+//        try { Thread.sleep(50); } catch (InterruptedException ex) {}
+//        Movement.stop();
+//        try { Thread.sleep(100); } catch (InterruptedException ex) {}
+//        read(); read(); read();
         
         if(currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
             this.searchSpecialCase = -1;
@@ -831,7 +860,7 @@ public class Driver {
 //            Movement.backward();
 //            try { Thread.sleep(320); } catch (InterruptedException ex) {}
 //            Movement.stop();
-//            adjust();
+//            adjust(COLOR_BLACK);
 //            read();
 //            read();
 //            read();
@@ -871,7 +900,7 @@ public class Driver {
 //        if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_YELLOW)
 //        {
 //            backwardUntil(MIDDLE_SENSOR, COLOR_BLACK, COLOR_WHITE);
-//            adjust();
+//            adjust(COLOR_BLACK);
 //            read(); read(); read();
 //
 //            if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_BLACK)
@@ -887,7 +916,7 @@ public class Driver {
 //                this.pathsDiscovered |= GameCommands.TURN_LEFT;
 //
 //            forwardUntil(MIDDLE_SENSOR, COLOR_BLACK, COLOR_WHITE);
-//            adjust();
+//            adjust(COLOR_BLACK);
 ////            forwardUntilBlack();
 //            read(); read(); read();
 //            if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_BLACK)
@@ -937,10 +966,10 @@ public class Driver {
 //            Movement.stop();
 //            read(); read(); read();
 ////            forwardUntil(MIDDLE_SENSOR, COLOR_BLACK, COLOR_WHITE);
-////            adjust();
+////            adjust(COLOR_BLACK);
 ////            backwardUntil(MIDDLE_SENSOR, COLOR_BLACK, COLOR_GREEN);
 ////            backwardUntil(MIDDLE_SENSOR, COLOR_BLACK, COLOR_WHITE);
-////            adjust();
+////            adjust(COLOR_BLACK);
 ////            forwardUntil(MIDDLE_SENSOR, COLOR_BLACK, COLOR_GREEN);
 //            if(currentColor[MIDDLE_SENSOR] == COLOR_GREEN)
 //                return GameCommands.FORWARD | GameCommands.TURN_NUMBER;
