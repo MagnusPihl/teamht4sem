@@ -66,7 +66,7 @@ public class Driver {
     private boolean isDriving;
     
     private int turnTimeout;
-    private static final int MOVE_INIT_TIME = 235;//+(2*(Battery.getVoltageMilliVolt()/100)); //find ud af om tallet er fornuftigt
+    private static final int MOVE_INIT_TIME = 700;//235;//+(2*(Battery.getVoltageMilliVolt()/100)); //find ud af om tallet er fornuftigt
     
     private int searchTimer;
     private byte searchLastFound;
@@ -204,7 +204,7 @@ public class Driver {
         
         calculateCurrentColors();
         calculateBlackSensors();
-//        LCD.showNumber((int)Runtime.getRuntime().freeMemory());
+        LCD.showNumber(this.searchSpecialCase);
     }
     
     /**
@@ -276,14 +276,17 @@ public class Driver {
     private void initMove() {
         isDriving = true;
         
+//        Movement.forward();
+//        try {
+//            Thread.sleep(MOVE_INIT_TIME);
+//        } catch (Exception e) {
+//            Sound.buzz();
+//        }
+//        Movement.stop();
         Movement.forward();
-        try {
-            Thread.sleep(MOVE_INIT_TIME);
-        } catch (Exception e) {
-            Sound.buzz();
-        }
-        Movement.stop();
+        Movement.forward();
         read();//we must ensure that the buffer is all cleared after we move the robot
+        read();
         read();
     }
     
@@ -293,16 +296,16 @@ public class Driver {
      * @param if sharpTurn is true a U-Turn will be performed.
      */
     public void turnLeft(boolean sharpTurn) {
-        LCD.showNumber(1000);
-        if(this.searchSpecialCase == -1 || sharpTurn == true) {
-            Sound.twoBeeps();
-            if((this.searchSpecialCase == 2 || this.searchSpecialCase == 3) && sharpTurn == true)
-                sharpTurn = false;
+        LCD.showNumber(this.searchSpecialCase);
+        if(this.searchSpecialCase == -1)
             initMove();
+        if(this.searchSpecialCase <= 0 || sharpTurn == true) {
+            Sound.buzz();
+            if(this.searchSpecialCase > 0 && sharpTurn == true)
+                sharpTurn = false;
+            isDriving = true;
             adjust(COLOR_BLACK);
             Movement.sharpLeft();
-            isDriving = true;
-            
             while(isDriving){
                 read();
                 if (blackSensors == 4 || blackSensors == 6) { // 100 110
@@ -330,7 +333,6 @@ public class Driver {
      * @param if sharpTurn is true a U-Turn will be performed.
      */
     public void turnRight(boolean sharpTurn) {
-        LCD.showNumber(0001);
         if(this.searchSpecialCase == 1) {
             Movement.sharpLeft();
             isDriving = true;
@@ -389,9 +391,8 @@ public class Driver {
     public void ascertain(){
         Movement.stop();
         Movement.backward();
-        try { Thread.sleep(140); } catch (InterruptedException ex) {}
+        try { Thread.sleep(50); } catch (InterruptedException ex) {}
         Movement.stop();
-        try { Thread.sleep(140); } catch (InterruptedException ex) {}
         read();
         read();
         read();
@@ -558,7 +559,8 @@ public class Driver {
 //    }
     
     public void forward() {
-        initMove();
+//        initMove();
+        isDriving = true;
         Movement.forward();
         while(isDriving){
             read();
@@ -579,7 +581,7 @@ public class Driver {
                 adjust(currentColor[MIDDLE_SENSOR]);
                     if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW){
                         isDriving = false;
-                        LCD.showProgramNumber(currentColor[MIDDLE_SENSOR]);
+//                        LCD.showProgramNumber(currentColor[MIDDLE_SENSOR]);
                     }
                 } else {
                     if(j < 5){
@@ -596,7 +598,7 @@ public class Driver {
                 adjust(currentColor[MIDDLE_SENSOR]);
                     if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW){
                         isDriving = false;
-                        LCD.showProgramNumber(currentColor[MIDDLE_SENSOR]);
+//                        LCD.showProgramNumber(currentColor[MIDDLE_SENSOR]);
                 }
                 } else {
                     if(j < 5){
@@ -621,7 +623,7 @@ public class Driver {
                     ascertain();
                 adjust(currentColor[MIDDLE_SENSOR]);
                     if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW){
-                        LCD.showProgramNumber(currentColor[MIDDLE_SENSOR]);
+//                        LCD.showProgramNumber(currentColor[MIDDLE_SENSOR]);
                         isDriving = false;
                     }
                 } else {
@@ -690,9 +692,9 @@ public class Driver {
         searchTimer = (int)System.currentTimeMillis();
         this.turnLeftSearch();
         searchTimer = (int)System.currentTimeMillis() - searchTimer;
-        if(searchTimer < 1150)
+        if(searchTimer < 1300)          //1300 for 7.5; 1150 for 8.1
             return 1;
-        else if(searchTimer < 2000)
+        else if(searchTimer < 2000)     //2000 for 7.5-8.1
             return 2;
         else
             return 3;
@@ -713,6 +715,8 @@ public class Driver {
         
         if(currentColor[MIDDLE_SENSOR] == COLOR_GREEN) {
             this.searchSpecialCase = -1;
+            Sound.twoBeeps();
+            Movement.forward();
             return (GameCommands.FORWARD | GameCommands.TURN_NUMBER);
         } else if(currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
             initMove();
@@ -774,10 +778,12 @@ public class Driver {
                 }
                 //else Facing RIGHT
             }
-            this.searchSpecialCase = 4;
+            this.searchSpecialCase = 0;
+            Sound.twoBeeps();
         }
         else {
             Sound.beepSequence();
+            this.searchSpecialCase = -1;
             this.pathsDiscovered = -1;
         }
 //        else{
@@ -789,7 +795,7 @@ public class Driver {
         LCD.clearSegment(Segment.SENSOR_2_ACTIVE);
         LCD.clearSegment(Segment.SENSOR_2_VIEW);
         LCD.clearSegment(Segment.SENSOR_3_ACTIVE);
-        LCD.clear();
+//        LCD.clear();
         LCD.refresh();
         if((pathsDiscovered & GameCommands.TURN_LEFT) > 0)
             LCD.setSegment(Segment.SENSOR_1_ACTIVE);
@@ -799,7 +805,7 @@ public class Driver {
             LCD.setSegment(Segment.SENSOR_3_ACTIVE);
         if((pathsDiscovered & GameCommands.TURN_NUMBER) > 0)
             LCD.setSegment(Segment.SENSOR_2_VIEW);
-        LCD.showNumber(pathsDiscovered);
+//        LCD.showNumber(pathsDiscovered);
         LCD.refresh();
         
         if(this.pathsDiscovered == (GameCommands.TURN_RIGHT | GameCommands.TURN_NUMBER))
