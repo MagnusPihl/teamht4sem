@@ -31,12 +31,10 @@ import field.*;
 
 public class PacmanBrush extends Brush
 {
-    private int lastDirection;
     
     public PacmanBrush(EditorPanel panel)
     {
         super(panel);
-        this.lastDirection = Node.DOWN;
     }
     
     public void mouseReleased(MouseEvent e)
@@ -45,13 +43,7 @@ public class PacmanBrush extends Brush
         
         if (e.getButton() == e.BUTTON1) {
             super.panel.getField().placePacman(curpos);
-            if (super.panel.getField().getEntityRenderers()[0] != null) {
-                super.panel.getField().getEntityRenderers()[0].getEntity().setDirection(lastDirection);
-            }            
         } else if (e.getButton() == e.BUTTON3) {
-            if (super.panel.getField().getEntityRenderers()[0] != null) {
-                this.lastDirection = super.panel.getField().getEntityRenderers()[0].getEntity().getDirection();
-            }
             super.panel.getField().removeEntityAt(curpos);
         }
         super.panel.checkSize();
