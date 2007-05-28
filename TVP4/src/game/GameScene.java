@@ -440,7 +440,7 @@ public class GameScene implements Scene {
         
         if(this.state == this.STATE_PLACEMENT) {
             if(placementState%2 == 0){
-                this.robotDialog[((placementState/2)+1)].draw(_g);
+                this.robotDialog[((placementState/2))].draw(_g);
             }
         }
     }
@@ -452,14 +452,16 @@ public class GameScene implements Scene {
         if(this.state == this.STATE_PLACEMENT) {
             if(this.confirm.isPressed()){
                 placementState++;
-                if(placementState == 6) {
-                    this.state = this.STATE_RUNNING;
-                    return;
-                }
+                
                 if(placementState%2 == 1){
                     this.field.getEntityRenderers()[(placementState-1)/2].setHighlight(true);
                 } else{
                     this.field.getEntityRenderers()[(placementState-1)/2].setHighlight(false);
+                }
+                
+                if(placementState == 6) {
+                    this.state = this.STATE_RUNNING;
+                    return;
                 }
             }
         }
@@ -563,7 +565,7 @@ public class GameScene implements Scene {
     public void init(InputManager _input) {
         this.state = this.STATE_RUNNING;
         if(this.online){
-            //this.state = this.STATE_PLACEMENT;
+            this.state = this.STATE_PLACEMENT;
             this.placementState = 0;
             this.semaphore.release(3-this.semaphore.availablePermits());
             this.proxy[0].open(this.towerPort);
