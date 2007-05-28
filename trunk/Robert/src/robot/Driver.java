@@ -115,7 +115,7 @@ public class Driver {
         try {
             Thread.sleep(300);
         } catch (Exception e){
-            Sound.buzz();
+//            Sound.buzz();
         }
         while(Button.RUN.isPressed()) {}
         
@@ -164,7 +164,7 @@ public class Driver {
         
         TextLCD.print(calibrationMessages[COLOR_GREEN]);
         THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN] = readRaw(MIDDLE_SENSOR);
-        THRESHOLD[MIDDLE_SENSOR][COLOR_BLACK] -= (int)((THRESHOLD[MIDDLE_SENSOR][COLOR_BLACK] - THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN]) / 3f);
+        THRESHOLD[MIDDLE_SENSOR][COLOR_BLACK] -= (int)((THRESHOLD[MIDDLE_SENSOR][COLOR_BLACK] - THRESHOLD[MIDDLE_SENSOR][COLOR_GREEN]) / 2f);
         
         TextLCD.print(calibrationMessages[COLOR_YELLOW]);
         THRESHOLD[MIDDLE_SENSOR][COLOR_YELLOW] = readRaw(MIDDLE_SENSOR);
@@ -204,7 +204,6 @@ public class Driver {
         
         calculateCurrentColors();
         calculateBlackSensors();
-        LCD.showNumber(this.searchSpecialCase);
     }
     
     /**
@@ -303,9 +302,9 @@ public class Driver {
             Sound.buzz();
             if(this.searchSpecialCase > 0 && sharpTurn == true)
                 sharpTurn = false;
-            isDriving = true;
             adjust(COLOR_BLACK);
             Movement.sharpLeft();
+            isDriving = true;
             while(isDriving){
                 read();
                 if (blackSensors == 4 || blackSensors == 6) { // 100 110
@@ -391,59 +390,12 @@ public class Driver {
     public void ascertain(){
         Movement.stop();
         Movement.backward();
-        try { Thread.sleep(50); } catch (InterruptedException ex) {}
+        try { Thread.sleep(60); } catch (InterruptedException ex) {}
         Movement.stop();
         read();
         read();
         read();
     }
-    
-//    /**
-//     * Move robot forward.
-//     */
-//    public void adjust(){
-//        isDriving = true;
-////        LCD.showProgramNumber(0);
-//        while(isDriving){
-//            Movement.stop();
-//            try { Thread.sleep(50); } catch(Exception e) { }
-//            read();
-//            read();
-//            read();
-//            if (blackSensors == 3) {//011
-//                Movement.right();
-//            } else if (blackSensors == 6) {//110
-//                Movement.left();
-//            } else if (blackSensors == 4) {//100
-//                if(currentColor[MIDDLE_SENSOR] != COLOR_YELLOW)
-//                    Movement.left();
-//                else
-//                    ; //Do something when on yellow. I don't know what.
-//            } else if (blackSensors == 1) {//001
-//                if(currentColor[MIDDLE_SENSOR] != COLOR_YELLOW)
-//                    Movement.right();
-//                else
-//                    ; //Do something when on yellow. I don't know what.
-//            } else if (blackSensors == 5) { //101
-//                if(currentColor[MIDDLE_SENSOR] != COLOR_YELLOW)
-//                    Movement.backward();
-//                else
-//                    ; //Do something when on yellow. I don't know what.
-//            } else if (blackSensors == 2) { //010
-//                Movement.stop();
-//                isDriving = false;
-//            } else if (blackSensors == 0) { //000
-//                if(currentColor[MIDDLE_SENSOR] != COLOR_WHITE) {
-//                    Movement.stop();
-//                    isDriving = false;
-//                }
-//                Movement.backward();
-//            } else if (blackSensors == 7) { //111
-//                Movement.left();
-//            }
-//            try { Thread.sleep(50); } catch(Exception e) { }
-//        }
-//    }
     
     /**
      * Move robot forward.
@@ -479,88 +431,34 @@ public class Driver {
                     Movement.stop();
                 }
             }
-            Sound.beep();
-            Sound.beep();
+            //Sound.beep();
+            //Sound.beep();
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ex) {
                 }
         }
+//        else if(color == this.COLOR_GREEN){
+//            while(isDriving){
+//                read();
+//                if (currentColor[LEFT_SENSOR] != this.COLOR_WHITE) {
+//                    Movement.left();
+//                } else if (currentColor[RIGHT_SENSOR] != this.COLOR_WHITE) {
+//                    Movement.right();
+//                } else{
+//                    Movement.stop();
+//                    isDriving = false;
+//                }
+//            }
+//        }
     }
-    
-//    public void forwardUntilBlack() {
-//        isDriving = true;
-//        Movement.forward();
-//
-//        read();
-//        read();
-//        while(isDriving){
-//            read();
-//            if (blackSensors == 2){//010
-//                isDriving = false;
-//            } else if (blackSensors == 3) {//011
-//                Movement.backwardRight();
-//            } else if (blackSensors == 6) {//110
-//                Movement.backwardLeft();
-//            } else if (blackSensors == 4) {//100
-//                Movement.sharpLeft();
-//            } else if (blackSensors == 1) {//001
-//                Movement.sharpRight();
-//            } else if (blackSensors == 5) {//101
-//                //?
-//            } else if (blackSensors == 0) {//000
-//                isDriving = false;
-//            } else if (blackSensors == 7) {//111
-//                //?;
-//            }
-//        }
-//        try { Thread.sleep(500); } catch (InterruptedException ex) {}
-//        adjust(COLOR_BLACK);
-//    }
-    
-//    public void backward() {
-//        isDriving = true;
-//        Movement.backward();
-//        read();//we must ensure that the buffer is all cleared after we move the robot
-//        read();
-//
-//        while(isDriving) {
-//            read();
-//            if (currentColor[MIDDLE_SENSOR] == COLOR_BLACK || currentColor[MIDDLE_SENSOR] == COLOR_WHITE) {
-//                isDriving = false;
-//            }
-//        }
-//
-//        isDriving = true;
-//        Movement.backward();
-//
-//        while(isDriving){
-//            read();
-//            if (blackSensors == 2){//010
-//                isDriving = false;
-//            } else if (blackSensors == 3) {//011
-//                Movement.backwardRight();
-//            } else if (blackSensors == 6) {//110
-//                Movement.backwardLeft();
-//            } else if (blackSensors == 4) {//100
-//                Movement.sharpLeft();
-//            } else if (blackSensors == 1) {//001
-//                Movement.sharpRight();
-//            } else if (blackSensors == 5) {//101
-//                //?
-//            } else if (blackSensors == 0) {//000
-//                isDriving = false;
-//            } else if (blackSensors == 7) {//111
-//                //?;
-//            }
-//        }
-//        try { Thread.sleep(500); } catch (InterruptedException ex) {}
-//        adjust(COLOR_BLACK);
-//    }
     
     public void forward() {
 //        initMove();
         isDriving = true;
+        Movement.forward();
+        Movement.forward();
+        Movement.forward();
         Movement.forward();
         while(isDriving){
             read();
@@ -577,8 +475,9 @@ public class Driver {
                 Movement.left();
             } else if (blackSensors == 4) {//100
                 if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
+                    adjust(currentColor[MIDDLE_SENSOR]);
+                    isDriving = true;
                     ascertain();
-                adjust(currentColor[MIDDLE_SENSOR]);
                     if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW){
                         isDriving = false;
 //                        LCD.showProgramNumber(currentColor[MIDDLE_SENSOR]);
@@ -594,8 +493,9 @@ public class Driver {
                 }
             } else if (blackSensors == 1) {//001
                 if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
+                    adjust(currentColor[MIDDLE_SENSOR]);
+                    isDriving = true;
                     ascertain();
-                adjust(currentColor[MIDDLE_SENSOR]);
                     if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW){
                         isDriving = false;
 //                        LCD.showProgramNumber(currentColor[MIDDLE_SENSOR]);
@@ -612,7 +512,8 @@ public class Driver {
             } else if (blackSensors == 5) {//101
                 if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
                     ascertain();
-                adjust(currentColor[MIDDLE_SENSOR]);
+                    adjust(currentColor[MIDDLE_SENSOR]);
+                    isDriving = true;
                     if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW)
                         isDriving = false;
                 } else {
@@ -620,8 +521,9 @@ public class Driver {
                 }
             } else if (blackSensors == 0) {//000
                 if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW) {
+                    adjust(currentColor[MIDDLE_SENSOR]);
+                    isDriving = true;
                     ascertain();
-                adjust(currentColor[MIDDLE_SENSOR]);
                     if (currentColor[MIDDLE_SENSOR] == COLOR_GREEN || currentColor[MIDDLE_SENSOR] == COLOR_YELLOW){
 //                        LCD.showProgramNumber(currentColor[MIDDLE_SENSOR]);
                         isDriving = false;
@@ -659,42 +561,14 @@ public class Driver {
         this.searchSpecialCase = -1;
     }
     
-//    public void forwardUntil(byte sensor, byte color1, byte color2)
-//    {
-//        while(currentColor[sensor] != color1 && currentColor[sensor] != color2)
-//        {
-//            Movement.forward();
-//            try { Thread.sleep(125); } catch (InterruptedException ex) {}
-//            Movement.stop();
-//            this.read();
-//            this.read();
-//            this.read();
-//        }
-//        try { Thread.sleep(500); } catch (InterruptedException ex) {}
-//    }
-//
-//    public void backwardUntil(byte sensor, byte color1, byte color2)
-//    {
-//        while(currentColor[sensor] != color1 && currentColor[sensor] != color2)
-//        {
-//            Movement.backward();
-//            try { Thread.sleep(125); } catch (InterruptedException ex) {}
-//            Movement.stop();
-//            this.read();
-//            this.read();
-//            this.read();
-//        }
-//        try { Thread.sleep(500); } catch (InterruptedException ex) {}
-//    }
-    
     public byte findOnLeft()    //Values tested for battery life 8.1
     {
         searchTimer = (int)System.currentTimeMillis();
         this.turnLeftSearch();
         searchTimer = (int)System.currentTimeMillis() - searchTimer;
-        if(searchTimer < 1300)          //1300 for 7.5; 1150 for 8.1
+        if(searchTimer < 1500)          //1300 for 7.5; 1150 for 8.1
             return 1;
-        else if(searchTimer < 2000)     //2000 for 7.5-8.1
+        else if(searchTimer < 2300)     //2000 for 7.5-8.1
             return 2;
         else
             return 3;
@@ -783,6 +657,12 @@ public class Driver {
         }
         else {
             Sound.beepSequence();
+            Movement.backward();
+                try {
+                    Thread.sleep(400);
+                } catch (InterruptedException ex) {
+                }
+            Movement.stop();
             this.searchSpecialCase = -1;
             this.pathsDiscovered = -1;
         }
@@ -817,179 +697,4 @@ public class Driver {
         
         return this.pathsDiscovered;
     }
-    
-//    public byte searchTimed(boolean doubleCheck)
-//    {
-//        this.pathsDiscovered = 0;
-//        read();
-//        read();
-//        read();
-//
-//        Movement.forward();
-//        try { Thread.sleep(200); } catch (InterruptedException ex) {}
-//        Movement.backward();
-//
-//        read();
-//        read();
-//        read();
-//
-//        if(currentColor[MIDDLE_SENSOR] == COLOR_YELLOW)
-//        {
-//            if(this.currentColor[this.RIGHT_SENSOR] == this.COLOR_BLACK)
-//                this.pathsDiscovered |= GameCommands.TURN_RIGHT;
-//            if(this.currentColor[this.LEFT_SENSOR] == this.COLOR_BLACK)
-//                this.pathsDiscovered |= GameCommands.TURN_LEFT;
-//            Movement.forward();
-//            try { Thread.sleep(320); } catch (InterruptedException ex) {}
-//            Movement.stop();
-//            read();
-//            read();
-//            read();
-//            if(currentColor[MIDDLE_SENSOR] == COLOR_BLACK)
-//                this.pathsDiscovered |= GameCommands.FORWARD;
-//            Movement.backward();
-//            try { Thread.sleep(320); } catch (InterruptedException ex) {}
-//            Movement.stop();
-//            read();
-//            read();
-//            read();
-//            if((currentColor[RIGHT_SENSOR] == COLOR_BLACK) && ((pathsDiscovered & GameCommands.TURN_RIGHT) == 0))
-//                return search(true);
-//            if((currentColor[LEFT_SENSOR] == COLOR_BLACK) && ((pathsDiscovered & GameCommands.TURN_LEFT) == 0))
-//                return search(true);
-//            Movement.backward();
-//            try { Thread.sleep(320); } catch (InterruptedException ex) {}
-//            Movement.stop();
-//            adjust(COLOR_BLACK);
-//            read();
-//            read();
-//            read();
-//            if(currentColor[MIDDLE_SENSOR] == COLOR_BLACK)
-//                this.pathsDiscovered |= GameCommands.TURN_NUMBER;
-//            Movement.forward();
-//            try { Thread.sleep(320); } catch (InterruptedException ex) {}
-//            Movement.stop();
-//            this.tempPathsDiscovered = this.pathsDiscovered;
-//            if(doubleCheck)
-//                search(false);
-//            if(this.tempPathsDiscovered == this.pathsDiscovered && this.pathsDiscovered != GameCommands.TURN_NUMBER &&
-//                    (this.pathsDiscovered & GameCommands.TURN_LEFT)>0 && (this.pathsDiscovered & GameCommands.TURN_RIGHT)>0)
-//                return this.pathsDiscovered;
-//            else
-//                return search(true);
-//        }
-//        else if(currentColor[MIDDLE_SENSOR] == COLOR_GREEN)
-//        {
-//            return GameCommands.FORWARD | GameCommands.TURN_NUMBER;
-//        }
-//        else
-//            return -1;
-//    }
-//
-//
-//    /**
-//     * Search current node for available paths.
-//     *
-//     * @return byte paths available.
-//     */
-//    public byte searchInch(boolean doubleCheck)
-//    {
-//        this.pathsDiscovered = 0;
-//        read(); read(); read();
-//
-//        if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_YELLOW)
-//        {
-//            backwardUntil(MIDDLE_SENSOR, COLOR_BLACK, COLOR_WHITE);
-//            adjust(COLOR_BLACK);
-//            read(); read(); read();
-//
-//            if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_BLACK)
-//                this.pathsDiscovered |= GameCommands.TURN_NUMBER;
-//
-//            forwardUntil(MIDDLE_SENSOR, COLOR_YELLOW, COLOR_GREEN);
-//            read(); read(); read();
-//            if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_GREEN)
-//                return search(true);
-//            if(this.currentColor[this.RIGHT_SENSOR] == this.COLOR_BLACK)
-//                this.pathsDiscovered |= GameCommands.TURN_RIGHT;
-//            if(this.currentColor[this.LEFT_SENSOR] == this.COLOR_BLACK)
-//                this.pathsDiscovered |= GameCommands.TURN_LEFT;
-//
-//            forwardUntil(MIDDLE_SENSOR, COLOR_BLACK, COLOR_WHITE);
-//            adjust(COLOR_BLACK);
-////            forwardUntilBlack();
-//            read(); read(); read();
-//            if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_BLACK)
-//                this.pathsDiscovered |= GameCommands.FORWARD;
-//
-//            backwardUntil(MIDDLE_SENSOR, COLOR_YELLOW, COLOR_GREEN);
-////            backward();
-//            read(); read(); read();
-//            if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_GREEN)
-//                return search(true);
-//            if((currentColor[RIGHT_SENSOR] == COLOR_BLACK) && ((pathsDiscovered & GameCommands.TURN_RIGHT) == 0))
-//                return search(true);
-//            if((currentColor[LEFT_SENSOR] == COLOR_BLACK) && ((pathsDiscovered & GameCommands.TURN_LEFT) == 0))
-//                return search(true);
-//
-//            LCD.clearSegment(Segment.SENSOR_1_ACTIVE);
-//            LCD.clearSegment(Segment.SENSOR_2_ACTIVE);
-//            LCD.clearSegment(Segment.SENSOR_2_VIEW);
-//            LCD.clearSegment(Segment.SENSOR_3_ACTIVE);
-//            LCD.clear();
-//            LCD.refresh();
-//            if((pathsDiscovered & GameCommands.TURN_LEFT) > 0)
-//                LCD.setSegment(Segment.SENSOR_1_ACTIVE);
-//            if((pathsDiscovered & GameCommands.FORWARD) > 0)
-//                LCD.setSegment(Segment.SENSOR_2_ACTIVE);
-//            if((pathsDiscovered & GameCommands.TURN_RIGHT) > 0)
-//                LCD.setSegment(Segment.SENSOR_3_ACTIVE);
-//            if((pathsDiscovered & GameCommands.TURN_NUMBER) > 0)
-//                LCD.setSegment(Segment.SENSOR_2_VIEW);
-//            LCD.showNumber(pathsDiscovered);
-//            LCD.refresh();
-//
-//            this.tempPathsDiscovered = this.pathsDiscovered;
-//            if(doubleCheck)
-//                search(false);
-//            if(this.tempPathsDiscovered == this.pathsDiscovered && this.pathsDiscovered != GameCommands.TURN_NUMBER)
-//                return this.pathsDiscovered;
-//            else
-//                return search(true);
-//        }
-//        else if(this.currentColor[this.MIDDLE_SENSOR] == this.COLOR_GREEN)
-//        {
-//            Movement.forward();
-//            try { Thread.sleep(50); } catch (InterruptedException ex) {}
-//            Movement.backward();
-//            try { Thread.sleep(50); } catch (InterruptedException ex) {}
-//            Movement.stop();
-//            read(); read(); read();
-////            forwardUntil(MIDDLE_SENSOR, COLOR_BLACK, COLOR_WHITE);
-////            adjust(COLOR_BLACK);
-////            backwardUntil(MIDDLE_SENSOR, COLOR_BLACK, COLOR_GREEN);
-////            backwardUntil(MIDDLE_SENSOR, COLOR_BLACK, COLOR_WHITE);
-////            adjust(COLOR_BLACK);
-////            forwardUntil(MIDDLE_SENSOR, COLOR_BLACK, COLOR_GREEN);
-//            if(currentColor[MIDDLE_SENSOR] == COLOR_GREEN)
-//                return GameCommands.FORWARD | GameCommands.TURN_NUMBER;
-//            else
-//            {
-//                forward();
-//                return search(true);
-//            }
-////            if((pathsDiscovered & GameCommands.TURN_LEFT) > 0)
-////                LCD.setSegment(Segment.SENSOR_1_ACTIVE);
-////            if((pathsDiscovered & GameCommands.FORWARD) > 0)
-////                LCD.setSegment(Segment.SENSOR_2_ACTIVE);
-////            if((pathsDiscovered & GameCommands.TURN_RIGHT) > 0)
-////                LCD.setSegment(Segment.SENSOR_3_ACTIVE);
-////            if((pathsDiscovered & GameCommands.TURN_NUMBER) > 0)
-////                LCD.setSegment(Segment.SENSOR_2_VIEW);
-////            LCD.showNumber(pathsDiscovered);
-////            return pathsDiscovered;    //Forward and back available
-//        }
-//
-//        return search(true);    //Not on a node
-//    }
 }

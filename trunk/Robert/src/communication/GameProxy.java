@@ -71,7 +71,7 @@ public class GameProxy {
                     this.driver.setSegment(address);
                     Thread.sleep(200);
                 } catch (InterruptedException ex) {
-                    Sound.buzz();
+//                    Sound.buzz();
                 }
             }
         }
@@ -116,7 +116,7 @@ public class GameProxy {
                 try {
                     command = in.read();                    
                 } catch (Exception e) {
-                    Sound.buzz();
+//                    Sound.buzz();
                 }
                 if (command != -1) {
                     //LCD.showNumber(command);
