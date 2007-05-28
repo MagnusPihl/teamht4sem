@@ -278,7 +278,7 @@ public class FieldExplorer implements Runnable {
                 for (Iterator i = field.getNodeList().iterator(); i.hasNext();) {
                     current = (Node)i.next();
                     if ((!this.closed.contains(current)) && (!this.open.contains(current))) {
-                        this.open.add(current);
+                        this.open.push(current);
                         System.out.println("Added to open list: " + current.getPosition());
                     }
                 }
