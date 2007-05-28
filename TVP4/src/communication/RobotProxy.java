@@ -92,6 +92,7 @@ public class RobotProxy extends Thread{
     }
     
     public void resetDirection() throws IOException {
+        this.lastDirection = Node.UP;
         this.out.write(GameCommands.RESET_DIRECTION);
     }
     
@@ -218,6 +219,11 @@ public class RobotProxy extends Thread{
      * Switch light on robot on or off depending on passed boolean.
      * 
      * @param boolean true if the lights should be turned on.
+     */
+    /**
+     * Turns the light on and off
+     *
+     * @param on
      */
     public void lights(boolean on) throws IOException{
         if(on){
