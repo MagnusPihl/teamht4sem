@@ -1,5 +1,4 @@
 package robot;
-import josx.platform.rcx.LCD;
 import josx.platform.rcx.Motor;
 /*
  * Movement.java
@@ -30,7 +29,7 @@ public class Movement {
     public static void forward() {
         Motor.A.forward();
         Motor.C.backward();
-        try{ Thread.sleep(150); } catch(Exception e) {}
+        try{ Thread.sleep(125); } catch(Exception e) {}
         Movement.stop();
 //        LCD.showNumber((int)Runtime.getRuntime().freeMemory());
     }
