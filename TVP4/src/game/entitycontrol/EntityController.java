@@ -96,7 +96,9 @@ public abstract class EntityController
         
         if (this.lastDirection != Node.INVALID_DIRECTION) {            
             if (nodes[this.lastDirection] != null) {
-                return this.lastDirection;
+                if (!nodes[this.lastDirection].holdsEntity()) {
+                    return this.lastDirection;
+                }
             }
 
             int direction = Node.INVALID_DIRECTION;
@@ -116,28 +118,28 @@ public abstract class EntityController
             }            
 
             if (nodes[direction] != null) {
-                if (nodes[direction].getEntity() == null) {
+                if (!nodes[direction].holdsEntity()) {
                     return direction;
                 }
             } 
             
             direction = Node.getOpposite(direction);
             if (nodes[direction] != null) {
-                if (nodes[direction].getEntity() == null) {
+                if (!nodes[direction].holdsEntity()) {
                     return direction;
                 }
             }
 
             direction = Node.getOpposite(this.lastDirection);
             if (nodes[direction] != null) {
-                if (nodes[direction].getEntity() == null) {
+                if (!nodes[direction].holdsEntity()) {
                     return direction;
                 }
             }
         } else {
             for (int i = 0; i < Node.DIRECTION_COUNT; i++) {
                 if (nodes[i] != null) {
-                    if (nodes[i].getEntity() == null) {
+                    if (!nodes[i].holdsEntity()) {
                         return i;
                     }
                 }
