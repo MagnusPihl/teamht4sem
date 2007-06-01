@@ -100,7 +100,7 @@ public class GameScene implements Scene {
     // SKAL være robot 1&2, hvis der er 2, osv.
     //Husk at sætte mode til online i options. Bemærk at alle entiteter bevæger sig i spillet, lige meget hvor mange
     // robotter der er sat til. Det kan der ikke gøres noget ved. Der sendes kun til det antal du vælger.
-    private final int NUM_ROBOTS = 1;
+    private final int NUM_ROBOTS = 3;
     
     private int points;
     
@@ -166,7 +166,7 @@ public class GameScene implements Scene {
         this.entity[0] = new Entity(null, 0);
         this.entity[1] = new Entity(null, 1);
         this.entity[2] = new Entity(null, 2);
-        TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "pacman/"));
+        TileSet.getInstance().loadTileSet(new File(TileSet.SKIN_LIBRARY + "neon/"));
         SoundSet.getInstance().loadSoundSet(new File(SoundSet.SKIN_LIBRARY + "pacman/"));
         this.soundManager = new SoundManager();
         this.cancel = new InputAction("Cancel", InputAction.DETECT_FIRST_ACTION);
@@ -263,7 +263,7 @@ public class GameScene implements Scene {
         return this.towerPort;
     }
     
-    private void updateLevelOffset() {
+    private void updateLevelOffset(long _time) {
         this.ghost1Offscreen = false;
         this.ghost2Offscreen = false;
         if(field.getSize().width * TileSet.getInstance().getTileSize() > 800 ||
@@ -320,37 +320,39 @@ public class GameScene implements Scene {
                 this.ghost2OffscreenY = ghostY;
         }
         
+        //float move = (float)(_time*0.05);
+        float move = (float)(_time*0.1);
         if(field.getSize().width * TileSet.getInstance().getTileSize() > 800) {
             int pacX = field.getEntityRenderers()[0].getEntity().getPosition().x * TileSet.getInstance().getTileSize();
             
             if(pacX + this.levelOffsetX < 400 && this.levelOffsetX < 25)
-                this.levelOffsetX += 1;//Math.ceil((pacX+this.levelOffsetX)/100)+1;
+                this.levelOffsetX += move;//Math.ceil((pacX+this.levelOffsetX)/100)+1;
             if(pacX + this.levelOffsetX > 400 && field.getSize().width * TileSet.getInstance().getTileSize() + this.levelOffsetX > 775)
-                this.levelOffsetX -= 1;//(pacX+this.levelOffsetX)/100;
+                this.levelOffsetX -= move;//(pacX+this.levelOffsetX)/100;
             if(pacX + this.levelOffsetX < 250 && this.levelOffsetX < 25)
-                this.levelOffsetX += 1;
+                this.levelOffsetX += move;
             if(pacX + this.levelOffsetX > 550 && field.getSize().width * TileSet.getInstance().getTileSize() + this.levelOffsetX > 775)
-                this.levelOffsetX -= 1;
+                this.levelOffsetX -= move;
             if(pacX + this.levelOffsetX < 100 && this.levelOffsetX < 25)
-                this.levelOffsetX += 1;
+                this.levelOffsetX += move;
             if(pacX + this.levelOffsetX > 700 && field.getSize().width * TileSet.getInstance().getTileSize() + this.levelOffsetX > 775)
-                this.levelOffsetX -= 1;
+                this.levelOffsetX -= move;
         }
         if(field.getSize().height * TileSet.getInstance().getTileSize() > 520) {
             int pacY = field.getEntityRenderers()[0].getEntity().getPosition().y * TileSet.getInstance().getTileSize();
             
             if(pacY + this.levelOffsetY < 300 && this.levelOffsetY < 85)
-                this.levelOffsetY += 1;//Math.ceil((pacY+this.levelOffsetY)/100)+1;
+                this.levelOffsetY += move;//Math.ceil((pacY+this.levelOffsetY)/100)+1;
             if(pacY + this.levelOffsetY > 300 && field.getSize().height * TileSet.getInstance().getTileSize() + this.levelOffsetY > 575)
-                this.levelOffsetY -= 1;//(pacY+this.levelOffsetY)/100;
+                this.levelOffsetY -= move;//(pacY+this.levelOffsetY)/100;
             if(pacY + this.levelOffsetY < 200 && this.levelOffsetY < 85)
-                this.levelOffsetY += 1;
+                this.levelOffsetY += move;
             if(pacY + this.levelOffsetY > 400 && field.getSize().height * TileSet.getInstance().getTileSize() + this.levelOffsetY > 575)
-                this.levelOffsetY -= 1;
+                this.levelOffsetY -= move;
             if(pacY + this.levelOffsetY < 100 && this.levelOffsetY < 85)
-                this.levelOffsetY += 1;
+                this.levelOffsetY += move;
             if(pacY + this.levelOffsetY > 500 && field.getSize().height * TileSet.getInstance().getTileSize() + this.levelOffsetY > 575)
-                this.levelOffsetY -= 1;
+                this.levelOffsetY -= move;
         }
     }
     
@@ -360,7 +362,7 @@ public class GameScene implements Scene {
         //START Draw background
         this.tiledBackground =
                 PacmanApp.getInstance().getCore().getScreenManager().createCompatibleImage(800, 600, Transparency.OPAQUE);
-        this.updateLevelOffset();
+        this.updateLevelOffset(0);
         
         int startTileX = (this.levelOffsetX % TileSet.getInstance().getTileSize()) - TileSet.getInstance().getTileSize();
         int startTileY = (this.levelOffsetY % TileSet.getInstance().getTileSize()) - TileSet.getInstance().getTileSize();
@@ -388,7 +390,6 @@ public class GameScene implements Scene {
         //Any state
         _g.drawImage(this.tiledBackground, 0, 0, null);
         
-        this.updateLevelOffset();
         Shape c = _g.getClip();
         _g.setClip(0, 50, 800, 550);
         field.drawField(_g, this.levelOffsetX, this.levelOffsetY);
@@ -441,6 +442,14 @@ public class GameScene implements Scene {
         if(this.state == this.STATE_PLACEMENT) {
             if(placementState%2 == 0){
                 this.robotDialog[((placementState/2))].draw(_g);
+            }
+        }
+        
+        if (this.online) {
+            for (int i = 0; i < NUM_ROBOTS; i++) {
+                if (this.proxy[i].isWaitingForAnswer()) {
+                    _g.drawImage(TileSet.getInstance().getEntityTile(i,Node.DOWN,0), 340 + i * TileSet.getInstance().getTileSize(), 0, null);
+                }
             }
         }
     }
@@ -532,9 +541,11 @@ public class GameScene implements Scene {
                     //END OF TURN!
                 }
             }
-            if(this.online)
-                for(int i=0; i < NUM_ROBOTS; i++)
+            if(this.online) {                
+                for(int i=0; i < NUM_ROBOTS; i++) {
                     this.proxy[i].isDoneMoving();
+                }
+            }
         }
         
         if(this.state == this.STATE_PAUSE) {
@@ -560,6 +571,8 @@ public class GameScene implements Scene {
         
         if(this.moveTimer<0)
             this.moveTimer = this.roundTime;
+        
+        this.updateLevelOffset(_time);        
     }
     
     public void init(InputManager _input) {
@@ -576,8 +589,13 @@ public class GameScene implements Scene {
         this.resetPoints();
         this.fps = PacmanApp.getInstance().getFont().renderString("FPS: "+this.fps,400);
         this.field.loadFrom(this.level);
-        this.mapBuffer = new BufferedImage(this.field.getSize().width*TileSet.getInstance().getTileSize(),
-                this.field.getSize().height*TileSet.getInstance().getTileSize(), BufferedImage.TYPE_INT_RGB);
+        Dimension dim = this.field.getSize();
+        if ((dim.height != 0) && (dim.width != 0)) {
+            this.mapBuffer = PacmanApp.getInstance().getCore().getScreenManager().createCompatibleImage(
+                    dim.width*TileSet.getInstance().getTileSize(),
+                    dim.height*TileSet.getInstance().getTileSize(), 
+                    BufferedImage.TYPE_INT_RGB);
+        }
         for(int i=0; i<3; i++) {
             if(this.field.getEntityRenderers().length > i) {                
                 this.entity[i].setNode(this.field.getEntityRenderers()[i].getEntity().getNode());
