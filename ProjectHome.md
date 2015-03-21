@@ -1,0 +1,1 @@
+School project aimed at recreating Pac-Man with wirelessly controlled Lego Mindstorm robots.
